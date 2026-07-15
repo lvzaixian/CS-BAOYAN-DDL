@@ -1037,6 +1037,48 @@ test('rejects private markers that reach another public candidate field', async 
   }
 });
 
+test('rejects or sanitizes wrapped embedded private paths', async (t) => {
+  const wrappedPaths = [
+    '夏令营(/tmp/private.md)',
+    '夏令营[path:/var/private.md]',
+    '夏令营(`/private/expired-evidence.md`)',
+    '夏令营(path:C:\\Private\\secret.md)',
+    '夏令营[unc:\\\\server\\share\\secret.md]',
+    '夏令营(`targets/2027/private.md`)',
+    '夏令营[profile:profile_space/private-note.md]',
+  ];
+
+  for (const wrappedPath of wrappedPaths) {
+    await t.test(`${wrappedPath} in a prominent field`, () => {
+      const input = validInput();
+      input.mainRows[0].project = wrappedPath;
+
+      assert.throws(
+        () => importScoutingData(input, identities()),
+        /candidate.*private marker/i,
+      );
+    });
+
+    await t.test(`${wrappedPath} in a fact field`, () => {
+      const input = validInput();
+      input.mainRows[0].materialList = wrappedPath;
+      delete input.mainRows[0].materialComplexity;
+
+      const candidate = importScoutingData(input, identities());
+      const active = opportunity(candidate, '2026年优秀大学生夏令营');
+
+      assert.deepEqual(active.materials, {
+        status: 'unverified',
+        summary: '待官方公布',
+      });
+      assert.ok(
+        !JSON.stringify(candidate).includes(wrappedPath),
+        `leaked wrapped private path: ${wrappedPath}`,
+      );
+    });
+  }
+});
+
 test('does not scan validated official URL paths as private free text', async (t) => {
   for (const path of ['targets', 'private', 'Home']) {
     await t.test(`/${path}/`, () => {
