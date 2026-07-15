@@ -22,15 +22,15 @@
   --color-fg-0: #fafafa;
   --color-fg-1: #d4d4d8;
   --color-fg-2: #a1a1aa;
-  --color-fg-3: #71717a;
-  --color-fg-4: #52525b;
+  --color-fg-3: #94949e;
+  --color-fg-4: #8b8b96;
 
   /* urgency scale */
   --color-urge-critical: #fb7185; /* < 24h */
   --color-urge-soon:     #fbbf24; /* < 7d  */
   --color-urge-near:     #a3e635; /* < 30d */
   --color-urge-far:      #34d399; /* > 30d */
-  --color-urge-expired:  #52525b;
+  --color-urge-expired:  #8b8b96;
 }
 
 /* light theme overrides */
@@ -45,12 +45,12 @@
   --color-fg-1: #27272a;
   --color-fg-2: #52525b;
   --color-fg-3: #71717a;
-  --color-fg-4: #a1a1aa;
-  --color-urge-critical: #e11d48;
-  --color-urge-soon: #d97706;
-  --color-urge-near: #16a34a;
-  --color-urge-far: #059669;
-  --color-urge-expired: #a1a1aa;
+  --color-fg-4: #5f5f68;
+  --color-urge-critical: #be123c;
+  --color-urge-soon: #92400e;
+  --color-urge-near: #166534;
+  --color-urge-far: #047857;
+  --color-urge-expired: #52525b;
 }
 
 html,
@@ -149,6 +149,17 @@ kbd {
   30%      { background-color: var(--color-surface-3); }
 }
 .row-flash { animation: row-flash 380ms ease; }
+
+.filter-chips,
+.filter-chip,
+.filter-chip__value {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.filter-chip__value {
+  overflow-wrap: anywhere;
+}
 
 /* detail drawer: unframed sections with hard overflow boundaries */
 .detail-panel,

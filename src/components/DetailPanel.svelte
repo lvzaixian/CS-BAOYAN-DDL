@@ -9,6 +9,7 @@
     Link,
     X,
   } from 'lucide-svelte';
+  import { onMount, tick } from 'svelte';
   import type { DerivedSchool } from '$lib/types';
   import type { FactStatus } from '$lib/snapshot-types';
   import { formatDateTime } from '$lib/time';
@@ -45,16 +46,58 @@
   const primaryOfficialSource = $derived(officialSources[0] ?? null);
 
   let imgFailed = $state(false);
+  let panel = $state<HTMLElement | null>(null);
+  let closeButton = $state<HTMLButtonElement | null>(null);
+
+  onMount(() => {
+    const returnFocus = document.activeElement as HTMLElement | null;
+    void tick().then(() => closeButton?.focus());
+    return () => queueMicrotask(() => returnFocus?.focus());
+  });
+
+  function onDialogKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      onClose();
+      return;
+    }
+    if (event.key !== 'Tab' || !panel) return;
+    const focusable = Array.from(panel.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    ));
+    if (focusable.length === 0) {
+      event.preventDefault();
+      panel.focus();
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
 </script>
 
-<div class="fixed inset-0 z-40 fade" role="dialog" aria-modal="true" aria-label="项目详情">
+<div class="fixed inset-0 z-40 fade">
   <button
     class="absolute inset-0 bg-black/50 backdrop-blur-[3px]"
     onclick={onClose}
-    aria-label="关闭"
+    aria-label="关闭项目详情"
+    tabindex="-1"
   ></button>
 
   <div
+    bind:this={panel}
+    role="dialog"
+    aria-modal="true"
+    aria-label="项目详情"
+    tabindex="-1"
+    onkeydown={onDialogKeydown}
     class="detail-panel absolute right-0 top-0 bottom-0 w-full sm:w-[460px] min-w-0 max-w-full overflow-hidden surface-1 border-l border-line shadow-2xl slide-in-right flex flex-col"
   >
     <!-- header bar -->
@@ -80,9 +123,10 @@
         {/if}
       </div>
       <button
+        bind:this={closeButton}
         onclick={onClose}
         class="shrink-0 p-1.5 rounded text-fg-3 hover:text-fg-1 hover:surface-3 transition"
-        aria-label="关闭"
+        aria-label="关闭项目详情"
         title="关闭 (Esc)"
       >
         <X class="w-4 h-4" />

@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "snapshotId": "2026-07-16T03:45:00.000Z-2bdbb806f7aa",
+  "scanAt": "2026-07-16T11:30:00+08:00",
+  "approvedAt": "2026-07-16T11:45:00+08:00",
+  "previousSnapshotId": null,
+  "dataHash": "2bdbb806f7aa7da321d7deab306fa8fb96743795cdc5fe36225b246c70eebfa5",
+  "defaultFeedId": "e2e2028",
+  "feeds": [
+    {
+      "id": "e2e2028",
+      "label": "E2E 推免活动 2028",
+      "admissionCycle": "2028",
+      "eventYear": 2026
+    }
+  ],
+  "counts": {
+    "confirmedOpen": 2,
+    "confirmedUnknownDeadline": 1,
+    "pendingExcluded": 0,
+    "expired": 1
+  },
+  "opportunities": [
+    {
+      "projectId": "2028|红杉大学|人工智能学院|夏令营",
+      "feedId": "e2e2028",
+      "name": "红杉大学",
+      "institute": "人工智能学院",
+      "project": "2026年优秀大学生夏令营",
+      "eventType": "夏令营",
+      "description": "E2E_ACTIVE_SOONER",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-18T18:00:00+08:00",
+      "deadlineOriginal": "2026年7月18日18:00截止",
+      "deadlineEpochMs": 1784368800000,
+      "website": "https://admissions.redwood.example.test/2026/summer-camp",
+      "tags": ["985", "C9"],
+      "province": "北京",
+      "verifiedAt": "2026-07-16T10:30:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "红杉大学官方通知",
+          "url": "https://admissions.redwood.example.test/2026/summer-camp"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知发现页",
+          "url": "https://discovery.example.test/redwood-summer-camp"
+        }
+      ],
+      "logistics": {
+        "status": "confirmed",
+        "summary": "提供校内住宿和工作餐，往返交通自行承担。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "需要两封专家推荐信。"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "LONG_UNBROKEN_FACT_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+      }
+    },
+    {
+      "projectId": "2028|蓝湾大学|计算机学院|预推免",
+      "feedId": "e2e2028",
+      "name": "蓝湾大学",
+      "institute": "计算机学院",
+      "project": "2026年预推免招生",
+      "eventType": "预推免",
+      "description": "E2E_ACTIVE_LATER",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-31T23:59:00+08:00",
+      "deadlineOriginal": "2026年7月31日23:59截止",
+      "deadlineEpochMs": 1785513540000,
+      "website": "https://admissions.bluebay.example.test/recommendation",
+      "tags": ["211", "研究院"],
+      "province": "上海",
+      "verifiedAt": "2026-07-16T10:40:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "蓝湾大学官方通知",
+          "url": "https://admissions.bluebay.example.test/recommendation"
+        },
+        {
+          "kind": "cs-baoyan",
+          "label": "CS-BAOYAN 发现页",
+          "url": "https://discovery.example.test/bluebay-recommendation"
+        }
+      ],
+      "logistics": { "status": "not-published", "summary": "未公布" },
+      "recommendation": { "status": "confirmed", "summary": "无需推荐信" },
+      "materials": { "status": "confirmed", "summary": "成绩单、排名证明和个人陈述。" }
+    },
+    {
+      "projectId": "2028|青禾大学|软件学院|开放日",
+      "feedId": "e2e2028",
+      "name": "青禾大学",
+      "institute": "软件学院",
+      "project": "2026年研究生招生开放日",
+      "eventType": "开放日",
+      "description": "E2E_ACTIVE_UNKNOWN",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "官方尚未公布截止时间",
+      "deadlineEpochMs": null,
+      "website": "https://admissions.greenfield.example.test/open-day",
+      "tags": ["985", "联培"],
+      "province": "广东",
+      "verifiedAt": "2026-07-16T10:50:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "青禾大学官方通知",
+          "url": "https://admissions.greenfield.example.test/open-day"
+        }
+      ],
+      "logistics": { "status": "confirmed", "summary": "提供午餐，不提供住宿。" },
+      "recommendation": { "status": "not-published", "summary": "未公布" },
+      "materials": { "status": "confirmed", "summary": "在线填写报名表。" }
+    },
+    {
+      "projectId": "2028|远山大学|网络空间安全学院|夏令营",
+      "feedId": "e2e2028",
+      "name": "远山大学",
+      "institute": "网络空间安全学院",
+      "project": "2026年优秀大学生夏令营",
+      "eventType": "夏令营",
+      "description": "E2E_EXPIRED",
+      "verificationStatus": "expired",
+      "deadline": "2026-07-10T12:00:00+08:00",
+      "deadlineOriginal": "2026年7月10日12:00截止",
+      "deadlineEpochMs": 1783656000000,
+      "website": "https://admissions.farmountain.example.test/summer-camp",
+      "tags": ["双非"],
+      "province": "浙江",
+      "verifiedAt": "2026-07-16T11:00:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "远山大学官方通知",
+          "url": "https://admissions.farmountain.example.test/summer-camp"
+        },
+        {
+          "kind": "other-discovery",
+          "label": "历史发现页",
+          "url": "https://discovery.example.test/farmountain-archive"
+        }
+      ],
+      "logistics": { "status": "not-applicable", "summary": "活动已结束。" },
+      "recommendation": { "status": "not-published", "summary": "未公布" },
+      "materials": { "status": "not-published", "summary": "未公布" }
+    }
+  ]
+}

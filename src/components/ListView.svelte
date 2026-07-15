@@ -48,7 +48,7 @@
       {#if hasMultiple}
         {@render head('进行中', groups.live.length, false)}
       {/if}
-      <div class="divide-line">
+      <div class="divide-line" data-row-group="active-timed">
         {#each groups.live as r (rowKey(r))}
           <SchoolRow school={r} selected={selectedKey === rowKey(r)} {onSelect} />
         {/each}
@@ -57,7 +57,7 @@
 
     {#if groups.unknown.length > 0}
       {@render head('未知截止', groups.unknown.length, false)}
-      <div class="divide-line">
+      <div class="divide-line" data-row-group="active-unknown">
         {#each groups.unknown as r (rowKey(r))}
           <SchoolRow school={r} selected={selectedKey === rowKey(r)} {onSelect} />
         {/each}
@@ -66,7 +66,7 @@
 
     {#if groups.dead.length > 0}
       {@render head('已过期', groups.dead.length, true)}
-      <div class="divide-line">
+      <div class="divide-line" data-row-group="expired">
         {#each groups.dead as r (rowKey(r))}
           <SchoolRow school={r} selected={selectedKey === rowKey(r)} {onSelect} />
         {/each}

@@ -35,7 +35,7 @@
   }
 </script>
 
-<div class="surface-1 border border-line rounded-xl overflow-hidden {mode === 'sidebar' ? 'sticky top-[68px] max-h-[calc(100dvh-84px)] overflow-y-auto' : ''}">
+<div aria-label="筛选条件" class="surface-1 border border-line rounded-xl overflow-hidden {mode === 'sidebar' ? 'sticky top-[68px] max-h-[calc(100dvh-84px)] overflow-y-auto' : ''}">
   <!-- 档次 -->
   <div class="px-4 py-3 border-b border-line">
     <div class="flex items-center justify-between mb-2">
@@ -54,6 +54,8 @@
         <button
           disabled={c === 0 && !on}
           onclick={() => (filters.tags = toggle(filters.tags, t))}
+          aria-label="筛选档次：{t}"
+          aria-pressed={on}
           class="inline-flex items-center gap-1.5 text-xs rounded-md px-2.5 py-1.5 transition border
             {on
               ? 'bg-emerald-100 border-emerald-300 text-emerald-800 dark:bg-emerald-500/15 dark:border-emerald-500/40 dark:text-emerald-200'
@@ -84,6 +86,8 @@
         <button
           disabled={c === 0 && !on}
           onclick={() => (filters.status = toggle(filters.status, t))}
+          aria-label="筛选状态：{t}"
+          aria-pressed={on}
           class="inline-flex items-center gap-1.5 text-xs rounded-md px-2.5 py-1.5 transition border
             {on
               ? 'bg-amber-100 border-amber-300 text-amber-800 dark:bg-amber-500/15 dark:border-amber-500/40 dark:text-amber-200'
@@ -114,6 +118,8 @@
         <button
           disabled={c === 0 && !on}
           onclick={() => (filters.provinces = toggle(filters.provinces, p))}
+          aria-label="筛选省份：{p}"
+          aria-pressed={on}
           class="inline-flex items-center gap-1.5 text-xs rounded-md px-2 py-1 transition border
             {on
               ? 'bg-sky-100 border-sky-300 text-sky-800 dark:bg-sky-500/15 dark:border-sky-500/40 dark:text-sky-200'

@@ -33,9 +33,9 @@
 
 <div
   data-row-key={key}
+  data-deadline-ms={school.deadlineMs ?? undefined}
   class="group w-full grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:gap-4 px-3 sm:px-4 transition relative overflow-hidden
-    {selected ? 'surface-3' : 'hover:surface-2'}
-    {expired ? 'opacity-60' : ''}"
+    {selected ? 'surface-3' : 'hover:surface-2'}"
 >
   <!-- selected indicator -->
   <span
@@ -47,6 +47,7 @@
     type="button"
     onclick={() => onSelect(key)}
     aria-pressed={selected}
+    aria-label="查看项目详情：{school.name} {school.institute}"
     class="w-full min-w-0 text-left grid grid-cols-[40px_minmax(0,1fr)_auto] sm:grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-3 sm:gap-4 py-3"
   >
     <!-- logo -->

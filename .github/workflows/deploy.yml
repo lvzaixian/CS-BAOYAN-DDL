@@ -63,6 +63,31 @@ jobs:
       - name: Build production site
         run: pnpm run build
 
+      - name: Install Chromium for browser verification
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Initialize browser diagnostics
+        run: |
+          mkdir -p browser-diagnostics
+          printf 'commit=%s\nrun=%s\nattempt=%s\n' \
+            "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" \
+            > browser-diagnostics/context.txt
+
+      - name: Run deterministic browser verification
+        run: pnpm run test:e2e
+
+      - name: Upload browser failure artifacts
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: deploy-playwright-failure-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            test-results/
+            playwright-report/
+            browser-diagnostics/
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Create release identity
         shell: bash
         run: |

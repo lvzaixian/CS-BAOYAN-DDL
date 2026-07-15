@@ -230,9 +230,9 @@ test('wires status counts and deadline/source labels through authoritative helpe
   assert.match(detailPanelSource, /sourceLinkLabel\(school\)/);
 });
 
-test('keeps the feed selector shrinkable on narrow mobile headers and auto-sized on desktop', () => {
-  assert.match(headerSource, /max-w-36/);
-  assert.match(headerSource, /sm:max-w-none/);
+test('keeps the feed selector readable on narrow mobile headers and auto-sized on desktop', () => {
+  assert.match(headerSource, /w-28 min-w-28 shrink-0/);
+  assert.match(headerSource, /sm:w-auto sm:min-w-0 sm:max-w-none/);
   assert.match(headerSource, /w-full min-w-0 sm:w-auto/);
 });
 

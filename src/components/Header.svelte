@@ -5,7 +5,11 @@
   import { feedCatalog, isValidFeedId } from '$lib/schools';
   import type { ViewMode } from '$lib/types';
 
-  let { onOpenDrawer, onOpenHelp }: { onOpenDrawer: () => void; onOpenHelp: () => void } = $props();
+  let { drawerOpen, onOpenDrawer, onOpenHelp }: {
+    drawerOpen: boolean;
+    onOpenDrawer: (trigger: HTMLButtonElement) => void;
+    onOpenHelp: () => void;
+  } = $props();
 
   function setSource(e: Event) {
     const feedId = (e.target as HTMLSelectElement).value;
@@ -17,10 +21,10 @@
 </script>
 
 <header class="sticky top-0 z-30 backdrop-blur-md bg-[var(--color-surface-0)]/70 border-b border-line">
-  <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 h-14 flex items-center gap-3">
+  <div class="mx-auto w-full max-w-7xl px-2 sm:px-6 lg:px-8 h-14 flex items-center gap-1.5 sm:gap-3">
     <!-- mark -->
     <div class="flex items-center gap-2.5 min-w-0 shrink-0">
-      <div class="relative w-8 h-8 rounded-lg surface-3 border border-line-strong grid place-items-center overflow-hidden shrink-0">
+      <div class="relative w-8 h-8 rounded-lg surface-3 border border-line-strong hidden min-[360px]:grid place-items-center overflow-hidden shrink-0">
         <Clock class="w-4 h-4 urge-far" />
         <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-sky-500/10 pointer-events-none"></div>
       </div>
@@ -31,7 +35,7 @@
     </div>
 
     <!-- source switcher -->
-    <div class="ml-1 min-w-0 max-w-36 shrink sm:ml-3 sm:max-w-none sm:shrink-0">
+    <div class="ml-1 w-28 min-w-28 shrink-0 sm:ml-3 sm:w-auto sm:min-w-0 sm:max-w-none">
       <label class="sr-only" for="source-select">数据源</label>
       <div class="relative min-w-0">
         <select
@@ -57,6 +61,7 @@
       <button
         role="tab"
         aria-selected={filters.view === 'list'}
+        aria-label="列表视图"
         onclick={() => setView('list')}
         class="px-2 py-1 rounded text-xs font-medium flex items-center gap-1.5 transition {filters.view === 'list' ? 'surface-3 text-fg-0' : 'text-fg-2 hover:text-fg-1'}"
       >
@@ -66,6 +71,7 @@
       <button
         role="tab"
         aria-selected={filters.view === 'calendar'}
+        aria-label="日历视图"
         onclick={() => setView('calendar')}
         class="px-2 py-1 rounded text-xs font-medium flex items-center gap-1.5 transition {filters.view === 'calendar' ? 'surface-3 text-fg-0' : 'text-fg-2 hover:text-fg-1'}"
       >
@@ -77,8 +83,10 @@
     <!-- mobile filter trigger -->
     <button
       class="lg:hidden surface-2 hover:surface-3 border border-line rounded-md p-1.5 transition"
-      onclick={onOpenDrawer}
+      onclick={(event) => onOpenDrawer(event.currentTarget)}
       aria-label="筛选"
+      aria-expanded={drawerOpen}
+      aria-controls="mobile-filter-drawer"
     >
       <SlidersHorizontal class="w-4 h-4 text-fg-1" />
     </button>
