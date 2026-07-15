@@ -21,6 +21,7 @@ import { fileURLToPath } from 'node:url';
 
 import {
   importScoutingData,
+  writeCandidateAtomically,
   type IdentityContext,
 } from '../scripts/snapshot/import-scouting-data.js';
 import { validateCandidate } from '../src/lib/snapshot-validation.js';
@@ -407,6 +408,44 @@ test('one previous row expanding to multiple current rows preserves the exact ID
       .map((row) => row.projectId)
       .sort(),
     [currentInput.mainRows[0].projectId, currentInput.mainRows[1].projectId].sort(),
+  );
+});
+
+test('shared URL growth preserves all previous IDs and accepts a new current ID', () => {
+  const previousInput = sharedOfficialUrlInput();
+  const previous = sealCandidate(importScoutingData(previousInput, identities()));
+  const currentInput = sharedOfficialUrlInput();
+  const addition = structuredClone(currentInput.mainRows[0]);
+  addition.projectId = '2027|测试大学|计算机学院|校园开放体验';
+  addition.project = '2026年计算机学院校园开放体验';
+  addition.eventType = '校园开放体验';
+  currentInput.mainRows.splice(2, 0, addition);
+
+  const candidate = importScoutingData(currentInput, identities({ previous }));
+
+  assert.deepEqual(
+    candidate.opportunities
+      .filter((row) => row.website === currentInput.mainRows[0].officialUrl)
+      .map((row) => row.projectId)
+      .sort(),
+    [
+      previousInput.mainRows[0].projectId,
+      previousInput.mainRows[1].projectId,
+      addition.projectId,
+    ].sort(),
+  );
+});
+
+test('shared URL replacement is ambiguous when a previous ID is missing', () => {
+  const previousInput = sharedOfficialUrlInput();
+  const previous = sealCandidate(importScoutingData(previousInput, identities()));
+  const currentInput = sharedOfficialUrlInput();
+  currentInput.mainRows[1].projectId = '2027|测试大学|计算机学院|校园开放体验';
+  currentInput.mainRows[1].project = '2026年计算机学院校园开放体验';
+
+  assert.throws(
+    () => importScoutingData(currentInput, identities({ previous })),
+    /ambiguous.*compound alias/i,
   );
 });
 
@@ -809,13 +848,60 @@ test('suppresses ambiguous recommendation and official-system phrases as unverif
   }
 });
 
+test('suppresses deferred system language without weakening authoritative negatives', async (t) => {
+  const deferredCases = [
+    {
+      phrase: '具体材料以报名系统为准',
+      field: 'materialList',
+      otherField: 'materialComplexity',
+      group: 'materials',
+      expected: { status: 'unverified', summary: '待官方公布' },
+    },
+    {
+      phrase: '未在通知中要求推荐信',
+      field: 'recommendationLetters',
+      otherField: 'recommendationTemplate',
+      group: 'recommendation',
+      expected: { status: 'not-published', summary: '未公布' },
+    },
+    {
+      phrase: '是否使用模板请以系统为准',
+      field: 'recommendationTemplate',
+      otherField: 'recommendationLetters',
+      group: 'recommendation',
+      expected: { status: 'unverified', summary: '待官方公布' },
+    },
+  ] as const;
+
+  for (const deferred of deferredCases) {
+    await t.test(deferred.phrase, () => {
+      const input = validInput();
+      input.mainRows[0][deferred.field] = deferred.phrase;
+      delete input.mainRows[0][deferred.otherField];
+
+      const active = opportunity(
+        importScoutingData(input, identities()),
+        '2026年优秀大学生夏令营',
+      );
+
+      assert.deepEqual(active[deferred.group], deferred.expected);
+      assert.ok(!JSON.stringify(active).includes(deferred.phrase));
+    });
+  }
+});
+
 test('suppresses local and private markers found in otherwise allowed fact fields', async (t) => {
   const markers = [
     '/Users/max/private/evidence.md',
+    '/home/maxwell/private/evidence.md',
+    '/private/expired-evidence.md',
     'C:\\Users\\max\\private\\evidence.md',
     'profile_space/private-note.md',
     'targets/submitted/private-note.md',
+    'targets/2027-school/private-note.md',
     'submittedProjectIds=secret',
+    'PENDING_PRIVATE_RISK',
+    'PRIVATE_EVIDENCE_PATH',
     'file:///Users/max/private/evidence.md',
   ];
 
@@ -837,30 +923,55 @@ test('suppresses local and private markers found in otherwise allowed fact field
   }
 });
 
-test('rejects private markers that reach another public candidate field', () => {
-  const input = validInput();
-  input.mainRows[0].project = '夏令营 /Users/max/private/project.md';
+test('rejects private markers that reach another public candidate field', async (t) => {
+  for (const marker of [
+    '/home/maxwell/private/evidence.md',
+    '/private/expired-evidence.md',
+    'PENDING_PRIVATE_RISK',
+    'targets/2027-school/private-note.md',
+  ]) {
+    await t.test(marker, () => {
+      const input = validInput();
+      input.mainRows[0].project = `夏令营 ${marker}`;
 
-  assert.throws(
-    () => importScoutingData(input, identities()),
-    /candidate.*private marker/i,
-  );
+      assert.throws(
+        () => importScoutingData(input, identities()),
+        /candidate.*private marker/i,
+      );
+    });
+  }
 });
 
-test('preserves confirmed negative recommendation wording', () => {
+test('does not mistake a case-sensitive official /Home/ URL path for a private path', () => {
   const input = validInput();
-  input.mainRows[0].recommendationLetters = '未要求推荐信';
-  delete input.mainRows[0].recommendationTemplate;
+  input.mainRows[0].officialUrl = 'https://gs.example.edu.cn/Home/Detail/8021';
 
   const active = opportunity(
     importScoutingData(input, identities()),
     '2026年优秀大学生夏令营',
   );
 
-  assert.deepEqual(active.recommendation, {
-    status: 'confirmed',
-    summary: '推荐信数量：未要求推荐信',
-  });
+  assert.equal(active.website, input.mainRows[0].officialUrl);
+});
+
+test('preserves confirmed negative recommendation wording', async (t) => {
+  for (const phrase of ['无需推荐信', '未要求推荐信']) {
+    await t.test(phrase, () => {
+      const input = validInput();
+      input.mainRows[0].recommendationLetters = phrase;
+      delete input.mainRows[0].recommendationTemplate;
+
+      const active = opportunity(
+        importScoutingData(input, identities()),
+        '2026年优秀大学生夏令营',
+      );
+
+      assert.deepEqual(active.recommendation, {
+        status: 'confirmed',
+        summary: `推荐信数量：${phrase}`,
+      });
+    });
+  }
 });
 
 test('rejects a non-null previous identity unless it is a valid approved snapshot', () => {
@@ -1116,6 +1227,30 @@ test('CLI atomically replaces an existing regular candidate and leaves no temp r
       'candidate.json',
       'input.json',
     ]);
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
+test('atomic writer cancellation before rename preserves output and removes its temp file', async () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'scouting-atomic-cancel-'));
+  const outputPath = join(tempRoot, 'candidate.json');
+  const outputBefore = 'CURRENT_CANDIDATE_MUST_SURVIVE\n';
+  writeFileSync(outputPath, outputBefore, 'utf8');
+  const controller = new AbortController();
+  controller.abort(new Error('cancelled before atomic rename'));
+
+  try {
+    await assert.rejects(
+      writeCandidateAtomically(
+        outputPath,
+        importScoutingData(freshCliInput(), identities()),
+        controller.signal,
+      ),
+      /cancelled before atomic rename/i,
+    );
+    assert.equal(readFileSync(outputPath, 'utf8'), outputBefore);
+    assert.deepEqual(readdirSync(tempRoot), ['candidate.json']);
   } finally {
     rmSync(tempRoot, { recursive: true, force: true });
   }

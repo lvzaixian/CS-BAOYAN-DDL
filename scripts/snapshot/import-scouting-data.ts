@@ -55,11 +55,11 @@ interface CurrentUrlIdentity {
 
 const beijingOffsetMs = 8 * 60 * 60 * 1000;
 const unverifiedPattern =
-  /未核实|待核实|待系统核实|未确认|未明确|无法核实|不确定|疑似|传闻|可能|交流群|群聊|截图|以[^，。；\n]*官方报名系统[^，。；\n]*为准/;
+  /未核实|待核实|待系统核实|未确认|未明确|无法核实|不确定|疑似|传闻|可能|交流群|群聊|截图|(?:请)?以[^，。；\n]*系统[^，。；\n]*为准/;
 const notPublishedPattern =
-  /未公布|待公布|暂未公布|未提及|未在[^，。；\n]*(?:列出|提及|说明)|暂无|待定|后续通知/;
+  /未公布|待公布|暂未公布|未提及|未在[^，。；\n]*(?:列出|提及|说明|要求)|暂无|待定|后续通知/;
 const privateMarkerPattern =
-  /\/Users\/|[A-Za-z]:\/+Users\/|profile_space|targets\/+submitted|submittedProjectIds|file:\/\//i;
+  /\/Users\/|\/home\/|\/private\/|[A-Za-z]:\/+[Uu]sers\/|profile_space|targets\/|submittedProjectIds|file:\/\/|PENDING_PRIVATE|PRIVATE_[A-Z0-9_]*/;
 
 function isObject(value: unknown): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -289,11 +289,11 @@ function resolveProjectId(
     const compoundAlias = identityIndex.compoundAliasesByUrlAndInput.get(
       compoundAliasKey(normalizedOfficialUrl, inputProjectId),
     );
-    const exactCurrentMatch = [...current.projectIds].some((projectId) =>
-      reusablePreviousIds.has(projectId));
+    const everyPreviousIdRemains = [...reusablePreviousIds].every((projectId) =>
+      current.projectIds.has(projectId));
 
     if (current.rowCount > 1) {
-      if (reusablePreviousIds.size === 1 && exactCurrentMatch) return inputProjectId;
+      if (everyPreviousIdRemains) return inputProjectId;
       const hasCompoundAssignment = [...current.projectIds].some((projectId) =>
         identityIndex.compoundAliasesByUrlAndInput.has(
           compoundAliasKey(normalizedOfficialUrl, projectId),
@@ -755,7 +755,11 @@ async function removeTempFile(path: string): Promise<void> {
   }
 }
 
-async function writeCandidateAtomically(path: string, candidate: SnapshotCandidate): Promise<void> {
+export async function writeCandidateAtomically(
+  path: string,
+  candidate: SnapshotCandidate,
+  signal?: AbortSignal,
+): Promise<void> {
   const parent = dirname(path);
   await mkdir(parent, { recursive: true });
   const tempPath = join(
@@ -769,6 +773,11 @@ async function writeCandidateAtomically(path: string, candidate: SnapshotCandida
     await handle.sync();
     await handle.close();
     handle = undefined;
+    if (signal?.aborted) {
+      throw signal.reason instanceof Error
+        ? signal.reason
+        : new Error('Atomic candidate write aborted before rename');
+    }
     await rename(tempPath, path);
   } finally {
     if (handle !== undefined) {
