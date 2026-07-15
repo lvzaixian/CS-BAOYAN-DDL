@@ -1,5 +1,6 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
+import { randomUUID } from 'node:crypto';
+import { lstat, mkdir, open, rename, unlink } from 'node:fs/promises';
+import { basename, dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import type {
@@ -7,7 +8,12 @@ import type {
   PublicSnapshot,
   SnapshotCandidate,
 } from '../../src/lib/snapshot-types.js';
-import { validateCandidate, validateSnapshot } from '../../src/lib/snapshot-validation.js';
+import { validateCandidate } from '../../src/lib/snapshot-validation.js';
+import {
+  readRegularJsonFile,
+  validateApprovedSnapshot,
+} from './approve-snapshot.js';
+import type { RegularJsonFile } from './approve-snapshot.js';
 
 export interface SnapshotDiff {
   added: string[];
@@ -26,6 +32,22 @@ type JsonObject = Record<string, unknown>;
 
 const usage =
   'Usage: snapshot:diff -- [--previous PATH] --next PATH --output PATH';
+
+function isObject(value: unknown): value is JsonObject {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function hasErrorCode(error: unknown, code: string): boolean {
+  return isObject(error) && error.code === code;
+}
+
+function quoted(value: string): string {
+  return JSON.stringify(value);
+}
+
+function safeError(error: unknown): string {
+  return JSON.stringify(error instanceof Error ? error.message : String(error));
+}
 
 function codePointCompare(left: string, right: string): number {
   const leftPoints = [...left];
@@ -106,11 +128,11 @@ function parseCliOptions(argv: string[]): CliOptions {
   const allowed = new Set(['--previous', '--next', '--output']);
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
-    if (!allowed.has(flag)) throw new Error(`unknown argument: ${flag}\n${usage}`);
-    if (values.has(flag)) throw new Error(`duplicate argument: ${flag}`);
+    if (!allowed.has(flag)) throw new Error(`unknown argument: ${quoted(flag)}\n${usage}`);
+    if (values.has(flag)) throw new Error(`duplicate argument: ${quoted(flag)}`);
     const value = argv[index + 1];
     if (value === undefined || value.startsWith('--')) {
-      throw new Error(`missing value for ${flag}\n${usage}`);
+      throw new Error(`missing value for ${quoted(flag)}\n${usage}`);
     }
     values.set(flag, value);
     index += 1;
@@ -123,17 +145,77 @@ function parseCliOptions(argv: string[]): CliOptions {
   return { previous: values.get('--previous'), next, output };
 }
 
-async function readJson(path: string, label: string): Promise<unknown> {
-  let text: string;
-  try {
-    text = await readFile(path, 'utf8');
-  } catch (error) {
-    throw new Error(`${label} could not be read at ${path}: ${String(error)}`);
+async function assertSafeOutput(
+  outputPath: string,
+  inputs: Array<{ flag: '--next' | '--previous'; path: string; file: RegularJsonFile }>,
+): Promise<void> {
+  for (const input of inputs) {
+    if (resolve(outputPath) === resolve(input.path)) {
+      throw new Error(`--output collides with ${input.flag}`);
+    }
   }
+
+  let outputInfo: Awaited<ReturnType<typeof lstat>>;
   try {
-    return JSON.parse(text) as unknown;
+    outputInfo = await lstat(outputPath);
   } catch (error) {
-    throw new Error(`${label} is not valid JSON at ${path}: ${String(error)}`);
+    if (hasErrorCode(error, 'ENOENT')) return;
+    throw new Error(`--output could not be inspected at ${quoted(outputPath)}: ${safeError(error)}`);
+  }
+  if (outputInfo.isSymbolicLink()) {
+    throw new Error(`--output must not be an existing symlink at ${quoted(outputPath)}`);
+  }
+  if (!outputInfo.isFile()) {
+    throw new Error(`--output must be absent or a regular file at ${quoted(outputPath)}`);
+  }
+  for (const input of inputs) {
+    if (outputInfo.dev === input.file.dev && outputInfo.ino === input.file.ino) {
+      throw new Error(`--output collides with ${input.flag} by inode or hardlink`);
+    }
+  }
+}
+
+async function removeTempFile(path: string): Promise<void> {
+  try {
+    await unlink(path);
+  } catch (error) {
+    if (!hasErrorCode(error, 'ENOENT')) return;
+  }
+}
+
+export async function writeDiffAtomically(
+  path: string,
+  diff: SnapshotDiff,
+  signal?: AbortSignal,
+): Promise<void> {
+  const parent = dirname(path);
+  await mkdir(parent, { recursive: true });
+  const tempPath = join(parent, `.${basename(path)}.${process.pid}.${randomUUID()}.tmp`);
+  let handle: Awaited<ReturnType<typeof open>> | undefined;
+  let directoryHandle: Awaited<ReturnType<typeof open>> | undefined;
+  try {
+    handle = await open(tempPath, 'wx', 0o600);
+    await handle.writeFile(`${JSON.stringify(diff, null, 2)}\n`, 'utf8');
+    await handle.sync();
+    await handle.close();
+    handle = undefined;
+    if (signal?.aborted) {
+      throw signal.reason instanceof Error
+        ? signal.reason
+        : new Error('Atomic diff write cancelled before rename');
+    }
+    directoryHandle = await open(parent, 'r');
+    if (signal?.aborted) {
+      throw signal.reason instanceof Error
+        ? signal.reason
+        : new Error('Atomic diff write cancelled before rename');
+    }
+    await rename(tempPath, path);
+    await directoryHandle.sync().catch(() => undefined);
+  } finally {
+    if (handle !== undefined) await handle.close().catch(() => undefined);
+    if (directoryHandle !== undefined) await directoryHandle.close().catch(() => undefined);
+    await removeTempFile(tempPath);
   }
 }
 
@@ -149,25 +231,29 @@ async function runCli(): Promise<void> {
   const argv = process.argv.slice(2);
   if (argv[0] === '--') argv.shift();
   const options = parseCliOptions(argv);
-  const protectedPaths = [options.next, options.previous].filter(
-    (path): path is string => path !== undefined,
-  );
-  if (protectedPaths.some((path) => resolve(path) === resolve(options.output))) {
-    throw new Error('--output must not collide with an input path');
-  }
-
-  const [nextInput, previousInput] = await Promise.all([
-    readJson(options.next, 'next candidate'),
+  const [nextFile, previousFile] = await Promise.all([
+    readRegularJsonFile(options.next, 'next candidate'),
     options.previous === undefined
       ? Promise.resolve(null)
-      : readJson(options.previous, 'previous snapshot'),
+      : readRegularJsonFile(options.previous, 'previous snapshot'),
   ]);
+  const inputs: Array<{
+    flag: '--next' | '--previous';
+    path: string;
+    file: RegularJsonFile;
+  }> = [{ flag: '--next', path: options.next, file: nextFile }];
+  if (options.previous !== undefined && previousFile !== null) {
+    inputs.push({ flag: '--previous', path: options.previous, file: previousFile });
+  }
+  await assertSafeOutput(options.output, inputs);
+  const nextInput = nextFile.value;
+  const previousInput = previousFile?.value ?? null;
   const candidateErrors = validateCandidate(nextInput, referenceTime(nextInput, 'scanAt'));
   if (candidateErrors.length > 0) {
     throw new Error(`Next candidate validation failed:\n${candidateErrors.join('\n')}`);
   }
   if (previousInput !== null) {
-    const previousErrors = validateSnapshot(
+    const previousErrors = validateApprovedSnapshot(
       previousInput,
       referenceTime(previousInput, 'approvedAt'),
     );
@@ -180,9 +266,14 @@ async function runCli(): Promise<void> {
     previousInput as PublicSnapshot | null,
     nextInput as SnapshotCandidate,
   );
-  await mkdir(dirname(options.output), { recursive: true });
-  await writeFile(options.output, `${JSON.stringify(diff, null, 2)}\n`, 'utf8');
-  console.log(`Wrote snapshot diff to ${options.output}`);
+  try {
+    await writeDiffAtomically(options.output, diff);
+  } catch (error) {
+    throw new Error(
+      `snapshot diff could not be written to ${quoted(options.output)}: ${safeError(error)}`,
+    );
+  }
+  console.log(`Wrote snapshot diff to ${quoted(options.output)}`);
 }
 
 const entrypoint = process.argv[1];

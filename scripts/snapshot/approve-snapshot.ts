@@ -1,13 +1,13 @@
 import { createHash, randomUUID } from 'node:crypto';
+import { constants } from 'node:fs';
 import {
   lstat,
   mkdir,
   open,
-  readFile,
   rename,
-  stat,
   unlink,
 } from 'node:fs/promises';
+import type { FileHandle } from 'node:fs/promises';
 import { basename, dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -36,6 +36,21 @@ interface ApprovedFileState {
   fingerprint: FileFingerprint;
 }
 
+export interface RegularJsonFile {
+  value: unknown;
+  text: string;
+  dev: number;
+  ino: number;
+  size: number;
+  mtimeMs: number;
+}
+
+export interface ApproveSnapshotIoHooks {
+  beforeRename?: () => Promise<void>;
+  openDirectory?: (path: string) => Promise<FileHandle>;
+  syncDirectory?: (handle: FileHandle) => Promise<void>;
+}
+
 export interface ApproveSnapshotFileOptions {
   candidatePath: string;
   approvedPath: string;
@@ -44,6 +59,7 @@ export interface ApproveSnapshotFileOptions {
 
 const usage =
   'Usage: snapshot:approve -- --candidate PATH --approved PATH [--approved-at ISO_TIMESTAMP]';
+export const MAX_SNAPSHOT_JSON_BYTES = 16 * 1024 * 1024;
 
 function isObject(value: unknown): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -51,6 +67,14 @@ function isObject(value: unknown): value is JsonObject {
 
 function hasErrorCode(error: unknown, code: string): boolean {
   return isObject(error) && error.code === code;
+}
+
+function quoted(value: string): string {
+  return JSON.stringify(value);
+}
+
+function safeError(error: unknown): string {
+  return JSON.stringify(error instanceof Error ? error.message : String(error));
 }
 
 function codePointCompare(left: string, right: string): number {
@@ -121,6 +145,11 @@ function snapshotIdFor(approvedAt: string, dataHash: string): string {
   return `${new Date(Date.parse(approvedAt)).toISOString()}-${dataHash.slice(0, 12)}`;
 }
 
+function isRepositorySnapshotId(value: string): boolean {
+  const match = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)-[0-9a-f]{12}$/.exec(value);
+  return match !== null && isValidIsoTimestamp(match[1]);
+}
+
 export function validateApprovedSnapshot(input: unknown, nowMs = Date.now()): string[] {
   const errors = validateSnapshot(input, nowMs);
   if (!isObject(input)) return errors;
@@ -142,6 +171,12 @@ export function validateApprovedSnapshot(input: unknown, nowMs = Date.now()): st
     && input.snapshotId !== snapshotIdFor(input.approvedAt, recomputedHash)
   ) {
     errors.push('snapshot.snapshotId: must be derived from approvedAt and the canonical hash');
+  }
+  if (
+    typeof input.previousSnapshotId === 'string'
+    && !isRepositorySnapshotId(input.previousSnapshotId)
+  ) {
+    errors.push('snapshot.previousSnapshotId: expected the repository snapshot ID format');
   }
   return errors;
 }
@@ -168,16 +203,9 @@ export function approveCandidate(
     const currentReferenceTime = isValidIsoTimestamp(current.approvedAt)
       ? Date.parse(current.approvedAt)
       : 0;
-    const currentErrors = validateSnapshot(current, currentReferenceTime);
+    const currentErrors = validateApprovedSnapshot(current, currentReferenceTime);
     if (currentErrors.length > 0) {
       throw new Error(`Current snapshot validation failed:\n${currentErrors.join('\n')}`);
-    }
-    const currentHash = canonicalDataHash(current);
-    if (current.dataHash !== currentHash) {
-      throw new Error('Current snapshot dataHash does not match the lowercase canonical hash');
-    }
-    if (current.snapshotId !== snapshotIdFor(current.approvedAt, currentHash)) {
-      throw new Error('Current snapshot snapshotId does not match approvedAt and canonical hash');
     }
   }
 
@@ -201,11 +229,11 @@ function parseCliOptions(argv: string[]): CliOptions {
   const allowed = new Set(['--candidate', '--approved', '--approved-at']);
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
-    if (!allowed.has(flag)) throw new Error(`unknown argument: ${flag}\n${usage}`);
-    if (values.has(flag)) throw new Error(`duplicate argument: ${flag}`);
+    if (!allowed.has(flag)) throw new Error(`unknown argument: ${quoted(flag)}\n${usage}`);
+    if (values.has(flag)) throw new Error(`duplicate argument: ${quoted(flag)}`);
     const value = argv[index + 1];
     if (value === undefined || value.startsWith('--')) {
-      throw new Error(`missing value for ${flag}\n${usage}`);
+      throw new Error(`missing value for ${quoted(flag)}\n${usage}`);
     }
     values.set(flag, value);
     index += 1;
@@ -218,11 +246,54 @@ function parseCliOptions(argv: string[]): CliOptions {
   return { candidate, approved, approvedAt: values.get('--approved-at') };
 }
 
-async function readText(path: string, label: string): Promise<string> {
+async function readRegularText(path: string, label: string): Promise<Omit<RegularJsonFile, 'value'>> {
+  let pathInfo: Awaited<ReturnType<typeof lstat>>;
   try {
-    return await readFile(path, 'utf8');
+    pathInfo = await lstat(path);
   } catch (error) {
-    throw new Error(`${label} could not be read at ${path}: ${String(error)}`);
+    throw new Error(`${label} could not be read at ${quoted(path)}: ${safeError(error)}`);
+  }
+  if (pathInfo.isSymbolicLink()) {
+    throw new Error(`${label} must not be a symlink at ${quoted(path)}`);
+  }
+  if (!pathInfo.isFile()) {
+    throw new Error(`${label} must be a regular file at ${quoted(path)}`);
+  }
+  if (pathInfo.size > MAX_SNAPSHOT_JSON_BYTES) {
+    throw new Error(`${label} exceeds the JSON size limit at ${quoted(path)}`);
+  }
+
+  let handle: FileHandle;
+  try {
+    handle = await open(path, constants.O_RDONLY | constants.O_NOFOLLOW);
+  } catch (error) {
+    throw new Error(`${label} could not be read at ${quoted(path)}: ${safeError(error)}`);
+  }
+  try {
+    const openedInfo = await handle.stat();
+    if (
+      !openedInfo.isFile()
+      || openedInfo.dev !== pathInfo.dev
+      || openedInfo.ino !== pathInfo.ino
+    ) {
+      throw new Error(`${label} changed while being opened at ${quoted(path)}`);
+    }
+    if (openedInfo.size > MAX_SNAPSHOT_JSON_BYTES) {
+      throw new Error(`${label} exceeds the JSON size limit at ${quoted(path)}`);
+    }
+    const text = await handle.readFile({ encoding: 'utf8' });
+    if (Buffer.byteLength(text, 'utf8') > MAX_SNAPSHOT_JSON_BYTES) {
+      throw new Error(`${label} exceeds the JSON size limit at ${quoted(path)}`);
+    }
+    return {
+      text,
+      dev: openedInfo.dev,
+      ino: openedInfo.ino,
+      size: openedInfo.size,
+      mtimeMs: openedInfo.mtimeMs,
+    };
+  } finally {
+    await handle.close().catch(() => undefined);
   }
 }
 
@@ -230,8 +301,16 @@ function parseJson(text: string, path: string, label: string): unknown {
   try {
     return JSON.parse(text) as unknown;
   } catch (error) {
-    throw new Error(`${label} is not valid JSON at ${path}: ${String(error)}`);
+    throw new Error(`${label} is not valid JSON at ${quoted(path)}: ${safeError(error)}`);
   }
+}
+
+export async function readRegularJsonFile(
+  path: string,
+  label: string,
+): Promise<RegularJsonFile> {
+  const file = await readRegularText(path, label);
+  return { ...file, value: parseJson(file.text, path, label) };
 }
 
 function bytesHash(contents: string): string {
@@ -246,20 +325,20 @@ async function readApprovedFileState(path: string): Promise<ApprovedFileState> {
     if (hasErrorCode(error, 'ENOENT')) {
       return { value: null, fingerprint: { exists: false } };
     }
-    throw error;
+    throw new Error(`current snapshot could not be inspected at ${quoted(path)}: ${safeError(error)}`);
   }
   if (info.isSymbolicLink()) throw new Error('--approved must not be an existing symlink');
   if (!info.isFile()) throw new Error('--approved must be absent or an existing regular file');
-  const contents = await readText(path, 'current snapshot');
+  const file = await readRegularJsonFile(path, 'current snapshot');
   return {
-    value: parseJson(contents, path, 'current snapshot') as PublicSnapshot,
+    value: file.value as PublicSnapshot,
     fingerprint: {
       exists: true,
-      dev: info.dev,
-      ino: info.ino,
-      size: info.size,
-      mtimeMs: info.mtimeMs,
-      contentHash: bytesHash(contents),
+      dev: file.dev,
+      ino: file.ino,
+      size: file.size,
+      mtimeMs: file.mtimeMs,
+      contentHash: bytesHash(file.text),
     },
   };
 }
@@ -278,13 +357,18 @@ async function assertApprovedFileUnchanged(
   if (!expected.exists || info.isSymbolicLink() || !info.isFile()) {
     throw new Error('approved snapshot changed concurrently before atomic rename');
   }
-  const contents = await readFile(path, 'utf8');
+  let file: Omit<RegularJsonFile, 'value'>;
+  try {
+    file = await readRegularText(path, 'approved snapshot');
+  } catch {
+    throw new Error('approved snapshot changed concurrently before atomic rename');
+  }
   if (
-    info.dev !== expected.dev
-    || info.ino !== expected.ino
-    || info.size !== expected.size
-    || info.mtimeMs !== expected.mtimeMs
-    || bytesHash(contents) !== expected.contentHash
+    file.dev !== expected.dev
+    || file.ino !== expected.ino
+    || file.size !== expected.size
+    || file.mtimeMs !== expected.mtimeMs
+    || bytesHash(file.text) !== expected.contentHash
   ) {
     throw new Error('approved snapshot changed concurrently before atomic rename');
   }
@@ -294,7 +378,7 @@ async function removeTempFile(path: string): Promise<void> {
   try {
     await unlink(path);
   } catch (error) {
-    if (!hasErrorCode(error, 'ENOENT')) throw error;
+    if (!hasErrorCode(error, 'ENOENT')) return;
   }
 }
 
@@ -303,11 +387,13 @@ async function writeApprovedAtomically(
   snapshot: PublicSnapshot,
   expected: FileFingerprint,
   signal?: AbortSignal,
+  hooks: ApproveSnapshotIoHooks = {},
 ): Promise<void> {
   const parent = dirname(path);
   await mkdir(parent, { recursive: true });
   const tempPath = join(parent, `.${basename(path)}.${process.pid}.${randomUUID()}.tmp`);
   let handle: Awaited<ReturnType<typeof open>> | undefined;
+  let directoryHandle: FileHandle | undefined;
   try {
     handle = await open(tempPath, 'wx', 0o600);
     await handle.writeFile(`${JSON.stringify(snapshot, null, 2)}\n`, 'utf8');
@@ -319,55 +405,92 @@ async function writeApprovedAtomically(
         ? signal.reason
         : new Error('Atomic approved write cancelled before rename');
     }
+    directoryHandle = await (hooks.openDirectory ?? ((directory) => open(directory, 'r')))(parent);
+    await hooks.beforeRename?.();
+    if (signal?.aborted) {
+      throw signal.reason instanceof Error
+        ? signal.reason
+        : new Error('Atomic approved write cancelled before rename');
+    }
     await assertApprovedFileUnchanged(path, expected);
     await rename(tempPath, path);
-    const directoryHandle = await open(parent, 'r');
     try {
-      await directoryHandle.sync();
-    } finally {
-      await directoryHandle.close();
+      await (hooks.syncDirectory ?? ((directory) => directory.sync()))(directoryHandle);
+    } catch {
+      // The rename is committed; later durability or cleanup failures must not report rejection.
     }
   } finally {
     if (handle !== undefined) await handle.close().catch(() => undefined);
+    if (directoryHandle !== undefined) await directoryHandle.close().catch(() => undefined);
     await removeTempFile(tempPath);
   }
+}
+
+async function acquireApprovalLock(path: string): Promise<{ handle: FileHandle; path: string }> {
+  const lockPath = join(dirname(path), `.${basename(path)}.lock`);
+  try {
+    return { handle: await open(lockPath, 'wx', 0o600), path: lockPath };
+  } catch (error) {
+    if (hasErrorCode(error, 'EEXIST')) {
+      throw new Error('approved target is locked by another approval');
+    }
+    throw new Error(`approval lock could not be acquired beside ${quoted(path)}: ${safeError(error)}`);
+  }
+}
+
+async function releaseApprovalLock(lock: { handle: FileHandle; path: string }): Promise<void> {
+  await lock.handle.close().catch(() => undefined);
+  await unlink(lock.path).catch(() => undefined);
 }
 
 export async function approveSnapshotFile(
   options: ApproveSnapshotFileOptions,
   signal?: AbortSignal,
+  hooks: ApproveSnapshotIoHooks = {},
 ): Promise<PublicSnapshot> {
   if (resolve(options.candidatePath) === resolve(options.approvedPath)) {
     throw new Error('--candidate and --approved paths collide');
   }
-  const candidateText = await readText(options.candidatePath, 'candidate');
-  const candidateInfo = await stat(options.candidatePath);
-  if (!candidateInfo.isFile()) throw new Error('--candidate must be a regular file');
-  const approvedState = await readApprovedFileState(options.approvedPath);
-  if (
-    approvedState.fingerprint.exists
-    && candidateInfo.dev === approvedState.fingerprint.dev
-    && candidateInfo.ino === approvedState.fingerprint.ino
-  ) {
-    throw new Error('--candidate and --approved collide by inode or hardlink');
+  const candidateFile = await readRegularJsonFile(options.candidatePath, 'candidate');
+  try {
+    await mkdir(dirname(options.approvedPath), { recursive: true });
+  } catch (error) {
+    throw new Error(
+      `approved parent could not be created for ${quoted(options.approvedPath)}: ${safeError(error)}`,
+    );
   }
-  const candidateInput = parseJson(
-    candidateText,
-    options.candidatePath,
-    'candidate',
-  ) as SnapshotCandidate;
-  const approved = approveCandidate(
-    candidateInput,
-    approvedState.value,
-    options.approvedAt,
-  );
-  await writeApprovedAtomically(
-    options.approvedPath,
-    approved,
-    approvedState.fingerprint,
-    signal,
-  );
-  return approved;
+  const lock = await acquireApprovalLock(options.approvedPath);
+  try {
+    const approvedState = await readApprovedFileState(options.approvedPath);
+    if (
+      approvedState.fingerprint.exists
+      && candidateFile.dev === approvedState.fingerprint.dev
+      && candidateFile.ino === approvedState.fingerprint.ino
+    ) {
+      throw new Error('--candidate and --approved collide by inode or hardlink');
+    }
+    const approved = approveCandidate(
+      candidateFile.value as SnapshotCandidate,
+      approvedState.value,
+      options.approvedAt,
+    );
+    try {
+      await writeApprovedAtomically(
+        options.approvedPath,
+        approved,
+        approvedState.fingerprint,
+        signal,
+        hooks,
+      );
+    } catch (error) {
+      throw new Error(
+        `approved snapshot could not be replaced at ${quoted(options.approvedPath)}: ${safeError(error)}`,
+      );
+    }
+    return approved;
+  } finally {
+    await releaseApprovalLock(lock);
+  }
 }
 
 async function runCli(): Promise<void> {
@@ -379,7 +502,7 @@ async function runCli(): Promise<void> {
     approvedPath: options.approved,
     approvedAt: options.approvedAt ?? new Date().toISOString(),
   });
-  console.log(`Approved snapshot ${approved.snapshotId} to ${options.approved}`);
+  console.log(`Approved snapshot ${approved.snapshotId} to ${quoted(options.approved)}`);
 }
 
 const entrypoint = process.argv[1];

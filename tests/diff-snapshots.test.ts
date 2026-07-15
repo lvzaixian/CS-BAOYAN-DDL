@@ -2,10 +2,14 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import {
   existsSync,
+  linkSync,
+  lstatSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  readdirSync,
   rmSync,
+  symlinkSync,
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -13,7 +17,8 @@ import { dirname, join, resolve } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
-import { diffSnapshots } from '../scripts/snapshot/diff-snapshots.js';
+import * as snapshotDiff from '../scripts/snapshot/diff-snapshots.js';
+import { approveCandidate } from '../scripts/snapshot/approve-snapshot.js';
 import type {
   PublicOpportunity,
   PublicSnapshot,
@@ -25,7 +30,8 @@ const fixture = JSON.parse(
 ) as PublicSnapshot;
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const cliPath = resolve(repositoryRoot, 'scripts/snapshot/diff-snapshots.ts');
-const tsxPath = resolve(repositoryRoot, 'node_modules/.bin/tsx');
+const approvedAt = '2026-07-16T09:35:00+08:00';
+const { diffSnapshots } = snapshotDiff;
 
 function opportunity(projectId: string): PublicOpportunity {
   return {
@@ -72,7 +78,7 @@ function writeJson(path: string, value: unknown): void {
 }
 
 function runDiffCli(args: string[]) {
-  return spawnSync(tsxPath, [cliPath, ...args], {
+  return spawnSync(process.execPath, ['--import', 'tsx', cliPath, ...args], {
     cwd: repositoryRoot,
     encoding: 'utf8',
   });
@@ -242,6 +248,319 @@ test('diff CLI rejects an explicitly missing previous file without output', () =
   } finally {
     rmSync(tempRoot, { recursive: true, force: true });
   }
+});
+
+test('diff CLI rejects tampered previous snapshot hashes', () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-diff-tampered-'));
+  const previousPath = join(tempRoot, 'previous.json');
+  const nextPath = join(tempRoot, 'candidate.json');
+  const outputPath = join(tempRoot, 'diff.json');
+  const next = candidate([opportunity('2027|测试大学|计算机学院|same')]);
+  const previous = approveCandidate(next, null, approvedAt);
+  previous.opportunities[0].website = 'https://cs.example.edu.cn/tampered';
+  writeJson(previousPath, previous);
+  writeJson(nextPath, next);
+
+  try {
+    const result = runDiffCli([
+      '--previous', previousPath,
+      '--next', nextPath,
+      '--output', outputPath,
+    ]);
+
+    assert.notEqual(result.status, 0);
+    assert.match(
+      `${result.stdout}\n${result.stderr}`,
+      /previous snapshot validation failed:[\s\S]*(?:canonical|hash)/i,
+    );
+    assert.equal(existsSync(outputPath), false);
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
+test('diff CLI rejects symlink inputs before reading them', async (t) => {
+  await t.test('next candidate', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-diff-next-symlink-'));
+    const targetPath = join(tempRoot, 'target.json');
+    const nextPath = join(tempRoot, 'candidate.json');
+    const outputPath = join(tempRoot, 'diff.json');
+    writeJson(targetPath, candidate([opportunity('2027|测试大学|计算机学院|new')]));
+    const targetBefore = readFileSync(targetPath);
+    symlinkSync(targetPath, nextPath);
+
+    try {
+      const result = runDiffCli(['--next', nextPath, '--output', outputPath]);
+      assert.notEqual(result.status, 0);
+      assert.match(`${result.stdout}\n${result.stderr}`, /next.*symlink/i);
+      assert.ok(lstatSync(nextPath).isSymbolicLink());
+      assert.deepEqual(readFileSync(targetPath), targetBefore);
+      assert.equal(existsSync(outputPath), false);
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  await t.test('previous snapshot', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-diff-previous-symlink-'));
+    const previousTarget = join(tempRoot, 'previous-target.json');
+    const previousPath = join(tempRoot, 'previous.json');
+    const nextPath = join(tempRoot, 'candidate.json');
+    const outputPath = join(tempRoot, 'diff.json');
+    const next = candidate([opportunity('2027|测试大学|计算机学院|same')]);
+    writeJson(previousTarget, approveCandidate(next, null, approvedAt));
+    writeJson(nextPath, next);
+    symlinkSync(previousTarget, previousPath);
+
+    try {
+      const result = runDiffCli([
+        '--previous', previousPath,
+        '--next', nextPath,
+        '--output', outputPath,
+      ]);
+      assert.notEqual(result.status, 0);
+      assert.match(`${result.stdout}\n${result.stderr}`, /previous.*symlink/i);
+      assert.ok(lstatSync(previousPath).isSymbolicLink());
+      assert.equal(existsSync(outputPath), false);
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  await t.test('FIFO next candidate', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-diff-next-fifo-'));
+    const nextPath = join(tempRoot, 'candidate.fifo');
+    const outputPath = join(tempRoot, 'diff.json');
+    const created = spawnSync('mkfifo', [nextPath], { encoding: 'utf8' });
+    assert.equal(created.status, 0, created.stderr);
+
+    try {
+      const result = spawnSync(
+        process.execPath,
+        ['--import', 'tsx', cliPath, '--next', nextPath, '--output', outputPath],
+        { cwd: repositoryRoot, encoding: 'utf8', timeout: 500 },
+      );
+      assert.notEqual(result.status, 0);
+      assert.match(`${result.stdout}\n${result.stderr}`, /next.*regular file/i);
+      assert.ok(lstatSync(nextPath).isFIFO());
+      assert.equal(existsSync(outputPath), false);
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+});
+
+test('diff CLI rejects oversized JSON inputs before parsing', () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-diff-oversized-'));
+  const nextPath = join(tempRoot, 'candidate.json');
+  const outputPath = join(tempRoot, 'diff.json');
+  const next = candidate([opportunity('2027|测试大学|计算机学院|new')]);
+  writeFileSync(nextPath, `${' '.repeat(16 * 1024 * 1024 + 1)}${JSON.stringify(next)}`, 'utf8');
+
+  try {
+    const result = runDiffCli(['--next', nextPath, '--output', outputPath]);
+    assert.notEqual(result.status, 0);
+    assert.match(`${result.stdout}\n${result.stderr}`, /next.*(?:too large|size limit)/i);
+    assert.equal(existsSync(outputPath), false);
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
+test('diff CLI protects input and symlink sentinels from output collisions', async (t) => {
+  await t.test('hardlink to next candidate', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-diff-hardlink-output-'));
+    const nextPath = join(tempRoot, 'candidate.json');
+    const outputPath = join(tempRoot, 'diff.json');
+    writeJson(nextPath, candidate([opportunity('2027|测试大学|计算机学院|new')]));
+    linkSync(nextPath, outputPath);
+    const before = readFileSync(nextPath);
+
+    try {
+      const result = runDiffCli(['--next', nextPath, '--output', outputPath]);
+      assert.notEqual(result.status, 0);
+      assert.match(`${result.stdout}\n${result.stderr}`, /output.*(?:collid|inode|hardlink)/i);
+      assert.deepEqual(readFileSync(nextPath), before);
+      assert.deepEqual(readFileSync(outputPath), before);
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  await t.test('symlink output', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-diff-symlink-output-'));
+    const nextPath = join(tempRoot, 'candidate.json');
+    const targetPath = join(tempRoot, 'sentinel.txt');
+    const outputPath = join(tempRoot, 'diff.json');
+    writeJson(nextPath, candidate([opportunity('2027|测试大学|计算机学院|new')]));
+    writeFileSync(targetPath, 'SENTINEL_MUST_SURVIVE\n', 'utf8');
+    const before = readFileSync(targetPath);
+    symlinkSync(targetPath, outputPath);
+
+    try {
+      const result = runDiffCli(['--next', nextPath, '--output', outputPath]);
+      assert.notEqual(result.status, 0);
+      assert.match(`${result.stdout}\n${result.stderr}`, /output.*symlink/i);
+      assert.ok(lstatSync(outputPath).isSymbolicLink());
+      assert.deepEqual(readFileSync(targetPath), before);
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  await t.test('hardlink to previous snapshot', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-diff-previous-hardlink-output-'));
+    const previousPath = join(tempRoot, 'previous.json');
+    const nextPath = join(tempRoot, 'candidate.json');
+    const outputPath = join(tempRoot, 'diff.json');
+    const next = candidate([opportunity('2027|测试大学|计算机学院|same')]);
+    writeJson(previousPath, approveCandidate(next, null, approvedAt));
+    writeJson(nextPath, next);
+    linkSync(previousPath, outputPath);
+    const before = readFileSync(previousPath);
+
+    try {
+      const result = runDiffCli([
+        '--previous', previousPath,
+        '--next', nextPath,
+        '--output', outputPath,
+      ]);
+      assert.notEqual(result.status, 0);
+      assert.match(`${result.stdout}\n${result.stderr}`, /output.*previous.*(?:inode|hardlink)/i);
+      assert.deepEqual(readFileSync(previousPath), before);
+      assert.deepEqual(readFileSync(outputPath), before);
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  await t.test('resolved path collision', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-diff-resolved-output-'));
+    const nextPath = join(tempRoot, 'candidate.json');
+    writeJson(nextPath, candidate([opportunity('2027|测试大学|计算机学院|new')]));
+    const before = readFileSync(nextPath);
+
+    try {
+      const result = runDiffCli([
+        '--next', nextPath,
+        '--output', join(tempRoot, '.', 'candidate.json'),
+      ]);
+      assert.notEqual(result.status, 0);
+      assert.match(`${result.stdout}\n${result.stderr}`, /output.*collid.*next/i);
+      assert.deepEqual(readFileSync(nextPath), before);
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  await t.test('non-regular output', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-diff-directory-output-'));
+    const nextPath = join(tempRoot, 'candidate.json');
+    const outputPath = join(tempRoot, 'diff.json');
+    writeJson(nextPath, candidate([opportunity('2027|测试大学|计算机学院|new')]));
+    mkdirSync(outputPath);
+
+    try {
+      const result = runDiffCli(['--next', nextPath, '--output', outputPath]);
+      assert.notEqual(result.status, 0);
+      assert.match(`${result.stdout}\n${result.stderr}`, /output.*regular file/i);
+      assert.ok(lstatSync(outputPath).isDirectory());
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+});
+
+test('atomic diff cancellation preserves output and removes its sibling temp', async () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-diff-atomic-cancel-'));
+  const outputPath = join(tempRoot, 'diff.json');
+  const before = 'CURRENT_DIFF_MUST_SURVIVE\n';
+  writeFileSync(outputPath, before, 'utf8');
+  const writer = (snapshotDiff as typeof snapshotDiff & {
+    writeDiffAtomically?: (
+      path: string,
+      diff: ReturnType<typeof diffSnapshots>,
+      signal?: AbortSignal,
+    ) => Promise<void>;
+  }).writeDiffAtomically;
+  const controller = new AbortController();
+  controller.abort(new Error('cancelled before diff rename'));
+
+  try {
+    assert.equal(typeof writer, 'function');
+    await assert.rejects(
+      writer!(outputPath, { added: [], changed: [], expired: [], removed: [] }, controller.signal),
+      /cancelled before diff rename/i,
+    );
+    assert.equal(readFileSync(outputPath, 'utf8'), before);
+    assert.deepEqual(readdirSync(tempRoot), ['diff.json']);
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
+test('atomic diff rechecks cancellation immediately before rename', async () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-diff-final-cancel-'));
+  const outputPath = join(tempRoot, 'diff.json');
+  const before = 'CURRENT_DIFF_MUST_SURVIVE\n';
+  writeFileSync(outputPath, before, 'utf8');
+  let cancellationChecks = 0;
+  const signal = {
+    reason: new Error('cancelled at final diff barrier'),
+    get aborted(): boolean {
+      cancellationChecks += 1;
+      return cancellationChecks >= 2;
+    },
+  } as AbortSignal;
+
+  try {
+    await assert.rejects(
+      snapshotDiff.writeDiffAtomically(
+        outputPath,
+        { added: [], changed: [], expired: [], removed: [] },
+        signal,
+      ),
+      /cancelled at final diff barrier/i,
+    );
+    assert.equal(readFileSync(outputPath, 'utf8'), before);
+    assert.deepEqual(readdirSync(tempRoot), ['diff.json']);
+    assert.equal(cancellationChecks, 2);
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
+test('diff CLI JSON-escapes user-controlled paths in output', async (t) => {
+  await t.test('failure stderr', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-diff-path-error-'));
+    const nextPath = join(tempRoot, 'missing\nnext.json');
+    const outputPath = join(tempRoot, 'diff.json');
+
+    try {
+      const result = runDiffCli(['--next', nextPath, '--output', outputPath]);
+      assert.notEqual(result.status, 0);
+      assert.ok(result.stderr.includes(JSON.stringify(nextPath)));
+      assert.equal(result.stderr.includes(nextPath), false);
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  await t.test('success stdout', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-diff-path-success-'));
+    const nextPath = join(tempRoot, 'candidate.json');
+    const outputPath = join(tempRoot, 'diff\nreport.json');
+    writeJson(nextPath, candidate([opportunity('2027|测试大学|计算机学院|new')]));
+
+    try {
+      const result = runDiffCli(['--next', nextPath, '--output', outputPath]);
+      assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+      assert.ok(result.stdout.includes(JSON.stringify(outputPath)));
+      assert.equal(result.stdout.includes(outputPath), false);
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
 });
 
 test('diff CLI rejects unknown, duplicate and missing arguments', async (t) => {

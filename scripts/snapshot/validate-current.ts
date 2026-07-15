@@ -1,8 +1,7 @@
-import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { validateApprovedSnapshot } from './approve-snapshot.js';
+import { readRegularJsonFile, validateApprovedSnapshot } from './approve-snapshot.js';
 import type { PublicSnapshot } from '../../src/lib/snapshot-types.js';
 
 interface CliOptions {
@@ -11,16 +10,20 @@ interface CliOptions {
 
 const usage = 'Usage: snapshot:validate -- [--approved PATH]';
 
+function quoted(value: string): string {
+  return JSON.stringify(value);
+}
+
 function parseCliOptions(argv: string[]): CliOptions {
   if (argv.length === 0) return { approved: 'data/approved/current.json' };
   const values = new Map<string, string>();
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
-    if (flag !== '--approved') throw new Error(`unknown argument: ${flag}\n${usage}`);
-    if (values.has(flag)) throw new Error(`duplicate argument: ${flag}`);
+    if (flag !== '--approved') throw new Error(`unknown argument: ${quoted(flag)}\n${usage}`);
+    if (values.has(flag)) throw new Error(`duplicate argument: ${quoted(flag)}`);
     const value = argv[index + 1];
     if (value === undefined || value.startsWith('--')) {
-      throw new Error(`missing value for ${flag}\n${usage}`);
+      throw new Error(`missing value for ${quoted(flag)}\n${usage}`);
     }
     values.set(flag, value);
     index += 1;
@@ -29,17 +32,7 @@ function parseCliOptions(argv: string[]): CliOptions {
 }
 
 async function readSnapshot(path: string): Promise<unknown> {
-  let text: string;
-  try {
-    text = await readFile(path, 'utf8');
-  } catch (error) {
-    throw new Error(`approved snapshot could not be read at ${path}: ${String(error)}`);
-  }
-  try {
-    return JSON.parse(text) as unknown;
-  } catch (error) {
-    throw new Error(`approved snapshot is not valid JSON at ${path}: ${String(error)}`);
-  }
+  return (await readRegularJsonFile(path, 'approved snapshot')).value;
 }
 
 async function runCli(): Promise<void> {

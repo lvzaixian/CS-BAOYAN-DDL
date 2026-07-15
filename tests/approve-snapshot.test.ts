@@ -36,7 +36,6 @@ const fixture = JSON.parse(
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const approveCliPath = resolve(repositoryRoot, 'scripts/snapshot/approve-snapshot.ts');
 const validateCliPath = resolve(repositoryRoot, 'scripts/snapshot/validate-current.ts');
-const tsxPath = resolve(repositoryRoot, 'node_modules/.bin/tsx');
 const approvedAt = '2026-07-16T09:35:00+08:00';
 
 function candidate(): SnapshotCandidate {
@@ -62,10 +61,11 @@ function writeJson(path: string, value: unknown): void {
   writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
 }
 
-function runCli(path: string, args: string[]) {
-  return spawnSync(tsxPath, [path, ...args], {
+function runCli(path: string, args: string[], timeout?: number) {
+  return spawnSync(process.execPath, ['--import', 'tsx', path, ...args], {
     cwd: repositoryRoot,
     encoding: 'utf8',
+    timeout,
   });
 }
 
@@ -201,7 +201,7 @@ test('approval validates the current snapshot hash before trusting its ID', asyn
     tampered.snapshotId = 'must-not-be-trusted';
     assert.throws(
       () => approveCandidate(candidate(), tampered, '2026-07-16T09:40:00+08:00'),
-      /current snapshot.*hash/i,
+      /current snapshot[\s\S]*hash/i,
     );
   });
 
@@ -231,6 +231,23 @@ test('validateApprovedSnapshot rejects hash and snapshot ID tampering', () => {
   const errors = validateApprovedSnapshot(tampered, Date.parse(approvedAt)).join('\n');
   assert.match(errors, /dataHash.*canonical/i);
   assert.match(errors, /snapshotId.*approvedAt.*hash/i);
+});
+
+test('validateApprovedSnapshot rejects forged lineage identifiers', async (t) => {
+  const approved = approveCandidate(candidate(), null, approvedAt);
+  for (const previousSnapshotId of [
+    'forged-parent',
+    '2026-99-99T01:35:00.000Z-123456789abc',
+    '2026-07-16T01:35:00.000Z-ABCDEF123456',
+  ]) {
+    await t.test(previousSnapshotId, () => {
+      const forged = { ...approved, previousSnapshotId };
+      assert.match(
+        validateApprovedSnapshot(forged, Date.parse(approvedAt)).join('\n'),
+        /previousSnapshotId.*snapshot ID format/i,
+      );
+    });
+  }
 });
 
 test('approve CLI creates the first current snapshot and preserves staging files', () => {
@@ -321,6 +338,77 @@ test('approve CLI rejects missing or malformed candidates without changing curre
   }
 });
 
+test('approve CLI rejects unsafe candidate file types before reading', async (t) => {
+  await t.test('symlink', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-approve-candidate-symlink-'));
+    const targetPath = join(tempRoot, 'candidate-target.json');
+    const candidatePath = join(tempRoot, 'candidate.json');
+    const approvedPath = join(tempRoot, 'current.json');
+    writeJson(targetPath, candidate());
+    symlinkSync(targetPath, candidatePath);
+
+    try {
+      const result = runCli(approveCliPath, [
+        '--candidate', candidatePath,
+        '--approved', approvedPath,
+        '--approved-at', approvedAt,
+      ]);
+      assert.notEqual(result.status, 0);
+      assert.match(`${result.stdout}\n${result.stderr}`, /candidate.*symlink/i);
+      assert.ok(lstatSync(candidatePath).isSymbolicLink());
+      assert.equal(existsSync(approvedPath), false);
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  await t.test('FIFO', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-approve-candidate-fifo-'));
+    const candidatePath = join(tempRoot, 'candidate.fifo');
+    const approvedPath = join(tempRoot, 'current.json');
+    const created = spawnSync('mkfifo', [candidatePath], { encoding: 'utf8' });
+    assert.equal(created.status, 0, created.stderr);
+
+    try {
+      const result = runCli(approveCliPath, [
+        '--candidate', candidatePath,
+        '--approved', approvedPath,
+        '--approved-at', approvedAt,
+      ], 500);
+      assert.notEqual(result.status, 0);
+      assert.match(`${result.stdout}\n${result.stderr}`, /candidate.*regular file/i);
+      assert.ok(lstatSync(candidatePath).isFIFO());
+      assert.equal(existsSync(approvedPath), false);
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+});
+
+test('approve CLI rejects oversized candidate JSON before parsing', () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-approve-candidate-oversized-'));
+  const candidatePath = join(tempRoot, 'candidate.json');
+  const approvedPath = join(tempRoot, 'current.json');
+  writeFileSync(
+    candidatePath,
+    `${' '.repeat(16 * 1024 * 1024 + 1)}${JSON.stringify(candidate())}`,
+    'utf8',
+  );
+
+  try {
+    const result = runCli(approveCliPath, [
+      '--candidate', candidatePath,
+      '--approved', approvedPath,
+      '--approved-at', approvedAt,
+    ]);
+    assert.notEqual(result.status, 0);
+    assert.match(`${result.stdout}\n${result.stderr}`, /candidate.*(?:too large|size limit)/i);
+    assert.equal(existsSync(approvedPath), false);
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
 test('approve CLI rejects malformed or tampered current snapshots byte-identically', async (t) => {
   const cases: Array<[string, unknown | string, RegExp]> = [
     ['invalid JSON', '{broken', /current snapshot.*valid JSON/i],
@@ -329,7 +417,7 @@ test('approve CLI rejects malformed or tampered current snapshots byte-identical
       const current = approveCandidate(candidate(), null, approvedAt);
       current.opportunities[0].project = 'tampered';
       return current;
-    })(), /current snapshot.*hash/i],
+    })(), /current snapshot[\s\S]*hash/i],
   ];
 
   for (const [name, current, pattern] of cases) {
@@ -356,6 +444,7 @@ test('approve CLI rejects malformed or tampered current snapshots byte-identical
         assert.match(`${result.stdout}\n${result.stderr}`, pattern);
         assert.deepEqual(readFileSync(candidatePath), candidateBefore);
         assert.deepEqual(readFileSync(approvedPath), approvedBefore);
+        assert.deepEqual(readdirSync(tempRoot).sort(), ['candidate.json', 'current.json']);
       } finally {
         rmSync(tempRoot, { recursive: true, force: true });
       }
@@ -518,6 +607,177 @@ test('atomic approval detects a concurrent current replacement before rename', a
   }
 });
 
+test('approval lock excludes a cooperating concurrent writer and is cleaned', async () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-approve-lock-concurrent-'));
+  const candidatePath = join(tempRoot, 'candidate.json');
+  const approvedPath = join(tempRoot, 'current.json');
+  const lockPath = join(tempRoot, '.current.json.lock');
+  writeJson(candidatePath, candidate());
+  writeJson(approvedPath, approveCandidate(candidate(), null, approvedAt));
+  const currentBefore = readFileSync(approvedPath);
+  let releaseFirst!: () => void;
+  let firstEntered!: () => void;
+  const releasePromise = new Promise<void>((resolve) => {
+    releaseFirst = resolve;
+  });
+  const enteredPromise = new Promise<void>((resolve) => {
+    firstEntered = resolve;
+  });
+  const first = approveSnapshotFile({
+    candidatePath,
+    approvedPath,
+    approvedAt: '2026-07-16T09:40:00+08:00',
+  }, undefined, {
+    beforeRename: async () => {
+      firstEntered();
+      await releasePromise;
+    },
+  });
+
+  try {
+    await Promise.race([
+      enteredPromise,
+      new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('first approval never reached the rename barrier')), 500);
+      }),
+    ]);
+    assert.ok(existsSync(lockPath));
+    await assert.rejects(
+      approveSnapshotFile({
+        candidatePath,
+        approvedPath,
+        approvedAt: '2026-07-16T09:45:00+08:00',
+      }),
+      /approval.*lock|another approval/i,
+    );
+    assert.deepEqual(readFileSync(approvedPath), currentBefore);
+    releaseFirst();
+    await first;
+    assert.equal(existsSync(lockPath), false);
+    assert.deepEqual(readdirSync(tempRoot).sort(), ['candidate.json', 'current.json']);
+  } finally {
+    releaseFirst();
+    await first.catch(() => undefined);
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
+test('directory open failure is pre-commit and preserves the old current', async () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-approve-directory-open-failure-'));
+  const candidatePath = join(tempRoot, 'candidate.json');
+  const approvedPath = join(tempRoot, 'current.json');
+  writeJson(candidatePath, candidate());
+  writeJson(approvedPath, approveCandidate(candidate(), null, approvedAt));
+  const before = readFileSync(approvedPath);
+
+  try {
+    await assert.rejects(
+      approveSnapshotFile({
+        candidatePath,
+        approvedPath,
+        approvedAt: '2026-07-16T09:40:00+08:00',
+      }, undefined, {
+        openDirectory: async () => {
+          throw new Error('injected directory open failure');
+        },
+      }),
+      /injected directory open failure/i,
+    );
+    assert.deepEqual(readFileSync(approvedPath), before);
+    assert.deepEqual(readdirSync(tempRoot).sort(), ['candidate.json', 'current.json']);
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
+test('post-rename directory sync failure does not report a false approval failure', async () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-approve-directory-sync-failure-'));
+  const candidatePath = join(tempRoot, 'candidate.json');
+  const approvedPath = join(tempRoot, 'current.json');
+  writeJson(candidatePath, candidate());
+  writeJson(approvedPath, approveCandidate(candidate(), null, approvedAt));
+  let syncCalls = 0;
+
+  try {
+    const approved = await approveSnapshotFile({
+      candidatePath,
+      approvedPath,
+      approvedAt: '2026-07-16T09:40:00+08:00',
+    }, undefined, {
+      syncDirectory: async () => {
+        syncCalls += 1;
+        throw new Error('injected post-rename sync failure');
+      },
+    });
+    assert.equal(syncCalls, 1);
+    assert.deepEqual(
+      validateApprovedSnapshot(
+        JSON.parse(readFileSync(approvedPath, 'utf8')),
+        Date.parse(approved.approvedAt),
+      ),
+      [],
+    );
+    assert.deepEqual(readdirSync(tempRoot).sort(), ['candidate.json', 'current.json']);
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
+test('approve and validate CLIs JSON-escape user-controlled paths', async (t) => {
+  await t.test('approve failure stderr', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-approve-path-error-'));
+    const candidatePath = join(tempRoot, 'missing\ncandidate.json');
+    const approvedPath = join(tempRoot, 'current.json');
+
+    try {
+      const result = runCli(approveCliPath, [
+        '--candidate', candidatePath,
+        '--approved', approvedPath,
+        '--approved-at', approvedAt,
+      ]);
+      assert.notEqual(result.status, 0);
+      assert.ok(result.stderr.includes(JSON.stringify(candidatePath)));
+      assert.equal(result.stderr.includes(candidatePath), false);
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  await t.test('approve success stdout', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-approve-path-success-'));
+    const candidatePath = join(tempRoot, 'candidate.json');
+    const approvedPath = join(tempRoot, 'current\napproved.json');
+    writeJson(candidatePath, candidate());
+
+    try {
+      const result = runCli(approveCliPath, [
+        '--candidate', candidatePath,
+        '--approved', approvedPath,
+        '--approved-at', approvedAt,
+      ]);
+      assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+      assert.ok(result.stdout.includes(JSON.stringify(approvedPath)));
+      assert.equal(result.stdout.includes(approvedPath), false);
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  await t.test('validate failure stderr', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-validate-path-error-'));
+    const approvedPath = join(tempRoot, 'missing\napproved.json');
+
+    try {
+      const result = runCli(validateCliPath, ['--approved', approvedPath]);
+      assert.notEqual(result.status, 0);
+      assert.ok(result.stderr.includes(JSON.stringify(approvedPath)));
+      assert.equal(result.stderr.includes(approvedPath), false);
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+});
+
 test('approve CLI rejects unknown, duplicate and missing arguments', async (t) => {
   const cases: Array<[string, string[], RegExp]> = [
     ['unknown', ['--candidate', 'a', '--approved', 'b', '--wat', 'x'], /unknown|usage/i],
@@ -569,6 +829,59 @@ test('validate-current CLI prints every structural and hash error', () => {
   } finally {
     rmSync(tempRoot, { recursive: true, force: true });
   }
+});
+
+test('validate-current rejects symlink and oversized approved inputs before reading', async (t) => {
+  await t.test('symlink', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-validate-symlink-'));
+    const targetPath = join(tempRoot, 'target.json');
+    const approvedPath = join(tempRoot, 'current.json');
+    writeJson(targetPath, approveCandidate(longLivedCandidate(), null, approvedAt));
+    symlinkSync(targetPath, approvedPath);
+
+    try {
+      const result = runCli(validateCliPath, ['--approved', approvedPath]);
+      assert.notEqual(result.status, 0);
+      assert.match(`${result.stdout}\n${result.stderr}`, /approved snapshot.*symlink/i);
+      assert.ok(lstatSync(approvedPath).isSymbolicLink());
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  await t.test('oversized JSON', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-validate-oversized-'));
+    const approvedPath = join(tempRoot, 'current.json');
+    const approved = approveCandidate(longLivedCandidate(), null, approvedAt);
+    writeFileSync(
+      approvedPath,
+      `${' '.repeat(16 * 1024 * 1024 + 1)}${JSON.stringify(approved)}`,
+      'utf8',
+    );
+
+    try {
+      const result = runCli(validateCliPath, ['--approved', approvedPath]);
+      assert.notEqual(result.status, 0);
+      assert.match(`${result.stdout}\n${result.stderr}`, /approved snapshot.*(?:too large|size limit)/i);
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
+
+  await t.test('directory', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-validate-directory-'));
+    const approvedPath = join(tempRoot, 'current.json');
+    mkdirSync(approvedPath);
+
+    try {
+      const result = runCli(validateCliPath, ['--approved', approvedPath]);
+      assert.notEqual(result.status, 0);
+      assert.match(`${result.stdout}\n${result.stderr}`, /approved snapshot.*regular file/i);
+      assert.ok(lstatSync(approvedPath).isDirectory());
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
+    }
+  });
 });
 
 test('validate-current CLI rejects unknown, duplicate and missing arguments', async (t) => {
