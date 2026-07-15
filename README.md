@@ -1,8 +1,10 @@
-# CSSummerCampDDL
+# CS 保研 DDL · 及时版
 
-国内计算机保研 · 夏令营 / 预推免 截止日期速查表，部署在 [ddl.csbaoyan.top](https://ddl.csbaoyan.top)。
+这是基于 [CS-BAOYAN-DDL](https://github.com/CS-BAOYAN/CS-BAOYAN-DDL) 的及时更新版本，保留原项目的列表、日历、筛选、搜索和倒计时体验。
 
-数据来源于 CS-BAOYAN 社区维护的 [BoardCaster](https://github.com/CS-BAOYAN/BoardCaster) 数据库与 [CSSummerCamp](https://github.com/CS-BAOYAN/CSSummerCamp2024) 仓库。
+本版本将保研通知网、CS-BAOYAN 和 BoardCaster 作为发现源，并回到院校官网、官方报名系统、官方公众号或官方附件核验后再发布。页面不保证覆盖所有院校，临近截止时请再次打开官方通知确认。
+
+本分支将把当前周期数据切换为版本化批准快照；完成切换前不得发布。扫描候选、个人投递状态和本地证据不会提交到公开仓库。
 
 ## 技术栈
 
@@ -32,15 +34,16 @@ pnpm install   # 或 npm i / bun i
 pnpm run dev   # http://localhost:5180
 pnpm run build # → dist/
 pnpm run preview
-pnpm run deploy   # 推送 dist/ 到 gh-pages 分支
 ```
 
 `predev` / `prebuild` 钩子会从 `scripts/source/universities.json` 抽取 logo 映射，写入 `src/data/logos.json`，避免完整的 2400+ 学校排名数据进 bundle。
 
+生产发布仅通过受保护的 GitHub Actions 工作流进行，并且必须在快照验证、隐私检查、构建和 E2E 全部通过后执行。
+
 ## 数据贡献
 
-请在本仓库提 Issue，或到 [BoardCaster](https://github.com/CS-BAOYAN/BoardCaster) 提 Issue / PR。
+欢迎在本仓库提交 Issue，并附上院校官网、官方报名系统、官方公众号或官方附件等官方来源。BoardCaster 等聚合源和 Issue 仅作为发现线索；条目通过官方核验后才会发布。
 
-## 许可
+## 上游与许可
 
-[MIT License](LICENSE)。
+界面基于 MIT 许可的 [CS-BAOYAN/CS-BAOYAN-DDL](https://github.com/CS-BAOYAN/CS-BAOYAN-DDL)。原版权声明和许可证保留在 [LICENSE](LICENSE)。

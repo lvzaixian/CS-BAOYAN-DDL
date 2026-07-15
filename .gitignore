@@ -2,6 +2,8 @@
 node_modules
 /dist
 src/data/logos.json
+data/staging/*.json
+!data/staging/.gitkeep
 
 
 # local env files
