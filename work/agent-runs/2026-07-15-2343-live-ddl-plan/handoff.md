@@ -6,6 +6,8 @@
 - 本地仓库：`/Users/maxwellbrooks/Workspace/CS-BAOYAN-DDL`。
 - 基线：`31ce9d56c1da64af98691a31d5f7b3e5403ddc11`。
 - 计划分支：`codex/live-data-plan`。
+- 计划提交：`88520b7`（随后仅追加本交接记录）。
+- 草稿 PR：`https://github.com/lvzaixian/CS-BAOYAN-DDL/pull/1`。
 - 设计和执行计划已根据 repo explorer 与 architecture reviewer 结果修正。
 
 ## Decisions
