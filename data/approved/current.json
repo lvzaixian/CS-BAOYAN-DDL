@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "scanAt": "2026-07-16T09:30:00+08:00",
+  "defaultFeedId": "camp2028",
+  "feeds": [
+    {
+      "id": "camp2026",
+      "label": "推免活动 2026",
+      "admissionCycle": "2026",
+      "eventYear": 2026
+    },
+    {
+      "id": "camp2027",
+      "label": "推免活动 2027",
+      "admissionCycle": "2027",
+      "eventYear": 2026
+    },
+    {
+      "id": "camp2028",
+      "label": "推免活动 2028",
+      "admissionCycle": "2028",
+      "eventYear": 2026
+    }
+  ],
+  "counts": {
+    "confirmedOpen": 1,
+    "confirmedUnknownDeadline": 1,
+    "pendingExcluded": 1,
+    "expired": 1
+  },
+  "opportunities": [
+    {
+      "projectId": "2027|测试大学|计算机学院|夏令营",
+      "feedId": "camp2027",
+      "name": "测试大学",
+      "institute": "计算机学院",
+      "project": "2026年优秀大学生夏令营",
+      "eventType": "夏令营",
+      "description": "2026年优秀大学生夏令营",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-20T23:59:00+08:00",
+      "deadlineOriginal": "2026年7月20日；官方未公布具体时刻",
+      "deadlineEpochMs": 1784563140000,
+      "website": "https://cs.example.edu.cn/admissions/summer-camp/",
+      "tags": [],
+      "verifiedAt": "2026-07-16T08:45:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://cs.example.edu.cn/admissions/summer-camp/"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/12345"
+        }
+      ],
+      "logistics": {
+        "status": "unverified",
+        "summary": "待官方公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：2封；推荐信模板：官网下载"
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": "未公布"
+      }
+    },
+    {
+      "projectId": "2028|示例大学|软件学院|开放日",
+      "feedId": "camp2028",
+      "name": "示例大学",
+      "institute": "软件学院",
+      "project": "2026年研究生招生开放日",
+      "eventType": "开放日",
+      "description": "2026年研究生招生开放日",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "官方暂未公布",
+      "deadlineEpochMs": null,
+      "website": "https://software.example.edu.cn/open-day",
+      "tags": [],
+      "verifiedAt": "2026-07-16T09:00:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://software.example.edu.cn/open-day"
+        }
+      ],
+      "logistics": {
+        "status": "confirmed",
+        "summary": "住宿：提供住宿；餐食：提供餐食；交通：自行前往；报销：不报销"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：成绩单、排名证明"
+      }
+    },
+    {
+      "projectId": "2026|历史大学|网络空间安全学院|预推免",
+      "feedId": "camp2026",
+      "name": "历史大学",
+      "institute": "网络空间安全学院",
+      "project": "2025年预推免活动",
+      "eventType": "已过期活动",
+      "description": "2025年预推免活动",
+      "verificationStatus": "expired",
+      "deadline": null,
+      "deadlineOriginal": "未公布",
+      "deadlineEpochMs": null,
+      "website": "https://cyber.example.edu.cn/admissions/expired",
+      "tags": [],
+      "verifiedAt": "2026-07-16T09:30:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://cyber.example.edu.cn/admissions/expired"
+        }
+      ],
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": "未公布"
+      }
+    }
+  ],
+  "snapshotId": "2026-07-16T01:35:00.000Z-b782e22d3fe8",
+  "approvedAt": "2026-07-16T09:35:00+08:00",
+  "previousSnapshotId": null,
+  "dataHash": "b782e22d3fe8c9c9df4aaaabc9de19db6de8ff45ed3a77285b88222fa1e14298"
+}

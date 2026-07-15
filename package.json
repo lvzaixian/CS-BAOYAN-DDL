@@ -12,6 +12,8 @@
     "test": "tsx --test tests/*.test.ts",
     "test:unit": "tsx --test tests/*.test.ts",
     "snapshot:import": "tsx scripts/snapshot/import-scouting-data.ts",
+    "snapshot:diff": "tsx scripts/snapshot/diff-snapshots.ts",
+    "snapshot:approve": "tsx scripts/snapshot/approve-snapshot.ts",
     "snapshot:validate": "tsx scripts/snapshot/validate-current.ts",
     "deploy": "pnpm build && gh-pages -d dist",
     "check": "svelte-check --tsconfig ./tsconfig.json"
