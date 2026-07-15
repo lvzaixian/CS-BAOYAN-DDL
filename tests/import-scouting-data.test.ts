@@ -1,5 +1,18 @@
 import assert from 'node:assert/strict';
-import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import {
+  existsSync,
+  linkSync,
+  lstatSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  readlinkSync,
+  rmSync,
+  statSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -63,6 +76,59 @@ function sharedOfficialUrlInput(): Record<string, any> {
   second.eventType = '开放日';
   input.mainRows.splice(1, 0, second);
   return input;
+}
+
+function freshCliInput(): Record<string, any> {
+  const input = validInput();
+  input.mainRows[0].deadline = '2099-12-31T23:59:00+08:00';
+  input.mainRows[0].deadlineOriginal = '2099年12月31日23:59';
+  return input;
+}
+
+function staleCliInput(): Record<string, any> {
+  const input = validInput();
+  input.scanAt = '2000-01-01T12:00:00+08:00';
+  input.mainRows[0].deadline = '2000-01-02T23:59:00+08:00';
+  input.mainRows[0].deadlineOriginal = '2000年1月2日23:59';
+  for (const row of input.mainRows) row.verifiedAt = input.scanAt;
+  return input;
+}
+
+function writeJson(path: string, value: unknown): void {
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
+}
+
+function prepareCliSources(tempRoot: string, input = freshCliInput()) {
+  const inputPath = join(tempRoot, 'input.json');
+  const aliasesPath = join(tempRoot, 'aliases.json');
+  const approvedPath = join(tempRoot, 'approved.json');
+  writeJson(inputPath, input);
+  writeJson(aliasesPath, {});
+  writeJson(approvedPath, sealCandidate(importScoutingData(input, identities())));
+  return { inputPath, aliasesPath, approvedPath };
+}
+
+function runImporterCli(options: {
+  input: string;
+  aliases: string;
+  output: string;
+  approved?: string;
+}) {
+  const args = [
+    cliPath,
+    '--input',
+    options.input,
+    '--aliases',
+    options.aliases,
+    '--output',
+    options.output,
+  ];
+  if (options.approved !== undefined) args.push('--approved', options.approved);
+  return spawnSync(tsxPath, args, {
+    cwd: repositoryRoot,
+    encoding: 'utf8',
+  });
 }
 
 function opportunity(candidate: SnapshotCandidate, project: string) {
@@ -139,14 +205,15 @@ test('maps confirmed and sparse expired rows while excluding pending and private
   }
 });
 
-test('uses the public project title when a confirmed main row omits description', () => {
+test('always uses the public project title instead of an input description', () => {
   const input = validInput();
-  delete input.mainRows[0].description;
+  input.mainRows[0].description = 'PRIVATE_DESCRIPTION_MUST_NOT_SHIP';
 
   const candidate = importScoutingData(input, identities());
   const active = opportunity(candidate, '2026年优秀大学生夏令营');
 
   assert.equal(active.description, active.project);
+  assert.ok(!JSON.stringify(candidate).includes('PRIVATE_DESCRIPTION_MUST_NOT_SHIP'));
 });
 
 test('derives feed catalog from mapped rows and chooses the newest active feed', () => {
@@ -182,6 +249,39 @@ test('sorts timed active rows ascending, then unknown deadline, then expired', (
     '2026年研究生招生开放日',
     '2025年预推免活动',
   ]);
+});
+
+test('uses deterministic code-point ordering for equal-status equal-deadline rows', () => {
+  const input = validInput();
+  const a = structuredClone(input.mainRows[0]);
+  a.projectId = '2027|阿大学|计算机学院|夏令营';
+  a.school = '阿大学';
+  a.project = '阿大学夏令营';
+  a.officialUrl = 'https://a.example.edu.cn/summer-camp';
+  const zhong = structuredClone(input.mainRows[0]);
+  zhong.projectId = '2027|中大学|计算机学院|夏令营';
+  zhong.school = '中大学';
+  zhong.project = '中大学夏令营';
+  zhong.officialUrl = 'https://zhong.example.edu.cn/summer-camp';
+  input.mainRows = [a, zhong];
+  input.expiredRows = [];
+
+  const candidate = importScoutingData(input, identities());
+
+  assert.deepEqual(candidate.opportunities.map((row) => row.projectId), [
+    zhong.projectId,
+    a.projectId,
+  ]);
+});
+
+test('rejects expired-only input so it cannot replace an active snapshot', () => {
+  const input = validInput();
+  input.mainRows = [];
+
+  assert.throws(
+    () => importScoutingData(input, identities()),
+    /mainRows must contain an active row/i,
+  );
 });
 
 test('rejects duplicate resolved project IDs', () => {
@@ -231,6 +331,35 @@ test('reuses a previous ID across a display-name change via normalized official 
   assert.equal(active.name, '测试大学');
 });
 
+test('normalizes a trailing-dot hostname before previous URL identity lookup', () => {
+  const previousId = '2027|旧测试大学|计算机学院|夏令营';
+  const previous = previousWith(
+    'https://cs.example.edu.cn./admissions/summer-camp',
+    previousId,
+  );
+
+  const candidate = importScoutingData(validInput(), identities({ previous }));
+
+  assert.equal(
+    opportunity(candidate, '2026年优秀大学生夏令营').projectId,
+    previousId,
+  );
+});
+
+test('does not reuse a previous URL identity from another admission cycle', () => {
+  const previousInput = validInput();
+  previousInput.mainRows[0].projectId = '2026|旧测试大学|计算机学院|夏令营';
+  previousInput.mainRows[0].cycle = '2026';
+  const previous = sealCandidate(importScoutingData(previousInput, identities()));
+
+  const candidate = importScoutingData(validInput(), identities({ previous }));
+
+  assert.equal(
+    opportunity(candidate, '2026年优秀大学生夏令营').projectId,
+    '2027|测试大学|计算机学院|夏令营',
+  );
+});
+
 test('uses an alias only for an explicit official URL migration', () => {
   const previousId = '2027|测试大学|计算机学院|旧夏令营';
   const previous = previousWith('https://cs.example.edu.cn/admissions/old', previousId);
@@ -262,6 +391,60 @@ test('repeat import preserves distinct stable IDs that share one official URL', 
       .map((row) => row.projectId)
       .sort(),
     [input.mainRows[0].projectId, input.mainRows[1].projectId].sort(),
+  );
+});
+
+test('one previous row expanding to multiple current rows preserves the exact ID only', () => {
+  const previousInput = validInput();
+  const previous = sealCandidate(importScoutingData(previousInput, identities()));
+  const currentInput = sharedOfficialUrlInput();
+
+  const candidate = importScoutingData(currentInput, identities({ previous }));
+
+  assert.deepEqual(
+    candidate.opportunities
+      .filter((row) => row.website === currentInput.mainRows[0].officialUrl)
+      .map((row) => row.projectId)
+      .sort(),
+    [currentInput.mainRows[0].projectId, currentInput.mainRows[1].projectId].sort(),
+  );
+});
+
+test('one previous row with multiple renamed current rows requires a compound alias', () => {
+  const previous = sealCandidate(importScoutingData(validInput(), identities()));
+  const currentInput = sharedOfficialUrlInput();
+  currentInput.mainRows[0].projectId = '2027|测试大学|计算机学院|暑期学校';
+  currentInput.mainRows[1].projectId = '2027|测试大学|计算机学院|校园开放体验';
+
+  assert.throws(
+    () => importScoutingData(currentInput, identities({ previous })),
+    /ambiguous.*compound alias/i,
+  );
+});
+
+test('compound alias selects the renamed row in a one-to-many transition', () => {
+  const previousInput = validInput();
+  const approvedId = previousInput.mainRows[0].projectId;
+  const previous = sealCandidate(importScoutingData(previousInput, identities()));
+  const currentInput = sharedOfficialUrlInput();
+  const renamedId = '2027|测试大学|计算机学院|暑期学校';
+  const newId = '2027|测试大学|计算机学院|校园开放体验';
+  currentInput.mainRows[0].projectId = renamedId;
+  currentInput.mainRows[1].projectId = newId;
+
+  const candidate = importScoutingData(currentInput, identities({
+    previous,
+    aliases: {
+      [`${currentInput.mainRows[0].officialUrl}::${renamedId}`]: approvedId,
+    },
+  }));
+
+  assert.deepEqual(
+    candidate.opportunities
+      .filter((row) => row.website === currentInput.mainRows[0].officialUrl)
+      .map((row) => row.projectId)
+      .sort(),
+    [approvedId, newId].sort(),
   );
 });
 
@@ -321,6 +504,59 @@ test('compound alias must resolve to an ID approved for that shared URL', () => 
   );
 });
 
+test('alias targets must exist in the previous snapshot and match the current cycle', async (t) => {
+  await t.test('simple alias rejects an arbitrary target without a previous snapshot', () => {
+    const input = validInput();
+    assert.throws(
+      () => importScoutingData(input, identities({
+        aliases: {
+          [input.mainRows[0].officialUrl]: '2027|任意大学|计算机学院|任意项目',
+        },
+      })),
+      /simple alias target.*validated previous snapshot/i,
+    );
+  });
+
+  await t.test('simple alias rejects a previous target from another cycle', () => {
+    const previousInput = validInput();
+    const previousId = '2026|旧测试大学|计算机学院|夏令营';
+    previousInput.mainRows[0].projectId = previousId;
+    previousInput.mainRows[0].cycle = '2026';
+    previousInput.mainRows[0].officialUrl = 'https://cs.example.edu.cn/admissions/old';
+    const previous = sealCandidate(importScoutingData(previousInput, identities()));
+    const input = validInput();
+
+    assert.throws(
+      () => importScoutingData(input, identities({
+        previous,
+        aliases: { [input.mainRows[0].officialUrl]: previousId },
+      })),
+      /simple alias target.*cycle/i,
+    );
+  });
+
+  await t.test('compound alias rejects a previous target from another cycle', () => {
+    const previousInput = sharedOfficialUrlInput();
+    const previousId = '2026|旧测试大学|计算机学院|夏令营';
+    previousInput.mainRows[0].projectId = previousId;
+    previousInput.mainRows[0].cycle = '2026';
+    const previous = sealCandidate(importScoutingData(previousInput, identities()));
+    const input = sharedOfficialUrlInput();
+    const changedId = '2027|测试大学|计算机学院|暑期学校';
+    input.mainRows[0].projectId = changedId;
+
+    assert.throws(
+      () => importScoutingData(input, identities({
+        previous,
+        aliases: {
+          [`${input.mainRows[0].officialUrl}::${changedId}`]: previousId,
+        },
+      })),
+      /compound alias target.*cycle/i,
+    );
+  });
+});
+
 test('rejects malformed and normalized conflicting alias entries', async (t) => {
   await t.test('empty compound input ID', () => {
     assert.throws(
@@ -365,6 +601,9 @@ test('rejects malformed and normalized conflicting alias entries', async (t) => 
 });
 
 test('simple URL alias cannot collapse multiple current rows into one ID', () => {
+  const previousInput = validInput();
+  previousInput.mainRows[0].officialUrl = 'https://cs.example.edu.cn/admissions/old';
+  const previous = sealCandidate(importScoutingData(previousInput, identities()));
   const input = sharedOfficialUrlInput();
   const migratedUrl = 'https://cs.example.edu.cn/admissions/migrated';
   input.mainRows[0].officialUrl = migratedUrl;
@@ -372,6 +611,7 @@ test('simple URL alias cannot collapse multiple current rows into one ID', () =>
 
   assert.throws(
     () => importScoutingData(input, identities({
+      previous,
       aliases: { [migratedUrl]: input.mainRows[0].projectId },
     })),
     /duplicate resolved projectId/i,
@@ -531,6 +771,82 @@ test('suppresses ambiguous not-listed recommendation wording', () => {
   assert.ok(!JSON.stringify(active).includes('未要求或未在通知中列出'));
 });
 
+test('suppresses ambiguous recommendation and official-system phrases as unverified', async (t) => {
+  await t.test('未明确要求推荐信', () => {
+    const input = validInput();
+    input.mainRows[0].recommendationLetters = '未明确要求推荐信';
+    delete input.mainRows[0].recommendationTemplate;
+
+    const active = opportunity(
+      importScoutingData(input, identities()),
+      '2026年优秀大学生夏令营',
+    );
+
+    assert.deepEqual(active.recommendation, {
+      status: 'unverified',
+      summary: '待官方公布',
+    });
+    assert.ok(!JSON.stringify(active).includes('未明确要求推荐信'));
+  });
+
+  for (const phrase of ['以官方报名系统为准', '最终材料以学校官方报名系统要求为准']) {
+    await t.test(phrase, () => {
+      const input = validInput();
+      input.mainRows[0].materialList = phrase;
+      delete input.mainRows[0].materialComplexity;
+
+      const active = opportunity(
+        importScoutingData(input, identities()),
+        '2026年优秀大学生夏令营',
+      );
+
+      assert.deepEqual(active.materials, {
+        status: 'unverified',
+        summary: '待官方公布',
+      });
+      assert.ok(!JSON.stringify(active).includes(phrase));
+    });
+  }
+});
+
+test('suppresses local and private markers found in otherwise allowed fact fields', async (t) => {
+  const markers = [
+    '/Users/max/private/evidence.md',
+    'C:\\Users\\max\\private\\evidence.md',
+    'profile_space/private-note.md',
+    'targets/submitted/private-note.md',
+    'submittedProjectIds=secret',
+    'file:///Users/max/private/evidence.md',
+  ];
+
+  for (const marker of markers) {
+    await t.test(marker, () => {
+      const input = validInput();
+      input.mainRows[0].materialList = marker;
+      delete input.mainRows[0].materialComplexity;
+
+      const candidate = importScoutingData(input, identities());
+      const active = opportunity(candidate, '2026年优秀大学生夏令营');
+
+      assert.deepEqual(active.materials, {
+        status: 'unverified',
+        summary: '待官方公布',
+      });
+      assert.ok(!JSON.stringify(candidate).includes(marker), `leaked private marker: ${marker}`);
+    });
+  }
+});
+
+test('rejects private markers that reach another public candidate field', () => {
+  const input = validInput();
+  input.mainRows[0].project = '夏令营 /Users/max/private/project.md';
+
+  assert.throws(
+    () => importScoutingData(input, identities()),
+    /candidate.*private marker/i,
+  );
+});
+
 test('preserves confirmed negative recommendation wording', () => {
   const input = validInput();
   input.mainRows[0].recommendationLetters = '未要求推荐信';
@@ -565,6 +881,34 @@ test('rejects aggregator detail URLs used as the official website', () => {
   );
 });
 
+test('rejects denied discovery-host subdomains as official websites', async (t) => {
+  for (const host of [
+    'm.baoyantongzhi.com',
+    'sub.ddl.csbaoyan.top',
+    'admissions.github.com',
+  ]) {
+    await t.test(host, () => {
+      const input = validInput();
+      input.mainRows[0].officialUrl = `https://${host}/official/notice`;
+
+      assert.throws(
+        () => importScoutingData(input, identities()),
+        /official website/i,
+      );
+    });
+  }
+});
+
+test('pure import remains deterministic for a corpus that is stale at wall-clock time', () => {
+  const input = staleCliInput();
+  const first = importScoutingData(input, identities());
+  const second = importScoutingData(input, identities());
+
+  assert.deepEqual(second, first);
+  assert.deepEqual(validateCandidate(first, Date.parse(first.scanAt)), []);
+  assert.match(validateCandidate(first, Date.now()).join('\n'), /confirmed-open.*future/i);
+});
+
 test('rejects relative CLI input paths', () => {
   const result = spawnSync(tsxPath, [
     cliPath,
@@ -585,7 +929,11 @@ test('rejects relative CLI input paths', () => {
 
 test('CLI imports an absolute input and creates the output parent on first import', () => {
   const tempRoot = mkdtempSync(join(tmpdir(), 'scouting-import-'));
+  const inputPath = join(tempRoot, 'input.json');
+  const aliasesPath = join(tempRoot, 'aliases.json');
   const outputPath = join(tempRoot, 'nested', 'candidate.json');
+  writeJson(inputPath, freshCliInput());
+  writeJson(aliasesPath, {});
 
   try {
     const result = spawnSync('corepack', [
@@ -594,13 +942,11 @@ test('CLI imports an absolute input and creates the output parent on first impor
       'snapshot:import',
       '--',
       '--input',
-      validFixturePath,
+      inputPath,
       '--aliases',
-      resolve(repositoryRoot, 'data/project-id-aliases.json'),
+      aliasesPath,
       '--output',
       outputPath,
-      '--approved',
-      join(tempRoot, 'missing-approved.json'),
     ], {
       cwd: repositoryRoot,
       encoding: 'utf8',
@@ -610,6 +956,248 @@ test('CLI imports an absolute input and creates the output parent on first impor
     const candidate = JSON.parse(readFileSync(outputPath, 'utf8')) as SnapshotCandidate;
     assert.equal(candidate.counts.pendingExcluded, 1);
     assert.deepEqual(validateCandidate(candidate, Date.parse(candidate.scanAt)), []);
+    assert.deepEqual(readdirSync(join(tempRoot, 'nested')), ['candidate.json']);
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
+test('CLI rejects an explicitly supplied missing approved snapshot without output', () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'scouting-missing-approved-'));
+  const { inputPath, aliasesPath } = prepareCliSources(tempRoot);
+  const approvedPath = join(tempRoot, 'does-not-exist.json');
+  const outputPath = join(tempRoot, 'candidate.json');
+
+  try {
+    const result = runImporterCli({
+      input: inputPath,
+      aliases: aliasesPath,
+      output: outputPath,
+      approved: approvedPath,
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.match(`${result.stdout}\n${result.stderr}`, /approved snapshot.*could not be read/i);
+    assert.equal(existsSync(outputPath), false);
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
+test('CLI rejects resolved output collisions without modifying protected files', async (t) => {
+  for (const protectedName of ['input', 'aliases', 'approved'] as const) {
+    await t.test(protectedName, () => {
+      const tempRoot = mkdtempSync(join(tmpdir(), `scouting-collision-${protectedName}-`));
+      const { inputPath, aliasesPath, approvedPath } = prepareCliSources(tempRoot);
+      const protectedPaths = { input: inputPath, aliases: aliasesPath, approved: approvedPath };
+      mkdirSync(join(tempRoot, 'path-segment'));
+      const outputPath = protectedName === 'input'
+        ? `${join(tempRoot, 'path-segment')}/../input.json`
+        : protectedPaths[protectedName];
+      const before = new Map(
+        Object.values(protectedPaths).map((path) => [path, readFileSync(path, 'utf8')]),
+      );
+
+      try {
+        const result = runImporterCli({
+          input: inputPath,
+          aliases: aliasesPath,
+          output: outputPath,
+          approved: approvedPath,
+        });
+
+        assert.notEqual(result.status, 0);
+        assert.match(`${result.stdout}\n${result.stderr}`, /output.*collid/i);
+        for (const [path, contents] of before) {
+          assert.equal(readFileSync(path, 'utf8'), contents, `modified protected file: ${path}`);
+        }
+        assert.deepEqual(readdirSync(tempRoot).sort(), [
+          'aliases.json',
+          'approved.json',
+          'input.json',
+          'path-segment',
+        ]);
+      } finally {
+        rmSync(tempRoot, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('CLI rejects a hardlink output collision without modifying its source inode', () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'scouting-hardlink-output-'));
+  const { inputPath, aliasesPath, approvedPath } = prepareCliSources(tempRoot);
+  const outputPath = join(tempRoot, 'candidate.json');
+  linkSync(inputPath, outputPath);
+  const sourceBefore = readFileSync(inputPath, 'utf8');
+  const aliasesBefore = readFileSync(aliasesPath, 'utf8');
+  const approvedBefore = readFileSync(approvedPath, 'utf8');
+  const inputStat = statSync(inputPath);
+  const outputStat = statSync(outputPath);
+  assert.equal(outputStat.dev, inputStat.dev);
+  assert.equal(outputStat.ino, inputStat.ino);
+
+  try {
+    const result = runImporterCli({
+      input: inputPath,
+      aliases: aliasesPath,
+      output: outputPath,
+      approved: approvedPath,
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.match(`${result.stdout}\n${result.stderr}`, /output.*collid|hardlink/i);
+    assert.equal(readFileSync(inputPath, 'utf8'), sourceBefore);
+    assert.equal(readFileSync(outputPath, 'utf8'), sourceBefore);
+    assert.equal(readFileSync(aliasesPath, 'utf8'), aliasesBefore);
+    assert.equal(readFileSync(approvedPath, 'utf8'), approvedBefore);
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
+test('CLI rejects an existing symlink output without modifying its target', () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'scouting-symlink-output-'));
+  const { inputPath, aliasesPath, approvedPath } = prepareCliSources(tempRoot);
+  const targetPath = join(tempRoot, 'symlink-target.json');
+  const outputPath = join(tempRoot, 'candidate.json');
+  const targetBefore = 'SYMLINK_TARGET_MUST_NOT_CHANGE\n';
+  writeFileSync(targetPath, targetBefore, 'utf8');
+  symlinkSync(targetPath, outputPath);
+  const inputBefore = readFileSync(inputPath, 'utf8');
+  const aliasesBefore = readFileSync(aliasesPath, 'utf8');
+  const approvedBefore = readFileSync(approvedPath, 'utf8');
+
+  try {
+    const result = runImporterCli({
+      input: inputPath,
+      aliases: aliasesPath,
+      output: outputPath,
+      approved: approvedPath,
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.match(`${result.stdout}\n${result.stderr}`, /output.*symlink/i);
+    assert.ok(lstatSync(outputPath).isSymbolicLink());
+    assert.equal(readlinkSync(outputPath), targetPath);
+    assert.equal(readFileSync(targetPath, 'utf8'), targetBefore);
+    assert.equal(readFileSync(inputPath, 'utf8'), inputBefore);
+    assert.equal(readFileSync(aliasesPath, 'utf8'), aliasesBefore);
+    assert.equal(readFileSync(approvedPath, 'utf8'), approvedBefore);
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
+test('CLI atomically replaces an existing regular candidate and leaves no temp residue', () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'scouting-regular-output-'));
+  const { inputPath, aliasesPath } = prepareCliSources(tempRoot);
+  const approvedPath = join(tempRoot, 'approved.json');
+  rmSync(approvedPath);
+  const outputPath = join(tempRoot, 'candidate.json');
+  writeFileSync(outputPath, 'OLD_CANDIDATE\n', 'utf8');
+  const inputBefore = readFileSync(inputPath, 'utf8');
+  const aliasesBefore = readFileSync(aliasesPath, 'utf8');
+
+  try {
+    const result = runImporterCli({
+      input: inputPath,
+      aliases: aliasesPath,
+      output: outputPath,
+    });
+
+    assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+    const candidate = JSON.parse(readFileSync(outputPath, 'utf8')) as SnapshotCandidate;
+    assert.equal(candidate.opportunities.length, 3);
+    assert.equal(readFileSync(inputPath, 'utf8'), inputBefore);
+    assert.equal(readFileSync(aliasesPath, 'utf8'), aliasesBefore);
+    assert.deepEqual(readdirSync(tempRoot).sort(), [
+      'aliases.json',
+      'candidate.json',
+      'input.json',
+    ]);
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
+test('CLI cleans sibling temp files when atomic replacement fails', () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'scouting-output-failure-'));
+  const { inputPath, aliasesPath } = prepareCliSources(tempRoot);
+  rmSync(join(tempRoot, 'approved.json'));
+  const outputPath = join(tempRoot, 'candidate.json');
+  mkdirSync(outputPath);
+
+  try {
+    const result = runImporterCli({
+      input: inputPath,
+      aliases: aliasesPath,
+      output: outputPath,
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.ok(lstatSync(outputPath).isDirectory());
+    assert.deepEqual(readdirSync(tempRoot).sort(), [
+      'aliases.json',
+      'candidate.json',
+      'input.json',
+    ]);
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
+test('CLI rejects a stale confirmed-open candidate and leaves output untouched', () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'scouting-stale-output-'));
+  const inputPath = join(tempRoot, 'input.json');
+  const aliasesPath = join(tempRoot, 'aliases.json');
+  const outputPath = join(tempRoot, 'candidate.json');
+  const outputBefore = 'CURRENT_CANDIDATE_MUST_SURVIVE\n';
+  writeJson(inputPath, staleCliInput());
+  writeJson(aliasesPath, {});
+  writeFileSync(outputPath, outputBefore, 'utf8');
+
+  try {
+    const result = runImporterCli({
+      input: inputPath,
+      aliases: aliasesPath,
+      output: outputPath,
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.match(`${result.stdout}\n${result.stderr}`, /freshness|confirmed-open.*future/i);
+    assert.equal(readFileSync(outputPath, 'utf8'), outputBefore);
+    assert.deepEqual(readdirSync(tempRoot).sort(), [
+      'aliases.json',
+      'candidate.json',
+      'input.json',
+    ]);
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
+test('CLI rejects a denied official subdomain without creating output', () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'scouting-denied-subdomain-'));
+  const input = freshCliInput();
+  input.mainRows[0].officialUrl = 'https://m.baoyantongzhi.com/notice/1';
+  const inputPath = join(tempRoot, 'input.json');
+  const aliasesPath = join(tempRoot, 'aliases.json');
+  const outputPath = join(tempRoot, 'candidate.json');
+  writeJson(inputPath, input);
+  writeJson(aliasesPath, {});
+
+  try {
+    const result = runImporterCli({
+      input: inputPath,
+      aliases: aliasesPath,
+      output: outputPath,
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.match(`${result.stdout}\n${result.stderr}`, /official website/i);
+    assert.equal(existsSync(outputPath), false);
+    assert.deepEqual(readdirSync(tempRoot).sort(), ['aliases.json', 'input.json']);
   } finally {
     rmSync(tempRoot, { recursive: true, force: true });
   }

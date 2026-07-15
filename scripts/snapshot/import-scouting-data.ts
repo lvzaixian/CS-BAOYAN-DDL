@@ -1,5 +1,6 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { dirname, isAbsolute, resolve } from 'node:path';
+import { randomUUID } from 'node:crypto';
+import { lstat, mkdir, open, readFile, rename, stat, unlink } from 'node:fs/promises';
+import { basename, dirname, isAbsolute, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import type {
@@ -47,11 +48,18 @@ interface IdentityIndex {
   compoundAliasesByUrlAndInput: Map<string, string>;
 }
 
+interface CurrentUrlIdentity {
+  projectIds: Set<string>;
+  rowCount: number;
+}
+
 const beijingOffsetMs = 8 * 60 * 60 * 1000;
 const unverifiedPattern =
-  /未核实|待核实|待系统核实|未确认|无法核实|不确定|疑似|传闻|可能|交流群|群聊|截图/;
+  /未核实|待核实|待系统核实|未确认|未明确|无法核实|不确定|疑似|传闻|可能|交流群|群聊|截图|以[^，。；\n]*官方报名系统[^，。；\n]*为准/;
 const notPublishedPattern =
   /未公布|待公布|暂未公布|未提及|未在[^，。；\n]*(?:列出|提及|说明)|暂无|待定|后续通知/;
+const privateMarkerPattern =
+  /\/Users\/|[A-Za-z]:\/+Users\/|profile_space|targets\/+submitted|submittedProjectIds|file:\/\//i;
 
 function isObject(value: unknown): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -127,6 +135,7 @@ function normalizeUrl(value: string, path: string): string {
   if (url.username !== '' || url.password !== '') {
     throw new Error(`${path} must not contain URL credentials`);
   }
+  url.hostname = url.hostname.toLowerCase().replace(/\.$/, '');
   url.hash = '';
   if (url.pathname !== '/') url.pathname = url.pathname.replace(/\/+$/, '');
   url.searchParams.sort();
@@ -150,6 +159,10 @@ function compoundAliasKey(normalizedUrl: string, inputProjectId: string): string
   return `${normalizedUrl}::${inputProjectId}`;
 }
 
+function containsPrivateMarker(value: string): boolean {
+  return privateMarkerPattern.test(value.replace(/\\/g, '/'));
+}
+
 function identityMaps(identities: IdentityContext): IdentityIndex {
   if (identities.previous !== null) {
     const referenceTime = Date.parse(identities.previous.approvedAt);
@@ -160,7 +173,9 @@ function identityMaps(identities: IdentityContext): IdentityIndex {
   }
 
   const previousByUrl = new Map<string, Set<string>>();
+  const previousProjectIds = new Set<string>();
   for (const opportunity of identities.previous?.opportunities ?? []) {
+    previousProjectIds.add(opportunity.projectId);
     const normalized = normalizeUrl(opportunity.website, 'previous opportunity website');
     const projectIds = previousByUrl.get(normalized) ?? new Set<string>();
     projectIds.add(opportunity.projectId);
@@ -177,6 +192,7 @@ function identityMaps(identities: IdentityContext): IdentityIndex {
     const projectId = projectIdValue.trim();
     const delimiterIndex = alias.indexOf('::');
     if (delimiterIndex === -1) {
+      parseProjectId(projectId, 'simple alias target');
       const normalizedUrl = normalizeUrl(alias, 'simple alias URL');
       addAlias(simpleAliasesByUrl, normalizedUrl, projectId, 'simple');
       continue;
@@ -191,6 +207,11 @@ function identityMaps(identities: IdentityContext): IdentityIndex {
     const url = alias.slice(0, delimiterIndex);
     const inputProjectId = alias.slice(delimiterIndex + 2).trim();
     if (inputProjectId === '') throw new Error(`malformed compound alias: ${alias}`);
+    const inputCycle = parseProjectId(inputProjectId, 'compound alias input').cycle;
+    const targetCycle = parseProjectId(projectId, 'compound alias target').cycle;
+    if (inputCycle !== targetCycle) {
+      throw new Error('compound alias target cycle must match the current input cycle');
+    }
     const normalizedUrl = normalizeUrl(url, 'compound alias URL');
     addAlias(
       compoundAliasesByUrlAndInput,
@@ -199,35 +220,114 @@ function identityMaps(identities: IdentityContext): IdentityIndex {
       'compound',
     );
   }
-  return { previousByUrl, simpleAliasesByUrl, compoundAliasesByUrlAndInput };
+  for (const projectId of simpleAliasesByUrl.values()) {
+    if (!previousProjectIds.has(projectId)) {
+      throw new Error(
+        'simple alias target must be an approved ID in the validated previous snapshot',
+      );
+    }
+  }
+  for (const projectId of compoundAliasesByUrlAndInput.values()) {
+    if (!previousProjectIds.has(projectId)) {
+      throw new Error(
+        'compound alias target must be an approved ID in the validated previous snapshot',
+      );
+    }
+  }
+  return {
+    previousByUrl,
+    simpleAliasesByUrl,
+    compoundAliasesByUrlAndInput,
+  };
+}
+
+function buildCurrentUrlIdentities(
+  mainRows: JsonObject[],
+  expiredRows: JsonObject[],
+): Map<string, CurrentUrlIdentity> {
+  const currentByUrl = new Map<string, CurrentUrlIdentity>();
+  const addRows = (rows: JsonObject[], label: 'mainRows' | 'expiredRows'): void => {
+    rows.forEach((row, index) => {
+      const path = `${label}[${index}]`;
+      const projectId = requiredString(row, 'projectId', path);
+      const officialUrl = requiredString(row, 'officialUrl', path);
+      const normalizedUrl = normalizeUrl(officialUrl, `${path}.officialUrl`);
+      const current = currentByUrl.get(normalizedUrl) ?? {
+        projectIds: new Set<string>(),
+        rowCount: 0,
+      };
+      current.projectIds.add(projectId);
+      current.rowCount += 1;
+      currentByUrl.set(normalizedUrl, current);
+    });
+  };
+  addRows(mainRows, 'mainRows');
+  addRows(expiredRows, 'expiredRows');
+  return currentByUrl;
 }
 
 function resolveProjectId(
   identityIndex: IdentityIndex,
+  currentByUrl: Map<string, CurrentUrlIdentity>,
   normalizedOfficialUrl: string,
   inputProjectId: string,
+  currentCycle: string,
   path: string,
 ): string {
   const previousIds = identityIndex.previousByUrl.get(normalizedOfficialUrl);
-  if (previousIds !== undefined) {
-    if (previousIds.has(inputProjectId)) return inputProjectId;
-    if (previousIds.size === 1) return previousIds.values().next().value as string;
+  const reusablePreviousIds = new Set(
+    [...(previousIds ?? [])].filter(
+      (projectId) => parseProjectId(projectId, 'previous opportunity').cycle === currentCycle,
+    ),
+  );
+  const current = currentByUrl.get(normalizedOfficialUrl);
+  if (current === undefined) throw new Error(`${path}.officialUrl is missing from current URL index`);
+
+  if (reusablePreviousIds.size > 0) {
+    if (reusablePreviousIds.has(inputProjectId)) return inputProjectId;
 
     const compoundAlias = identityIndex.compoundAliasesByUrlAndInput.get(
       compoundAliasKey(normalizedOfficialUrl, inputProjectId),
     );
-    if (compoundAlias === undefined) {
+    const exactCurrentMatch = [...current.projectIds].some((projectId) =>
+      reusablePreviousIds.has(projectId));
+
+    if (current.rowCount > 1) {
+      if (reusablePreviousIds.size === 1 && exactCurrentMatch) return inputProjectId;
+      const hasCompoundAssignment = [...current.projectIds].some((projectId) =>
+        identityIndex.compoundAliasesByUrlAndInput.has(
+          compoundAliasKey(normalizedOfficialUrl, projectId),
+        ));
+      if (!hasCompoundAssignment) {
+        throw new Error(
+          `${path}.officialUrl has ambiguous previous IDs in a one-to-many rename; an explicit compound alias is required`,
+        );
+      }
+      if (compoundAlias === undefined) return inputProjectId;
+    } else if (compoundAlias === undefined && reusablePreviousIds.size === 1) {
+      return reusablePreviousIds.values().next().value as string;
+    } else if (compoundAlias === undefined) {
       throw new Error(
         `${path}.officialUrl has ambiguous previous IDs; an explicit compound alias is required`,
       );
     }
-    if (!previousIds.has(compoundAlias)) {
-      throw new Error(`${path} compound alias must resolve to an approved ID for the shared URL`);
+
+    if (compoundAlias !== undefined) {
+      if (!reusablePreviousIds.has(compoundAlias)) {
+        throw new Error(`${path} compound alias must resolve to an approved ID for the shared URL`);
+      }
+      return compoundAlias;
     }
-    return compoundAlias;
   }
 
-  return identityIndex.simpleAliasesByUrl.get(normalizedOfficialUrl) ?? inputProjectId;
+  const simpleAlias = identityIndex.simpleAliasesByUrl.get(normalizedOfficialUrl);
+  if (simpleAlias !== undefined) {
+    if (parseProjectId(simpleAlias, 'simple alias target').cycle !== currentCycle) {
+      throw new Error('simple alias target cycle must match the current row cycle');
+    }
+    return simpleAlias;
+  }
+  return inputProjectId;
 }
 
 function daysInMonth(year: number, month: number): number {
@@ -338,6 +438,9 @@ function factGroup(
     const value = factText(row[key]);
     return value === undefined ? [] : [{ label, value }];
   });
+  if (values.some(({ value }) => containsPrivateMarker(value))) {
+    return { status: 'unverified', summary: '待官方公布' };
+  }
   if (values.some(({ value }) => unverifiedPattern.test(value))) {
     return { status: 'unverified', summary: '待官方公布' };
   }
@@ -357,6 +460,7 @@ function mapRow(
   expired: boolean,
   scanAt: string,
   identityIndex: IdentityIndex,
+  currentByUrl: Map<string, CurrentUrlIdentity>,
 ): MappedOpportunity {
   const inputProjectId = requiredString(row, 'projectId', path);
   const parsedId = parseProjectId(inputProjectId, path);
@@ -367,8 +471,10 @@ function mapRow(
   const normalizedOfficialUrl = normalizeUrl(officialUrl, `${path}.officialUrl`);
   const resolvedProjectId = resolveProjectId(
     identityIndex,
+    currentByUrl,
     normalizedOfficialUrl,
     inputProjectId,
+    cycle,
     path,
   );
 
@@ -415,7 +521,7 @@ function mapRow(
       eventType: expired
         ? optionalString(row, 'eventType') ?? '已过期活动'
         : requiredString(row, 'eventType', path),
-      description: optionalString(row, 'description') ?? project,
+      description: project,
       verificationStatus,
       deadline: normalizedDeadline.value,
       deadlineOriginal: normalizedDeadline.original,
@@ -459,10 +565,9 @@ function opportunityOrder(left: PublicOpportunity, right: PublicOpportunity): nu
     const deadlineDifference = (left.deadlineEpochMs ?? 0) - (right.deadlineEpochMs ?? 0);
     if (deadlineDifference !== 0) return deadlineDifference;
   }
-  return left.projectId.localeCompare(right.projectId, 'zh-CN', {
-    numeric: true,
-    sensitivity: 'base',
-  });
+  if (left.projectId < right.projectId) return -1;
+  if (left.projectId > right.projectId) return 1;
+  return 0;
 }
 
 export function importScoutingData(
@@ -478,12 +583,13 @@ export function importScoutingData(
   const mainRows = rowArray(dataset, 'mainRows');
   const expiredRows = rowArray(dataset, 'expiredRows');
   const pendingRows = rowArray(dataset, 'pendingRows');
+  const currentByUrl = buildCurrentUrlIdentities(mainRows, expiredRows);
   const identityIndex = identityMaps(identities);
 
   const active = mainRows.map((row, index) =>
-    mapRow(row, `mainRows[${index}]`, false, scanAt, identityIndex));
+    mapRow(row, `mainRows[${index}]`, false, scanAt, identityIndex, currentByUrl));
   const expired = expiredRows.map((row, index) =>
-    mapRow(row, `expiredRows[${index}]`, true, scanAt, identityIndex));
+    mapRow(row, `expiredRows[${index}]`, true, scanAt, identityIndex, currentByUrl));
   if (active.length === 0) {
     throw new Error('mainRows must contain an active row to select the default feed');
   }
@@ -529,6 +635,10 @@ export function importScoutingData(
     },
     opportunities,
   };
+
+  if (containsPrivateMarker(JSON.stringify(candidate))) {
+    throw new Error('Candidate contains a private marker in a public field');
+  }
 
   const validationErrors = validateCandidate(candidate, Date.parse(candidate.scanAt));
   if (validationErrors.length > 0) {
@@ -579,13 +689,7 @@ async function readJson(path: string, label: string): Promise<unknown> {
 
 async function readOptionalApproved(path: string | undefined): Promise<PublicSnapshot | null> {
   if (path === undefined) return null;
-  try {
-    return await readJson(path, 'approved snapshot') as PublicSnapshot;
-  } catch (error) {
-    if (isObject(error) && (error as { code?: unknown }).code === 'ENOENT') return null;
-    if (error instanceof Error && error.message.includes('ENOENT')) return null;
-    throw error;
-  }
+  return await readJson(path, 'approved snapshot') as PublicSnapshot;
 }
 
 function aliasesFrom(input: unknown): Record<string, string> {
@@ -600,6 +704,80 @@ function aliasesFrom(input: unknown): Record<string, string> {
   return aliases;
 }
 
+function hasErrorCode(error: unknown, code: string): boolean {
+  return isObject(error) && error.code === code;
+}
+
+async function assertSafeOutputPaths(options: CliOptions): Promise<void> {
+  const outputPath = resolve(options.output);
+  const protectedPaths = [
+    { flag: '--input', path: resolve(options.input) },
+    { flag: '--aliases', path: resolve(options.aliases) },
+    ...(options.approved === undefined
+      ? []
+      : [{ flag: '--approved', path: resolve(options.approved) }]),
+  ];
+
+  for (const protectedPath of protectedPaths) {
+    if (outputPath === protectedPath.path) {
+      throw new Error(`--output collides with ${protectedPath.flag}`);
+    }
+  }
+
+  let outputInfo: Awaited<ReturnType<typeof lstat>>;
+  try {
+    outputInfo = await lstat(outputPath);
+  } catch (error) {
+    if (hasErrorCode(error, 'ENOENT')) return;
+    throw error;
+  }
+  if (outputInfo.isSymbolicLink()) {
+    throw new Error('--output must not be an existing symlink');
+  }
+  if (!outputInfo.isFile()) {
+    throw new Error('--output must be absent or an existing regular file');
+  }
+
+  const outputStat = await stat(outputPath);
+  for (const protectedPath of protectedPaths) {
+    const protectedStat = await stat(protectedPath.path);
+    if (outputStat.dev === protectedStat.dev && outputStat.ino === protectedStat.ino) {
+      throw new Error(`--output collides with ${protectedPath.flag} by inode`);
+    }
+  }
+}
+
+async function removeTempFile(path: string): Promise<void> {
+  try {
+    await unlink(path);
+  } catch (error) {
+    if (!hasErrorCode(error, 'ENOENT')) throw error;
+  }
+}
+
+async function writeCandidateAtomically(path: string, candidate: SnapshotCandidate): Promise<void> {
+  const parent = dirname(path);
+  await mkdir(parent, { recursive: true });
+  const tempPath = join(
+    parent,
+    `.${basename(path)}.${process.pid}.${randomUUID()}.tmp`,
+  );
+  let handle: Awaited<ReturnType<typeof open>> | undefined;
+  try {
+    handle = await open(tempPath, 'wx', 0o600);
+    await handle.writeFile(`${JSON.stringify(candidate, null, 2)}\n`, 'utf8');
+    await handle.sync();
+    await handle.close();
+    handle = undefined;
+    await rename(tempPath, path);
+  } finally {
+    if (handle !== undefined) {
+      await handle.close().catch(() => undefined);
+    }
+    await removeTempFile(tempPath);
+  }
+}
+
 async function runCli(): Promise<void> {
   const argv = process.argv.slice(2);
   if (argv[0] === '--') argv.shift();
@@ -609,12 +787,16 @@ async function runCli(): Promise<void> {
     readJson(options.aliases, 'project ID aliases'),
     readOptionalApproved(options.approved),
   ]);
+  await assertSafeOutputPaths(options);
   const candidate = importScoutingData(input, {
     previous,
     aliases: aliasesFrom(aliasInput),
   });
-  await mkdir(dirname(options.output), { recursive: true });
-  await writeFile(options.output, `${JSON.stringify(candidate, null, 2)}\n`, 'utf8');
+  const freshnessErrors = validateCandidate(candidate, Date.now());
+  if (freshnessErrors.length > 0) {
+    throw new Error(`Candidate freshness validation failed:\n${freshnessErrors.join('\n')}`);
+  }
+  await writeCandidateAtomically(options.output, candidate);
   console.log(`Imported ${candidate.opportunities.length} opportunities to ${options.output}`);
 }
 
