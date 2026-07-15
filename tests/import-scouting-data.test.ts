@@ -1082,6 +1082,8 @@ test('rejects or sanitizes wrapped embedded private paths', async (t) => {
 test('rejects or sanitizes private paths adjacent to Chinese text', async (t) => {
   const adjacentPaths = [
     '证据见/tmp/private.md',
+    '证据见/资料/私密.md',
+    '证据见/2026/private.md',
     '证据见C:\\Private\\secret.md',
     '证据见targets/2027/private.md',
   ];

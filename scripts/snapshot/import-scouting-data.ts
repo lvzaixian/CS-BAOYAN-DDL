@@ -59,8 +59,31 @@ const unverifiedPattern =
 const notPublishedPattern =
   /未公布|待公布|暂未公布|未提及|未在[^，。；\n]*(?:列出|提及|说明|要求)|暂无|待定|后续通知/;
 const httpUrlTokenPattern = /https?:\/\/[^\s<>"'`，。；！？、（）()【】{}]+/giu;
-const localPathPatterns = [
-  /(?<!\d)\/(?!\/)[A-Za-z._~-][A-Za-z0-9._~-]*\/[^\s/\\<>"'`，。；！？、（）()\[\]【】{}]+/u,
+const unixSlashTokenPattern = /(?<!\/)\/(?!\/)[^\s\\<>"'`，。；！？、（）()\[\]【】{}]+/gu;
+const unixSystemRoots = new Set([
+  'applications',
+  'boot',
+  'dev',
+  'etc',
+  'home',
+  'library',
+  'media',
+  'mnt',
+  'opt',
+  'private',
+  'proc',
+  'root',
+  'run',
+  'srv',
+  'sys',
+  'tmp',
+  'users',
+  'usr',
+  'var',
+  'volumes',
+]);
+const extensionBearingFilePattern = /\.[\p{L}\p{N}][\p{L}\p{N}_-]*$/u;
+const nonUnixPathPatterns = [
   /[A-Za-z]:[\\/][^\s<>"'`，。；！？、（）()\[\]【】{}]+/u,
   /\\\\[^\\/\s<>"'`，。；！？、（）()\[\]【】{}]+[\\/][^\s<>"'`，。；！？、（）()\[\]【】{}]+/u,
   /targets[\\/][^\s<>"'`，。；！？、（）()\[\]【】{}]+/iu,
@@ -186,9 +209,20 @@ function withoutValidatedHttpUrlTokens(value: string): string {
   });
 }
 
+function containsUnixPrivatePath(value: string): boolean {
+  const slashTokens = value.match(unixSlashTokenPattern) ?? [];
+  return slashTokens.some((token) => {
+    const segments = token.slice(1).split('/').filter((segment) => segment !== '');
+    if (segments.length < 2) return false;
+    if (unixSystemRoots.has(segments[0].toLowerCase())) return true;
+    return extensionBearingFilePattern.test(segments.at(-1) ?? '');
+  });
+}
+
 function containsPrivateFreeText(value: string): boolean {
   const nonUrlText = withoutValidatedHttpUrlTokens(value);
-  return localPathPatterns.some((pattern) => pattern.test(nonUrlText))
+  return containsUnixPrivatePath(nonUrlText)
+    || nonUnixPathPatterns.some((pattern) => pattern.test(nonUrlText))
     || privateTextMarkerPattern.test(nonUrlText);
 }
 
