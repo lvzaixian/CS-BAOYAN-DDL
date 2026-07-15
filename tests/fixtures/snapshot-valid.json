@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "snapshotId": "2026-07-15T15:00:00.000Z-fixture",
+  "scanAt": "2026-07-15T23:00:00+08:00",
+  "approvedAt": "2026-07-15T23:05:00+08:00",
+  "previousSnapshotId": null,
+  "dataHash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "defaultFeedId": "camp2027",
+  "feeds": [
+    {
+      "id": "camp2027",
+      "label": "推免活动 2027",
+      "admissionCycle": "2027",
+      "eventYear": 2026
+    }
+  ],
+  "counts": {
+    "confirmedOpen": 1,
+    "confirmedUnknownDeadline": 0,
+    "pendingExcluded": 0,
+    "expired": 0
+  },
+  "opportunities": [
+    {
+      "projectId": "2027|测试大学|计算机学院|夏令营",
+      "feedId": "camp2027",
+      "name": "测试大学",
+      "institute": "计算机学院",
+      "project": "2026年优秀大学生夏令营",
+      "eventType": "夏令营",
+      "description": "用于契约测试的记录",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-20T23:59:00+08:00",
+      "deadlineOriginal": "2026年7月20日截止，官方未给具体时刻",
+      "deadlineEpochMs": 1784563140000,
+      "website": "https://cs.example.edu.cn/notice/1",
+      "tags": ["985"],
+      "province": "北京",
+      "verifiedAt": "2026-07-15T22:30:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院官网",
+          "url": "https://cs.example.edu.cn/notice/1"
+        }
+      ],
+      "logistics": { "status": "not-published", "summary": "未公布" },
+      "recommendation": { "status": "confirmed", "summary": "未要求推荐信" },
+      "materials": { "status": "confirmed", "summary": "成绩单与科研证明" }
+    }
+  ]
+}

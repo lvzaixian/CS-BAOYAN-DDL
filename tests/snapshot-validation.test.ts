@@ -1,0 +1,580 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import test from 'node:test';
+
+import { validateCandidate, validateSnapshot } from '../src/lib/snapshot-validation.js';
+
+const fixture = JSON.parse(
+  readFileSync(new URL('./fixtures/snapshot-valid.json', import.meta.url), 'utf8'),
+) as Record<string, unknown>;
+const nowMs = Date.parse('2026-07-16T00:00:00+08:00');
+
+function validSnapshot(): Record<string, any> {
+  return structuredClone(fixture);
+}
+
+function validCandidate(): Record<string, any> {
+  const candidate = validSnapshot();
+  delete candidate.snapshotId;
+  delete candidate.approvedAt;
+  delete candidate.previousSnapshotId;
+  delete candidate.dataHash;
+  return candidate;
+}
+
+function setOnlyOpportunityStatus(
+  snapshot: Record<string, any>,
+  status: 'confirmed-open' | 'confirmed-unknown-deadline' | 'expired',
+  deadline: string | null,
+): void {
+  snapshot.opportunities[0].verificationStatus = status;
+  snapshot.opportunities[0].deadline = deadline;
+  snapshot.opportunities[0].deadlineEpochMs = deadline === null ? null : Date.parse(deadline);
+  snapshot.counts.confirmedOpen = status === 'confirmed-open' ? 1 : 0;
+  snapshot.counts.confirmedUnknownDeadline =
+    status === 'confirmed-unknown-deadline' ? 1 : 0;
+  snapshot.counts.expired = status === 'expired' ? 1 : 0;
+}
+
+test('accepts a valid approved snapshot', () => {
+  assert.deepEqual(validateSnapshot(validSnapshot(), nowMs), []);
+});
+
+test('rejects duplicate projectId values', () => {
+  const snapshot = validSnapshot();
+  snapshot.opportunities.push(structuredClone(snapshot.opportunities[0]));
+  snapshot.counts.confirmedOpen = 2;
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /duplicate projectId/i);
+});
+
+test('rejects baoyantongzhi.com as the official website', () => {
+  const snapshot = validSnapshot();
+  snapshot.opportunities[0].website = 'https://baoyantongzhi.com/notice/1';
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /website.*denied/i);
+});
+
+test('rejects an expired deadline epoch on a confirmed-open row', () => {
+  const snapshot = validSnapshot();
+  snapshot.opportunities[0].deadline = '2026-07-15T23:59:00+08:00';
+  snapshot.opportunities[0].deadlineEpochMs = Date.parse(snapshot.opportunities[0].deadline);
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /confirmed-open.*future/i);
+});
+
+test('accepts a valid candidate without approval metadata', () => {
+  assert.deepEqual(validateCandidate(validCandidate(), nowMs), []);
+});
+
+test('candidate rejects every approval-only metadata field', async (t) => {
+  for (const key of ['snapshotId', 'approvedAt', 'previousSnapshotId', 'dataHash']) {
+    await t.test(key, () => {
+      const candidate = validCandidate();
+      candidate[key] = fixture[key];
+      assert.match(validateCandidate(candidate, nowMs).join('\n'), /unknown propert/i);
+    });
+  }
+});
+
+test('approved snapshot requires every approval metadata field', async (t) => {
+  for (const key of ['snapshotId', 'approvedAt', 'previousSnapshotId', 'dataHash']) {
+    await t.test(key, () => {
+      const snapshot = validSnapshot();
+      delete snapshot[key];
+      assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /missing propert/i);
+    });
+  }
+});
+
+test('accepts uppercase hexadecimal dataHash without recomputing it', () => {
+  const snapshot = validSnapshot();
+  snapshot.dataHash = 'A'.repeat(64);
+
+  assert.deepEqual(validateSnapshot(snapshot, nowMs), []);
+});
+
+test('rejects dataHash unless it is exactly 64 hexadecimal characters', async (t) => {
+  for (const hash of ['0'.repeat(63), '0'.repeat(65), `${'0'.repeat(63)}g`]) {
+    await t.test(hash.length.toString(), () => {
+      const snapshot = validSnapshot();
+      snapshot.dataHash = hash;
+      assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /dataHash.*64.*hexadecimal/i);
+    });
+  }
+});
+
+test('previousSnapshotId must be a string or null', () => {
+  const snapshot = validSnapshot();
+  snapshot.previousSnapshotId = 42;
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /previousSnapshotId.*string.*null/i);
+});
+
+test('schemaVersion must be exactly 1', () => {
+  const snapshot = validSnapshot();
+  snapshot.schemaVersion = 2;
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /schemaVersion.*exactly 1/i);
+});
+
+const unknownPropertyCases: Array<{
+  name: string;
+  path: string;
+  mutate: (snapshot: Record<string, any>) => void;
+}> = [
+  { name: 'snapshot', path: 'snapshot', mutate: (value) => (value.extra = true) },
+  { name: 'counts', path: 'counts', mutate: (value) => (value.counts.extra = true) },
+  { name: 'feed', path: 'feeds[0]', mutate: (value) => (value.feeds[0].extra = true) },
+  {
+    name: 'opportunity',
+    path: 'opportunities[0]',
+    mutate: (value) => (value.opportunities[0].extra = true),
+  },
+  {
+    name: 'discovery source',
+    path: 'discoverySources[0]',
+    mutate: (value) => (value.opportunities[0].discoverySources[0].extra = true),
+  },
+  {
+    name: 'fact group',
+    path: 'logistics',
+    mutate: (value) => (value.opportunities[0].logistics.extra = true),
+  },
+];
+
+for (const { name, path, mutate } of unknownPropertyCases) {
+  test(`rejects unknown properties on ${name} objects`, () => {
+    const snapshot = validSnapshot();
+    mutate(snapshot);
+
+    const errors = validateSnapshot(snapshot, nowMs).join('\n');
+    assert.match(errors, /unknown propert/i);
+    assert.match(errors, new RegExp(path.replace(/[\[\]]/g, '\\$&'), 'i'));
+  });
+}
+
+test('rejects missing required opportunity properties', () => {
+  const snapshot = validSnapshot();
+  delete snapshot.opportunities[0].eventType;
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /eventType.*missing propert/i);
+});
+
+test('returns errors instead of throwing for malformed input', async (t) => {
+  for (const input of [undefined, null, [], 'snapshot', 1]) {
+    await t.test(String(input), () => {
+      assert.doesNotThrow(() => validateCandidate(input, nowMs));
+      assert.doesNotThrow(() => validateSnapshot(input, nowMs));
+      assert.ok(validateCandidate(input, nowMs).length > 0);
+      assert.ok(validateSnapshot(input, nowMs).length > 0);
+    });
+  }
+});
+
+test('returns errors instead of throwing for malformed nested values', () => {
+  const snapshot = validSnapshot();
+  snapshot.feeds = null;
+  snapshot.opportunities = [null];
+
+  assert.doesNotThrow(() => validateSnapshot(snapshot, nowMs));
+  assert.ok(validateSnapshot(snapshot, nowMs).length > 0);
+});
+
+test('rejects invalid timestamp syntax and impossible calendar timestamps', async (t) => {
+  const cases = [
+    { name: 'scanAt', mutate: (value: Record<string, any>) => (value.scanAt = 'July 15, 2026') },
+    {
+      name: 'approvedAt',
+      mutate: (value: Record<string, any>) => (value.approvedAt = '2026-02-30T12:00:00Z'),
+    },
+    {
+      name: 'verifiedAt',
+      mutate: (value: Record<string, any>) =>
+        (value.opportunities[0].verifiedAt = 'not-a-timestamp'),
+    },
+  ];
+
+  for (const { name, mutate } of cases) {
+    await t.test(name, () => {
+      const snapshot = validSnapshot();
+      mutate(snapshot);
+      assert.match(validateSnapshot(snapshot, nowMs).join('\n'), new RegExp(`${name}.*ISO`, 'i'));
+    });
+  }
+});
+
+test('rejects malformed website and discovery source URLs', async (t) => {
+  await t.test('website', () => {
+    const snapshot = validSnapshot();
+    snapshot.opportunities[0].website = 'not a URL';
+    assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /website.*URL/i);
+  });
+
+  await t.test('discovery source', () => {
+    const snapshot = validSnapshot();
+    snapshot.opportunities[0].discoverySources[0].url = 'not a URL';
+    assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /discoverySources\[0\]\.url.*URL/i);
+  });
+});
+
+test('rejects unsupported status and source enum values', async (t) => {
+  const cases = [
+    {
+      name: 'verification status',
+      pattern: /verificationStatus.*allowed value/i,
+      mutate: (value: Record<string, any>) =>
+        (value.opportunities[0].verificationStatus = 'pending'),
+    },
+    {
+      name: 'fact status',
+      pattern: /logistics\.status.*allowed value/i,
+      mutate: (value: Record<string, any>) => (value.opportunities[0].logistics.status = 'maybe'),
+    },
+    {
+      name: 'source kind',
+      pattern: /discoverySources\[0\]\.kind.*allowed value/i,
+      mutate: (value: Record<string, any>) =>
+        (value.opportunities[0].discoverySources[0].kind = 'blog'),
+    },
+  ];
+
+  for (const { name, pattern, mutate } of cases) {
+    await t.test(name, () => {
+      const snapshot = validSnapshot();
+      mutate(snapshot);
+      assert.match(validateSnapshot(snapshot, nowMs).join('\n'), pattern);
+    });
+  }
+});
+
+test('feed IDs must be unique and non-empty', async (t) => {
+  await t.test('non-empty', () => {
+    const snapshot = validSnapshot();
+    snapshot.feeds[0].id = '';
+    assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /feeds\[0\]\.id.*non-empty/i);
+  });
+
+  await t.test('unique', () => {
+    const snapshot = validSnapshot();
+    snapshot.feeds.push({ ...snapshot.feeds[0], label: '重复 feed' });
+    assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /duplicate feed id/i);
+  });
+});
+
+test('defaultFeedId must identify a declared feed', () => {
+  const snapshot = validSnapshot();
+  snapshot.defaultFeedId = 'missing-feed';
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /defaultFeedId.*known feed/i);
+});
+
+test('every opportunity must reference a declared feed', () => {
+  const snapshot = validSnapshot();
+  snapshot.opportunities[0].feedId = 'missing-feed';
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /feedId.*known feed/i);
+});
+
+test('feed eventYear must be a number', () => {
+  const snapshot = validSnapshot();
+  snapshot.feeds[0].eventYear = '2026';
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /eventYear.*number/i);
+});
+
+test('province is optional but must be a string when present', () => {
+  const snapshot = validSnapshot();
+  snapshot.opportunities[0].province = 1;
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /province.*string/i);
+});
+
+test('every opportunity must have an explicitly official discovery source', () => {
+  const snapshot = validSnapshot();
+  snapshot.opportunities[0].discoverySources[0].kind = 'cs-baoyan';
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /official discovery source/i);
+});
+
+test('rejects every denied discovery host as the official website', async (t) => {
+  for (const host of ['ddl.csbaoyan.top', 'github.com', 'www.baoyantongzhi.com']) {
+    await t.test(host, () => {
+      const snapshot = validSnapshot();
+      snapshot.opportunities[0].website = `https://${host}/notice/1`;
+      assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /website.*denied/i);
+    });
+  }
+});
+
+test('confirmed-open requires a non-null finite deadline epoch', () => {
+  const snapshot = validSnapshot();
+  snapshot.opportunities[0].deadline = null;
+  snapshot.opportunities[0].deadlineEpochMs = null;
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /confirmed-open.*deadline/i);
+});
+
+test('confirmed-open deadline epoch must match its normalized timestamp', () => {
+  const snapshot = validSnapshot();
+  snapshot.opportunities[0].deadlineEpochMs += 1;
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /deadlineEpochMs.*match/i);
+});
+
+test('rejects null deadlineOriginal', () => {
+  const snapshot = validSnapshot();
+  snapshot.opportunities[0].deadlineOriginal = null;
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /deadlineOriginal.*string/i);
+});
+
+test('confirmed-unknown-deadline requires null deadline fields', () => {
+  const snapshot = validSnapshot();
+  setOnlyOpportunityStatus(snapshot, 'confirmed-unknown-deadline', null);
+  snapshot.opportunities[0].deadline = '2026-07-20T23:59:00+08:00';
+
+  assert.match(
+    validateSnapshot(snapshot, nowMs).join('\n'),
+    /confirmed-unknown-deadline.*null deadline/i,
+  );
+});
+
+test('accepts a confirmed-unknown-deadline row with null deadline fields', () => {
+  const snapshot = validSnapshot();
+  setOnlyOpportunityStatus(snapshot, 'confirmed-unknown-deadline', null);
+
+  assert.deepEqual(validateSnapshot(snapshot, nowMs), []);
+});
+
+test('expired rows cannot carry a future active deadline', () => {
+  const snapshot = validSnapshot();
+  setOnlyOpportunityStatus(snapshot, 'expired', '2026-07-20T23:59:00+08:00');
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /expired.*future/i);
+});
+
+test('accepts an expired row with a normalized past deadline', () => {
+  const snapshot = validSnapshot();
+  setOnlyOpportunityStatus(snapshot, 'expired', '2026-07-15T23:59:00+08:00');
+
+  assert.deepEqual(validateSnapshot(snapshot, nowMs), []);
+});
+
+test('status counts must match opportunity rows', async (t) => {
+  for (const key of ['confirmedOpen', 'confirmedUnknownDeadline', 'expired']) {
+    await t.test(key, () => {
+      const snapshot = validSnapshot();
+      snapshot.counts[key] += 1;
+      assert.match(validateSnapshot(snapshot, nowMs).join('\n'), new RegExp(`${key}.*match`, 'i'));
+    });
+  }
+});
+
+test('pendingExcluded must be a nonnegative integer', async (t) => {
+  for (const value of [-1, 0.5, Number.NaN]) {
+    await t.test(String(value), () => {
+      const snapshot = validSnapshot();
+      snapshot.counts.pendingExcluded = value;
+      assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /pendingExcluded.*nonnegative integer/i);
+    });
+  }
+});
+
+test('timed active rows must be ascending by deadline epoch', () => {
+  const snapshot = validSnapshot();
+  const later = structuredClone(snapshot.opportunities[0]);
+  later.projectId = `${later.projectId}|later`;
+  snapshot.opportunities.unshift(later);
+  snapshot.opportunities[1].deadline = '2026-07-19T23:59:00+08:00';
+  snapshot.opportunities[1].deadlineEpochMs = Date.parse(snapshot.opportunities[1].deadline);
+  snapshot.counts.confirmedOpen = 2;
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /ascending.*deadline/i);
+});
+
+test('unknown-deadline active rows must follow timed active rows', () => {
+  const snapshot = validSnapshot();
+  const unknown = structuredClone(snapshot.opportunities[0]);
+  unknown.projectId = `${unknown.projectId}|unknown`;
+  unknown.verificationStatus = 'confirmed-unknown-deadline';
+  unknown.deadline = null;
+  unknown.deadlineEpochMs = null;
+  snapshot.opportunities.unshift(unknown);
+  snapshot.counts.confirmedUnknownDeadline = 1;
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /unknown-deadline.*after timed/i);
+});
+
+test('expired rows must follow all active rows', () => {
+  const snapshot = validSnapshot();
+  const expired = structuredClone(snapshot.opportunities[0]);
+  expired.projectId = `${expired.projectId}|expired`;
+  expired.verificationStatus = 'expired';
+  expired.deadline = '2026-07-15T23:59:00+08:00';
+  expired.deadlineEpochMs = Date.parse(expired.deadline);
+  snapshot.opportunities.unshift(expired);
+  snapshot.counts.expired = 1;
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /expired.*after active/i);
+});
+
+test('accepts timed, unknown-deadline, then expired row ordering', () => {
+  const snapshot = validSnapshot();
+  const unknown = structuredClone(snapshot.opportunities[0]);
+  unknown.projectId = `${unknown.projectId}|unknown`;
+  unknown.verificationStatus = 'confirmed-unknown-deadline';
+  unknown.deadline = null;
+  unknown.deadlineEpochMs = null;
+  const expired = structuredClone(snapshot.opportunities[0]);
+  expired.projectId = `${expired.projectId}|expired`;
+  expired.verificationStatus = 'expired';
+  expired.deadline = '2026-07-15T23:59:00+08:00';
+  expired.deadlineEpochMs = Date.parse(expired.deadline);
+  snapshot.opportunities.push(unknown, expired);
+  snapshot.counts.confirmedUnknownDeadline = 1;
+  snapshot.counts.expired = 1;
+
+  assert.deepEqual(validateSnapshot(snapshot, nowMs), []);
+});
+
+test('rejects URL credentials in websites and every discovery source', async (t) => {
+  await t.test('website credentials', () => {
+    const snapshot = validSnapshot();
+    snapshot.opportunities[0].website = 'https://user:pass@cs.example.edu.cn/notice/1';
+
+    assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /website.*credentials/i);
+  });
+
+  await t.test('non-official discovery source credentials', () => {
+    const snapshot = validSnapshot();
+    snapshot.opportunities[0].discoverySources.push({
+      kind: 'cs-baoyan',
+      label: '发现源',
+      url: 'https://user:pass@ddl.example.test/notice/1',
+    });
+
+    assert.match(
+      validateSnapshot(snapshot, nowMs).join('\n'),
+      /discoverySources\[1\]\.url.*credentials/i,
+    );
+  });
+});
+
+test('canonicalizes trailing-dot hosts before denylist checks', async (t) => {
+  for (const host of [
+    'ddl.csbaoyan.top',
+    'github.com',
+    'www.baoyantongzhi.com',
+    'baoyantongzhi.com',
+  ]) {
+    await t.test(`website ${host}.`, () => {
+      const snapshot = validSnapshot();
+      snapshot.opportunities[0].website = `https://${host}./notice/1`;
+
+      assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /website.*denied/i);
+    });
+  }
+
+  await t.test('official source github.com.', () => {
+    const snapshot = validSnapshot();
+    snapshot.opportunities[0].discoverySources[0].url = 'https://github.com./notice/1';
+
+    assert.match(
+      validateSnapshot(snapshot, nowMs).join('\n'),
+      /discoverySources\[0\]\.url.*denied/i,
+    );
+  });
+});
+
+test('applies the denied-host list to official discovery sources', async (t) => {
+  for (const host of [
+    'ddl.csbaoyan.top',
+    'github.com',
+    'www.baoyantongzhi.com',
+    'baoyantongzhi.com',
+  ]) {
+    await t.test(host, () => {
+      const snapshot = validSnapshot();
+      snapshot.opportunities[0].discoverySources[0].url = `https://${host}/notice/1`;
+
+      assert.match(
+        validateSnapshot(snapshot, nowMs).join('\n'),
+        /discoverySources\[0\]\.url.*denied/i,
+      );
+    });
+  }
+});
+
+test('requires non-empty projectId and snapshotId values', async (t) => {
+  await t.test('projectId', () => {
+    const snapshot = validSnapshot();
+    snapshot.opportunities[0].projectId = '';
+
+    assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /projectId.*non-empty/i);
+  });
+
+  await t.test('snapshotId', () => {
+    const snapshot = validSnapshot();
+    snapshot.snapshotId = '';
+
+    assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /snapshotId.*non-empty/i);
+  });
+});
+
+test('requires eventYear to be an integer', () => {
+  const snapshot = validSnapshot();
+  snapshot.feeds[0].eventYear = 2026.5;
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /eventYear.*integer/i);
+});
+
+test('rejects non-finite nowMs values', async (t) => {
+  for (const value of [Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY]) {
+    await t.test(String(value), () => {
+      assert.match(validateSnapshot(validSnapshot(), value).join('\n'), /nowMs.*finite/i);
+    });
+  }
+});
+
+test('enforces candidate and approval chronology', async (t) => {
+  await t.test('candidate verifiedAt is not after scanAt', () => {
+    const candidate = validCandidate();
+    candidate.opportunities[0].verifiedAt = '2026-07-15T23:01:00+08:00';
+
+    assert.match(validateCandidate(candidate, nowMs).join('\n'), /verifiedAt.*scanAt/i);
+  });
+
+  await t.test('approvedAt is not before scanAt', () => {
+    const snapshot = validSnapshot();
+    snapshot.approvedAt = '2026-07-15T22:59:00+08:00';
+
+    assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /approvedAt.*scanAt/i);
+  });
+
+  await t.test('approved snapshot verifiedAt is not after approvedAt', () => {
+    const snapshot = validSnapshot();
+    snapshot.approvedAt = '2026-07-15T22:15:00+08:00';
+
+    assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /verifiedAt.*approvedAt/i);
+  });
+});
+
+test('rejects sparse feeds and opportunities arrays by index', async (t) => {
+  await t.test('feeds hole', () => {
+    const snapshot = validSnapshot();
+    snapshot.feeds = new Array(1);
+
+    assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /feeds\[0\].*missing array element/i);
+  });
+
+  await t.test('opportunities hole', () => {
+    const snapshot = validSnapshot();
+    snapshot.opportunities = new Array(1);
+
+    assert.match(
+      validateSnapshot(snapshot, nowMs).join('\n'),
+      /opportunities\[0\].*missing array element/i,
+    );
+  });
+});

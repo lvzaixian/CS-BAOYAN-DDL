@@ -9,6 +9,9 @@
     "prebuild": "tsx scripts/build-logos.ts",
     "build": "vite build",
     "preview": "vite preview --port 4173",
+    "test": "tsx --test tests/*.test.ts",
+    "test:unit": "tsx --test tests/*.test.ts",
+    "snapshot:validate": "tsx scripts/snapshot/validate-current.ts",
     "deploy": "pnpm build && gh-pages -d dist",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
