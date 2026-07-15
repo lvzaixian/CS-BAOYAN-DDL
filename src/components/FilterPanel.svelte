@@ -1,5 +1,6 @@
 <script lang="ts">
   import { filters, toggle } from '$lib/urlState.svelte';
+  import { countStatuses } from '$lib/filter';
   import { SCHOOL_TAGS, STATUS_TAGS } from '$lib/types';
   import { PROVINCES, resolveProvince } from '$data/provinces';
   import type { DerivedSchool } from '$lib/types';
@@ -11,6 +12,8 @@
     for (const r of rows) for (const t of r.tags) m.set(t, (m.get(t) ?? 0) + 1);
     return m;
   });
+
+  const statusCounts = $derived(countStatuses(rows));
 
   const provinceCounts = $derived.by(() => {
     const m = new Map<string, number>();
@@ -77,7 +80,7 @@
     <div class="flex flex-wrap gap-1.5">
       {#each STATUS_TAGS as t}
         {@const on = isOnStatus(t)}
-        {@const c = tagCounts.get(t) ?? 0}
+        {@const c = statusCounts[t]}
         <button
           disabled={c === 0 && !on}
           onclick={() => (filters.status = toggle(filters.status, t))}

@@ -38,11 +38,19 @@ function unverifiedLegacyFact(): FieldFactGroup {
   return { status: 'unverified', summary: '历史归档未核验' };
 }
 
+export function legacyProjectId(
+  feedId: FeedId,
+  row: { name: string; institute: string },
+  index: number,
+): string {
+  return `legacy|${feedId}|${row.name}|${row.institute}|${index}`;
+}
+
 function mapLegacySchool(feedId: FeedId, row: LegacySchool, index: number): School {
   const deadlineOriginal = row.deadline?.trim() ?? '';
   const deadlineEpochMs = parseDeadline(deadlineOriginal);
   return {
-    projectId: `legacy|${feedId}|${row.name}|${row.institute}|${index}`,
+    projectId: legacyProjectId(feedId, row, index),
     feedId,
     name: row.name,
     institute: row.institute,

@@ -8,6 +8,7 @@
     progressAgainst,
     splitCountdown,
   } from '$lib/time';
+  import { expiredDeadlineText, sourceLinkLabel } from '$lib/filter';
   import { getInitials, getLogoUrl } from '$lib/logos';
   import { resolveProvince } from '$data/provinces';
 
@@ -19,6 +20,8 @@
   const parts = $derived(school.remainingMs && school.remainingMs > 0 ? splitCountdown(school.remainingMs) : null);
   const urgeClass = $derived(`urge-${school.urgency}`);
   const urgeBgClass = $derived(`bg-urge-${school.urgency}`);
+  const relativeDeadline = $derived(expiredDeadlineText(school));
+  const sourceLabel = $derived(sourceLinkLabel(school));
 
   let imgFailed = $state(false);
 </script>
@@ -91,7 +94,7 @@
             {/each}
           </div>
         {:else}
-          <div class="text-2xl font-semibold {urgeClass} tabular">{formatCountdown(school.remainingMs)}</div>
+          <div class="text-2xl font-semibold {urgeClass} tabular">{relativeDeadline ?? formatCountdown(school.remainingMs)}</div>
         {/if}
 
         <!-- progress -->
@@ -142,7 +145,7 @@
         rel="noopener noreferrer"
         class="w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg surface-3 hover:bg-emerald-500/15 hover:text-emerald-200 text-fg-0 text-sm font-medium border border-line-strong transition"
       >
-        <span>打开官网</span>
+        <span>{sourceLabel}</span>
         <ExternalLink class="w-3.5 h-3.5" />
       </a>
     </div>

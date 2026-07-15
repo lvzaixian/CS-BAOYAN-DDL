@@ -1,20 +1,52 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import {
   applyFilters,
+  countStatuses,
   deriveSchool,
+  expiredDeadlineText,
   pickCalendarMonth,
   rowGroup,
   rowKey,
+  sourceLinkLabel,
 } from '../src/lib/filter';
 import {
   defaultFeedId,
   feedCatalog,
   getSchools,
   isValidFeedId,
+  legacyProjectId,
   sourceCounts,
 } from '../src/lib/schools';
 import type { School } from '../src/lib/types';
+import approved from '../data/approved/current.json';
+import legacy from '../src/data/legacy-schools.json';
+
+interface LegacyRow {
+  name: string;
+  institute: string;
+  description: string;
+  deadline?: string | null;
+  website: string;
+  tags: string[];
+  province?: string;
+}
+
+const legacyByFeed = legacy as Record<string, LegacyRow[]>;
+const filterPanelSource = readFileSync(
+  new URL('../src/components/FilterPanel.svelte', import.meta.url),
+  'utf8',
+);
+const headerSource = readFileSync(new URL('../src/components/Header.svelte', import.meta.url), 'utf8');
+const schoolRowSource = readFileSync(
+  new URL('../src/components/SchoolRow.svelte', import.meta.url),
+  'utf8',
+);
+const detailPanelSource = readFileSync(
+  new URL('../src/components/DetailPanel.svelte', import.meta.url),
+  'utf8',
+);
 
 const now = Date.parse('2026-07-15T00:00:00+08:00');
 
@@ -118,6 +150,100 @@ test('keeps an approved expired row with a null deadline in the expired group', 
   assert.equal(row.urgency, 'expired');
 });
 
+test('filters status from verificationStatus with OR semantics and ignores contradictory tags', () => {
+  const active = deriveSchool(school({ projectId: 'active-empty-tags', tags: [] }), now);
+  const activeUnknown = deriveSchool(school({
+    projectId: 'active-unknown-empty-tags',
+    verificationStatus: 'confirmed-unknown-deadline',
+    deadline: null,
+    deadlineEpochMs: null,
+    tags: [],
+  }), now);
+  const activeWithStaleTag = deriveSchool(school({
+    projectId: 'active-with-stale-ended-tag',
+    tags: ['已结营'],
+  }), now);
+  const legacyWithContradictoryTag = deriveSchool(school({
+    projectId: 'legacy|archive|school|institute|0',
+    verificationStatus: 'expired',
+    deadline: null,
+    deadlineEpochMs: null,
+    tags: ['已开营'],
+    discoverySources: [{
+      kind: 'other-discovery',
+      label: '历史归档来源（未核验）',
+      url: 'https://discovery.example/archive',
+    }],
+  }), now);
+  const rows = [legacyWithContradictoryTag, activeUnknown, activeWithStaleTag, active];
+  const filteredIds = (status: string[]) => new Set(
+    applyFilters(rows, { ...emptyFilters, status }).map(rowKey),
+  );
+
+  assert.deepEqual(filteredIds(['已开营']), new Set([
+    active.projectId,
+    activeUnknown.projectId,
+    activeWithStaleTag.projectId,
+  ]));
+  assert.deepEqual(filteredIds(['已结营']), new Set([legacyWithContradictoryTag.projectId]));
+  assert.deepEqual(filteredIds(['已开营', '已结营']), new Set(rows.map(rowKey)));
+  assert.deepEqual(countStatuses(rows), { 已开营: 3, 已结营: 1 });
+});
+
+test('labels links by official-source provenance', () => {
+  const official = school({});
+  const historical = school({
+    discoverySources: [{
+      kind: 'other-discovery',
+      label: '历史归档来源（未核验）',
+      url: 'https://discovery.example/archive',
+    }],
+  });
+
+  assert.equal(sourceLinkLabel(official), '官网');
+  assert.equal(sourceLinkLabel(historical), '历史来源（未核验）');
+  assert.equal(sourceLinkLabel(school({ discoverySources: [] })), '历史来源（未核验）');
+});
+
+test('overrides a null relative deadline only for expired rows', () => {
+  const expired = school({
+    verificationStatus: 'expired',
+    deadline: null,
+    deadlineEpochMs: null,
+  });
+  const activeUnknown = school({
+    verificationStatus: 'confirmed-unknown-deadline',
+    deadline: null,
+    deadlineEpochMs: null,
+  });
+
+  assert.equal(expiredDeadlineText(expired), '已结束');
+  assert.equal(expiredDeadlineText(activeUnknown), null);
+});
+
+test('wires status counts and deadline/source labels through authoritative helpers', () => {
+  assert.match(filterPanelSource, /countStatuses\(rows\)/);
+  assert.match(schoolRowSource, /expiredDeadlineText\(school\)/);
+  assert.match(schoolRowSource, /sourceLinkLabel\(school\)/);
+  assert.match(detailPanelSource, /expiredDeadlineText\(school\)/);
+  assert.match(detailPanelSource, /sourceLinkLabel\(school\)/);
+});
+
+test('keeps the feed selector shrinkable on narrow mobile headers and auto-sized on desktop', () => {
+  assert.match(headerSource, /max-w-36/);
+  assert.match(headerSource, /sm:max-w-none/);
+  assert.match(headerSource, /w-full min-w-0 sm:w-auto/);
+});
+
+test('keeps row selection and the source link as sibling interactive controls', () => {
+  const markup = schoolRowSource.slice(schoolRowSource.indexOf('</script>') + '</script>'.length);
+  const primaryButtonEnd = markup.indexOf('</button>');
+  const sourceLinkStart = markup.indexOf('<a');
+
+  assert.match(markup, /^\s*<div\s+[\s\S]*data-row-key=\{key\}/);
+  assert.ok(primaryButtonEnd !== -1 && sourceLinkStart > primaryButtonEnd);
+});
+
 test('uses an archive deadline month when a feed has no active timed rows', () => {
   const archiveDeadline = Date.parse('2025-04-20T00:00:00+08:00');
   const archive = deriveSchool(school({
@@ -129,70 +255,58 @@ test('uses an archive deadline month when a feed has no active timed rows', () =
   assert.deepEqual(pickCalendarMonth([archive], now), { y: 2025, m: 3 });
 });
 
-test('accepts approved feeds dynamically and uses the approved default', () => {
+test('uses the approved default and accepts a dynamically published camp2027 feed', () => {
+  assert.equal(defaultFeedId, approved.defaultFeedId);
+  assert.equal(isValidFeedId(defaultFeedId), true);
+  assert.equal(approved.feeds.some((feed) => feed.id === 'camp2027'), true);
   assert.equal(isValidFeedId('camp2027'), true);
-  assert.equal(isValidFeedId('camp2028'), true);
-  assert.equal(defaultFeedId, 'camp2028');
-  assert.deepEqual(feedCatalog.map((feed) => feed.id), [
-    'camp2026',
-    'camp2027',
-    'camp2028',
-    'camp2025',
-    'camp2024',
-    'yutuimian2024',
-  ]);
 });
 
-test('approved feeds exclusively own overlapping legacy feed IDs', () => {
-  assert.deepEqual(getSchools('camp2026').map(rowKey), [
-    '2026|历史大学|网络空间安全学院|预推免',
-  ]);
-  assert.deepEqual(getSchools('camp2027').map(rowKey), [
-    '2027|测试大学|计算机学院|夏令营',
-  ]);
-  assert.equal(getSchools('camp2027').some((row) => row.projectId.startsWith('legacy|')), false);
+test('each approved feed exclusively exposes its approved opportunities', () => {
+  for (const feed of approved.feeds) {
+    const expectedIds = approved.opportunities
+      .filter((row) => row.feedId === feed.id)
+      .map((row) => row.projectId);
+    assert.deepEqual(getSchools(feed.id).map(rowKey), expectedIds);
+  }
 });
 
-test('maps legacy archives to deterministic IDs and unverified source metadata', () => {
-  const row = getSchools('camp2025')[0];
+test('appends only legacy feeds absent from the approved catalog', () => {
+  const approvedFeedIds = approved.feeds.map((feed) => feed.id);
+  const approvedFeedSet = new Set(approvedFeedIds);
+  const missingLegacyFeedIds = Object.keys(legacyByFeed)
+    .filter((feedId) => !approvedFeedSet.has(feedId));
 
-  assert.equal(row.projectId, 'legacy|camp2025|清华大学|智能产业研究院|0');
-  assert.equal(row.verificationStatus, 'expired');
-  assert.equal(row.eventType, '历史归档');
-  assert.equal(row.verifiedAt, '');
-  assert.deepEqual(row.discoverySources, [
-    {
-      kind: 'other-discovery',
-      label: '历史归档来源（未核验）',
-      url: row.website,
-    },
-  ]);
-  assert.deepEqual(row.logistics, { status: 'unverified', summary: '历史归档未核验' });
-  assert.deepEqual(row.recommendation, { status: 'unverified', summary: '历史归档未核验' });
-  assert.deepEqual(row.materials, { status: 'unverified', summary: '历史归档未核验' });
-});
-
-test('keeps a legacy row with a missing deadline as an expired archive', () => {
-  const row = getSchools('camp2024').find(
-    (candidate) => candidate.projectId === 'legacy|camp2024|清华大学|智能产业研究院|2',
+  assert.deepEqual(
+    feedCatalog.slice(0, approved.feeds.length).map((feed) => feed.id),
+    approvedFeedIds,
   );
-  assert.ok(row);
-
-  const derived = deriveSchool(row, now);
-  assert.equal(row.deadlineEpochMs, null);
-  assert.equal(rowGroup(derived), 'expired');
-  assert.equal(derived.urgency, 'expired');
+  assert.deepEqual(
+    feedCatalog.slice(approved.feeds.length).map((feed) => feed.id),
+    missingLegacyFeedIds,
+  );
 });
 
-test('keeps duplicate legacy display names distinct by deterministic projectId', () => {
-  const duplicates = getSchools('camp2024').filter(
-    (row) => row.name === '中国科学院' && row.institute === '沈阳自动化研究所',
-  );
+test('maps appended legacy feeds with deterministic IDs and unverified provenance', () => {
+  const approvedFeedSet = new Set(approved.feeds.map((feed) => feed.id));
+  for (const [feedId, rawRows] of Object.entries(legacyByFeed)) {
+    rawRows.forEach((rawRow, index) => {
+      assert.equal(
+        legacyProjectId(feedId, rawRow, index),
+        `legacy|${feedId}|${rawRow.name}|${rawRow.institute}|${index}`,
+      );
+    });
+    if (approvedFeedSet.has(feedId)) continue;
 
-  assert.deepEqual(duplicates.map(rowKey), [
-    'legacy|camp2024|中国科学院|沈阳自动化研究所|66',
-    'legacy|camp2024|中国科学院|沈阳自动化研究所|303',
-  ]);
+    const mappedRows = getSchools(feedId);
+    assert.equal(mappedRows.length, rawRows.length);
+    mappedRows.forEach((row, index) => {
+      assert.equal(row.projectId, legacyProjectId(feedId, rawRows[index], index));
+      assert.equal(row.verificationStatus, 'expired');
+      assert.equal(sourceLinkLabel(row), '历史来源（未核验）');
+      assert.equal(row.discoverySources.some((source) => source.kind === 'official'), false);
+    });
+  }
 });
 
 test('computes counts from the dynamic feed catalog', () => {

@@ -1,4 +1,4 @@
-import type { DerivedSchool, FilterState, School } from './types';
+import type { DerivedSchool, FilterState, School, StatusTag } from './types';
 import { urgency } from './time';
 import { resolveProvince } from '$data/provinces';
 
@@ -34,6 +34,34 @@ export function rowGroup(
 
 export function rowKey(row: Pick<School, 'projectId'>): string {
   return row.projectId;
+}
+
+export function opportunityStatusLabel(
+  row: Pick<School, 'verificationStatus'>,
+): StatusTag {
+  return row.verificationStatus === 'expired' ? '已结营' : '已开营';
+}
+
+export function countStatuses(
+  rows: readonly Pick<School, 'verificationStatus'>[],
+): Record<StatusTag, number> {
+  const counts: Record<StatusTag, number> = { 已开营: 0, 已结营: 0 };
+  for (const row of rows) counts[opportunityStatusLabel(row)] += 1;
+  return counts;
+}
+
+export function sourceLinkLabel(
+  row: Pick<School, 'discoverySources'>,
+): '官网' | '历史来源（未核验）' {
+  return row.discoverySources.some((source) => source.kind === 'official')
+    ? '官网'
+    : '历史来源（未核验）';
+}
+
+export function expiredDeadlineText(
+  row: Pick<School, 'verificationStatus'>,
+): '已结束' | null {
+  return row.verificationStatus === 'expired' ? '已结束' : null;
 }
 
 export function pickCalendarMonth(
@@ -83,12 +111,8 @@ export function applyFilters(
       const hit = r.tags.some((t) => tagSet.has(t));
       if (!hit) return false;
     }
-    // status tags: AND
-    if (statusSet.size > 0) {
-      for (const st of statusSet) {
-        if (!r.tags.includes(st)) return false;
-      }
-    }
+    // opening status: OR across selected, derived from authoritative verification state
+    if (statusSet.size > 0 && !statusSet.has(opportunityStatusLabel(r))) return false;
     // search across name + institute (case-insensitive)
     if (q) {
       const hay = `${r.name} ${r.institute}`.toLowerCase();

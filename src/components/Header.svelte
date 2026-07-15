@@ -31,14 +31,14 @@
     </div>
 
     <!-- source switcher -->
-    <div class="ml-1 sm:ml-3">
+    <div class="ml-1 min-w-0 max-w-36 shrink sm:ml-3 sm:max-w-none sm:shrink-0">
       <label class="sr-only" for="source-select">数据源</label>
-      <div class="relative">
+      <div class="relative min-w-0">
         <select
           id="source-select"
           value={filters.source}
           onchange={setSource}
-          class="appearance-none surface-2 hover:surface-3 transition text-fg-1 text-xs sm:text-sm font-medium pl-3 pr-8 py-1.5 rounded-md border border-line cursor-pointer outline-none focus:border-line-strong"
+          class="w-full min-w-0 sm:w-auto appearance-none surface-2 hover:surface-3 transition text-fg-1 text-xs sm:text-sm font-medium pl-3 pr-8 py-1.5 rounded-md border border-line cursor-pointer outline-none focus:border-line-strong"
         >
           {#each feedCatalog as feed}
             <option value={feed.id}>{feed.label}</option>
