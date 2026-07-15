@@ -656,3 +656,55 @@ test('candidate projectId admission cycle must match its referenced feed', () =>
 
   assert.match(validateCandidate(candidate, nowMs).join('\n'), /projectId.*admissionCycle/i);
 });
+
+test('candidate feed admissionCycle must be exactly four digits', async (t) => {
+  for (const admissionCycle of ['27', '20270', '20A7']) {
+    await t.test(admissionCycle, () => {
+      const candidate = validCandidate();
+      candidate.feeds[0].admissionCycle = admissionCycle;
+
+      assert.match(
+        validateCandidate(candidate, nowMs).join('\n'),
+        /feeds\[0\]\.admissionCycle.*four digits/i,
+      );
+    });
+  }
+});
+
+test('approved feed admissionCycle must be exactly four digits', async (t) => {
+  for (const admissionCycle of ['27', '20270', '20A7']) {
+    await t.test(admissionCycle, () => {
+      const snapshot = validSnapshot();
+      snapshot.feeds[0].admissionCycle = admissionCycle;
+
+      assert.match(
+        validateSnapshot(snapshot, nowMs).join('\n'),
+        /feeds\[0\]\.admissionCycle.*four digits/i,
+      );
+    });
+  }
+});
+
+test('candidate projectId leading cycle must be exactly four digits', async (t) => {
+  for (const admissionCycle of ['27', '20270', '20A7']) {
+    await t.test(admissionCycle, () => {
+      const candidate = validCandidate();
+      candidate.feeds[0].admissionCycle = admissionCycle;
+      candidate.opportunities[0].projectId = `${admissionCycle}|测试大学|计算机学院|夏令营`;
+
+      assert.match(validateCandidate(candidate, nowMs).join('\n'), /projectId.*four digits/i);
+    });
+  }
+});
+
+test('approved projectId leading cycle must be exactly four digits', async (t) => {
+  for (const admissionCycle of ['27', '20270', '20A7']) {
+    await t.test(admissionCycle, () => {
+      const snapshot = validSnapshot();
+      snapshot.feeds[0].admissionCycle = admissionCycle;
+      snapshot.opportunities[0].projectId = `${admissionCycle}|测试大学|计算机学院|夏令营`;
+
+      assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /projectId.*four digits/i);
+    });
+  }
+});

@@ -263,6 +263,9 @@ function validateFeed(
   const id = stringValue(feed, 'id', path, errors, true);
   stringValue(feed, 'label', path, errors);
   const admissionCycle = stringValue(feed, 'admissionCycle', path, errors);
+  if (admissionCycle !== undefined && !/^[0-9]{4}$/.test(admissionCycle)) {
+    errors.push(`${path}.admissionCycle: expected exactly four digits`);
+  }
   const eventYear = finiteNumberValue(feed, 'eventYear', path, errors);
   if (eventYear !== undefined && !Number.isInteger(eventYear)) {
     errors.push(`${path}.eventYear: expected an integer`);
@@ -422,6 +425,9 @@ function validatePublicProjectId(
   if (parts.length !== 4 || parts.some((part) => part.trim() === '')) {
     errors.push(`${opportunity.path}.projectId: expected four non-empty parts`);
     return;
+  }
+  if (!/^[0-9]{4}$/.test(parts[0])) {
+    errors.push(`${opportunity.path}.projectId: leading cycle must be exactly four digits`);
   }
 
   const admissionCycle = feedAdmissionCycles.get(opportunity.feedId);
