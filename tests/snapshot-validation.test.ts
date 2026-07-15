@@ -384,7 +384,7 @@ test('pendingExcluded must be a nonnegative integer', async (t) => {
 test('timed active rows must be ascending by deadline epoch', () => {
   const snapshot = validSnapshot();
   const later = structuredClone(snapshot.opportunities[0]);
-  later.projectId = `${later.projectId}|later`;
+  later.projectId = '2027|测试大学|计算机学院|夏令营-later';
   snapshot.opportunities.unshift(later);
   snapshot.opportunities[1].deadline = '2026-07-19T23:59:00+08:00';
   snapshot.opportunities[1].deadlineEpochMs = Date.parse(snapshot.opportunities[1].deadline);
@@ -396,7 +396,7 @@ test('timed active rows must be ascending by deadline epoch', () => {
 test('unknown-deadline active rows must follow timed active rows', () => {
   const snapshot = validSnapshot();
   const unknown = structuredClone(snapshot.opportunities[0]);
-  unknown.projectId = `${unknown.projectId}|unknown`;
+  unknown.projectId = '2027|测试大学|计算机学院|夏令营-unknown';
   unknown.verificationStatus = 'confirmed-unknown-deadline';
   unknown.deadline = null;
   unknown.deadlineEpochMs = null;
@@ -409,7 +409,7 @@ test('unknown-deadline active rows must follow timed active rows', () => {
 test('expired rows must follow all active rows', () => {
   const snapshot = validSnapshot();
   const expired = structuredClone(snapshot.opportunities[0]);
-  expired.projectId = `${expired.projectId}|expired`;
+  expired.projectId = '2027|测试大学|计算机学院|夏令营-expired';
   expired.verificationStatus = 'expired';
   expired.deadline = '2026-07-15T23:59:00+08:00';
   expired.deadlineEpochMs = Date.parse(expired.deadline);
@@ -422,12 +422,12 @@ test('expired rows must follow all active rows', () => {
 test('accepts timed, unknown-deadline, then expired row ordering', () => {
   const snapshot = validSnapshot();
   const unknown = structuredClone(snapshot.opportunities[0]);
-  unknown.projectId = `${unknown.projectId}|unknown`;
+  unknown.projectId = '2027|测试大学|计算机学院|夏令营-unknown';
   unknown.verificationStatus = 'confirmed-unknown-deadline';
   unknown.deadline = null;
   unknown.deadlineEpochMs = null;
   const expired = structuredClone(snapshot.opportunities[0]);
-  expired.projectId = `${expired.projectId}|expired`;
+  expired.projectId = '2027|测试大学|计算机学院|夏令营-expired';
   expired.verificationStatus = 'expired';
   expired.deadline = '2026-07-15T23:59:00+08:00';
   expired.deadlineEpochMs = Date.parse(expired.deadline);
@@ -577,4 +577,82 @@ test('rejects sparse feeds and opportunities arrays by index', async (t) => {
       /opportunities\[0\].*missing array element/i,
     );
   });
+});
+
+test('rejects denied discovery-host subdomains for websites and official sources', async (t) => {
+  for (const host of [
+    'sub.ddl.csbaoyan.top',
+    'pages.github.com',
+    'm.www.baoyantongzhi.com',
+    'm.baoyantongzhi.com',
+  ]) {
+    await t.test(`website ${host}`, () => {
+      const snapshot = validSnapshot();
+      snapshot.opportunities[0].website = `https://${host}/notice/1`;
+
+      assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /website.*denied/i);
+    });
+
+    await t.test(`official source ${host}`, () => {
+      const snapshot = validSnapshot();
+      snapshot.opportunities[0].discoverySources[0].url = `https://${host}/notice/1`;
+
+      assert.match(
+        validateSnapshot(snapshot, nowMs).join('\n'),
+        /discoverySources\[0\]\.url.*denied/i,
+      );
+    });
+  }
+});
+
+test('does not treat github.io as a github.com subdomain', () => {
+  const snapshot = validSnapshot();
+  snapshot.opportunities[0].website = 'https://github.io/notice/1';
+  snapshot.opportunities[0].discoverySources[0].url = 'https://github.io/notice/1';
+
+  assert.deepEqual(validateSnapshot(snapshot, nowMs), []);
+});
+
+test('approved projectId admission cycle must match its referenced feed', () => {
+  const snapshot = validSnapshot();
+  snapshot.opportunities[0].projectId = '2029|测试大学|计算机学院|夏令营';
+
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /projectId.*admissionCycle/i);
+});
+
+test('approved projectId must use four non-empty stable ID parts', async (t) => {
+  for (const projectId of [
+    '2027|测试大学|计算机学院',
+    '2027|测试大学|计算机学院|夏令营|extra',
+    '2027||计算机学院|夏令营',
+  ]) {
+    await t.test(projectId, () => {
+      const snapshot = validSnapshot();
+      snapshot.opportunities[0].projectId = projectId;
+
+      assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /projectId.*four non-empty parts/i);
+    });
+  }
+});
+
+test('candidate projectId must use four non-empty stable ID parts', async (t) => {
+  for (const projectId of [
+    '2027|测试大学|计算机学院',
+    '2027|测试大学|计算机学院|夏令营|extra',
+    '2027||计算机学院|夏令营',
+  ]) {
+    await t.test(projectId, () => {
+      const candidate = validCandidate();
+      candidate.opportunities[0].projectId = projectId;
+
+      assert.match(validateCandidate(candidate, nowMs).join('\n'), /projectId.*four non-empty parts/i);
+    });
+  }
+});
+
+test('candidate projectId admission cycle must match its referenced feed', () => {
+  const candidate = validCandidate();
+  candidate.opportunities[0].projectId = '2029|测试大学|计算机学院|夏令营';
+
+  assert.match(validateCandidate(candidate, nowMs).join('\n'), /projectId.*admissionCycle/i);
 });

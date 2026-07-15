@@ -71,6 +71,8 @@ const factKeys = ['status', 'summary'] as const;
 
 interface OpportunityOrderValue {
   path: string;
+  projectId?: string;
+  feedId?: string;
   status?: VerificationStatus;
   deadlineEpochMs?: number | null;
   verifiedAtMs?: number;
@@ -244,22 +246,28 @@ function parsePublicUrl(value: string, path: string, errors: string[]): URL | un
 
 function isDeniedOfficialHost(url: URL): boolean {
   const hostname = url.hostname.toLowerCase().replace(/\.$/, '');
-  return deniedOfficialHosts.has(hostname);
+  return [...deniedOfficialHosts].some(
+    (deniedHost) => hostname === deniedHost || hostname.endsWith(`.${deniedHost}`),
+  );
 }
 
-function validateFeed(value: unknown, index: number, errors: string[]): { id?: string } {
+function validateFeed(
+  value: unknown,
+  index: number,
+  errors: string[],
+): { id?: string; admissionCycle?: string } {
   const path = `snapshot.feeds[${index}]`;
   const feed = validateShape(value, path, feedKeys, [], errors);
   if (feed === undefined) return {};
 
   const id = stringValue(feed, 'id', path, errors, true);
   stringValue(feed, 'label', path, errors);
-  stringValue(feed, 'admissionCycle', path, errors);
+  const admissionCycle = stringValue(feed, 'admissionCycle', path, errors);
   const eventYear = finiteNumberValue(feed, 'eventYear', path, errors);
   if (eventYear !== undefined && !Number.isInteger(eventYear)) {
     errors.push(`${path}.eventYear: expected an integer`);
   }
-  return { id };
+  return { id, admissionCycle };
 }
 
 function validateFact(value: unknown, path: string, errors: string[]): void {
@@ -291,7 +299,7 @@ function validateOpportunity(
   knownFeedIds: Set<string>,
   nowMs: number,
   errors: string[],
-): OpportunityOrderValue & { projectId?: string } {
+): OpportunityOrderValue {
   const path = `snapshot.opportunities[${index}]`;
   const opportunity = validateShape(value, path, opportunityKeys, ['province'], errors);
   if (opportunity === undefined) return { path };
@@ -400,7 +408,28 @@ function validateOpportunity(
     }
   }
 
-  return { path, projectId, status, deadlineEpochMs, verifiedAtMs };
+  return { path, projectId, feedId, status, deadlineEpochMs, verifiedAtMs };
+}
+
+function validatePublicProjectId(
+  opportunity: OpportunityOrderValue,
+  feedAdmissionCycles: Map<string, string>,
+  errors: string[],
+): void {
+  if (opportunity.projectId === undefined || opportunity.feedId === undefined) return;
+
+  const parts = opportunity.projectId.split('|');
+  if (parts.length !== 4 || parts.some((part) => part.trim() === '')) {
+    errors.push(`${opportunity.path}.projectId: expected four non-empty parts`);
+    return;
+  }
+
+  const admissionCycle = feedAdmissionCycles.get(opportunity.feedId);
+  if (admissionCycle !== undefined && parts[0] !== admissionCycle) {
+    errors.push(
+      `${opportunity.path}.projectId: leading segment must match feed admissionCycle`,
+    );
+  }
 }
 
 function validateCounts(value: unknown, errors: string[]): JsonObject | undefined {
@@ -465,6 +494,7 @@ function validateInput(input: unknown, approved: boolean, nowMs: number): string
   const defaultFeedId = stringValue(snapshot, 'defaultFeedId', 'snapshot', errors);
 
   const knownFeedIds = new Set<string>();
+  const feedAdmissionCycles = new Map<string, string>();
   if (Object.hasOwn(snapshot, 'feeds')) {
     if (!Array.isArray(snapshot.feeds)) {
       errors.push('snapshot.feeds: expected an array');
@@ -474,10 +504,11 @@ function validateInput(input: unknown, approved: boolean, nowMs: number): string
           errors.push(`snapshot.feeds[${index}]: missing array element`);
           continue;
         }
-        const { id } = validateFeed(snapshot.feeds[index], index, errors);
+        const { id, admissionCycle } = validateFeed(snapshot.feeds[index], index, errors);
         if (id !== undefined && id.length > 0) {
           if (knownFeedIds.has(id)) errors.push(`snapshot.feeds[${index}].id: duplicate feed ID`);
           knownFeedIds.add(id);
+          if (admissionCycle !== undefined) feedAdmissionCycles.set(id, admissionCycle);
         }
       }
     }
@@ -487,7 +518,7 @@ function validateInput(input: unknown, approved: boolean, nowMs: number): string
   }
 
   const counts = validateCounts(snapshot.counts, errors);
-  const opportunities: Array<OpportunityOrderValue & { projectId?: string }> = [];
+  const opportunities: OpportunityOrderValue[] = [];
   if (Object.hasOwn(snapshot, 'opportunities')) {
     if (!Array.isArray(snapshot.opportunities)) {
       errors.push('snapshot.opportunities: expected an array');
@@ -535,6 +566,10 @@ function validateInput(input: unknown, approved: boolean, nowMs: number): string
         errors.push(`${opportunity.path}.verifiedAt: must not be after snapshot.scanAt`);
       }
     }
+  }
+
+  for (const opportunity of opportunities) {
+    validatePublicProjectId(opportunity, feedAdmissionCycles, errors);
   }
 
   if (approved) {
