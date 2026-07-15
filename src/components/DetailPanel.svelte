@@ -1,27 +1,48 @@
 <script lang="ts">
-  import { X, ExternalLink, Clock } from 'lucide-svelte';
-  import type { DerivedSchool } from '$lib/types';
   import {
-    formatCountdown,
-    formatDate,
-    formatDateTime,
-    progressAgainst,
-    splitCountdown,
-  } from '$lib/time';
+    BedDouble,
+    CalendarClock,
+    CircleAlert,
+    ExternalLink,
+    Files,
+    LetterText,
+    Link,
+    X,
+  } from 'lucide-svelte';
+  import type { DerivedSchool } from '$lib/types';
+  import type { FactStatus } from '$lib/snapshot-types';
+  import { formatDateTime } from '$lib/time';
   import { expiredDeadlineText, sourceLinkLabel } from '$lib/filter';
   import { getInitials, getLogoUrl } from '$lib/logos';
   import { resolveProvince } from '$data/provinces';
+
+  const factStatusLabels: Record<FactStatus, string> = {
+    confirmed: '已核验',
+    'not-published': '未公布',
+    unverified: '未核验',
+    'not-applicable': '不适用',
+  };
 
   let { school, onClose }: { school: DerivedSchool; onClose: () => void } = $props();
 
   const logo = $derived(getLogoUrl(school.name));
   const province = $derived(resolveProvince(school.name, school.province));
-  const progress = $derived(progressAgainst(school.remainingMs, 90));
-  const parts = $derived(school.remainingMs && school.remainingMs > 0 ? splitCountdown(school.remainingMs) : null);
-  const urgeClass = $derived(`urge-${school.urgency}`);
-  const urgeBgClass = $derived(`bg-urge-${school.urgency}`);
-  const relativeDeadline = $derived(expiredDeadlineText(school));
+  const deadlineStatus = $derived(expiredDeadlineText(school));
+  const normalizedDeadline = $derived(
+    school.deadlineMs === null ? '未公布' : formatDateTime(school.deadlineMs),
+  );
   const sourceLabel = $derived(sourceLinkLabel(school));
+  const verifiedAtMs = $derived.by(() => {
+    const parsed = Date.parse(school.verifiedAt);
+    return Number.isFinite(parsed) ? parsed : null;
+  });
+  const officialSources = $derived(
+    school.discoverySources.filter((source) => source.kind === 'official'),
+  );
+  const discoverySources = $derived(
+    school.discoverySources.filter((source) => source.kind !== 'official'),
+  );
+  const primaryOfficialSource = $derived(officialSources[0] ?? null);
 
   let imgFailed = $state(false);
 </script>
@@ -34,10 +55,10 @@
   ></button>
 
   <div
-    class="absolute right-0 top-0 bottom-0 w-full sm:w-[460px] surface-1 border-l border-line shadow-2xl slide-in-right flex flex-col"
+    class="detail-panel absolute right-0 top-0 bottom-0 w-full sm:w-[460px] min-w-0 max-w-full overflow-hidden surface-1 border-l border-line shadow-2xl slide-in-right flex flex-col"
   >
     <!-- header bar -->
-    <div class="px-5 py-4 border-b border-line flex items-start gap-3">
+    <div class="px-5 py-4 border-b border-line flex items-start gap-3 min-w-0">
       <div class="w-12 h-12 shrink-0 rounded-lg surface-2 border border-line grid place-items-center overflow-hidden">
         {#if logo && !imgFailed}
           <img
@@ -51,9 +72,9 @@
           <span class="text-fg-2 text-[12px] font-medium tracking-tight">{getInitials(school.name)}</span>
         {/if}
       </div>
-      <div class="min-w-0 flex-1">
-        <div class="text-fg-0 font-semibold text-base leading-tight truncate">{school.name}</div>
-        <div class="text-fg-2 text-sm mt-0.5 truncate">{school.institute}</div>
+      <div class="min-w-0 flex-1 detail-wrap">
+        <div class="text-fg-0 font-semibold text-base leading-tight">{school.name}</div>
+        <div class="text-fg-2 text-sm mt-0.5">{school.institute}</div>
         {#if province}
           <div class="text-fg-4 text-xs mt-1">{province}</div>
         {/if}
@@ -69,85 +90,132 @@
     </div>
 
     <!-- body -->
-    <div class="flex-1 overflow-y-auto">
-      <!-- countdown -->
-      <div class="px-5 py-5 border-b border-line">
-        <div class="flex items-center gap-2 text-fg-3 text-[11px] uppercase tracking-[0.16em] font-medium mb-3">
-          <Clock class="w-3.5 h-3.5" />
-          <span>距截止</span>
-        </div>
+    <div class="detail-panel__body flex-1 min-w-0 overflow-y-auto overflow-x-hidden">
+      <section class="detail-section px-5 py-4 border-b border-line" aria-labelledby="deadline-heading">
+        <h2 id="deadline-heading" class="detail-section__title text-fg-2 text-xs font-medium mb-3">
+          <CalendarClock class="w-4 h-4" aria-hidden="true" />
+          <span>截止信息</span>
+        </h2>
+        <dl class="detail-deadline-grid">
+          <div class="detail-field detail-field--wide">
+            <dt>原始文本</dt>
+            <dd class="detail-wrap">{school.deadlineOriginal || '未提供'}</dd>
+          </div>
+          <div class="detail-field">
+            <dt>标准化时间</dt>
+            <dd class="detail-wrap tabular">
+              {normalizedDeadline}{deadlineStatus ? ` · ${deadlineStatus}` : ''}
+            </dd>
+          </div>
+          <div class="detail-field">
+            <dt>核验时间</dt>
+            <dd class="detail-wrap tabular">
+              {verifiedAtMs === null ? '未记录' : formatDateTime(verifiedAtMs)}
+            </dd>
+          </div>
+        </dl>
+      </section>
 
-        {#if parts}
-          <div class="grid grid-cols-4 gap-2">
-            {#each [
-              { v: parts.days, label: '天' },
-              { v: parts.hours, label: '时' },
-              { v: parts.minutes, label: '分' },
-              { v: parts.seconds, label: '秒' },
-            ] as p}
-              <div class="surface-2 border border-line rounded-lg py-3 flex flex-col items-center justify-center">
-                <div class="text-fg-0 text-2xl font-semibold tabular leading-none {urgeClass}">
-                  {String(p.v).padStart(2, '0')}
-                </div>
-                <div class="text-fg-3 text-[10.5px] mt-1.5 tracking-wider">{p.label}</div>
-              </div>
+      <section class="detail-section px-5 py-4 border-b border-line" aria-labelledby="logistics-heading">
+        <h2 id="logistics-heading" class="detail-section__title text-fg-2 text-xs font-medium mb-3">
+          <BedDouble class="w-4 h-4" aria-hidden="true" />
+          <span>食宿与交通</span>
+        </h2>
+        <div class="flex items-start justify-between gap-3 min-w-0">
+          <p class="detail-wrap min-w-0 text-fg-1 text-sm leading-relaxed">
+            {school.logistics.summary || '未提供'}
+          </p>
+          <span class="shrink-0 rounded border border-line px-1.5 py-0.5 text-[10.5px] text-fg-3">
+            {factStatusLabels[school.logistics.status]}
+          </span>
+        </div>
+      </section>
+
+      <section class="detail-section px-5 py-4 border-b border-line" aria-labelledby="recommendation-heading">
+        <h2 id="recommendation-heading" class="detail-section__title text-fg-2 text-xs font-medium mb-3">
+          <LetterText class="w-4 h-4" aria-hidden="true" />
+          <span>推荐信</span>
+        </h2>
+        <p class="detail-wrap text-fg-1 text-sm leading-relaxed">
+          {school.recommendation.summary || '未提供'}
+        </p>
+      </section>
+
+      <section class="detail-section px-5 py-4 border-b border-line" aria-labelledby="materials-heading">
+        <h2 id="materials-heading" class="detail-section__title text-fg-2 text-xs font-medium mb-3">
+          <Files class="w-4 h-4" aria-hidden="true" />
+          <span>材料</span>
+        </h2>
+        <p class="detail-wrap text-fg-1 text-sm leading-relaxed">
+          {school.materials.summary || '未提供'}
+        </p>
+      </section>
+
+      <section class="detail-section px-5 py-4" aria-labelledby="sources-heading">
+        <h2 id="sources-heading" class="detail-section__title text-fg-2 text-xs font-medium mb-3">
+          <Link class="w-4 h-4" aria-hidden="true" />
+          <span>信息来源</span>
+        </h2>
+
+        {#if officialSources.length > 0}
+          <div class="detail-source-list" aria-label="官方来源">
+            {#each officialSources as source}
+              <a
+                href={source.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="detail-source-link detail-source-link--official text-fg-1"
+                aria-label="打开{sourceLabel}：{source.label}"
+              >
+                <span>{sourceLabel} · {source.label}</span>
+                <ExternalLink class="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+              </a>
             {/each}
           </div>
-        {:else}
-          <div class="text-2xl font-semibold {urgeClass} tabular">{relativeDeadline ?? formatCountdown(school.remainingMs)}</div>
         {/if}
 
-        <!-- progress -->
-        <div class="mt-4 h-1.5 surface-2 rounded-full overflow-hidden">
-          <div
-            class="h-full {urgeBgClass} transition-all"
-            style="width: {progress * 100}%"
-          ></div>
-        </div>
-        <div class="mt-2 flex items-center justify-between text-[11px] text-fg-3 tabular">
-          <span>截止时间</span>
-          <span>{formatDateTime(school.deadlineMs)}</span>
-        </div>
-      </div>
-
-      <!-- tags -->
-      {#if school.tags.length > 0}
-        <div class="px-5 py-4 border-b border-line">
-          <div class="text-fg-3 text-[11px] uppercase tracking-[0.16em] font-medium mb-2">标签</div>
-          <div class="flex flex-wrap gap-1.5">
-            {#each school.tags as t}
-              <span class="surface-2 border border-line rounded-md px-2 py-1 text-xs text-fg-1">{t}</span>
+        {#if discoverySources.length > 0}
+          <div class="detail-source-list mt-2" aria-label="发现来源">
+            {#each discoverySources as source}
+              <a
+                href={source.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="detail-source-link detail-source-link--secondary text-fg-3 hover:text-fg-1"
+                aria-label="打开发现来源：{source.label}"
+              >
+                <span>{source.label}</span>
+                <ExternalLink class="w-3 h-3 shrink-0" aria-hidden="true" />
+              </a>
             {/each}
           </div>
-        </div>
-      {/if}
+        {/if}
 
-      <!-- description -->
-      <div class="px-5 py-4 border-b border-line">
-        <div class="text-fg-3 text-[11px] uppercase tracking-[0.16em] font-medium mb-2">说明</div>
-        <p class="text-fg-1 text-sm leading-relaxed whitespace-pre-line">
-          {school.description && school.description !== '_No response_' ? school.description : '（暂无说明）'}
-        </p>
-      </div>
-
-      <!-- date -->
-      <div class="px-5 py-4 border-b border-line">
-        <div class="text-fg-3 text-[11px] uppercase tracking-[0.16em] font-medium mb-2">截止日期</div>
-        <div class="text-fg-1 text-sm tabular">{formatDate(school.deadlineMs)}</div>
-      </div>
+        {#if officialSources.length === 0 && discoverySources.length === 0}
+          <p class="text-fg-3 text-sm">暂无可用来源</p>
+        {/if}
+      </section>
     </div>
 
     <!-- footer cta -->
-    <div class="px-5 py-4 border-t border-line">
-      <a
-        href={school.website}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg surface-3 hover:bg-emerald-500/15 hover:text-emerald-200 text-fg-0 text-sm font-medium border border-line-strong transition"
-      >
-        <span>{sourceLabel}</span>
-        <ExternalLink class="w-3.5 h-3.5" />
-      </a>
+    <div class="detail-panel__footer px-5 py-4 border-t border-line">
+      {#if primaryOfficialSource}
+        <a
+          href={primaryOfficialSource.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg surface-3 hover:bg-emerald-500/15 hover:text-emerald-200 text-fg-0 text-sm font-medium border border-line-strong transition detail-wrap"
+          aria-label="打开{sourceLabel}：{primaryOfficialSource.label}"
+        >
+          <span>查看{sourceLabel}</span>
+          <ExternalLink class="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+        </a>
+      {:else}
+        <div class="w-full inline-flex items-center justify-center gap-2 py-2 text-fg-3 text-sm" role="status">
+          <CircleAlert class="w-4 h-4 shrink-0" aria-hidden="true" />
+          <span class="detail-wrap">暂无已核验官方来源</span>
+        </div>
+      {/if}
     </div>
   </div>
 </div>

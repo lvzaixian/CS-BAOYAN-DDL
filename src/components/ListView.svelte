@@ -56,7 +56,7 @@
     {/if}
 
     {#if groups.unknown.length > 0}
-      {@render head('日期未公布', groups.unknown.length, false)}
+      {@render head('未知截止', groups.unknown.length, false)}
       <div class="divide-line">
         {#each groups.unknown as r (rowKey(r))}
           <SchoolRow school={r} selected={selectedKey === rowKey(r)} {onSelect} />
@@ -65,7 +65,7 @@
     {/if}
 
     {#if groups.dead.length > 0}
-      {@render head('已结束', groups.dead.length, true)}
+      {@render head('已过期', groups.dead.length, true)}
       <div class="divide-line">
         {#each groups.dead as r (rowKey(r))}
           <SchoolRow school={r} selected={selectedKey === rowKey(r)} {onSelect} />

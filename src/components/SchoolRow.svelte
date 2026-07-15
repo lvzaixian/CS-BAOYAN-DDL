@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ExternalLink } from 'lucide-svelte';
+  import { Archive, BadgeCheck, ExternalLink } from 'lucide-svelte';
   import type { DerivedSchool } from '$lib/types';
   import { formatRemainingShort, formatDateShort, progressAgainst } from '$lib/time';
   import { expiredDeadlineText, rowKey, sourceLinkLabel } from '$lib/filter';
@@ -21,6 +21,12 @@
   const expired = $derived(school.urgency === 'expired');
   const relativeDeadline = $derived(expiredDeadlineText(school));
   const sourceLabel = $derived(sourceLinkLabel(school));
+  const verificationLabel = $derived(
+    school.verificationStatus === 'expired' ? '已过期' : '已核验',
+  );
+  const displayTags = $derived(
+    school.tags.filter((tag) => tag !== '已开营' && tag !== '已结营'),
+  );
 
   let imgFailed = $state(false);
 </script>
@@ -65,7 +71,21 @@
         <span class="text-fg-3 text-xs truncate">{school.institute}</span>
       </div>
       <div class="flex items-center gap-1.5 flex-wrap min-h-[18px]">
-        {#each school.tags as t}
+        <span
+          class="inline-flex items-center gap-1 text-[10.5px] font-medium px-1.5 py-0.5 rounded ring-1
+            {expired
+              ? 'bg-zinc-100 text-zinc-600 ring-zinc-200 dark:bg-zinc-500/15 dark:text-fg-3 dark:ring-zinc-500/30'
+              : 'bg-emerald-100 text-emerald-700 ring-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30'}"
+          aria-label="核验状态：{verificationLabel}"
+        >
+          {#if expired}
+            <Archive class="w-3 h-3" aria-hidden="true" />
+          {:else}
+            <BadgeCheck class="w-3 h-3" aria-hidden="true" />
+          {/if}
+          {verificationLabel}
+        </span>
+        {#each displayTags as t}
           <span
             class="inline-block text-[10.5px] tracking-tight font-medium px-1.5 py-0.5 rounded
               {t === 'TOP2' ? 'bg-rose-100 text-rose-700 ring-1 ring-rose-200 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/30'
@@ -73,8 +93,6 @@
               : t === 'C9' ? 'bg-violet-100 text-violet-700 ring-1 ring-violet-200 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30'
               : t === '985' ? 'bg-sky-100 text-sky-700 ring-1 ring-sky-200 dark:bg-sky-500/15 dark:text-sky-300 dark:ring-sky-500/30'
               : t === '211' ? 'bg-cyan-100 text-cyan-700 ring-1 ring-cyan-200 dark:bg-cyan-500/15 dark:text-cyan-300 dark:ring-cyan-500/30'
-              : t === '已开营' ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30'
-              : t === '已结营' ? 'bg-zinc-100 text-zinc-600 ring-1 ring-zinc-200 dark:bg-zinc-500/15 dark:text-fg-3 dark:ring-zinc-500/30'
               : 'bg-zinc-100 text-zinc-600 ring-1 ring-zinc-200 dark:bg-zinc-500/10 dark:text-fg-2 dark:ring-zinc-500/20'}"
           >{t}</span>
         {/each}
