@@ -1,8 +1,8 @@
-import type { FilterState, Source, ViewMode } from './types';
-import { SOURCES } from './types';
+import type { FilterState, ViewMode } from './types';
+import { defaultFeedId, isValidFeedId } from './schools';
 
 const DEFAULT: FilterState = {
-  source: 'camp2026',
+  source: defaultFeedId,
   view: 'list',
   query: '',
   tags: [],
@@ -10,16 +10,15 @@ const DEFAULT: FilterState = {
   provinces: [],
 };
 
-const VALID_SOURCES = new Set(SOURCES.map((s) => s.id));
 const VALID_VIEWS = new Set<ViewMode>(['list', 'calendar']);
 
 function readFromUrl(): FilterState {
   if (typeof window === 'undefined') return { ...DEFAULT };
   const p = new URLSearchParams(window.location.search);
-  const src = p.get('src') as Source | null;
+  const src = p.get('src');
   const v = p.get('view') as ViewMode | null;
   return {
-    source: src && VALID_SOURCES.has(src) ? src : DEFAULT.source,
+    source: src && isValidFeedId(src) ? src : DEFAULT.source,
     view: v && VALID_VIEWS.has(v) ? v : DEFAULT.view,
     query: p.get('q') ?? '',
     tags: parseList(p.get('tags')) as FilterState['tags'],

@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { startClock, clock } from '$lib/clock.svelte';
   import { filters, initFilterSync } from '$lib/urlState.svelte';
-  import { applyFilters, deriveSchool } from '$lib/filter';
+  import { applyFilters, deriveSchool, rowKey } from '$lib/filter';
   import { getSchools } from '$lib/schools';
   import type { DerivedSchool } from '$lib/types';
   import Header from '$components/Header.svelte';
@@ -17,6 +17,7 @@
   let selectedIndex = $state(0);
   let drawerOpen = $state(false);
   let helpOpen = $state(false);
+  let previousFeedId = $state(filters.source);
 
   // mount / unmount the shared 1Hz tick
   onMount(() => {
@@ -46,8 +47,15 @@
   const visibleCount = $derived(visible.length);
 
   const selected = $derived(
-    selectedKey ? visible.find((r) => `${r.name}::${r.institute}` === selectedKey) ?? null : null,
+    selectedKey ? visible.find((r) => rowKey(r) === selectedKey) ?? null : null,
   );
+
+  $effect(() => {
+    if (filters.source === previousFeedId) return;
+    previousFeedId = filters.source;
+    selectedKey = null;
+    selectedIndex = 0;
+  });
 
   // global keyboard shortcuts
   function onKey(e: KeyboardEvent) {
@@ -87,7 +95,7 @@
       if (visible.length === 0) return;
       selectedIndex = Math.min(visible.length - 1, selectedIndex + 1);
       const r = visible[selectedIndex];
-      ensureRowVisible(`${r.name}::${r.institute}`);
+      ensureRowVisible(rowKey(r));
       e.preventDefault();
       return;
     }
@@ -95,14 +103,14 @@
       if (visible.length === 0) return;
       selectedIndex = Math.max(0, selectedIndex - 1);
       const r = visible[selectedIndex];
-      ensureRowVisible(`${r.name}::${r.institute}`);
+      ensureRowVisible(rowKey(r));
       e.preventDefault();
       return;
     }
     if (e.key === 'Enter') {
       if (visible[selectedIndex]) {
         const r = visible[selectedIndex];
-        selectedKey = `${r.name}::${r.institute}`;
+        selectedKey = rowKey(r);
         e.preventDefault();
       }
     }
@@ -118,7 +126,7 @@
 
   function handleSelect(key: string) {
     selectedKey = key;
-    const i = visible.findIndex((r) => `${r.name}::${r.institute}` === key);
+    const i = visible.findIndex((r) => rowKey(r) === key);
     if (i >= 0) selectedIndex = i;
   }
 </script>
@@ -144,7 +152,7 @@
             onSelect={handleSelect}
           />
         {:else}
-          <CalendarView rows={visible} onSelect={handleSelect} />
+          <CalendarView rows={visible} feedId={filters.source} onSelect={handleSelect} />
         {/if}
       </main>
     </div>

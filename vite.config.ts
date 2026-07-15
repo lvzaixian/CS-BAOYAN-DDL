@@ -9,6 +9,7 @@ export default defineConfig({
     alias: {
       $lib: path.resolve('src/lib'),
       $data: path.resolve('src/data'),
+      $approved: path.resolve('data/approved'),
       $components: path.resolve('src/components'),
     },
   },

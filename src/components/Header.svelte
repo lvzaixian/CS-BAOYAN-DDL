@@ -2,13 +2,14 @@
   import { Sun, Moon, Calendar, List, HelpCircle, SlidersHorizontal, Clock } from 'lucide-svelte';
   import { filters } from '$lib/urlState.svelte';
   import { theme, toggleTheme } from '$lib/theme.svelte';
-  import { SOURCES } from '$lib/types';
-  import type { Source, ViewMode } from '$lib/types';
+  import { feedCatalog, isValidFeedId } from '$lib/schools';
+  import type { ViewMode } from '$lib/types';
 
   let { onOpenDrawer, onOpenHelp }: { onOpenDrawer: () => void; onOpenHelp: () => void } = $props();
 
   function setSource(e: Event) {
-    filters.source = (e.target as HTMLSelectElement).value as Source;
+    const feedId = (e.target as HTMLSelectElement).value;
+    if (isValidFeedId(feedId)) filters.source = feedId;
   }
   function setView(v: ViewMode) {
     filters.view = v;
@@ -39,8 +40,8 @@
           onchange={setSource}
           class="appearance-none surface-2 hover:surface-3 transition text-fg-1 text-xs sm:text-sm font-medium pl-3 pr-8 py-1.5 rounded-md border border-line cursor-pointer outline-none focus:border-line-strong"
         >
-          {#each SOURCES as s}
-            <option value={s.id}>{s.label}</option>
+          {#each feedCatalog as feed}
+            <option value={feed.id}>{feed.label}</option>
           {/each}
         </select>
         <svg class="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-fg-3 pointer-events-none" viewBox="0 0 12 12" fill="none">

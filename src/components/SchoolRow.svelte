@@ -2,6 +2,7 @@
   import { ExternalLink } from 'lucide-svelte';
   import type { DerivedSchool } from '$lib/types';
   import { formatRemainingShort, formatDateShort, progressAgainst } from '$lib/time';
+  import { rowKey } from '$lib/filter';
   import { getInitials, getLogoUrl } from '$lib/logos';
   import { resolveProvince } from '$data/provinces';
 
@@ -11,7 +12,7 @@
     onSelect: (key: string) => void;
   } = $props();
 
-  const key = $derived(`${school.name}::${school.institute}`);
+  const key = $derived(rowKey(school));
   const logo = $derived(getLogoUrl(school.name));
   const province = $derived(resolveProvince(school.name, school.province));
   const progress = $derived(progressAgainst(school.remainingMs, 90));

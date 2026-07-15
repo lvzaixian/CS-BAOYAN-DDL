@@ -1,21 +1,8 @@
-export type Source = 'camp2026' | 'camp2025' | 'camp2024' | 'yutuimian2024';
+import type { PublicOpportunity } from './snapshot-types';
 
-export const SOURCES: { id: Source; label: string }[] = [
-  { id: 'camp2026', label: '夏令营 2026' },
-  { id: 'camp2025', label: '夏令营 2025' },
-  { id: 'camp2024', label: '夏令营 2024' },
-  { id: 'yutuimian2024', label: '预推免 2024' },
-];
+export type FeedId = string;
 
-export interface School {
-  name: string;
-  institute: string;
-  description: string;
-  deadline: string;
-  website: string;
-  tags: string[];
-  province?: string;
-}
+export interface School extends PublicOpportunity {}
 
 export const SCHOOL_TAGS = ['TOP2', '港三', '华五', 'C9', '985', '211', '双非', '四非', '研究院', '联培'] as const;
 export type SchoolTag = (typeof SCHOOL_TAGS)[number];
@@ -26,7 +13,7 @@ export type StatusTag = (typeof STATUS_TAGS)[number];
 export type ViewMode = 'list' | 'calendar';
 
 export interface FilterState {
-  source: Source;
+  source: FeedId;
   view: ViewMode;
   query: string;
   tags: SchoolTag[];
@@ -37,7 +24,7 @@ export interface FilterState {
 export type Urgency = 'expired' | 'critical' | 'soon' | 'near' | 'far' | 'unknown';
 
 export interface DerivedSchool extends School {
-  /** ms epoch; null if no deadline */
+  /** UI compatibility alias for deadlineEpochMs. */
   deadlineMs: number | null;
   /** ms remaining; null if no deadline. Negative if expired. */
   remainingMs: number | null;

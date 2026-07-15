@@ -1,25 +1,33 @@
 <script lang="ts">
   import { ChevronLeft, ChevronRight, CalendarRange } from 'lucide-svelte';
   import type { DerivedSchool } from '$lib/types';
+  import { pickCalendarMonth, rowKey } from '$lib/filter';
   import { dateKey, startOfDay } from '$lib/time';
   import { clock } from '$lib/clock.svelte';
 
-  let { rows, onSelect }: { rows: DerivedSchool[]; onSelect: (key: string) => void } = $props();
+  let { rows, feedId, onSelect }: {
+    rows: DerivedSchool[];
+    feedId: string;
+    onSelect: (key: string) => void;
+  } = $props();
 
   // current visible month — initialise to the month of the earliest live deadline
   function pickInitialMonth(): { y: number; m: number } {
-    const now = new Date(clock.now);
-    let earliest: number | null = null;
-    for (const r of rows) {
-      if (r.deadlineMs !== null && r.remainingMs !== null && r.remainingMs >= 0) {
-        if (earliest === null || r.deadlineMs < earliest) earliest = r.deadlineMs;
-      }
-    }
-    const target = earliest ? new Date(earliest) : now;
-    return { y: target.getFullYear(), m: target.getMonth() };
+    return pickCalendarMonth(rows, clock.now);
   }
 
   let cursor = $state(pickInitialMonth());
+  let visibleFeedId = $state<string>();
+
+  $effect(() => {
+    if (visibleFeedId === undefined) {
+      visibleFeedId = feedId;
+      return;
+    }
+    if (feedId === visibleFeedId) return;
+    visibleFeedId = feedId;
+    cursor = pickInitialMonth();
+  });
 
   // group rows by date key for the visible month
   const byDay = $derived.by(() => {
@@ -128,9 +136,9 @@
           {/if}
         </div>
         <div class="flex flex-col gap-0.5 min-h-0">
-          {#each items.slice(0, 3) as r, ri (r.name + '|' + r.institute + '|' + (r.deadlineMs ?? ri))}
+          {#each items.slice(0, 3) as r (rowKey(r))}
             <button
-              onclick={() => onSelect(`${r.name}::${r.institute}`)}
+              onclick={() => onSelect(rowKey(r))}
               class="group min-w-0 text-left flex items-center gap-1.5 surface-2 hover:surface-3 transition rounded-md px-1.5 py-1 border border-transparent hover:border-line"
               title="{r.name} · {r.institute}"
             >
