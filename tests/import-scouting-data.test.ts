@@ -79,6 +79,15 @@ function sharedOfficialUrlInput(): Record<string, any> {
   return input;
 }
 
+function renamedSharedOfficialUrlInput(): Record<string, any> {
+  const input = sharedOfficialUrlInput();
+  input.mainRows[0].projectId = '2027|测试大学|计算机学院|暑期学校';
+  input.mainRows[0].project = '2026年计算机学院暑期学校';
+  input.mainRows[1].projectId = '2027|测试大学|计算机学院|校园开放体验';
+  input.mainRows[1].project = '2026年计算机学院校园开放体验';
+  return input;
+}
+
 function freshCliInput(): Record<string, any> {
   const input = validInput();
   input.mainRows[0].deadline = '2099-12-31T23:59:00+08:00';
@@ -446,6 +455,82 @@ test('shared URL replacement is ambiguous when a previous ID is missing', () => 
   assert.throws(
     () => importScoutingData(currentInput, identities({ previous })),
     /ambiguous.*compound alias/i,
+  );
+});
+
+test('shared URL rename rejects partial compound alias coverage', () => {
+  const previousInput = sharedOfficialUrlInput();
+  const previous = sealCandidate(importScoutingData(previousInput, identities()));
+  const currentInput = renamedSharedOfficialUrlInput();
+  const sharedUrl = currentInput.mainRows[0].officialUrl;
+
+  assert.throws(
+    () => importScoutingData(currentInput, identities({
+      previous,
+      aliases: {
+        [`${sharedUrl}::${currentInput.mainRows[0].projectId}`]:
+          previousInput.mainRows[0].projectId,
+      },
+    })),
+    /cover every missing previous ID exactly once/i,
+  );
+});
+
+test('shared URL rename accepts complete compound alias coverage', () => {
+  const previousInput = sharedOfficialUrlInput();
+  const previous = sealCandidate(importScoutingData(previousInput, identities()));
+  const currentInput = renamedSharedOfficialUrlInput();
+  const sharedUrl = currentInput.mainRows[0].officialUrl;
+
+  const candidate = importScoutingData(currentInput, identities({
+    previous,
+    aliases: {
+      [`${sharedUrl}::${currentInput.mainRows[0].projectId}`]:
+        previousInput.mainRows[0].projectId,
+      [`${sharedUrl}::${currentInput.mainRows[1].projectId}`]:
+        previousInput.mainRows[1].projectId,
+    },
+  }));
+
+  assert.deepEqual(
+    candidate.opportunities
+      .filter((row) => row.website === sharedUrl)
+      .map((row) => row.projectId)
+      .sort(),
+    [previousInput.mainRows[0].projectId, previousInput.mainRows[1].projectId].sort(),
+  );
+});
+
+test('shared URL rename admits a new ID after complete previous-ID coverage', () => {
+  const previousInput = sharedOfficialUrlInput();
+  const previous = sealCandidate(importScoutingData(previousInput, identities()));
+  const currentInput = renamedSharedOfficialUrlInput();
+  const sharedUrl = currentInput.mainRows[0].officialUrl;
+  const addition = structuredClone(currentInput.mainRows[0]);
+  addition.projectId = '2027|测试大学|计算机学院|实验室开放日';
+  addition.project = '2026年计算机学院实验室开放日';
+  currentInput.mainRows.splice(2, 0, addition);
+
+  const candidate = importScoutingData(currentInput, identities({
+    previous,
+    aliases: {
+      [`${sharedUrl}::${currentInput.mainRows[0].projectId}`]:
+        previousInput.mainRows[0].projectId,
+      [`${sharedUrl}::${currentInput.mainRows[1].projectId}`]:
+        previousInput.mainRows[1].projectId,
+    },
+  }));
+
+  assert.deepEqual(
+    candidate.opportunities
+      .filter((row) => row.website === sharedUrl)
+      .map((row) => row.projectId)
+      .sort(),
+    [
+      previousInput.mainRows[0].projectId,
+      previousInput.mainRows[1].projectId,
+      addition.projectId,
+    ].sort(),
   );
 });
 
@@ -895,7 +980,12 @@ test('suppresses local and private markers found in otherwise allowed fact field
     '/Users/max/private/evidence.md',
     '/home/maxwell/private/evidence.md',
     '/private/expired-evidence.md',
+    '/tmp/private-note.md',
+    '/var/folders/private-note.md',
     'C:\\Users\\max\\private\\evidence.md',
+    'D:\\USERS\\max\\private.md',
+    'E:\\Projects\\private-note.md',
+    '\\\\server\\share\\private-note.md',
     'profile_space/private-note.md',
     'targets/submitted/private-note.md',
     'targets/2027-school/private-note.md',
@@ -927,6 +1017,11 @@ test('rejects private markers that reach another public candidate field', async 
   for (const marker of [
     '/home/maxwell/private/evidence.md',
     '/private/expired-evidence.md',
+    '/tmp/private-note.md',
+    '/var/folders/private-note.md',
+    'D:\\USERS\\max\\private.md',
+    'E:\\Projects\\private-note.md',
+    '\\\\server\\share\\private-note.md',
     'PENDING_PRIVATE_RISK',
     'targets/2027-school/private-note.md',
   ]) {
@@ -942,16 +1037,21 @@ test('rejects private markers that reach another public candidate field', async 
   }
 });
 
-test('does not mistake a case-sensitive official /Home/ URL path for a private path', () => {
-  const input = validInput();
-  input.mainRows[0].officialUrl = 'https://gs.example.edu.cn/Home/Detail/8021';
+test('does not scan validated official URL paths as private free text', async (t) => {
+  for (const path of ['targets', 'private', 'Home']) {
+    await t.test(`/${path}/`, () => {
+      const input = validInput();
+      input.mainRows[0].officialUrl = `https://gs.example.edu.cn/${path}/Detail/8021`;
 
-  const active = opportunity(
-    importScoutingData(input, identities()),
-    '2026年优秀大学生夏令营',
-  );
+      const active = opportunity(
+        importScoutingData(input, identities()),
+        '2026年优秀大学生夏令营',
+      );
 
-  assert.equal(active.website, input.mainRows[0].officialUrl);
+      assert.equal(active.website, input.mainRows[0].officialUrl);
+      assert.equal(active.discoverySources[0].url, input.mainRows[0].officialUrl);
+    });
+  }
 });
 
 test('preserves confirmed negative recommendation wording', async (t) => {

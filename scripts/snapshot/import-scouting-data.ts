@@ -58,8 +58,10 @@ const unverifiedPattern =
   /未核实|待核实|待系统核实|未确认|未明确|无法核实|不确定|疑似|传闻|可能|交流群|群聊|截图|(?:请)?以[^，。；\n]*系统[^，。；\n]*为准/;
 const notPublishedPattern =
   /未公布|待公布|暂未公布|未提及|未在[^，。；\n]*(?:列出|提及|说明|要求)|暂无|待定|后续通知/;
-const privateMarkerPattern =
-  /\/Users\/|\/home\/|\/private\/|[A-Za-z]:\/+[Uu]sers\/|profile_space|targets\/|submittedProjectIds|file:\/\/|PENDING_PRIVATE|PRIVATE_[A-Z0-9_]*/;
+const localPathPattern =
+  /(?:^|[\s"'（【，。；：=])(?:\/(?!\/)[^\s"'，。；）】]+|[A-Za-z]:[\\/][^\s"'，。；）】]+|\\\\[^\\/\s"'，。；]+[\\/][^\s"'，。；）】]+)/;
+const privateTextMarkerPattern =
+  /file:\/\/|profile_space|(?:^|[\s"'（【，。；：=])targets[\\/]|submittedProjectIds?|submittedIds?|PENDING_PRIVATE(?:_[A-Z0-9_]*)?|PRIVATE_[A-Z0-9_]+/i;
 
 function isObject(value: unknown): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -159,8 +161,18 @@ function compoundAliasKey(normalizedUrl: string, inputProjectId: string): string
   return `${normalizedUrl}::${inputProjectId}`;
 }
 
-function containsPrivateMarker(value: string): boolean {
-  return privateMarkerPattern.test(value.replace(/\\/g, '/'));
+function containsPrivateFreeText(value: string): boolean {
+  return localPathPattern.test(value) || privateTextMarkerPattern.test(value);
+}
+
+function candidateContainsPrivateFreeText(value: unknown): boolean {
+  if (typeof value === 'string') return containsPrivateFreeText(value);
+  if (Array.isArray(value)) return value.some(candidateContainsPrivateFreeText);
+  if (!isObject(value)) return false;
+  return Object.entries(value).some(([key, child]) =>
+    (key === 'website' || key === 'url')
+      ? false
+      : candidateContainsPrivateFreeText(child));
 }
 
 function identityMaps(identities: IdentityContext): IdentityIndex {
@@ -264,6 +276,51 @@ function buildCurrentUrlIdentities(
   addRows(mainRows, 'mainRows');
   addRows(expiredRows, 'expiredRows');
   return currentByUrl;
+}
+
+function validateSharedUrlAliasCoverage(
+  identityIndex: IdentityIndex,
+  currentByUrl: Map<string, CurrentUrlIdentity>,
+): void {
+  for (const [normalizedUrl, current] of currentByUrl) {
+    const previousIds = identityIndex.previousByUrl.get(normalizedUrl);
+    if (previousIds === undefined) continue;
+    const cycles = new Set(
+      [...current.projectIds].map((projectId) =>
+        parseProjectId(projectId, 'current URL identity').cycle),
+    );
+
+    for (const cycle of cycles) {
+      const currentIds = new Set(
+        [...current.projectIds].filter((projectId) =>
+          parseProjectId(projectId, 'current URL identity').cycle === cycle),
+      );
+      const previousCycleIds = new Set(
+        [...previousIds].filter((projectId) =>
+          parseProjectId(projectId, 'previous URL identity').cycle === cycle),
+      );
+      const missingPreviousIds = [...previousCycleIds].filter(
+        (projectId) => !currentIds.has(projectId),
+      );
+      if (missingPreviousIds.length === 0) continue;
+      if (previousCycleIds.size === 1 && currentIds.size === 1) continue;
+
+      const coverage = new Map(missingPreviousIds.map((projectId) => [projectId, 0]));
+      for (const currentId of currentIds) {
+        const aliasTarget = identityIndex.compoundAliasesByUrlAndInput.get(
+          compoundAliasKey(normalizedUrl, currentId),
+        );
+        if (aliasTarget !== undefined && coverage.has(aliasTarget)) {
+          coverage.set(aliasTarget, (coverage.get(aliasTarget) ?? 0) + 1);
+        }
+      }
+      if ([...coverage.values()].some((count) => count !== 1)) {
+        throw new Error(
+          'shared URL has ambiguous previous IDs: compound aliases must cover every missing previous ID exactly once',
+        );
+      }
+    }
+  }
 }
 
 function resolveProjectId(
@@ -438,7 +495,7 @@ function factGroup(
     const value = factText(row[key]);
     return value === undefined ? [] : [{ label, value }];
   });
-  if (values.some(({ value }) => containsPrivateMarker(value))) {
+  if (values.some(({ value }) => containsPrivateFreeText(value))) {
     return { status: 'unverified', summary: '待官方公布' };
   }
   if (values.some(({ value }) => unverifiedPattern.test(value))) {
@@ -585,6 +642,7 @@ export function importScoutingData(
   const pendingRows = rowArray(dataset, 'pendingRows');
   const currentByUrl = buildCurrentUrlIdentities(mainRows, expiredRows);
   const identityIndex = identityMaps(identities);
+  validateSharedUrlAliasCoverage(identityIndex, currentByUrl);
 
   const active = mainRows.map((row, index) =>
     mapRow(row, `mainRows[${index}]`, false, scanAt, identityIndex, currentByUrl));
@@ -636,7 +694,7 @@ export function importScoutingData(
     opportunities,
   };
 
-  if (containsPrivateMarker(JSON.stringify(candidate))) {
+  if (candidateContainsPrivateFreeText(candidate)) {
     throw new Error('Candidate contains a private marker in a public field');
   }
 
