@@ -58,11 +58,12 @@ const unverifiedPattern =
   /未核实|待核实|待系统核实|未确认|未明确|无法核实|不确定|疑似|传闻|可能|交流群|群聊|截图|(?:请)?以[^，。；\n]*系统[^，。；\n]*为准/;
 const notPublishedPattern =
   /未公布|待公布|暂未公布|未提及|未在[^，。；\n]*(?:列出|提及|说明|要求)|暂无|待定|后续通知/;
+const httpUrlTokenPattern = /https?:\/\/[^\s<>"'`，。；！？、（）()【】{}]+/giu;
 const localPathPatterns = [
-  /(?<![\p{L}\p{N}_/])\/(?!\/)\S+/u,
-  /(?<![\p{L}\p{N}_])[A-Za-z]:[\\/]\S+/u,
-  /\\\\[^\\/\s]+[\\/]\S+/u,
-  /(?<![\p{L}\p{N}_])targets[\\/]\S+/iu,
+  /(?<!\d)\/(?!\/)[A-Za-z._~-][A-Za-z0-9._~-]*\/[^\s/\\<>"'`，。；！？、（）()\[\]【】{}]+/u,
+  /[A-Za-z]:[\\/][^\s<>"'`，。；！？、（）()\[\]【】{}]+/u,
+  /\\\\[^\\/\s<>"'`，。；！？、（）()\[\]【】{}]+[\\/][^\s<>"'`，。；！？、（）()\[\]【】{}]+/u,
+  /targets[\\/][^\s<>"'`，。；！？、（）()\[\]【】{}]+/iu,
 ];
 const privateTextMarkerPattern =
   /file:\/\/|profile_space|submittedProjectIds?|submittedIds?|PENDING_PRIVATE(?:_[A-Z0-9_]*)?|PRIVATE_[A-Z0-9_]+/i;
@@ -165,9 +166,30 @@ function compoundAliasKey(normalizedUrl: string, inputProjectId: string): string
   return `${normalizedUrl}::${inputProjectId}`;
 }
 
+function withoutValidatedHttpUrlTokens(value: string): string {
+  return value.replace(httpUrlTokenPattern, (token) => {
+    if (!/^https?:\/\/[^/?#]/i.test(token)) return token;
+    try {
+      const url = new URL(token);
+      if (
+        ['http:', 'https:'].includes(url.protocol)
+        && url.hostname !== ''
+        && url.username === ''
+        && url.password === ''
+      ) {
+        return '';
+      }
+    } catch {
+      // Keep malformed URL-like text available to the private-path scanner.
+    }
+    return token;
+  });
+}
+
 function containsPrivateFreeText(value: string): boolean {
-  return localPathPatterns.some((pattern) => pattern.test(value))
-    || privateTextMarkerPattern.test(value);
+  const nonUrlText = withoutValidatedHttpUrlTokens(value);
+  return localPathPatterns.some((pattern) => pattern.test(nonUrlText))
+    || privateTextMarkerPattern.test(nonUrlText);
 }
 
 function candidateContainsPrivateFreeText(value: unknown): boolean {

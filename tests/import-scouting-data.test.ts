@@ -1079,6 +1079,108 @@ test('rejects or sanitizes wrapped embedded private paths', async (t) => {
   }
 });
 
+test('rejects or sanitizes private paths adjacent to Chinese text', async (t) => {
+  const adjacentPaths = [
+    '证据见/tmp/private.md',
+    '证据见C:\\Private\\secret.md',
+    '证据见targets/2027/private.md',
+  ];
+
+  for (const adjacentPath of adjacentPaths) {
+    await t.test(`${adjacentPath} in a prominent field`, () => {
+      const input = validInput();
+      input.mainRows[0].project = adjacentPath;
+
+      assert.throws(
+        () => importScoutingData(input, identities()),
+        /candidate.*private marker/i,
+      );
+    });
+
+    await t.test(`${adjacentPath} in a fact field`, () => {
+      const input = validInput();
+      input.mainRows[0].materialList = adjacentPath;
+      delete input.mainRows[0].materialComplexity;
+
+      const candidate = importScoutingData(input, identities());
+      const active = opportunity(candidate, '2026年优秀大学生夏令营');
+
+      assert.deepEqual(active.materials, {
+        status: 'unverified',
+        summary: '待官方公布',
+      });
+      assert.ok(!JSON.stringify(candidate).includes(adjacentPath));
+    });
+  }
+});
+
+test('preserves validated HTTP URL substrings in fact text', () => {
+  const input = validInput();
+  const fact = '官网：https://gs.example.edu.cn/targets/private/Home';
+  input.mainRows[0].materialList = fact;
+  delete input.mainRows[0].materialComplexity;
+
+  const active = opportunity(
+    importScoutingData(input, identities()),
+    '2026年优秀大学生夏令营',
+  );
+
+  assert.deepEqual(active.materials, {
+    status: 'confirmed',
+    summary: `材料清单：${fact}`,
+  });
+});
+
+test('does not exempt file, credential-bearing, or malformed URL text', async (t) => {
+  for (const value of [
+    '官网：file:///tmp/private.md',
+    '官网：https://user:secret@gs.example.edu.cn/targets/private/Home',
+    '官网：https://[invalid]/tmp/private.md',
+  ]) {
+    await t.test(value, () => {
+      const input = validInput();
+      input.mainRows[0].materialList = value;
+      delete input.mainRows[0].materialComplexity;
+
+      const candidate = importScoutingData(input, identities());
+      const active = opportunity(candidate, '2026年优秀大学生夏令营');
+
+      assert.deepEqual(active.materials, {
+        status: 'unverified',
+        summary: '待官方公布',
+      });
+      assert.ok(!JSON.stringify(candidate).includes(value));
+    });
+  }
+});
+
+test('preserves benign date and Chinese slash text', () => {
+  const input = validInput();
+  const project = '2026/07/16 线上/线下活动';
+  const fact = '日期：2026/07/16；形式：线上/线下';
+  input.mainRows[0].project = project;
+  input.mainRows[0].materialList = fact;
+  delete input.mainRows[0].materialComplexity;
+
+  const active = opportunity(importScoutingData(input, identities()), project);
+
+  assert.equal(active.project, project);
+  assert.deepEqual(active.materials, {
+    status: 'confirmed',
+    summary: `材料清单：${fact}`,
+  });
+});
+
+test('preserves slash-delimited category text from the real corpus', () => {
+  const input = validInput();
+  const project = '2027年推免研究生预报名（计算机/软件/大数据等）';
+  input.mainRows[0].project = project;
+
+  const active = opportunity(importScoutingData(input, identities()), project);
+
+  assert.equal(active.project, project);
+});
+
 test('does not scan validated official URL paths as private free text', async (t) => {
   for (const path of ['targets', 'private', 'Home']) {
     await t.test(`/${path}/`, () => {
