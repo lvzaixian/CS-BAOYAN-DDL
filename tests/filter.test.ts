@@ -16,6 +16,7 @@ import {
   feedCatalog,
   getSchools,
   isValidFeedId,
+  legacyDisplayTags,
   legacyProjectId,
   sourceCounts,
 } from '../src/lib/schools';
@@ -53,7 +54,7 @@ const now = Date.parse('2026-07-15T00:00:00+08:00');
 function school(overrides: Partial<School>): School {
   return {
     projectId: '2027|测试大学|计算机学院|夏令营',
-    feedId: 'camp2027',
+    feedId: 'test-feed',
     name: '测试大学',
     institute: '计算机学院',
     project: '优秀大学生夏令营',
@@ -200,7 +201,7 @@ test('labels links by official-source provenance', () => {
     }],
   });
 
-  assert.equal(sourceLinkLabel(official), '官网');
+  assert.equal(sourceLinkLabel(official), '官方来源');
   assert.equal(sourceLinkLabel(historical), '历史来源（未核验）');
   assert.equal(sourceLinkLabel(school({ discoverySources: [] })), '历史来源（未核验）');
 });
@@ -247,7 +248,7 @@ test('keeps row selection and the source link as sibling interactive controls', 
 test('uses an archive deadline month when a feed has no active timed rows', () => {
   const archiveDeadline = Date.parse('2025-04-20T00:00:00+08:00');
   const archive = deriveSchool(school({
-    projectId: 'legacy|camp2025|测试大学|计算机学院|0',
+    projectId: 'legacy|archive-feed|测试大学|计算机学院|0',
     verificationStatus: 'expired',
     deadlineEpochMs: archiveDeadline,
   }), now);
@@ -255,11 +256,16 @@ test('uses an archive deadline month when a feed has no active timed rows', () =
   assert.deepEqual(pickCalendarMonth([archive], now), { y: 2025, m: 3 });
 });
 
-test('uses the approved default and accepts a dynamically published camp2027 feed', () => {
+test('uses the approved default and accepts every approved feed dynamically', () => {
+  const approvedFeedIds = approved.feeds.map((feed) => feed.id);
+
   assert.equal(defaultFeedId, approved.defaultFeedId);
   assert.equal(isValidFeedId(defaultFeedId), true);
-  assert.equal(approved.feeds.some((feed) => feed.id === 'camp2027'), true);
-  assert.equal(isValidFeedId('camp2027'), true);
+  assert.equal(approvedFeedIds.includes(defaultFeedId), true);
+  for (const feedId of approvedFeedIds) {
+    assert.equal(isValidFeedId(feedId), true);
+    assert.equal(feedCatalog.some((feed) => feed.id === feedId), true);
+  }
 });
 
 test('each approved feed exclusively exposes its approved opportunities', () => {
@@ -287,6 +293,20 @@ test('appends only legacy feeds absent from the approved catalog', () => {
   );
 });
 
+test('strips stale status tags across the legacy corpus while preserving every other tag', () => {
+  let staleOpenRows = 0;
+
+  for (const rawRows of Object.values(legacyByFeed)) {
+    for (const rawRow of rawRows) {
+      const expectedTags = rawRow.tags.filter((tag) => tag !== '已开营' && tag !== '已结营');
+      assert.deepEqual(legacyDisplayTags(rawRow.tags), expectedTags);
+      if (rawRow.tags.includes('已开营')) staleOpenRows += 1;
+    }
+  }
+
+  assert.ok(staleOpenRows > 0, 'legacy corpus must exercise stale 已开营 rows');
+});
+
 test('maps appended legacy feeds with deterministic IDs and unverified provenance', () => {
   const approvedFeedSet = new Set(approved.feeds.map((feed) => feed.id));
   for (const [feedId, rawRows] of Object.entries(legacyByFeed)) {
@@ -303,6 +323,9 @@ test('maps appended legacy feeds with deterministic IDs and unverified provenanc
     mappedRows.forEach((row, index) => {
       assert.equal(row.projectId, legacyProjectId(feedId, rawRows[index], index));
       assert.equal(row.verificationStatus, 'expired');
+      assert.deepEqual(row.tags, legacyDisplayTags(rawRows[index].tags));
+      assert.equal(row.tags.includes('已开营'), false);
+      assert.equal(row.tags.includes('已结营'), false);
       assert.equal(sourceLinkLabel(row), '历史来源（未核验）');
       assert.equal(row.discoverySources.some((source) => source.kind === 'official'), false);
     });

@@ -46,6 +46,10 @@ export function legacyProjectId(
   return `legacy|${feedId}|${row.name}|${row.institute}|${index}`;
 }
 
+export function legacyDisplayTags(tags: readonly string[]): string[] {
+  return tags.filter((tag) => tag !== '已开营' && tag !== '已结营');
+}
+
 function mapLegacySchool(feedId: FeedId, row: LegacySchool, index: number): School {
   const deadlineOriginal = row.deadline?.trim() ?? '';
   const deadlineEpochMs = parseDeadline(deadlineOriginal);
@@ -62,7 +66,7 @@ function mapLegacySchool(feedId: FeedId, row: LegacySchool, index: number): Scho
     deadlineOriginal: deadlineOriginal || '历史数据未提供',
     deadlineEpochMs,
     website: row.website,
-    tags: [...row.tags],
+    tags: legacyDisplayTags(row.tags),
     ...(row.province ? { province: row.province } : {}),
     verifiedAt: '',
     discoverySources: row.website

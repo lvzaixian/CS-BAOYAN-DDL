@@ -52,9 +52,9 @@ export function countStatuses(
 
 export function sourceLinkLabel(
   row: Pick<School, 'discoverySources'>,
-): '官网' | '历史来源（未核验）' {
+): '官方来源' | '历史来源（未核验）' {
   return row.discoverySources.some((source) => source.kind === 'official')
-    ? '官网'
+    ? '官方来源'
     : '历史来源（未核验）';
 }
 
