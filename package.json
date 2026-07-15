@@ -16,7 +16,6 @@
     "snapshot:approve": "tsx scripts/snapshot/approve-snapshot.ts",
     "snapshot:validate": "tsx scripts/snapshot/validate-current.ts",
     "check:public": "bash scripts/check-public.sh",
-    "deploy": "pnpm build && gh-pages -d dist",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
@@ -26,7 +25,6 @@
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tailwindcss/vite": "^4.0.0",
     "@types/node": "^22.10.0",
-    "gh-pages": "^6.2.0",
     "svelte": "^5.20.0",
     "svelte-check": "^4.1.4",
     "tailwindcss": "^4.0.0",
