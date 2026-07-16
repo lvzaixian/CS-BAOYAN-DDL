@@ -57,10 +57,10 @@
     <div class="flex-1"></div>
 
     <!-- view toggle -->
-    <div class="surface-2 border border-line rounded-md p-0.5 flex items-center gap-0.5" role="tablist" aria-label="视图切换">
+    <div class="surface-2 border border-line rounded-md p-0.5 flex items-center gap-0.5" role="group" aria-label="视图切换">
       <button
-        role="tab"
-        aria-selected={filters.view === 'list'}
+        type="button"
+        aria-pressed={filters.view === 'list'}
         aria-label="列表视图"
         onclick={() => setView('list')}
         class="px-2 py-1 rounded text-xs font-medium flex items-center gap-1.5 transition {filters.view === 'list' ? 'surface-3 text-fg-0' : 'text-fg-2 hover:text-fg-1'}"
@@ -69,8 +69,8 @@
         <span class="hidden sm:inline">列表</span>
       </button>
       <button
-        role="tab"
-        aria-selected={filters.view === 'calendar'}
+        type="button"
+        aria-pressed={filters.view === 'calendar'}
         aria-label="截止日历视图"
         onclick={() => setView('calendar')}
         class="px-2 py-1 rounded text-xs font-medium flex items-center gap-1.5 transition {filters.view === 'calendar' ? 'surface-3 text-fg-0' : 'text-fg-2 hover:text-fg-1'}"

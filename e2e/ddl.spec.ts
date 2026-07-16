@@ -78,6 +78,42 @@ async function expectContentFits(locator: Locator, label: string): Promise<void>
   );
 }
 
+async function expectWcagAaContrast(locator: Locator, label: string): Promise<void> {
+  const ratio = await locator.evaluate((element) => {
+    const rgba = (value: string): [number, number, number, number] => {
+      const values = value.match(/[\d.]+/g)?.map(Number) ?? [];
+      return [values[0] ?? 0, values[1] ?? 0, values[2] ?? 0, values[3] ?? 1];
+    };
+    const foreground = rgba(getComputedStyle(element).color);
+    let background: [number, number, number, number] = [255, 255, 255, 1];
+    let current: Element | null = element;
+    while (current) {
+      const candidate = rgba(getComputedStyle(current).backgroundColor);
+      if (candidate[3] > 0) {
+        background = candidate;
+        break;
+      }
+      current = current.parentElement;
+    }
+    const luminance = ([red, green, blue]: [number, number, number, number]) => {
+      const channels = [red, green, blue].map((channel) => {
+        const normalized = channel / 255;
+        return normalized <= 0.03928
+          ? normalized / 12.92
+          : ((normalized + 0.055) / 1.055) ** 2.4;
+      });
+      return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+    };
+    const foregroundLuminance = luminance(foreground);
+    const backgroundLuminance = luminance(background);
+    return (
+      (Math.max(foregroundLuminance, backgroundLuminance) + 0.05) /
+      (Math.min(foregroundLuminance, backgroundLuminance) + 0.05)
+    );
+  });
+  expect(ratio, `${label}: contrast ratio ${ratio.toFixed(2)}`).toBeGreaterThanOrEqual(4.5);
+}
+
 async function expectRowKeys(page: Page, expected: readonly string[]): Promise<void> {
   await expect
     .poll(() =>
@@ -418,7 +454,7 @@ test('search typing replaces history while every discrete filter pushes', async 
   await expect.poll(() => new URL(page.url()).searchParams.get('src')).toBe('e2e-no-tier');
   await expectHistoryLength();
 
-  await page.getByRole('tab', { name: '截止日历视图' }).click();
+  await page.getByRole('button', { name: '截止日历视图' }).click();
   expectedHistoryLength += 1;
   await expect.poll(() => new URL(page.url()).searchParams.get('view')).toBe('calendar');
   await expectHistoryLength();
@@ -473,8 +509,21 @@ test('hides the tier hierarchy when every tier count is zero', async ({ page }, 
   await expect(panel.getByRole('button', { name: /^筛选档次：/ })).toHaveCount(0);
 });
 
+test('view switch is a pressed-state segmented control instead of incomplete tabs', async ({ page }) => {
+  const switcher = page.getByRole('group', { name: '视图切换' });
+  const list = switcher.getByRole('button', { name: '列表视图' });
+  const calendar = switcher.getByRole('button', { name: '截止日历视图' });
+
+  await expect(switcher.getByRole('tab')).toHaveCount(0);
+  await expect(list).toHaveAttribute('aria-pressed', 'true');
+  await expect(calendar).toHaveAttribute('aria-pressed', 'false');
+  await calendar.click();
+  await expect(list).toHaveAttribute('aria-pressed', 'false');
+  await expect(calendar).toHaveAttribute('aria-pressed', 'true');
+});
+
 test('deadline calendar opens every crowded-day item and clears expansion on month and data changes', async ({ page }) => {
-  await page.getByRole('tab', { name: '截止日历视图' }).click();
+  await page.getByRole('button', { name: '截止日历视图' }).click();
   const calendar = page.getByRole('region', { name: '截止日历' });
   await expect(calendar).toBeVisible();
   await expectNoHorizontalOverflow(page, 'deadline calendar');
@@ -485,6 +534,19 @@ test('deadline calendar opens every crowded-day item and clears expansion on mon
   await expect(more).toHaveText('+2');
   await expect(more).toHaveAttribute('aria-expanded', 'false');
   await expect(more).toHaveAttribute('aria-controls', 'deadline-calendar-day-2026-07-18');
+  const hitTarget = await more.boundingBox();
+  expect(hitTarget).not.toBeNull();
+  expect(hitTarget!.width).toBeGreaterThanOrEqual(24);
+  expect(hitTarget!.height).toBeGreaterThanOrEqual(24);
+
+  const redwoodPreview = calendar.locator(
+    '[data-calendar-preview][aria-label="查看 2026年7月18日截止项目详情：红杉大学 人工智能学院 2026年优秀大学生夏令营"]',
+  );
+  await expect(redwoodPreview).toHaveAttribute(
+    'aria-label',
+    '查看 2026年7月18日截止项目详情：红杉大学 人工智能学院 2026年优秀大学生夏令营',
+  );
+  await expect(redwoodPreview).toHaveAttribute('aria-haspopup', 'dialog');
   await more.focus();
   await page.keyboard.press('Enter');
   await expect(more).toHaveAttribute('aria-expanded', 'true');
@@ -493,6 +555,7 @@ test('deadline calendar opens every crowded-day item and clears expansion on mon
   await expect(expanded).toBeVisible();
   const expandedItems = expanded.getByRole('button', { name: /^查看截止项目详情：/ });
   await expect(expandedItems).toHaveCount(5);
+  await expect(expandedItems.first()).toBeFocused();
   for (const [index, item] of CROWDED_DAY_ITEMS.entries()) {
     await expect(expandedItems.nth(index)).toContainText(item.name);
     await expect(expandedItems.nth(index)).toContainText(item.project);
@@ -519,6 +582,24 @@ test('deadline calendar opens every crowded-day item and clears expansion on mon
   await expect(expanded).toBeVisible();
   await page.getByLabel('数据源').selectOption('e2e-no-tier');
   await expect(expanded).toHaveCount(0);
+});
+
+test('mobile calendar uses readable day disclosures instead of clipped school previews', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === 'desktop');
+  await page.getByRole('button', { name: '截止日历视图' }).click();
+  const calendar = page.getByRole('region', { name: '截止日历' });
+  const preview = calendar.locator('[data-calendar-preview]').first();
+  await expect(preview).toBeHidden();
+
+  const disclosure = calendar.getByRole('button', {
+    name: '展开 2026年7月18日全部 5 个截止项目',
+  });
+  await expect(disclosure).toHaveText('+2');
+  const box = await disclosure.boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.width).toBeGreaterThanOrEqual(24);
+  expect(box!.height).toBeGreaterThanOrEqual(24);
+  await expectContentFits(disclosure, `${testInfo.project.name} calendar disclosure`);
 });
 
 test('row and detail dialogs support keyboard entry, trap, escape and focus restore', async ({ page }) => {
@@ -670,15 +751,27 @@ test('has no serious or critical axe violations in list and open panels', async 
   await assertAxe('keyboard help dialog');
   await page.keyboard.press('Escape');
   await page.keyboard.press('Escape');
-  await page.getByRole('button', { name: '切换主题' }).click();
-  await expect(page.locator('html')).toHaveClass(/dark/);
-  await assertAxe('dark list');
-  await page.getByRole('tab', { name: '截止日历视图' }).click();
-  await page
-    .getByRole('region', { name: '截止日历' })
+  await page.getByRole('button', { name: '截止日历视图' }).click();
+  const lightCalendar = page.getByRole('region', { name: '截止日历' });
+  await lightCalendar
     .getByRole('button', { name: '展开 2026年7月18日全部 5 个截止项目' })
     .click();
-  await assertAxe('expanded deadline calendar');
+  await assertAxe('light expanded deadline calendar');
+  await expectWcagAaContrast(
+    lightCalendar.locator('[data-calendar-date]').first(),
+    'light calendar date',
+  );
+  await expectWcagAaContrast(
+    lightCalendar.locator('[data-calendar-day-trigger]').first(),
+    'light calendar day trigger',
+  );
+  await expectWcagAaContrast(
+    lightCalendar.locator('[data-calendar-expanded-count]'),
+    'light calendar expanded count',
+  );
+  await page.getByRole('button', { name: '切换主题' }).click();
+  await expect(page.locator('html')).toHaveClass(/dark/);
+  await assertAxe('dark expanded deadline calendar');
 });
 
 test('emits reviewed nonblank list, panel and expanded-calendar screenshots', async ({ page }, testInfo) => {
@@ -713,7 +806,7 @@ test('emits reviewed nonblank list, panel and expanded-calendar screenshots', as
   );
   await page.keyboard.press('Escape');
 
-  await page.getByRole('tab', { name: '截止日历视图' }).click();
+  await page.getByRole('button', { name: '截止日历视图' }).click();
   const calendar = page.getByRole('region', { name: '截止日历' });
   await calendar
     .getByRole('button', { name: '展开 2026年7月18日全部 5 个截止项目' })

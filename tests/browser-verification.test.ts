@@ -147,6 +147,9 @@ test('frontend exposes stable browser selectors and accessible filter state', ()
   assert.match(app, /modes:\s*filters\.modes/);
   assert.match(header, /aria-expanded=\{drawerOpen\}/);
   assert.match(header, /aria-controls="mobile-filter-drawer"/);
+  assert.match(header, /role="group" aria-label="视图切换"/);
+  assert.equal(header.match(/aria-pressed=\{filters\.view === /g)?.length, 2);
+  assert.doesNotMatch(header, /role="tab(list)?"/);
   assert.match(app, /role="dialog"/);
   assert.match(app, /aria-modal="true"/);
   assert.match(app, /aria-label="筛选条件"/);

@@ -64,13 +64,12 @@ function discreteStateKey(s: FilterState): string {
 
 export const filters: FilterState = $state(readFromUrl());
 
-let initialised = false;
-export function initFilterSync() {
-  if (initialised) return;
-  initialised = true;
+let activeCleanup: (() => void) | null = null;
+export function initFilterSync(): () => void {
+  activeCleanup?.();
   let previousDiscreteState: string | null = null;
 
-  $effect.root(() => {
+  const stopRoot = $effect.root(() => {
     $effect(() => {
       const next = {
         source: filters.source,
@@ -90,7 +89,7 @@ export function initFilterSync() {
     });
   });
 
-  window.addEventListener('popstate', () => {
+  const onPopState = () => {
     const next = readFromUrl();
     writeToUrl(next, 'replace');
     filters.source = next.source;
@@ -100,7 +99,19 @@ export function initFilterSync() {
     filters.status = next.status;
     filters.modes = next.modes;
     filters.provinces = next.provinces;
-  });
+  };
+  window.addEventListener('popstate', onPopState);
+
+  let disposed = false;
+  const cleanup = () => {
+    if (disposed) return;
+    disposed = true;
+    stopRoot();
+    window.removeEventListener('popstate', onPopState);
+    if (activeCleanup === cleanup) activeCleanup = null;
+  };
+  activeCleanup = cleanup;
+  return cleanup;
 }
 
 export function clearAllFilters() {
