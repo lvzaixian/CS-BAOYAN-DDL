@@ -1,10 +1,10 @@
 {
   "schemaVersion": 2,
-  "snapshotId": "2026-07-16T03:45:00.000Z-36ac76ad9114",
+  "snapshotId": "2026-07-16T03:45:00.000Z-d781535ec98c",
   "scanAt": "2026-07-16T11:30:00+08:00",
   "approvedAt": "2026-07-16T11:45:00+08:00",
   "previousSnapshotId": null,
-  "dataHash": "36ac76ad9114d98e741383ef4d36fe5659e97d2f198b5292c1122bbf51217fcb",
+  "dataHash": "d781535ec98c55cbb3c8a615777516bc0a1e4420c9ef9852bcab40c5590223e8",
   "defaultFeedId": "e2e2028",
   "feeds": [
     {
@@ -178,9 +178,9 @@
       "eventType": "暑期学校",
       "description": "E2E_CROWDED_ONLINE",
       "verificationStatus": "confirmed-open",
-      "deadline": "2026-07-18T22:00:00+08:00",
-      "deadlineOriginal": "2026年7月18日22:00截止",
-      "deadlineEpochMs": 1784383200000,
+      "deadline": "2026-07-18T23:59:59+08:00",
+      "deadlineOriginal": "2026年7月18日截止；官方未公布具体时刻",
+      "deadlineEpochMs": 1784390399000,
       "website": "https://admissions.cloudsea.example.test/summer-school",
       "tags": ["研究院"],
       "province": "广东",
@@ -334,9 +334,9 @@
       "recommendation": { "status": "not-published", "summary": "未公布" },
       "materials": { "status": "not-published", "summary": "未公布" },
       "eventArrangement": {
-        "mode": "hybrid",
-        "time": { "status": "not-applicable", "summary": "活动已结束" },
-        "formatLocation": { "status": "not-applicable", "summary": "活动已结束" }
+        "mode": "unknown",
+        "time": { "status": "not-published", "summary": "未公布" },
+        "formatLocation": { "status": "not-published", "summary": "未公布" }
       }
     }
   ]

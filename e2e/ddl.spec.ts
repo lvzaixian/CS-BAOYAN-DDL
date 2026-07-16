@@ -174,13 +174,24 @@ test('uses the fixture and renders exact ordered groups and active deadlines', a
     1784372400000,
     1784376000000,
     1784379600000,
-    1784383200000,
+    1784390399000,
     1785513540000,
   ]);
   expect(activeDeadlines).toEqual([...activeDeadlines].sort((a, b) => a - b));
   await expect(
     page.locator('[data-row-group="active-unknown"] [data-row-key]'),
   ).not.toHaveAttribute('data-deadline-ms', /.+/);
+
+  for (const [key, label] of [
+    [KEYS.redwood, '线上'],
+    [KEYS.orange, '线下'],
+    [KEYS.silver, '混合'],
+    [KEYS.pine, '未核验'],
+  ] as const) {
+    const badge = page.locator(`[data-row-key="${key}"]`).getByLabel(`活动形式：${label}`);
+    await expect(badge).toContainText(label);
+    await expect(badge.locator('svg')).toHaveCount(1);
+  }
 });
 
 test('opens deterministic details with ordered facts and exact source links', async ({ page }) => {
@@ -195,8 +206,11 @@ test('opens deterministic details with ordered facts and exact source links', as
     '材料',
     '信息来源',
   ]);
+  await expect(dialog.getByText('线上', { exact: true })).toBeVisible();
   await expect(dialog.getByText('2026年8月3日至8月5日')).toBeVisible();
   await expect(dialog.getByText('腾讯会议，链接另行通知')).toBeVisible();
+  await expect(dialog.getByText(/2026年8月3日至8月5日\s*· 已核验/)).toBeVisible();
+  await expect(dialog.getByText(/腾讯会议，链接另行通知\s*· 已核验/)).toBeVisible();
   const officialCta = dialog
     .locator('.detail-panel__footer')
     .getByRole('link', { name: '打开官方来源：红杉大学官方通知' });
@@ -226,6 +240,19 @@ test('opens deterministic details with ordered facts and exact source links', as
       Boolean(node.compareDocumentPosition(other as Node) & Node.DOCUMENT_POSITION_FOLLOWING),
     await discovery.elementHandle()),
   ).toBe(true);
+});
+
+test('shows date-only source precision without presenting the normalized cutoff as official', async ({ page }) => {
+  await page
+    .getByRole('button', { name: '查看项目详情：云海大学 智能系统研究院 2026年智能系统暑期学校' })
+    .click();
+  const dialog = page.getByRole('dialog', { name: '项目详情' });
+  await expect(
+    dialog.getByText('2026年7月18日截止；官方未公布具体时刻', { exact: true }),
+  ).toBeVisible();
+  await expect(
+    dialog.getByText('2026 年 7月 18 日 · 按当日末排序（官方未公布具体时刻）', { exact: true }),
+  ).toBeVisible();
 });
 
 test('keeps desktop sidebar and mobile panels within their viewport', async ({ page }, testInfo) => {
@@ -286,13 +313,20 @@ test('event mode filters use OR semantics and clear completely', async ({ page }
   await expect(online).toHaveAttribute('aria-pressed', 'true');
   await closeMobileFilterPanel(page, testInfo.project.name);
   await expectRowKeys(page, [KEYS.redwood, KEYS.cloud]);
+  const onlineChip = page.getByRole('button', { name: '线上', exact: true });
+  await expect(onlineChip).toBeVisible();
+  await onlineChip.click();
+  await expect(onlineChip).toHaveCount(0);
+  await expectRowKeys(page, EXPECTED_KEYS);
+  await expect.poll(() => new URL(page.url()).searchParams.get('modes')).toBeNull();
 
   panel = await filterPanel(page, testInfo.project.name);
+  await panel.getByRole('button', { name: '筛选形式：线上' }).click();
   const hybrid = panel.getByRole('button', { name: '筛选形式：混合' });
   await hybrid.click();
   await expect(hybrid).toHaveAttribute('aria-pressed', 'true');
   await closeMobileFilterPanel(page, testInfo.project.name);
-  await expectRowKeys(page, [KEYS.redwood, KEYS.silver, KEYS.cloud, KEYS.farmountain]);
+  await expectRowKeys(page, [KEYS.redwood, KEYS.silver, KEYS.cloud]);
   await expect.poll(() => new URL(page.url()).searchParams.get('modes')).toBe('online,hybrid');
 
   await page.getByRole('button', { name: '清空全部' }).click();
@@ -300,7 +334,42 @@ test('event mode filters use OR semantics and clear completely', async ({ page }
   await expect.poll(() => new URL(page.url()).search).toBe('');
 });
 
+test('browser back and forward restore mode and status filter history', async ({ page }, testInfo) => {
+  let panel = await filterPanel(page, testInfo.project.name);
+  await panel.getByRole('button', { name: '筛选形式：线上' }).click();
+  await closeMobileFilterPanel(page, testInfo.project.name);
+  await expect.poll(() => new URL(page.url()).searchParams.get('modes')).toBe('online');
+
+  panel = await filterPanel(page, testInfo.project.name);
+  await panel.getByRole('button', { name: '筛选状态：开放' }).click();
+  await closeMobileFilterPanel(page, testInfo.project.name);
+  await expect.poll(() => new URL(page.url()).searchParams.get('status')).toBe('开放');
+
+  await page.goBack();
+  await expect.poll(() => new URL(page.url()).searchParams.get('modes')).toBe('online');
+  await expect.poll(() => new URL(page.url()).searchParams.get('status')).toBeNull();
+  await expect(page.getByRole('button', { name: '线上', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: '开放', exact: true })).toHaveCount(0);
+  await expectRowKeys(page, [KEYS.redwood, KEYS.cloud]);
+
+  await page.goBack();
+  await expect.poll(() => new URL(page.url()).search).toBe('');
+  await expect(page.locator('.filter-chip')).toHaveCount(0);
+  await expectRowKeys(page, EXPECTED_KEYS);
+
+  await page.goForward();
+  await expect.poll(() => new URL(page.url()).searchParams.get('modes')).toBe('online');
+  await expect(page.getByRole('button', { name: '线上', exact: true })).toBeVisible();
+  await expectRowKeys(page, [KEYS.redwood, KEYS.cloud]);
+
+  await page.goForward();
+  await expect.poll(() => new URL(page.url()).searchParams.get('status')).toBe('开放');
+  await expect(page.getByRole('button', { name: '开放', exact: true })).toBeVisible();
+  await expectRowKeys(page, [KEYS.redwood, KEYS.cloud]);
+});
+
 test('restores URL filters, migrates legacy status values and clears them', async ({ page }, testInfo) => {
+  const historyLengthBeforeNavigation = await page.evaluate(() => window.history.length);
   await page.goto(
     '/?q=%E5%A4%A7%E5%AD%A6&tags=985&status=%E5%B7%B2%E5%BC%80%E8%90%A5,%E5%B7%B2%E7%BB%93%E8%90%A5&modes=online,hybrid&prov=%E5%8C%97%E4%BA%AC,%E4%B8%8A%E6%B5%B7',
   );
@@ -308,6 +377,9 @@ test('restores URL filters, migrates legacy status values and clears them', asyn
   await expect(search).toHaveValue('大学');
   await expectRowKeys(page, [KEYS.redwood, KEYS.silver]);
   await expect.poll(() => new URL(page.url()).searchParams.get('status')).toBe('开放,已结束');
+  await expect.poll(() => page.evaluate(() => window.history.length)).toBe(
+    historyLengthBeforeNavigation + 1,
+  );
 
   let panel = await filterPanel(page, testInfo.project.name);
   await expect(panel.getByRole('button', { name: '筛选状态：开放' })).toHaveAttribute(
@@ -345,7 +417,7 @@ test('hides the tier hierarchy when every tier count is zero', async ({ page }, 
   await expect(panel.getByRole('button', { name: /^筛选档次：/ })).toHaveCount(0);
 });
 
-test('deadline calendar expands every crowded-day item and opens details', async ({ page }) => {
+test('deadline calendar opens every crowded-day item and clears expansion on month and data changes', async ({ page }) => {
   await page.getByRole('tab', { name: '截止日历视图' }).click();
   const calendar = page.getByRole('region', { name: '截止日历' });
   await expect(calendar).toBeVisible();
@@ -371,16 +443,22 @@ test('deadline calendar expands every crowded-day item and opens details', async
   }
   await expectNoHorizontalOverflow(page, 'expanded deadline calendar');
 
-  await expandedItems.nth(4).click();
   const detail = page.getByRole('dialog', { name: '项目详情' });
-  await expect(detail).toContainText('云海大学');
-  await page.keyboard.press('Escape');
-  await expect(expandedItems.nth(4)).toBeFocused();
+  for (const [index, item] of CROWDED_DAY_ITEMS.entries()) {
+    await expandedItems.nth(index).click();
+    await expect(detail).toContainText(item.name);
+    await expect(detail).toContainText(item.project);
+    await page.keyboard.press('Escape');
+    await expect(detail).toBeHidden();
+    await expect(expandedItems.nth(index)).toBeFocused();
+  }
 
-  await more.focus();
-  await page.keyboard.press('Space');
-  await expect(more).toHaveAttribute('aria-expanded', 'false');
+  await calendar.getByRole('button', { name: '下个月' }).click();
+  await expect(calendar.getByText('2026 年 8 月')).toBeVisible();
   await expect(expanded).toHaveCount(0);
+  await calendar.getByRole('button', { name: '上个月' }).click();
+  await expect(calendar.getByText('2026 年 7 月')).toBeVisible();
+  await expect(more).toHaveAttribute('aria-expanded', 'false');
   await more.click();
   await expect(expanded).toBeVisible();
   await page.getByLabel('数据源').selectOption('e2e-no-tier');
@@ -547,7 +625,7 @@ test('has no serious or critical axe violations in list and open panels', async 
   await assertAxe('expanded deadline calendar');
 });
 
-test('emits reviewed nonblank list and panel screenshots', async ({ page }, testInfo) => {
+test('emits reviewed nonblank list, panel and expanded-calendar screenshots', async ({ page }, testInfo) => {
   const isDesktop = testInfo.project.name === 'desktop';
   await captureReviewed(
     page.locator('main'),
@@ -576,5 +654,19 @@ test('emits reviewed nonblank list and panel screenshots', async ({ page }, test
     `${testInfo.project.name}-detail`,
     isDesktop ? 450 : testInfo.project.name === 'narrow-mobile' ? 300 : 380,
     600,
+  );
+  await page.keyboard.press('Escape');
+
+  await page.getByRole('tab', { name: '截止日历视图' }).click();
+  const calendar = page.getByRole('region', { name: '截止日历' });
+  await calendar
+    .getByRole('button', { name: '展开 2026年7月18日全部 5 个截止项目' })
+    .click();
+  await captureReviewed(
+    page.locator('main'),
+    testInfo,
+    `${testInfo.project.name}-calendar-expanded`,
+    isDesktop ? 800 : testInfo.project.name === 'narrow-mobile' ? 280 : 300,
+    700,
   );
 });

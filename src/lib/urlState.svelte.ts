@@ -41,7 +41,7 @@ function parseEnumList<T extends string>(v: string | null, allowed: readonly T[]
   return [...new Set(parseList(v).filter((value): value is T => allowedValues.has(value as T)))];
 }
 
-function writeToUrl(s: FilterState) {
+function writeToUrl(s: FilterState, method: 'push' | 'replace') {
   if (typeof window === 'undefined') return;
   const p = new URLSearchParams();
   if (s.source !== DEFAULT.source) p.set('src', s.source);
@@ -52,8 +52,10 @@ function writeToUrl(s: FilterState) {
   if (s.modes.length) p.set('modes', s.modes.join(','));
   if (s.provinces.length) p.set('prov', s.provinces.join(','));
   const qs = p.toString();
-  const url = qs ? `?${qs}` : window.location.pathname;
-  window.history.replaceState(null, '', url);
+  const url = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+  if (`${window.location.pathname}${window.location.search}` === url) return;
+  if (method === 'push') window.history.pushState(null, '', url);
+  else window.history.replaceState(null, '', url);
 }
 
 export const filters: FilterState = $state(readFromUrl());
@@ -62,10 +64,11 @@ let initialised = false;
 export function initFilterSync() {
   if (initialised) return;
   initialised = true;
+  let initialSync = true;
 
   $effect.root(() => {
     $effect(() => {
-      writeToUrl({
+      const next = {
         source: filters.source,
         view: filters.view,
         query: filters.query,
@@ -73,12 +76,15 @@ export function initFilterSync() {
         status: filters.status,
         modes: filters.modes,
         provinces: filters.provinces,
-      });
+      };
+      writeToUrl(next, initialSync ? 'replace' : 'push');
+      initialSync = false;
     });
   });
 
   window.addEventListener('popstate', () => {
     const next = readFromUrl();
+    writeToUrl(next, 'replace');
     filters.source = next.source;
     filters.view = next.view;
     filters.query = next.query;

@@ -56,7 +56,12 @@ test('browser tooling keeps the deterministic fixture in dist-e2e only', () => {
       projectId: string;
       verificationStatus: string;
       deadlineEpochMs: number | null;
-      eventArrangement?: { mode?: string };
+      deadlineOriginal: string;
+      eventArrangement?: {
+        mode?: string;
+        time?: { status?: string; summary?: string };
+        formatLocation?: { status?: string; summary?: string };
+      };
     }>;
   };
   const fixedNow = Date.parse('2026-07-16T12:00:00+08:00');
@@ -88,6 +93,15 @@ test('browser tooling keeps the deterministic fixture in dist-e2e only', () => {
     new Set(['online', 'offline', 'hybrid', 'unknown']),
   );
   assert.ok(fixture.opportunities.every((row) => row.eventArrangement?.mode));
+  const dateOnly = fixture.opportunities.find((row) => row.projectId.includes('|云海大学|'));
+  assert.equal(dateOnly?.deadlineEpochMs, Date.parse('2026-07-18T23:59:59+08:00'));
+  assert.equal(dateOnly?.deadlineOriginal, '2026年7月18日截止；官方未公布具体时刻');
+  const expired = fixture.opportunities.find((row) => row.verificationStatus === 'expired');
+  assert.deepEqual(expired?.eventArrangement, {
+    mode: 'unknown',
+    time: { status: 'not-published', summary: '未公布' },
+    formatLocation: { status: 'not-published', summary: '未公布' },
+  });
   const sameDayCounts = new Map<string, number>();
   for (const row of fixture.opportunities) {
     if (row.deadlineEpochMs === null) continue;
