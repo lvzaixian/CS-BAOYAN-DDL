@@ -184,7 +184,8 @@ jobs:
             throw new Error('RELEASE_SHA must be a full lowercase Git commit SHA');
           }
 
-          const snapshot = JSON.parse(fs.readFileSync('data/approved/current.json', 'utf8'));
+          const approvedSnapshotText = fs.readFileSync('data/approved/current.json', 'utf8');
+          const snapshot = JSON.parse(approvedSnapshotText);
           const snapshotId = snapshot.snapshotId;
           const dataHash = snapshot.dataHash;
           const snapshotScanAt = snapshot.scanAt;
@@ -201,10 +202,25 @@ jobs:
             }
           }
 
+          fs.mkdirSync('dist/data', { recursive: true });
+          fs.copyFileSync('data/approved/current.json', 'dist/data/current.json');
+          const publishedSnapshotText = fs.readFileSync('dist/data/current.json', 'utf8');
+          if (publishedSnapshotText !== approvedSnapshotText) {
+            throw new Error('published current snapshot is not an exact copy of the approved source');
+          }
+          const publishedSnapshot = JSON.parse(publishedSnapshotText);
+          if (
+            publishedSnapshot.snapshotId !== snapshotId
+            || publishedSnapshot.dataHash !== dataHash
+          ) {
+            throw new Error('published current snapshot identity does not match the approved source');
+          }
+
           fs.writeFileSync(
             'dist/release.json',
             `${JSON.stringify({ releaseSha, snapshotId, dataHash })}\n`,
           );
+          fs.copyFileSync('dist/release.json', 'dist/data/release.json');
           fs.appendFileSync(
             process.env.GITHUB_ENV,
             `EXPECTED_SNAPSHOT_ID=${snapshotId}\nEXPECTED_DATA_HASH=${dataHash}\n`

@@ -496,7 +496,7 @@ flock -u 9
 
 ### Task 16 activation 后内容与身份验收
 
-只有 Task 16 已运行 `activate-release.sh` 并成功切换 `current` 后，才验证 `release.json`、SPA、JavaScript asset 和 release identity。Task 14 不读取这些文件，因此不会等待尚未 activation 的内容。下面的 `smoke.sh` 同时验证精确三元身份、首页、同源 asset、SPA 深链和缺失 asset 的 404：
+只有 Task 16 已运行 `activate-release.sh` 并成功切换 `current` 后，才验证根 `/release.json`、监控事实源 `/data/release.json` 与 `/data/current.json`、SPA 和 JavaScript asset。Task 14 不读取这些文件，因此不会等待尚未 activation 的内容。下面的 `smoke.sh` 同时验证两个 release identity 都是完全相同的精确三字段对象，current 的 `snapshotId`/`dataHash` 与之匹配，以及首页、同源 asset、SPA 深链、缺失 asset 和缺失 `/data/*` 路径的 404；失败信息不会输出完整快照正文：
 
 ```bash
 set -Eeuo pipefail
@@ -507,6 +507,8 @@ case "$SELECTED_DOMAIN" in *[!a-z0-9.-]*|.*|*..*|*.) exit 1 ;; esac
 : "${EXPECTED_SNAPSHOT_ID:?Task 16 snapshot identity is required}"
 : "${EXPECTED_DATA_HASH:?Task 16 data hash is required}"
 test -f /srv/cs-baoyan-ddl/current/release.json
+test -f /srv/cs-baoyan-ddl/current/data/release.json
+test -f /srv/cs-baoyan-ddl/current/data/current.json
 SMOKE_URL="https://$SELECTED_DOMAIN" \
 EXPECTED_RELEASE_SHA="$EXPECTED_RELEASE_SHA" \
 EXPECTED_SNAPSHOT_ID="$EXPECTED_SNAPSHOT_ID" \
@@ -573,7 +575,7 @@ production environment 应设置 required reviewer，并把 deployment branches 
 
 部署前会查询远端 `refs/heads/main`，并在 archive 上传完成、activation 紧邻之前再次查询；若 `RELEASE_SHA` 已不是最新 main，旧 CI 即使晚完成也会被拒绝。两个 artifact 都来自受保护 main，但这不取代 production approval；受保护 main 与 production approval 共同定义部署代码和 release artifact 的信任边界。
 
-构建后生成 `dist/release.json`：
+构建后生成三个公开文件：批准的 `data/approved/current.json` 原样复制为 `dist/data/current.json`；同一个精确三字段 identity 同时写入监控使用的 `dist/data/release.json` 和 rollback/既有 smoke 兼容使用的 `dist/release.json`：
 
 ```json
 {"releaseSha":"<40-char commit>","snapshotId":"<approved snapshot>","dataHash":"<64-char hash>"}
@@ -589,7 +591,7 @@ production environment 应设置 required reviewer，并把 deployment branches 
 
 脚本仍在执行时，首次发布的失败处理会删除失败的 `current`；后续发布会尝试恢复该 run token 绑定的 previous，并再次执行本地 smoke。仅当 GitHub runner 仍可执行且能够重新连接主机时，workflow 才会自动补偿 public smoke 或 activation step 的失败。
 
-如果 runner 丢失或不可用，必须使用持久 transaction 执行显式 `rollback-release.sh` 对账；如果主机断电，也必须在主机恢复后根据同一 run token 执行 rollback/reconcile 对账。cleanup 的 `if: always()` 会在 runner 仍可执行时删除本地密钥并尝试清理 staging，但不能覆盖 runner 被强制终止的情形。public smoke 不跟随重定向，只接受精确 200、同源根相对 JavaScript asset，并精确核对 release SHA、snapshot ID、data hash、首页标题、SPA 深链和缺失 asset 的 404。
+如果 runner 丢失或不可用，必须使用持久 transaction 执行显式 `rollback-release.sh` 对账；如果主机断电，也必须在主机恢复后根据同一 run token 执行 rollback/reconcile 对账。cleanup 的 `if: always()` 会在 runner 仍可执行时删除本地密钥并尝试清理 staging，但不能覆盖 runner 被强制终止的情形。public smoke 不跟随重定向，只接受精确 200、同源根相对 JavaScript asset；它要求根 `/release.json` 与 `/data/release.json` 都是相同的精确三字段 identity，`/data/current.json` 的 snapshot ID 和 data hash 与之匹配，并核对首页标题、SPA 深链、缺失 asset 和缺失 `/data/*` 路径的 404。三套 Nginx 模板对 `/data/` 只执行静态文件查找，设置 `no-store` 与 `nosniff`，不存在时绝不回退到 SPA。
 
 常规脚本测试使用 fake `flock` 只验证脚本行为，不证明真实互斥。Linux/CI 必须运行使用 util-linux 真实 `flock` 的并发门禁；macOS 因系统没有兼容的 `flock` 而明确跳过该单项测试。
 
@@ -610,8 +612,8 @@ production environment 应设置 required reviewer，并把 deployment branches 
 ```bash
 CURRENT=/srv/cs-baoyan-ddl/current
 RELEASE_SHA=$(basename "$(readlink -f "$CURRENT")")
-EXPECTED_SNAPSHOT_ID=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["snapshotId"])' "$CURRENT/release.json")
-EXPECTED_DATA_HASH=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["dataHash"])' "$CURRENT/release.json")
+EXPECTED_SNAPSHOT_ID=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["snapshotId"])' "$CURRENT/data/release.json")
+EXPECTED_DATA_HASH=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["dataHash"])' "$CURRENT/data/release.json")
 SMOKE_URL=https://ddl.example.com \
 EXPECTED_RELEASE_SHA="$RELEASE_SHA" \
 EXPECTED_SNAPSHOT_ID="$EXPECTED_SNAPSHOT_ID" \

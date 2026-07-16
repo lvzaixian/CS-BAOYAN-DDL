@@ -40,7 +40,7 @@ https://admissions.example.edu.cn
 6. 远端 current 的 `scanAt`、`approvedAt` 不在未来，`approvedAt` 不早于 `scanAt`，且两者不超过最大年龄；
 7. TLS 证书 SAN 匹配目标 hostname，`notAfter` 至少还剩 21 个完整日。
 
-部署产物必须在上述两个精确 `/data/*` 路径提供 JSON；根路径 `/release.json` 不属于 monitor 契约。任一路径缺失、返回 SPA fallback、类型不符或身份不一致都会失败关闭。
+部署产物必须在上述两个精确 `/data/*` 路径提供 JSON；它们是 monitor 的唯一数据事实源。根路径 `/release.json` 保留给 rollback 和既有部署 smoke 兼容，但不属于 monitor 契约。部署 smoke 会同时核对根 `/release.json` 与 `/data/release.json` 的精确三字段身份、`/data/current.json` 的 `snapshotId`/`dataHash`，并要求未知 `/data/*` 路径返回 404。任一事实源缺失、返回 SPA fallback、类型不符、含额外 identity 字段或身份不一致都会失败关闭。
 
 失败时上传 `public-monitor-failure-*` diagnostics artifact。诊断只记录事件、ref、SHA、失败阶段和截断后的错误信息，不保存响应正文、请求头、环境变量或凭据。成功和失败都会写入 GitHub Actions step summary。
 

@@ -399,7 +399,7 @@ class SpaHandler(http.server.SimpleHTTPRequestHandler):
     def send_head(self):
         request_path = urlsplit(self.path).path
         translated = self.translate_path(request_path)
-        if not os.path.exists(translated) and not request_path.startswith("/assets/"):
+        if not os.path.exists(translated) and not request_path.startswith(("/assets/", "/data/")):
             self.path = "/index.html"
         return super().send_head()
 

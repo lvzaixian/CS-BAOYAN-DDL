@@ -156,6 +156,7 @@ function writeReleaseTree(
   assetSource = '/assets/app.js',
 ): void {
   mkdirSync(join(directory, 'assets'), { recursive: true });
+  mkdirSync(join(directory, 'data'), { recursive: true });
   writeFileSync(
     join(directory, 'index.html'),
     `<!doctype html><html><head><title>${expectedTitle}</title></head><body>${marker}<script type="module" src="${assetSource}"></script></body></html>`,
@@ -163,6 +164,16 @@ function writeReleaseTree(
   );
   writeFileSync(join(directory, 'assets', 'app.js'), `console.log(${JSON.stringify(marker)});\n`);
   writeFileSync(join(directory, 'release.json'), `${JSON.stringify(identity)}\n`, 'utf8');
+  writeFileSync(join(directory, 'data', 'release.json'), `${JSON.stringify(identity)}\n`, 'utf8');
+  writeFileSync(
+    join(directory, 'data', 'current.json'),
+    `${JSON.stringify({
+      snapshotId: identity.snapshotId,
+      dataHash: identity.dataHash,
+      fixtureBody: marker,
+    })}\n`,
+    'utf8',
+  );
 }
 
 function stageMaliciousArchive(
@@ -549,8 +560,9 @@ async function startCurrentFixture(
   t: TestContext,
   deployRoot: string,
   options: {
+    corruptPath?: '/release.json' | '/data/release.json' | '/data/current.json';
     expectedHost?: string;
-    corruptIdentity?: boolean;
+    extraIdentityFieldPath?: '/release.json' | '/data/release.json';
     missingAssetStatus?: number;
     redirectHomeTo?: string;
   } = {},
@@ -583,6 +595,8 @@ async function startCurrentFixture(
       relativePath = 'index.html';
     } else if (pathname === '/release.json') {
       relativePath = 'release.json';
+    } else if (pathname.startsWith('/data/')) {
+      relativePath = pathname.slice(1);
     } else if (pathname.startsWith('/assets/')) {
       relativePath = pathname.slice(1);
     } else {
@@ -596,10 +610,15 @@ async function startCurrentFixture(
     }
 
     let body = readFileSync(path);
-    if (options.corruptIdentity && relativePath === 'release.json') {
-      const identity = JSON.parse(body.toString('utf8')) as ReleaseIdentity;
-      identity.dataHash = 'f'.repeat(64);
-      body = Buffer.from(`${JSON.stringify(identity)}\n`);
+    if (options.corruptPath === pathname) {
+      const value = JSON.parse(body.toString('utf8')) as { dataHash: string };
+      value.dataHash = 'f'.repeat(64);
+      body = Buffer.from(`${JSON.stringify(value)}\n`);
+    }
+    if (options.extraIdentityFieldPath === pathname) {
+      const value = JSON.parse(body.toString('utf8')) as Record<string, unknown>;
+      value.unexpected = true;
+      body = Buffer.from(`${JSON.stringify(value)}\n`);
     }
     response.writeHead(200, {
       'Content-Type': relativePath.endsWith('.json') ? 'application/json' : 'text/html',
@@ -1115,7 +1134,7 @@ test('failed first activation removes current and rejects path-shaped release id
   const { deployRoot, fakeBin } = makeDeployRoot(t);
   const smokeUrl = await startCurrentFixture(t, deployRoot, {
     expectedHost: 'ddl.test',
-    corruptIdentity: true,
+    corruptPath: '/release.json',
   });
   const identity: ReleaseIdentity = {
     releaseSha: '3'.repeat(40),
@@ -1156,7 +1175,7 @@ test('failed first activation removes current and rejects path-shaped release id
   assert.equal(existsSync(join(dirname(deployRoot), 'outside')), false);
 });
 
-test('smoke verifies exact release identity, title, asset, SPA fallback, and missing asset status', async (t) => {
+test('smoke verifies all public data endpoints, title, asset, SPA fallback, and missing paths', async (t) => {
   const { deployRoot, fakeBin } = makeDeployRoot(t);
   const identity: ReleaseIdentity = {
     releaseSha: '4'.repeat(40),
@@ -1189,6 +1208,100 @@ test('smoke verifies exact release identity, title, asset, SPA fallback, and mis
   });
   assert.notEqual(wrongIdentity.status, 0);
   assert.match(wrongIdentity.stderr, /smoke failed/i);
+});
+
+test('smoke fails closed when any public data endpoint is missing', async (t) => {
+  for (const relativePath of ['release.json', 'data/release.json', 'data/current.json']) {
+    await t.test(relativePath, async (subtest) => {
+      const { deployRoot, fakeBin } = makeDeployRoot(subtest);
+      const identity: ReleaseIdentity = {
+        releaseSha: '6'.repeat(40),
+        snapshotId: 'snapshot-missing-endpoint',
+        dataHash: '6'.repeat(64),
+      };
+      const release = join(deployRoot, 'releases', identity.releaseSha);
+      writeReleaseTree(release, identity, 'missing-endpoint');
+      rmSync(join(release, relativePath));
+      symlinkSync(release, join(deployRoot, 'current'));
+      const smokeUrl = await startCurrentFixture(subtest, deployRoot);
+
+      const result = await runScript(smokeScript, {
+        SMOKE_URL: smokeUrl,
+        EXPECTED_RELEASE_SHA: identity.releaseSha,
+        EXPECTED_SNAPSHOT_ID: identity.snapshotId,
+        EXPECTED_DATA_HASH: identity.dataHash,
+        SMOKE_ATTEMPTS: '1',
+        SMOKE_RETRY_DELAY: '0',
+        PATH: `${fakeBin}:${process.env.PATH}`,
+      });
+      assert.notEqual(result.status, 0, result.stderr || result.stdout);
+      assert.match(result.stderr, /smoke failed/i);
+    });
+  }
+});
+
+test('smoke fails closed on tampered public identities without logging snapshot bodies', async (t) => {
+  const snapshotBodySentinel = 'DO_NOT_LOG_COMPLETE_SNAPSHOT_BODY';
+  for (const endpoint of ['/release.json', '/data/release.json', '/data/current.json'] as const) {
+    await t.test(endpoint, async (subtest) => {
+      const { deployRoot, fakeBin } = makeDeployRoot(subtest);
+      const identity: ReleaseIdentity = {
+        releaseSha: '7'.repeat(40),
+        snapshotId: 'snapshot-tampered-endpoint',
+        dataHash: '7'.repeat(64),
+      };
+      const release = join(deployRoot, 'releases', identity.releaseSha);
+      writeReleaseTree(release, identity, snapshotBodySentinel);
+      symlinkSync(release, join(deployRoot, 'current'));
+      const smokeUrl = await startCurrentFixture(subtest, deployRoot, {
+        corruptPath: endpoint,
+      });
+
+      const result = await runScript(smokeScript, {
+        SMOKE_URL: smokeUrl,
+        EXPECTED_RELEASE_SHA: identity.releaseSha,
+        EXPECTED_SNAPSHOT_ID: identity.snapshotId,
+        EXPECTED_DATA_HASH: identity.dataHash,
+        SMOKE_ATTEMPTS: '1',
+        SMOKE_RETRY_DELAY: '0',
+        PATH: `${fakeBin}:${process.env.PATH}`,
+      });
+      assert.notEqual(result.status, 0, result.stderr || result.stdout);
+      assert.match(result.stderr, /smoke failed/i);
+      assert.doesNotMatch(result.stderr, new RegExp(snapshotBodySentinel));
+    });
+  }
+});
+
+test('smoke rejects extra fields in both release identity endpoints', async (t) => {
+  for (const endpoint of ['/release.json', '/data/release.json'] as const) {
+    await t.test(endpoint, async (subtest) => {
+      const { deployRoot, fakeBin } = makeDeployRoot(subtest);
+      const identity: ReleaseIdentity = {
+        releaseSha: '8'.repeat(40),
+        snapshotId: 'snapshot-extra-identity-field',
+        dataHash: '8'.repeat(64),
+      };
+      const release = join(deployRoot, 'releases', identity.releaseSha);
+      writeReleaseTree(release, identity, 'extra-identity-field');
+      symlinkSync(release, join(deployRoot, 'current'));
+      const smokeUrl = await startCurrentFixture(subtest, deployRoot, {
+        extraIdentityFieldPath: endpoint,
+      });
+
+      const result = await runScript(smokeScript, {
+        SMOKE_URL: smokeUrl,
+        EXPECTED_RELEASE_SHA: identity.releaseSha,
+        EXPECTED_SNAPSHOT_ID: identity.snapshotId,
+        EXPECTED_DATA_HASH: identity.dataHash,
+        SMOKE_ATTEMPTS: '1',
+        SMOKE_RETRY_DELAY: '0',
+        PATH: `${fakeBin}:${process.env.PATH}`,
+      });
+      assert.notEqual(result.status, 0, result.stderr || result.stdout);
+      assert.match(result.stderr, /smoke failed/i);
+    });
+  }
 });
 
 test('smoke fails when a missing asset does not return 404', async (t) => {
@@ -1444,12 +1557,51 @@ test('workflow bridges smoke identity, compensates attempted activation, and rec
   assert.ok(upload >= 0 && adjacentMainCheck > upload && adjacentMainCheck < activate);
 });
 
+test('workflow creates the public snapshot tree and exact matching release identities', () => {
+  const workflow = readFileSync(workflowPath, 'utf8');
+  const identityStart = workflow.indexOf('- name: Create release identity');
+  const identityEnd = workflow.indexOf('- name: Check final public artifact boundary');
+  assert.ok(identityStart >= 0 && identityEnd > identityStart);
+  const identityStep = workflow.slice(identityStart, identityEnd);
+
+  assert.match(identityStep, /fs\.mkdirSync\('dist\/data', \{ recursive: true \}\)/);
+  assert.match(
+    identityStep,
+    /fs\.copyFileSync\('data\/approved\/current\.json', 'dist\/data\/current\.json'\)/,
+  );
+  assert.match(identityStep, /fs\.readFileSync\('dist\/data\/current\.json', 'utf8'\)/);
+  assert.match(
+    identityStep,
+    /fs\.writeFileSync\(\s*'dist\/release\.json',\s*`\$\{JSON\.stringify\(\{ releaseSha, snapshotId, dataHash \}\)\}\\n`,\s*\)/,
+  );
+  assert.match(
+    identityStep,
+    /fs\.copyFileSync\('dist\/release\.json', 'dist\/data\/release\.json'\)/,
+  );
+  assert.match(identityStep, /publishedSnapshot\.snapshotId !== snapshotId/);
+  assert.match(identityStep, /publishedSnapshot\.dataHash !== dataHash/);
+});
+
 test('Nginx rejects unknown Host values before serving the release', () => {
   const template = readFileSync(nginxTemplatePath, 'utf8');
   assert.match(template, /listen 80 default_server;/);
   assert.match(template, /server_name _;/);
   assert.match(template, /return 444;/);
   assert.match(template, /if \(\$host != "__SERVER_NAME__"\)/);
+});
+
+test('all Nginx templates serve data files exactly and fail closed without SPA fallback', () => {
+  for (const templatePath of [nginxTemplatePath, baotaHttpTemplatePath, baotaTlsTemplatePath]) {
+    const template = readFileSync(templatePath, 'utf8');
+    const match = template.match(/location \/data\/ \{([\s\S]*?)\n    \}/);
+    assert.ok(match, `${templatePath} must define an exact static /data/ location`);
+    const location = match[1];
+    assert.match(location, /try_files \$uri =404;/);
+    assert.match(location, /Cache-Control "no-store(?:, no-cache, must-revalidate)?" always;/);
+    assert.match(location, /X-Content-Type-Options "nosniff" always;/);
+    assert.doesNotMatch(location, /index\.html|\$uri\//);
+    assert.doesNotMatch(template, /location \^~ \/data\//, 'dotfile regex must remain effective');
+  }
 });
 
 test('BaoTa HTTP template avoids a competing default server and preserves the static-site contract', () => {

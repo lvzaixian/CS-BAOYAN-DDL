@@ -218,9 +218,26 @@ expected = {
     "snapshotId": snapshot_id,
     "dataHash": data_hash,
 }
-actual = {key: value.get(key) for key in expected}
-if actual != expected:
-    raise SystemExit(f"release identity mismatch: expected {expected!r}, got {actual!r}")
+if not isinstance(value, dict) or set(value) != set(expected):
+    raise SystemExit("release identity schema mismatch")
+if value != expected:
+    raise SystemExit("release identity mismatch")
+PY
+}
+
+check_snapshot_identity() {
+  python3 - "$1" "$EXPECTED_SNAPSHOT_ID" "$EXPECTED_DATA_HASH" <<'PY'
+import json
+import sys
+
+path, snapshot_id, data_hash = sys.argv[1:]
+with open(path, encoding="utf-8") as handle:
+    value = json.load(handle)
+
+if not isinstance(value, dict):
+    raise SystemExit("public snapshot must be a JSON object")
+if value.get("snapshotId") != snapshot_id or value.get("dataHash") != data_hash:
+    raise SystemExit("public snapshot identity mismatch")
 PY
 }
 
@@ -228,8 +245,8 @@ check_once() {
   local asset_path
   local asset_url
   local deep_url
+  local missing_data_url
   local missing_url
-  local missing_status
 
   if ! fetch_exact 200 "$SMOKE_URL/" "$temp_dir/index.html"; then
     return 1
@@ -242,6 +259,20 @@ check_once() {
     return 1
   fi
   if ! check_release_identity "$temp_dir/release.json"; then
+    return 1
+  fi
+
+  if ! fetch_exact 200 "$SMOKE_URL/data/release.json" "$temp_dir/data-release.json"; then
+    return 1
+  fi
+  if ! check_release_identity "$temp_dir/data-release.json"; then
+    return 1
+  fi
+
+  if ! fetch_exact 200 "$SMOKE_URL/data/current.json" "$temp_dir/data-current.json"; then
+    return 1
+  fi
+  if ! check_snapshot_identity "$temp_dir/data-current.json"; then
     return 1
   fi
 
@@ -259,7 +290,13 @@ check_once() {
   fi
 
   missing_url=$(url_for "/assets/__deploy_smoke_missing__-${EXPECTED_RELEASE_SHA}.js") || return 1
-  fetch_exact 404 "$missing_url" /dev/null
+  if ! fetch_exact 404 "$missing_url" /dev/null; then
+    return 1
+  fi
+
+  missing_data_url=$(url_for "/data/__deploy_smoke_missing__-${EXPECTED_RELEASE_SHA}.json") \
+    || return 1
+  fetch_exact 404 "$missing_data_url" /dev/null
 }
 
 attempt=1
