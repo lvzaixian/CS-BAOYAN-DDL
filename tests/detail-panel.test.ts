@@ -94,6 +94,9 @@ test('matches only explicit times that support the normalized deadline', () => {
     ['2026年7月28日15：00关闭', at(28, 15, 0)],
     ['2026年7月28日18点30分截止', at(28, 18, 30)],
     ['2026年7月28日18时30分截止', at(28, 18, 30)],
+    ['2026年7月28日下午5点截止', at(28, 17, 0)],
+    ['2026年7月28日20时截止', at(28, 20, 0)],
+    ['2026年7月28日中午12点截止', at(28, 12, 0)],
     ['2026年7月28日24:00截止', at(29, 0, 0)],
     ['10:00 开放，7月28日15:00关闭', at(28, 15, 0)],
   ] as const) {
@@ -108,7 +111,8 @@ test('matches only explicit times that support the normalized deadline', () => {
     ['10:00 开放，7月28日截止', at(28, 23, 59)],
     ['2026年7月28日截止', at(28, 23, 59)],
     ['2026年7月28日23:59截止；官方未公布具体时刻', at(28, 23, 59)],
-    ['2026年7月28日18点截止', at(28, 18, 0)],
+    ['2026年7月28日下午5点截止', at(28, 5, 0)],
+    ['2026年7月28日晚上8点截止', at(28, 8, 0)],
     ['2026年7月28日24:01截止', at(29, 0, 1)],
   ] as const) {
     assert.equal(
@@ -146,6 +150,11 @@ test('shows project and event type in the detail header and keeps the official C
 test('labels province as the school location in list and detail views', () => {
   assert.match(schoolRowSource, />· 院校所在地：\{province\}</);
   assert.match(detailPanelSource, />院校所在地：\{province\}</);
+});
+
+test('opens details as a dialog trigger instead of a toggle button', () => {
+  assert.doesNotMatch(schoolRowSource, /aria-pressed=\{selected\}/);
+  assert.match(schoolRowSource, /aria-haspopup="dialog"/);
 });
 
 test('orders official and discovery sources without promoting legacy links', () => {

@@ -257,7 +257,7 @@ test('counts event modes and applies mode OR with cross-dimension AND semantics'
   );
   assert.deepEqual(
     ['online', 'offline', 'hybrid', 'unknown'].map((mode) => eventModeLabel(mode as never)),
-    ['线上', '线下', '混合', '待公布'],
+    ['线上', '线下', '混合', '未核验'],
   );
 });
 

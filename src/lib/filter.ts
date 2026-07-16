@@ -55,7 +55,7 @@ const EVENT_MODE_LABELS: Record<EventMode, string> = {
   online: '线上',
   offline: '线下',
   hybrid: '混合',
-  unknown: '待公布',
+  unknown: '未核验',
 };
 
 export function eventModeLabel(mode: EventMode): string {

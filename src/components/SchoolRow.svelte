@@ -59,7 +59,7 @@
   <button
     type="button"
     onclick={() => onSelect(key)}
-    aria-pressed={selected}
+    aria-haspopup="dialog"
     aria-label="查看项目详情：{school.name} {school.institute} {school.project}"
     class="w-full min-w-0 text-left grid grid-cols-[40px_minmax(0,1fr)_auto] sm:grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-3 sm:gap-4 py-3"
   >

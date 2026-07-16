@@ -1,6 +1,7 @@
 import type { FilterState, ViewMode } from './types';
 import { EVENT_MODES } from './snapshot-types';
 import { defaultFeedId, isValidFeedId } from './schools';
+import { parseStatusList } from './url-filter-values';
 
 const DEFAULT: FilterState = {
   source: defaultFeedId,
@@ -24,7 +25,7 @@ function readFromUrl(): FilterState {
     view: v && VALID_VIEWS.has(v) ? v : DEFAULT.view,
     query: p.get('q') ?? '',
     tags: parseList(p.get('tags')) as FilterState['tags'],
-    status: parseList(p.get('status')) as FilterState['status'],
+    status: parseStatusList(p.get('status')),
     modes: parseEnumList(p.get('modes'), EVENT_MODES),
     provinces: parseList(p.get('prov')),
   };
