@@ -1,8 +1,16 @@
 <script lang="ts">
-  import { Archive, BadgeCheck, ExternalLink } from 'lucide-svelte';
+  import {
+    Archive,
+    BadgeCheck,
+    CircleHelp,
+    ExternalLink,
+    GitMerge,
+    MapPin,
+    Monitor,
+  } from 'lucide-svelte';
   import type { DerivedSchool } from '$lib/types';
   import { formatRemainingShort, formatDateShort, progressAgainst } from '$lib/time';
-  import { expiredDeadlineText, rowKey, sourceLinkLabel } from '$lib/filter';
+  import { eventModeLabel, expiredDeadlineText, rowKey, sourceLinkLabel } from '$lib/filter';
   import { getInitials, getLogoUrl } from '$lib/logos';
   import { resolveProvince } from '$data/provinces';
 
@@ -21,6 +29,7 @@
   const expired = $derived(school.urgency === 'expired');
   const relativeDeadline = $derived(expiredDeadlineText(school));
   const sourceLabel = $derived(sourceLinkLabel(school));
+  const modeLabel = $derived(eventModeLabel(school.eventArrangement.mode));
   const verificationLabel = $derived(
     school.verificationStatus === 'expired' ? '已过期' : '已核验',
   );
@@ -47,7 +56,7 @@
     type="button"
     onclick={() => onSelect(key)}
     aria-pressed={selected}
-    aria-label="查看项目详情：{school.name} {school.institute}"
+    aria-label="查看项目详情：{school.name} {school.institute} {school.project}"
     class="w-full min-w-0 text-left grid grid-cols-[40px_minmax(0,1fr)_auto] sm:grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-3 sm:gap-4 py-3"
   >
     <!-- logo -->
@@ -71,6 +80,10 @@
         <span class="text-fg-0 font-medium text-sm truncate">{school.name}</span>
         <span class="text-fg-3 text-xs truncate">{school.institute}</span>
       </div>
+      <div class="flex items-center gap-1.5 min-w-0 text-xs">
+        <span class="text-fg-1 min-w-0 flex-1 truncate">{school.project}</span>
+        <span class="text-fg-4 max-w-[40%] truncate">· {school.eventType}</span>
+      </div>
       <div class="flex items-center gap-1.5 flex-wrap min-h-[18px]">
         <span
           class="inline-flex items-center gap-1 text-[10.5px] font-medium px-1.5 py-0.5 rounded ring-1
@@ -85,6 +98,21 @@
             <BadgeCheck class="w-3 h-3" aria-hidden="true" />
           {/if}
           {verificationLabel}
+        </span>
+        <span
+          class="inline-flex items-center gap-1 text-[10.5px] font-medium px-1.5 py-0.5 rounded ring-1 bg-violet-100 text-violet-700 ring-violet-200 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30"
+          aria-label="活动形式：{modeLabel}"
+        >
+          {#if school.eventArrangement.mode === 'online'}
+            <Monitor class="w-3 h-3" aria-hidden="true" />
+          {:else if school.eventArrangement.mode === 'offline'}
+            <MapPin class="w-3 h-3" aria-hidden="true" />
+          {:else if school.eventArrangement.mode === 'hybrid'}
+            <GitMerge class="w-3 h-3" aria-hidden="true" />
+          {:else}
+            <CircleHelp class="w-3 h-3" aria-hidden="true" />
+          {/if}
+          {modeLabel}
         </span>
         {#each displayTags as t}
           <span

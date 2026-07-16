@@ -41,6 +41,7 @@
       query: filters.query,
       tags: filters.tags,
       status: filters.status,
+      modes: filters.modes,
       provinces: filters.provinces,
     }),
   );

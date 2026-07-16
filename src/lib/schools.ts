@@ -1,7 +1,13 @@
 import approved from '$approved/current.json';
 import legacy from '$data/legacy-schools.json';
 import { parseDeadline } from './time';
-import type { FeedDescriptor, FieldFactGroup, PublicSnapshot } from './snapshot-types';
+import type {
+  FeedDescriptor,
+  FieldFactGroup,
+  LegacyPublicOpportunityV1,
+  PublicOpportunity,
+  ReadablePublicSnapshot,
+} from './snapshot-types';
 import type { FeedId, School } from './types';
 
 interface LegacySchool {
@@ -16,8 +22,27 @@ interface LegacySchool {
 
 type LegacySchoolsByFeed = Record<string, LegacySchool[]>;
 
-const snapshot = approved as PublicSnapshot;
+const snapshot = approved as ReadablePublicSnapshot;
 const legacySchools = legacy as LegacySchoolsByFeed;
+
+function unrecordedV1Fact(): FieldFactGroup {
+  return { status: 'unverified', summary: '旧版快照未记录' };
+}
+
+function adaptV1Opportunity(row: LegacyPublicOpportunityV1): PublicOpportunity {
+  return {
+    ...row,
+    eventArrangement: {
+      mode: 'unknown',
+      time: unrecordedV1Fact(),
+      formatLocation: unrecordedV1Fact(),
+    },
+  };
+}
+
+const approvedOpportunities: PublicOpportunity[] = snapshot.schemaVersion === 1
+  ? snapshot.opportunities.map(adaptV1Opportunity)
+  : snapshot.opportunities;
 
 function legacyFeedDescriptor(feedId: string): FeedDescriptor {
   const year = feedId.match(/\d{4}/)?.[0] ?? '0000';
@@ -75,6 +100,11 @@ function mapLegacySchool(feedId: FeedId, row: LegacySchool, index: number): Scho
     logistics: unverifiedLegacyFact(),
     recommendation: unverifiedLegacyFact(),
     materials: unverifiedLegacyFact(),
+    eventArrangement: {
+      mode: 'unknown',
+      time: unverifiedLegacyFact(),
+      formatLocation: unverifiedLegacyFact(),
+    },
   };
 }
 
@@ -89,7 +119,7 @@ export const defaultFeedId: FeedId = snapshot.defaultFeedId;
 export const schoolsByFeed: Record<FeedId, School[]> = Object.fromEntries([
   ...snapshot.feeds.map((feed) => [
     feed.id,
-    snapshot.opportunities.filter((row) => row.feedId === feed.id),
+    approvedOpportunities.filter((row) => row.feedId === feed.id),
   ] as const),
   ...legacyFeedCatalog.map((feed) => [
     feed.id,

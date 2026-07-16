@@ -1,4 +1,5 @@
 import type { DerivedSchool, FilterState, School, StatusTag } from './types';
+import type { EventMode } from './snapshot-types';
 import { urgency } from './time';
 import { resolveProvince } from '$data/provinces';
 
@@ -39,14 +40,33 @@ export function rowKey(row: Pick<School, 'projectId'>): string {
 export function opportunityStatusLabel(
   row: Pick<School, 'verificationStatus'>,
 ): StatusTag {
-  return row.verificationStatus === 'expired' ? '已结营' : '已开营';
+  return row.verificationStatus === 'expired' ? '已结束' : '开放';
 }
 
 export function countStatuses(
   rows: readonly Pick<School, 'verificationStatus'>[],
 ): Record<StatusTag, number> {
-  const counts: Record<StatusTag, number> = { 已开营: 0, 已结营: 0 };
+  const counts: Record<StatusTag, number> = { 开放: 0, 已结束: 0 };
   for (const row of rows) counts[opportunityStatusLabel(row)] += 1;
+  return counts;
+}
+
+const EVENT_MODE_LABELS: Record<EventMode, string> = {
+  online: '线上',
+  offline: '线下',
+  hybrid: '混合',
+  unknown: '待公布',
+};
+
+export function eventModeLabel(mode: EventMode): string {
+  return EVENT_MODE_LABELS[mode];
+}
+
+export function countModes(
+  rows: readonly Pick<School, 'eventArrangement'>[],
+): Record<EventMode, number> {
+  const counts: Record<EventMode, number> = { online: 0, offline: 0, hybrid: 0, unknown: 0 };
+  for (const row of rows) counts[row.eventArrangement.mode] += 1;
   return counts;
 }
 
@@ -91,18 +111,20 @@ function compareProjectId(a: School, b: School): number {
 interface ApplyOpts {
   query: string;
   tags: readonly string[];
-  status: readonly string[]; // 已开营 / 已结营
+  status: readonly string[]; // 开放 / 已结束
+  modes: readonly EventMode[];
   provinces: readonly string[];
 }
 
 /** Pure: filter + sort. Caller passes already-derived rows. */
 export function applyFilters(
   rows: readonly DerivedSchool[],
-  { query, tags, status, provinces }: ApplyOpts,
+  { query, tags, status, modes, provinces }: ApplyOpts,
 ): DerivedSchool[] {
   const q = query.trim().toLowerCase();
   const tagSet = new Set(tags);
   const statusSet = new Set(status);
+  const modeSet = new Set(modes);
   const provSet = new Set(provinces);
 
   const out = rows.filter((r) => {
@@ -113,9 +135,11 @@ export function applyFilters(
     }
     // opening status: OR across selected, derived from authoritative verification state
     if (statusSet.size > 0 && !statusSet.has(opportunityStatusLabel(r))) return false;
-    // search across name + institute (case-insensitive)
+    // event modes: OR within the dimension, AND with every other dimension
+    if (modeSet.size > 0 && !modeSet.has(r.eventArrangement.mode)) return false;
+    // search across public opportunity identity fields (case-insensitive)
     if (q) {
-      const hay = `${r.name} ${r.institute}`.toLowerCase();
+      const hay = `${r.name} ${r.institute} ${r.project} ${r.eventType}`.toLowerCase();
       if (!hay.includes(q)) return false;
     }
     // province
@@ -154,5 +178,6 @@ export const matchesFilter = (state: FilterState) => ({
   query: state.query,
   tags: state.tags,
   status: state.status,
+  modes: state.modes,
   provinces: state.provinces,
 });

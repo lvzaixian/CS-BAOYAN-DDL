@@ -3,8 +3,10 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import {
   applyFilters,
+  countModes,
   countStatuses,
   deriveSchool,
+  eventModeLabel,
   expiredDeadlineText,
   pickCalendarMonth,
   rowGroup,
@@ -77,6 +79,11 @@ function school(overrides: Partial<School>): School {
     logistics: { status: 'not-published', summary: '未公布' },
     recommendation: { status: 'not-published', summary: '未公布' },
     materials: { status: 'not-published', summary: '未公布' },
+    eventArrangement: {
+      mode: 'unknown',
+      time: { status: 'not-published', summary: '未公布' },
+      formatLocation: { status: 'not-published', summary: '未公布' },
+    },
     ...overrides,
   };
 }
@@ -85,6 +92,7 @@ const emptyFilters = {
   query: '',
   tags: [],
   status: [],
+  modes: [],
   provinces: [],
 };
 
@@ -181,14 +189,88 @@ test('filters status from verificationStatus with OR semantics and ignores contr
     applyFilters(rows, { ...emptyFilters, status }).map(rowKey),
   );
 
-  assert.deepEqual(filteredIds(['已开营']), new Set([
+  assert.deepEqual(filteredIds(['开放']), new Set([
     active.projectId,
     activeUnknown.projectId,
     activeWithStaleTag.projectId,
   ]));
-  assert.deepEqual(filteredIds(['已结营']), new Set([legacyWithContradictoryTag.projectId]));
-  assert.deepEqual(filteredIds(['已开营', '已结营']), new Set(rows.map(rowKey)));
-  assert.deepEqual(countStatuses(rows), { 已开营: 3, 已结营: 1 });
+  assert.deepEqual(filteredIds(['已结束']), new Set([legacyWithContradictoryTag.projectId]));
+  assert.deepEqual(filteredIds(['开放', '已结束']), new Set(rows.map(rowKey)));
+  assert.deepEqual(countStatuses(rows), { 开放: 3, 已结束: 1 });
+});
+
+test('counts event modes and applies mode OR with cross-dimension AND semantics', () => {
+  const online = deriveSchool(school({
+    projectId: 'online',
+    project: '人工智能开放日',
+    eventType: '开放日',
+    tags: ['985'],
+    province: '北京',
+    eventArrangement: {
+      mode: 'online',
+      time: { status: 'confirmed', summary: '7月20日' },
+      formatLocation: { status: 'confirmed', summary: '腾讯会议' },
+    },
+  }), now);
+  const offline = deriveSchool(school({
+    projectId: 'offline',
+    project: '网络安全夏令营',
+    eventType: '夏令营',
+    tags: ['211'],
+    province: '上海',
+    eventArrangement: {
+      mode: 'offline',
+      time: { status: 'confirmed', summary: '7月21日' },
+      formatLocation: { status: 'confirmed', summary: '校内' },
+    },
+  }), now);
+  const hybrid = deriveSchool(school({
+    projectId: 'hybrid',
+    project: '智能系统体验营',
+    eventType: '夏令营',
+    tags: ['985'],
+    province: '北京',
+    eventArrangement: {
+      mode: 'hybrid',
+      time: { status: 'confirmed', summary: '7月22日' },
+      formatLocation: { status: 'confirmed', summary: '线上与校内' },
+    },
+  }), now);
+  const unknown = deriveSchool(school({ projectId: 'unknown' }), now);
+  const rows = [online, offline, hybrid, unknown];
+
+  assert.deepEqual(countModes(rows), { online: 1, offline: 1, hybrid: 1, unknown: 1 });
+  assert.deepEqual(
+    new Set(applyFilters(rows, { ...emptyFilters, modes: ['online', 'offline'] }).map(rowKey)),
+    new Set(['online', 'offline']),
+  );
+  assert.deepEqual(
+    applyFilters(rows, {
+      ...emptyFilters,
+      modes: ['online', 'hybrid'],
+      tags: ['985'],
+      status: ['开放'],
+      provinces: ['北京'],
+      query: '人工智能',
+    }).map(rowKey),
+    ['online'],
+  );
+  assert.deepEqual(
+    ['online', 'offline', 'hybrid', 'unknown'].map((mode) => eventModeLabel(mode as never)),
+    ['线上', '线下', '混合', '待公布'],
+  );
+});
+
+test('searches name, institute, project and event type', () => {
+  const row = deriveSchool(school({
+    projectId: 'searchable',
+    project: '可信人工智能开放日',
+    eventType: '招生宣讲',
+  }), now);
+
+  for (const query of ['测试大学', '计算机学院', '可信人工智能', '招生宣讲']) {
+    assert.deepEqual(applyFilters([row], { ...emptyFilters, query }).map(rowKey), ['searchable']);
+  }
 });
 
 test('labels links by official-source provenance', () => {
@@ -277,6 +359,24 @@ test('each approved feed exclusively exposes its approved opportunities', () => 
   }
 });
 
+test('adapts the approved v1 snapshot with explicit unknown arrangements', () => {
+  if (approved.schemaVersion !== 1) return;
+  const rows = approved.feeds.flatMap((feed) => getSchools(feed.id));
+
+  assert.ok(rows.length > 0);
+  for (const row of rows) {
+    assert.equal(row.eventArrangement.mode, 'unknown');
+    assert.deepEqual(row.eventArrangement.time, {
+      status: 'unverified',
+      summary: '旧版快照未记录',
+    });
+    assert.deepEqual(row.eventArrangement.formatLocation, {
+      status: 'unverified',
+      summary: '旧版快照未记录',
+    });
+  }
+});
+
 test('appends only legacy feeds absent from the approved catalog', () => {
   const approvedFeedIds = approved.feeds.map((feed) => feed.id);
   const approvedFeedSet = new Set(approvedFeedIds);
@@ -328,6 +428,9 @@ test('maps appended legacy feeds with deterministic IDs and unverified provenanc
       assert.equal(row.tags.includes('已结营'), false);
       assert.equal(sourceLinkLabel(row), '历史来源（未核验）');
       assert.equal(row.discoverySources.some((source) => source.kind === 'official'), false);
+      assert.equal(row.eventArrangement.mode, 'unknown');
+      assert.equal(row.eventArrangement.time.status, 'unverified');
+      assert.equal(row.eventArrangement.formatLocation.status, 'unverified');
     });
   }
 });

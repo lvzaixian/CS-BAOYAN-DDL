@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Search, X, Zap, CalendarDays, Layers } from 'lucide-svelte';
   import { filters, clearAllFilters, toggle } from '$lib/urlState.svelte';
+  import { eventModeLabel } from '$lib/filter';
   import type { DerivedSchool } from '$lib/types';
 
   let { totalCount, visibleCount, rows }: {
@@ -23,7 +24,7 @@
   });
 
   const activeFilterCount = $derived(
-    filters.tags.length + filters.status.length + filters.provinces.length + (filters.query ? 1 : 0),
+    filters.tags.length + filters.status.length + filters.modes.length + filters.provinces.length + (filters.query ? 1 : 0),
   );
 
   function clearQuery() {
@@ -80,8 +81,8 @@
       id="search-input"
       type="search"
       bind:value={filters.query}
-      aria-label="搜索学校和学院"
-      placeholder='搜索学校、学院 …  按 "/" 聚焦'
+      aria-label="搜索学校、学院、项目和活动类型"
+      placeholder='搜索学校、学院、项目、活动类型 …  按 "/" 聚焦'
       class="w-full surface-1 hover:surface-2 focus:surface-2 transition rounded-lg border border-line focus:border-line-strong text-fg-0 placeholder:text-fg-4 text-sm pl-9 pr-9 py-2.5 outline-none"
     />
     {#if filters.query}
@@ -123,6 +124,15 @@
           class="filter-chip inline-flex items-center gap-1 surface-3 border border-line-strong text-fg-1 text-xs rounded-full pl-2.5 pr-1.5 py-1 hover:text-fg-0"
         >
           {t}
+          <X class="w-3 h-3" />
+        </button>
+      {/each}
+      {#each filters.modes as mode}
+        <button
+          onclick={() => (filters.modes = toggle(filters.modes, mode))}
+          class="filter-chip inline-flex items-center gap-1 surface-3 border border-line-strong text-fg-1 text-xs rounded-full pl-2.5 pr-1.5 py-1 hover:text-fg-0"
+        >
+          {eventModeLabel(mode)}
           <X class="w-3 h-3" />
         </button>
       {/each}

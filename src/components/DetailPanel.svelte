@@ -7,13 +7,14 @@
     Files,
     LetterText,
     Link,
+    MapPin,
     X,
   } from 'lucide-svelte';
   import { onMount, tick } from 'svelte';
   import type { DerivedSchool } from '$lib/types';
   import type { FactStatus } from '$lib/snapshot-types';
-  import { formatDateTime } from '$lib/time';
-  import { expiredDeadlineText, sourceLinkLabel } from '$lib/filter';
+  import { formatDate, formatDateTime } from '$lib/time';
+  import { eventModeLabel, expiredDeadlineText, sourceLinkLabel } from '$lib/filter';
   import { getInitials, getLogoUrl } from '$lib/logos';
   import { resolveProvince } from '$data/provinces';
 
@@ -29,9 +30,17 @@
   const logo = $derived(getLogoUrl(school.name));
   const province = $derived(resolveProvince(school.name, school.province));
   const deadlineStatus = $derived(expiredDeadlineText(school));
-  const normalizedDeadline = $derived(
-    school.deadlineMs === null ? '未公布' : formatDateTime(school.deadlineMs),
+  const deadlineIsDateOnly = $derived(
+    school.deadlineOriginal.includes('官方未公布具体时刻'),
   );
+  const normalizedDeadline = $derived(
+    school.deadlineMs === null
+      ? '未公布'
+      : deadlineIsDateOnly
+        ? `${formatDate(school.deadlineMs)} · 官方未公布具体时刻，按当日末排序`
+        : formatDateTime(school.deadlineMs),
+  );
+  const modeLabel = $derived(eventModeLabel(school.eventArrangement.mode));
   const sourceLabel = $derived(sourceLinkLabel(school));
   const verifiedAtMs = $derived.by(() => {
     const parsed = Date.parse(school.verifiedAt);
@@ -118,6 +127,8 @@
       <div class="min-w-0 flex-1 detail-wrap">
         <div class="text-fg-0 font-semibold text-base leading-tight">{school.name}</div>
         <div class="text-fg-2 text-sm mt-0.5">{school.institute}</div>
+        <div class="text-fg-1 text-sm mt-1">{school.project}</div>
+        <div class="text-fg-3 text-xs mt-0.5">{school.eventType}</div>
         {#if province}
           <div class="text-fg-4 text-xs mt-1">{province}</div>
         {/if}
@@ -155,6 +166,37 @@
             <dt>核验时间</dt>
             <dd class="detail-wrap tabular">
               {verifiedAtMs === null ? '未记录' : formatDateTime(verifiedAtMs)}
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="detail-section px-5 py-4 border-b border-line" aria-labelledby="arrangement-heading">
+        <h2 id="arrangement-heading" class="detail-section__title text-fg-2 text-xs font-medium mb-3">
+          <MapPin class="w-4 h-4" aria-hidden="true" />
+          <span>活动安排</span>
+        </h2>
+        <dl class="detail-deadline-grid">
+          <div class="detail-field detail-field--wide">
+            <dt>活动形式</dt>
+            <dd>{modeLabel}</dd>
+          </div>
+          <div class="detail-field">
+            <dt>活动时间</dt>
+            <dd class="detail-wrap">
+              {school.eventArrangement.time.summary || '未提供'}
+              <span class="ml-1 text-[10.5px] text-fg-3">
+                · {factStatusLabels[school.eventArrangement.time.status]}
+              </span>
+            </dd>
+          </div>
+          <div class="detail-field">
+            <dt>形式与地点</dt>
+            <dd class="detail-wrap">
+              {school.eventArrangement.formatLocation.summary || '未提供'}
+              <span class="ml-1 text-[10.5px] text-fg-3">
+                · {factStatusLabels[school.eventArrangement.formatLocation.status]}
+              </span>
             </dd>
           </div>
         </dl>
@@ -251,7 +293,7 @@
           class="w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg surface-3 hover:bg-emerald-500/15 hover:text-emerald-200 text-fg-0 text-sm font-medium border border-line-strong transition detail-wrap"
           aria-label="打开{sourceLabel}：{primaryOfficialSource.label}"
         >
-          <span>查看{sourceLabel}</span>
+          <span>查看官方通知</span>
           <ExternalLink class="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
         </a>
       {:else}

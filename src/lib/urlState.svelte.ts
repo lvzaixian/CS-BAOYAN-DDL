@@ -1,4 +1,5 @@
 import type { FilterState, ViewMode } from './types';
+import { EVENT_MODES } from './snapshot-types';
 import { defaultFeedId, isValidFeedId } from './schools';
 
 const DEFAULT: FilterState = {
@@ -7,6 +8,7 @@ const DEFAULT: FilterState = {
   query: '',
   tags: [],
   status: [],
+  modes: [],
   provinces: [],
 };
 
@@ -23,6 +25,7 @@ function readFromUrl(): FilterState {
     query: p.get('q') ?? '',
     tags: parseList(p.get('tags')) as FilterState['tags'],
     status: parseList(p.get('status')) as FilterState['status'],
+    modes: parseEnumList(p.get('modes'), EVENT_MODES),
     provinces: parseList(p.get('prov')),
   };
 }
@@ -30,6 +33,11 @@ function readFromUrl(): FilterState {
 function parseList(v: string | null): string[] {
   if (!v) return [];
   return v.split(',').map((s) => s.trim()).filter(Boolean);
+}
+
+function parseEnumList<T extends string>(v: string | null, allowed: readonly T[]): T[] {
+  const allowedValues = new Set(allowed);
+  return [...new Set(parseList(v).filter((value): value is T => allowedValues.has(value as T)))];
 }
 
 function writeToUrl(s: FilterState) {
@@ -40,6 +48,7 @@ function writeToUrl(s: FilterState) {
   if (s.query) p.set('q', s.query);
   if (s.tags.length) p.set('tags', s.tags.join(','));
   if (s.status.length) p.set('status', s.status.join(','));
+  if (s.modes.length) p.set('modes', s.modes.join(','));
   if (s.provinces.length) p.set('prov', s.provinces.join(','));
   const qs = p.toString();
   const url = qs ? `?${qs}` : window.location.pathname;
@@ -61,6 +70,7 @@ export function initFilterSync() {
         query: filters.query,
         tags: filters.tags,
         status: filters.status,
+        modes: filters.modes,
         provinces: filters.provinces,
       });
     });
@@ -73,6 +83,7 @@ export function initFilterSync() {
     filters.query = next.query;
     filters.tags = next.tags;
     filters.status = next.status;
+    filters.modes = next.modes;
     filters.provinces = next.provinces;
   });
 }
@@ -81,6 +92,7 @@ export function clearAllFilters() {
   filters.query = '';
   filters.tags = [];
   filters.status = [];
+  filters.modes = [];
   filters.provinces = [];
 }
 

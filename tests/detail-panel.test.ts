@@ -27,7 +27,7 @@ test('keeps the public list groups in actionable, unknown and expired order', ()
   assert.doesNotMatch(listViewSource, /head\('(日期未公布|已结束)'/);
 });
 
-test('renders only the compact verification badge copy for public rows', () => {
+test('renders compact project identity and icon-plus-text mode badges for public rows', () => {
   const markup = schoolRowSource.slice(schoolRowSource.indexOf('</script>'));
 
   assert.match(
@@ -38,13 +38,20 @@ test('renders only the compact verification badge copy for public rows', () => {
   assert.match(markup, /\{#each displayTags as t\}/);
   assert.doesNotMatch(schoolRowSource, /t === '(已开营|已结营)'/);
   assert.doesNotMatch(markup, />\s*(已开营|已结营)\s*</);
+  assert.match(markup, /\{school\.project\}/);
+  assert.match(markup, /\{school\.eventType\}/);
+  assert.match(markup, /\{modeLabel\}/);
+  assert.match(schoolRowSource, /Monitor/);
+  assert.match(schoolRowSource, /MapPin/);
+  assert.match(schoolRowSource, /GitMerge/);
+  assert.match(schoolRowSource, /CircleHelp/);
 });
 
-test('uses five unframed detail sections in the required order', () => {
+test('uses six unframed detail sections in the required order', () => {
   const bodyStart = detailPanelSource.indexOf('<!-- body -->');
   const footerStart = detailPanelSource.indexOf('<!-- footer cta -->');
   const body = detailPanelSource.slice(bodyStart, footerStart);
-  const headings = ['截止信息', '食宿与交通', '推荐信', '材料', '信息来源'];
+  const headings = ['截止信息', '活动安排', '食宿与交通', '推荐信', '材料', '信息来源'];
   let previous = -1;
 
   for (const heading of headings) {
@@ -53,7 +60,7 @@ test('uses five unframed detail sections in the required order', () => {
     previous = position;
   }
 
-  assert.equal(body.match(/<section\b/g)?.length, 5);
+  assert.equal(body.match(/<section\b/g)?.length, 6);
   assert.doesNotMatch(body, /surface-[23]|rounded-(?:lg|xl)/);
 });
 
@@ -64,15 +71,27 @@ test('shows deadline and application facts with legacy-safe fallbacks', () => {
     detailPanelSource,
     /const deadlineStatus = \$derived\(expiredDeadlineText\(school\)\)/,
   );
-  assert.match(
-    detailPanelSource,
-    /const normalizedDeadline = \$derived\(\s*school\.deadlineMs === null/,
-  );
+  assert.match(detailPanelSource, /school\.deadlineOriginal\.includes\('官方未公布具体时刻'\)/);
+  assert.match(detailPanelSource, /官方未公布具体时刻，按当日末排序/);
   assert.match(detailPanelSource, /verifiedAtMs === null\s*\?\s*'未记录'/);
+  assert.match(detailPanelSource, /eventModeLabel\(school\.eventArrangement\.mode\)/);
+  assert.match(detailPanelSource, /school\.eventArrangement\.time\.summary/);
+  assert.match(detailPanelSource, /factStatusLabels\[school\.eventArrangement\.time\.status\]/);
+  assert.match(detailPanelSource, /school\.eventArrangement\.formatLocation\.summary/);
+  assert.match(detailPanelSource, /factStatusLabels\[school\.eventArrangement\.formatLocation\.status\]/);
   assert.match(detailPanelSource, /school\.logistics\.summary/);
   assert.match(detailPanelSource, /factStatusLabels\[school\.logistics\.status\]/);
   assert.match(detailPanelSource, /school\.recommendation\.summary/);
   assert.match(detailPanelSource, /school\.materials\.summary/);
+});
+
+test('shows project and event type in the detail header and keeps the official CTA honest', () => {
+  const footer = detailPanelSource.slice(detailPanelSource.indexOf('<!-- footer cta -->'));
+
+  assert.match(detailPanelSource, /\{school\.project\}/);
+  assert.match(detailPanelSource, /\{school\.eventType\}/);
+  assert.match(footer, />\s*查看官方通知\s*</);
+  assert.doesNotMatch(footer, /立即报名/);
 });
 
 test('orders official and discovery sources without promoting legacy links', () => {

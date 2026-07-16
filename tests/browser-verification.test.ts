@@ -83,15 +83,31 @@ test('frontend exposes stable browser selectors and accessible filter state', ()
   const filterPanel = read('src/components/FilterPanel.svelte');
   const header = read('src/components/Header.svelte');
   const app = read('src/App.svelte');
+  const types = read('src/lib/types.ts');
+  const urlState = read('src/lib/urlState.svelte.ts');
 
   assert.match(schoolRow, /data-row-key=\{key\}/);
   assert.match(schoolRow, /data-deadline-ms=/);
-  assert.match(schoolRow, /aria-label="查看项目详情：\{school\.name\} \{school\.institute\}"/);
+  assert.match(schoolRow, /aria-label="查看项目详情：\{school\.name\} \{school\.institute\} \{school\.project\}"/);
   for (const group of ['active-timed', 'active-unknown', 'expired']) {
     assert.match(listView, new RegExp(`data-row-group="${group}"`));
   }
-  assert.match(toolbar, /aria-label="搜索学校和学院"/);
-  assert.equal(filterPanel.match(/aria-pressed=\{on\}/g)?.length, 3);
+  assert.match(toolbar, /aria-label="搜索学校、学院、项目和活动类型"/);
+  assert.match(toolbar, /placeholder='搜索学校、学院、项目、活动类型/);
+  assert.equal(filterPanel.match(/aria-pressed=\{on\}/g)?.length, 4);
+  assert.match(filterPanel, />形式</);
+  assert.match(filterPanel, />院校所在地</);
+  assert.match(filterPanel, /countModes\(rows\)/);
+  assert.match(filterPanel, /\{#if hasTagCounts\}/);
+  assert.match(types, /modes:\s*EventMode\[\]/);
+  assert.match(urlState, /EVENT_MODES/);
+  assert.match(urlState, /modes:\s*parseEnumList\(p\.get\('modes'\),\s*EVENT_MODES\)/);
+  assert.match(urlState, /p\.set\('modes',\s*s\.modes\.join\(','\)\)/);
+  assert.match(urlState, /filters\.modes\s*=\s*next\.modes/);
+  assert.match(urlState, /filters\.modes\s*=\s*\[\]/);
+  assert.match(toolbar, /filters\.modes\.length/);
+  assert.match(toolbar, /\{#each filters\.modes as mode\}/);
+  assert.match(app, /modes:\s*filters\.modes/);
   assert.match(header, /aria-expanded=\{drawerOpen\}/);
   assert.match(header, /aria-controls="mobile-filter-drawer"/);
   assert.match(app, /role="dialog"/);

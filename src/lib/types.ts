@@ -1,4 +1,4 @@
-import type { PublicOpportunity } from './snapshot-types';
+import type { EventMode, PublicOpportunity } from './snapshot-types';
 
 export type FeedId = string;
 
@@ -7,7 +7,7 @@ export interface School extends PublicOpportunity {}
 export const SCHOOL_TAGS = ['TOP2', '港三', '华五', 'C9', '985', '211', '双非', '四非', '研究院', '联培'] as const;
 export type SchoolTag = (typeof SCHOOL_TAGS)[number];
 
-export const STATUS_TAGS = ['已开营', '已结营'] as const;
+export const STATUS_TAGS = ['开放', '已结束'] as const;
 export type StatusTag = (typeof STATUS_TAGS)[number];
 
 export type ViewMode = 'list' | 'calendar';
@@ -18,6 +18,7 @@ export interface FilterState {
   query: string;
   tags: SchoolTag[];
   status: StatusTag[];
+  modes: EventMode[];
   provinces: string[];
 }
 
