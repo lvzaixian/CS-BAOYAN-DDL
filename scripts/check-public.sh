@@ -10,6 +10,13 @@ if test -n "$tracked_staging"; then
   exit 1
 fi
 
+tracked_work="$(git ls-files -- ':(top)work/**')"
+if test -n "$tracked_work"; then
+  printf '%s\n' 'tracked work file is forbidden' >&2
+  printf '%s\n' "$tracked_work" >&2
+  exit 1
+fi
+
 for forbidden in public/CNAME .github/workflows/update_json.yml; do
   if test -e "$forbidden" || test -L "$forbidden" \
     || git ls-files --error-unmatch -- "$forbidden" >/dev/null 2>&1; then

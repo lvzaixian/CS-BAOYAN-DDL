@@ -36,6 +36,65 @@ function setOnlyOpportunityStatus(
   snapshot.counts.expired = status === 'expired' ? 1 : 0;
 }
 
+const privateValueCases: Array<{
+  name: string;
+  path: string;
+  mutate: (snapshot: Record<string, any>) => void;
+}> = [
+  {
+    name: 'email address',
+    path: 'snapshot.opportunities[0].description',
+    mutate: (value) => (value.opportunities[0].description = '联系 student@example.com'),
+  },
+  {
+    name: 'Chinese mainland mobile number',
+    path: 'snapshot.opportunities[0].logistics.summary',
+    mutate: (value) => (value.opportunities[0].logistics.summary = '咨询 138-0013-8000'),
+  },
+  {
+    name: 'macOS user-local path',
+    path: 'snapshot.opportunities[0].materials.summary',
+    mutate: (value) => (value.opportunities[0].materials.summary = '/Users/alice/private.json'),
+  },
+  {
+    name: 'Linux user-local path',
+    path: 'snapshot.opportunities[0].discoverySources[0].label',
+    mutate: (value) =>
+      (value.opportunities[0].discoverySources[0].label = '/home/alice/private.json'),
+  },
+  {
+    name: 'Windows user-local path',
+    path: 'snapshot.opportunities[0].recommendation.summary',
+    mutate: (value) =>
+      (value.opportunities[0].recommendation.summary = String.raw`C:\Users\Alice\private.json`),
+  },
+  {
+    name: 'file URI',
+    path: 'snapshot.opportunities[0].tags[0]',
+    mutate: (value) => (value.opportunities[0].tags[0] = 'file:///Users/alice/private.json'),
+  },
+  {
+    name: 'submitted marker',
+    path: 'snapshot.opportunities[0].project',
+    mutate: (value) => (value.opportunities[0].project = 'submittedProjectIds'),
+  },
+  {
+    name: 'welfare marker',
+    path: 'snapshot.opportunities[0].eventType',
+    mutate: (value) => (value.opportunities[0].eventType = 'welfareScore'),
+  },
+  {
+    name: 'recommendation tier marker',
+    path: 'snapshot.opportunities[0].institute',
+    mutate: (value) => (value.opportunities[0].institute = 'recommendationTier=A'),
+  },
+  {
+    name: 'private profile target marker',
+    path: 'snapshot.feeds[0].label',
+    mutate: (value) => (value.feeds[0].label = 'profile_space/targets/private'),
+  },
+];
+
 test('accepts a valid approved snapshot', () => {
   assert.deepEqual(validateSnapshot(validSnapshot(), nowMs), []);
 });
@@ -65,6 +124,41 @@ test('rejects an expired deadline epoch on a confirmed-open row', () => {
 
 test('accepts a valid candidate without approval metadata', () => {
   assert.deepEqual(validateCandidate(validCandidate(), nowMs), []);
+});
+
+test('candidate rejects private values with their public field paths', async (t) => {
+  for (const { name, path, mutate } of privateValueCases) {
+    await t.test(name, () => {
+      const candidate = validCandidate();
+      mutate(candidate);
+
+      const errors = validateCandidate(candidate, nowMs).join('\n');
+      assert.match(errors, new RegExp(path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    });
+  }
+});
+
+test('approved snapshot rejects private values with their public field paths', async (t) => {
+  for (const { name, path, mutate } of privateValueCases) {
+    await t.test(name, () => {
+      const snapshot = validSnapshot();
+      mutate(snapshot);
+
+      const errors = validateSnapshot(snapshot, nowMs).join('\n');
+      assert.match(errors, new RegExp(path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    });
+  }
+});
+
+test('privacy validation does not reject normal public URLs or embedded long URL IDs', () => {
+  const candidate = validCandidate();
+  candidate.opportunities[0].description =
+    '详情：https://apply.example.edu.cn/notices/84d17857554739?channel=public';
+  const snapshot = validSnapshot();
+  snapshot.opportunities[0].description = candidate.opportunities[0].description;
+
+  assert.deepEqual(validateCandidate(candidate, nowMs), []);
+  assert.deepEqual(validateSnapshot(snapshot, nowMs), []);
 });
 
 test('candidate rejects every approval-only metadata field', async (t) => {

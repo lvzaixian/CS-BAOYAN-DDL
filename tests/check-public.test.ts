@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -25,7 +25,7 @@ function createRepository(t: TestContext): string {
   const repo = mkdtempSync(join(tmpdir(), 'check-public-'));
   t.after(() => rmSync(repo, { recursive: true, force: true }));
   git(repo, ['init', '-q']);
-  writeFileSync(join(repo, '.gitignore'), 'data/staging/*.json\n', 'utf8');
+  writeFileSync(join(repo, '.gitignore'), '/work/\ndata/staging/*.json\n', 'utf8');
   git(repo, ['add', '.gitignore']);
   return repo;
 }
@@ -56,9 +56,57 @@ function assertPrivateLeak(repo: string): void {
   assert.match(result.stderr, /private (?:contact )?data found/i);
 }
 
+test('root work directory is ignored by default', () => {
+  const result = run(repositoryRoot, 'git', ['check-ignore', '-q', '--', 'work/private.json']);
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+});
+
+test('rejects a work file that is force-staged despite the ignore rule', (t) => {
+  const repo = createRepository(t);
+  write(repo, 'work/private.json', '{"project":"private"}\n');
+  git(repo, ['add', '-f', '--', 'work/private.json']);
+
+  const result = check(repo);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /tracked work file is forbidden/i);
+  assert.match(result.stderr, /work\/private\.json/i);
+});
+
+test('rejects a work file already tracked in HEAD', (t) => {
+  const repo = createRepository(t);
+  write(repo, 'work/private.json', '{"project":"private"}\n');
+  git(repo, ['add', '-f', '--', 'work/private.json']);
+  git(repo, [
+    '-c',
+    'user.name=Test User',
+    '-c',
+    'user.email=test@example.com',
+    'commit',
+    '-qm',
+    'track work file',
+  ]);
+
+  const result = check(repo);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /tracked work file is forbidden/i);
+  assert.match(result.stderr, /work\/private\.json/i);
+});
+
 test('passes for clean tracked public inputs', (t) => {
   const repo = createRepository(t);
   writeTracked(repo, 'data/approved/current.json', '{"project":"public"}\n');
+
+  assertPasses(repo);
+});
+
+test('passes while scanning the privacy validator source itself', (t) => {
+  const repo = createRepository(t);
+  const validatorSource = readFileSync(
+    join(repositoryRoot, 'src/lib/snapshot-validation.ts'),
+    'utf8',
+  );
+  writeTracked(repo, 'src/lib/snapshot-validation.ts', validatorSource);
 
   assertPasses(repo);
 });

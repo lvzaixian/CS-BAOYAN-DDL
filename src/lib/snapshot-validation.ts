@@ -29,6 +29,38 @@ const deniedOfficialHosts = new Set([
   'www.baoyantongzhi.com',
   'baoyantongzhi.com',
 ]);
+const privateMarkerPattern = new RegExp(
+  [
+    'submitted(?:ProjectIds)?',
+    'targets[\\\\/]submitted',
+    'welfare(?:Score)?',
+    ['cityPlatform', 'Value'].join(''),
+    ['social', 'Value'].join(''),
+    ['recommendation', 'Tier'].join(''),
+    'profile_space[\\\\/]targets',
+  ].join('|'),
+  'i',
+);
+const privateValuePatterns: ReadonlyArray<{ pattern: RegExp; label: string }> = [
+  {
+    pattern: /[a-z0-9._%+-]+(?:@|%40)[a-z0-9.-]+\.[a-z]{2,}/i,
+    label: 'email address',
+  },
+  {
+    pattern: /(?:^|[^a-z0-9])1[3-9][0-9][ -]?[0-9]{4}[ -]?[0-9]{4}(?:[^a-z0-9]|$)/i,
+    label: 'Chinese mainland mobile number',
+  },
+  { pattern: /\bfile:\/+\S*/i, label: 'file URI' },
+  {
+    pattern:
+      /(?:^|[^a-z0-9.])\/(?:Users|home)\/[a-z0-9_.-]+(?:[\\/]|$)|\b[a-z]:[\\/]+Users[\\/]+[^\\/\s]+|(?:^|[\s"'(])~[\\/]+/i,
+    label: 'user-local path',
+  },
+  {
+    pattern: privateMarkerPattern,
+    label: 'private publication marker',
+  },
+];
 
 const candidateKeys = [
   'schemaVersion',
@@ -80,6 +112,48 @@ interface OpportunityOrderValue {
 
 function isObject(value: unknown): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function childPath(path: string, key: string): string {
+  return /^[a-z_$][a-z0-9_$]*$/i.test(key) ? `${path}.${key}` : `${path}[${JSON.stringify(key)}]`;
+}
+
+function validatePrivateText(value: string, path: string, errors: string[]): void {
+  for (const { pattern, label } of privateValuePatterns) {
+    if (pattern.test(value)) {
+      errors.push(`${path}: contains a ${label}`);
+      return;
+    }
+  }
+}
+
+function validateNoPrivateValues(
+  value: unknown,
+  path: string,
+  errors: string[],
+  seen = new WeakSet<object>(),
+): void {
+  if (typeof value === 'string' || typeof value === 'number') {
+    validatePrivateText(String(value), path, errors);
+    return;
+  }
+  if (typeof value !== 'object' || value === null || seen.has(value)) return;
+  seen.add(value);
+
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      if (Object.hasOwn(value, index)) {
+        validateNoPrivateValues(value[index], `${path}[${index}]`, errors, seen);
+      }
+    }
+    return;
+  }
+
+  for (const [key, child] of Object.entries(value)) {
+    const pathToChild = childPath(path, key);
+    validatePrivateText(key, pathToChild, errors);
+    validateNoPrivateValues(child, pathToChild, errors, seen);
+  }
 }
 
 function validateShape(
@@ -488,6 +562,7 @@ function validateInput(input: unknown, approved: boolean, nowMs: number): string
   if (!Number.isFinite(nowMs)) {
     errors.push('nowMs: expected a finite number');
   }
+  validateNoPrivateValues(input, 'snapshot', errors);
   const requiredKeys = approved ? [...candidateKeys, ...approvalKeys] : candidateKeys;
   const snapshot = validateShape(input, 'snapshot', requiredKeys, [], errors);
   if (snapshot === undefined) return errors;
