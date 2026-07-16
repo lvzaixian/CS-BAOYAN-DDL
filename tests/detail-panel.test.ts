@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { deadlineOriginalSupportsNormalizedTime } from '../src/lib/time';
 
 const listViewSource = readFileSync(
   new URL('../src/components/ListView.svelte', import.meta.url),
@@ -84,43 +85,53 @@ test('shows deadline and application facts with legacy-safe fallbacks', () => {
   assert.match(detailPanelSource, /school\.materials\.summary/);
 });
 
-test('shows a precise normalized deadline only when the official text includes hour and minute', () => {
-  const declaration = detailPanelSource.match(
-    /const explicitDeadlineTimePattern = (\/[^\n]+\/);/,
-  );
-  assert.ok(declaration, 'missing explicit deadline time pattern');
-  const pattern = new RegExp(declaration[1].slice(1, -1));
+test('matches only explicit times that support the normalized deadline', () => {
+  const at = (day: number, hour: number, minute: number) =>
+    new Date(2026, 6, day, hour, minute).getTime();
 
-  for (const text of [
-    '2026年8月12日23:59前完成报名',
-    '2026年8月12日23：59前完成报名',
-    '2026年8月12日18点30分截止',
-    '2026年8月12日18时30分截止',
-  ]) {
-    assert.equal(pattern.test(text), true, `expected explicit time in: ${text}`);
-  }
-  for (const text of [
-    '2026年8月12日截止',
-    '2026年8月12日截止；官方未公布具体时刻',
-    '2026年8月12日18点截止',
-    '2026年8月12日29:99截止',
-  ]) {
-    assert.equal(pattern.test(text), false, `expected date-only deadline in: ${text}`);
+  for (const [text, deadline] of [
+    ['2026年7月28日15:00关闭', at(28, 15, 0)],
+    ['2026年7月28日15：00关闭', at(28, 15, 0)],
+    ['2026年7月28日18点30分截止', at(28, 18, 30)],
+    ['2026年7月28日18时30分截止', at(28, 18, 30)],
+    ['2026年7月28日24:00截止', at(29, 0, 0)],
+    ['10:00 开放，7月28日15:00关闭', at(28, 15, 0)],
+  ] as const) {
+    assert.equal(
+      deadlineOriginalSupportsNormalizedTime(text, deadline),
+      true,
+      `expected normalized time support in: ${text}`,
+    );
   }
 
+  for (const [text, deadline] of [
+    ['10:00 开放，7月28日截止', at(28, 23, 59)],
+    ['2026年7月28日截止', at(28, 23, 59)],
+    ['2026年7月28日23:59截止；官方未公布具体时刻', at(28, 23, 59)],
+    ['2026年7月28日18点截止', at(28, 18, 0)],
+    ['2026年7月28日24:01截止', at(29, 0, 1)],
+  ] as const) {
+    assert.equal(
+      deadlineOriginalSupportsNormalizedTime(text, deadline),
+      false,
+      `expected no normalized time support in: ${text}`,
+    );
+  }
+
+  assert.equal(deadlineOriginalSupportsNormalizedTime('2026年7月28日15:00关闭', null), false);
+});
+
+test('uses normalized-time support to choose the precise detail deadline', () => {
   assert.match(
     detailPanelSource,
-    /explicitDeadlineTimePattern\.test\(school\.deadlineOriginal\)/,
+    /deadlineOriginalSupportsNormalizedTime\(\s*school\.deadlineOriginal,\s*school\.deadlineMs,?\s*\)/,
   );
+
   assert.match(
     detailPanelSource,
     /deadlineHasExplicitTime\s*\?\s*formatDateTime\(school\.deadlineMs\)/,
   );
   assert.match(detailPanelSource, /按当日末排序（官方未公布具体时刻）/);
-  assert.doesNotMatch(
-    detailPanelSource,
-    /school\.deadlineOriginal\.includes\('官方未公布具体时刻'\)/,
-  );
 });
 
 test('shows project and event type in the detail header and keeps the official CTA honest', () => {

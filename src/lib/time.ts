@@ -6,6 +6,32 @@ export function parseDeadline(raw: string | undefined | null): number | null {
   return Number.isFinite(t) ? t : null;
 }
 
+export function deadlineOriginalSupportsNormalizedTime(
+  original: string,
+  normalizedDeadline: number | null,
+): boolean {
+  if (normalizedDeadline === null || original.includes('官方未公布具体时刻')) return false;
+
+  const normalized = new Date(normalizedDeadline);
+  if (!Number.isFinite(normalized.getTime())) return false;
+  const normalizedMinutes = normalized.getHours() * 60 + normalized.getMinutes();
+
+  const colonTimePattern = /(?:^|[^\d])([01]?\d|2[0-3]|24)\s*[:：]\s*([0-5]\d)(?!\d)/g;
+  for (const match of original.matchAll(colonTimePattern)) {
+    const hour = Number(match[1]);
+    const minute = Number(match[2]);
+    if (hour === 24 && minute !== 0) continue;
+    if ((hour % 24) * 60 + minute === normalizedMinutes) return true;
+  }
+
+  const chineseTimePattern = /(?:^|[^\d])([01]?\d|2[0-3])\s*[点时]\s*([0-5]?\d)\s*分(?!\d)/g;
+  for (const match of original.matchAll(chineseTimePattern)) {
+    if (Number(match[1]) * 60 + Number(match[2]) === normalizedMinutes) return true;
+  }
+
+  return false;
+}
+
 export function urgency(remainingMs: number | null): Urgency {
   if (remainingMs === null) return 'unknown';
   if (remainingMs < 0) return 'expired';

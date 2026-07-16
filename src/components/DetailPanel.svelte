@@ -13,7 +13,11 @@
   import { onMount, tick } from 'svelte';
   import type { DerivedSchool } from '$lib/types';
   import type { FactStatus } from '$lib/snapshot-types';
-  import { formatDate, formatDateTime } from '$lib/time';
+  import {
+    deadlineOriginalSupportsNormalizedTime,
+    formatDate,
+    formatDateTime,
+  } from '$lib/time';
   import { eventModeLabel, expiredDeadlineText, sourceLinkLabel } from '$lib/filter';
   import { getInitials, getLogoUrl } from '$lib/logos';
   import { resolveProvince } from '$data/provinces';
@@ -24,15 +28,13 @@
     unverified: '未核验',
     'not-applicable': '不适用',
   };
-  const explicitDeadlineTimePattern = /(?:^|[^\d])(?:[01]?\d|2[0-3])\s*[:：]\s*[0-5]\d(?!\d)|(?:^|[^\d])(?:[01]?\d|2[0-3])\s*[点时]\s*[0-5]?\d\s*分/;
-
   let { school, onClose }: { school: DerivedSchool; onClose: () => void } = $props();
 
   const logo = $derived(getLogoUrl(school.name));
   const province = $derived(resolveProvince(school.name, school.province));
   const deadlineStatus = $derived(expiredDeadlineText(school));
   const deadlineHasExplicitTime = $derived(
-    explicitDeadlineTimePattern.test(school.deadlineOriginal),
+    deadlineOriginalSupportsNormalizedTime(school.deadlineOriginal, school.deadlineMs),
   );
   const normalizedDeadline = $derived(
     school.deadlineMs === null
