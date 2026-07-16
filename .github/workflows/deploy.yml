@@ -15,6 +15,90 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  production_gate:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production-approval
+    env:
+      RELEASE_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+      BUILD_BUNDLE_DIR: ${{ github.workspace }}/release-build
+
+    steps:
+      - name: Download build artifact for approval gate
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: production-build-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.BUILD_BUNDLE_DIR }}
+
+      - name: Validate release metadata and snapshot freshness
+        shell: bash
+        run: |
+          set -euo pipefail
+          metadata_path="$BUILD_BUNDLE_DIR/release-metadata.json"
+          test -d "$BUILD_BUNDLE_DIR" && test ! -L "$BUILD_BUNDLE_DIR" \
+            || { echo 'missing or unsafe build artifact directory' >&2; exit 1; }
+          test -f "$metadata_path" && test ! -L "$metadata_path" \
+            || { echo 'missing or unsafe release metadata' >&2; exit 1; }
+
+          python3 - "$metadata_path" <<'PY'
+          import json
+          import os
+          import re
+          import sys
+          from datetime import datetime, timedelta, timezone
+
+          MAX_AGE_SECONDS = 21600
+          ISO_TIMESTAMP = re.compile(
+              r"\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])"
+              r"T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,3})?"
+              r"(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)"
+          )
+
+          with open(sys.argv[1], encoding="utf-8") as handle:
+              metadata = json.load(handle)
+
+          expected_keys = {"releaseSha", "snapshotId", "dataHash", "archiveSha", "snapshotScanAt", "snapshotApprovedAt"}
+          if not isinstance(metadata, dict) or set(metadata) != expected_keys:
+              raise SystemExit("release metadata has an unexpected schema")
+          if metadata["releaseSha"] != os.environ["RELEASE_SHA"]:
+              raise SystemExit("release metadata SHA does not match the workflow release")
+          if not re.fullmatch(r"[0-9a-f]{40}", metadata["releaseSha"]):
+              raise SystemExit("release metadata SHA is invalid")
+          if not isinstance(metadata["snapshotId"], str) or not metadata["snapshotId"] \
+                  or any(char in metadata["snapshotId"] for char in "\t\r\n"):
+              raise SystemExit("release metadata snapshotId is invalid")
+          for key in ("dataHash", "archiveSha"):
+              if not isinstance(metadata[key], str) or not re.fullmatch(r"[0-9a-f]{64}", metadata[key]):
+                  raise SystemExit(f"release metadata {key} is invalid")
+
+          def parse_timestamp(key):
+              value = metadata[key]
+              if not isinstance(value, str) or ISO_TIMESTAMP.fullmatch(value) is None:
+                  raise SystemExit(f"release metadata {key} is not a valid ISO timestamp")
+              normalized = f"{value[:-1]}+00:00" if value.endswith("Z") else value
+              try:
+                  timestamp = datetime.fromisoformat(normalized)
+              except ValueError:
+                  raise SystemExit(f"release metadata {key} is not a valid ISO timestamp")
+              if timestamp.utcoffset() is None:
+                  raise SystemExit(f"release metadata {key} must include a UTC offset")
+              return timestamp.astimezone(timezone.utc)
+
+          scan_at = parse_timestamp("snapshotScanAt")
+          approved_at = parse_timestamp("snapshotApprovedAt")
+          now = datetime.now(timezone.utc)
+          max_age = timedelta(seconds=MAX_AGE_SECONDS)
+
+          if approved_at < scan_at:
+              raise SystemExit("release metadata snapshotApprovedAt is before snapshotScanAt")
+          for key, timestamp in (("snapshotScanAt", scan_at), ("snapshotApprovedAt", approved_at)):
+              if timestamp > now:
+                  raise SystemExit(f"release metadata {key} is in the future")
+              if now - timestamp > max_age:
+                  raise SystemExit(f"release metadata {key} is older than 21600 seconds")
+          PY
+
   prepare:
     if: >-
       (github.event_name == 'workflow_run' &&
@@ -165,6 +249,7 @@ jobs:
           retention-days: 1
 
   package-control-plane:
+    needs: production_gate
     if: >-
       (github.event_name == 'workflow_run' &&
        github.event.workflow_run.conclusion == 'success' &&
@@ -347,57 +432,6 @@ jobs:
               handle.write(f"SMOKE_HOST_HEADER={parsed.netloc}\n")
           PY
 
-      - name: Validate snapshot freshness before SSH setup
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - "$BUILD_BUNDLE_DIR/release-metadata.json" <<'PY'
-          import json
-          import re
-          import sys
-          from datetime import datetime, timedelta, timezone
-
-          MAX_AGE_SECONDS = 21600
-          ISO_TIMESTAMP = re.compile(
-              r"\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])"
-              r"T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,3})?"
-              r"(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)"
-          )
-
-          with open(sys.argv[1], encoding="utf-8") as handle:
-              metadata = json.load(handle)
-
-          expected_keys = {"releaseSha", "snapshotId", "dataHash", "archiveSha", "snapshotScanAt", "snapshotApprovedAt"}
-          if not isinstance(metadata, dict) or set(metadata) != expected_keys:
-              raise SystemExit("release metadata has an unexpected schema")
-
-          def parse_timestamp(key):
-              value = metadata[key]
-              if not isinstance(value, str) or ISO_TIMESTAMP.fullmatch(value) is None:
-                  raise SystemExit(f"release metadata {key} is not a valid ISO timestamp")
-              normalized = f"{value[:-1]}+00:00" if value.endswith("Z") else value
-              try:
-                  timestamp = datetime.fromisoformat(normalized)
-              except ValueError:
-                  raise SystemExit(f"release metadata {key} is not a valid ISO timestamp")
-              if timestamp.utcoffset() is None:
-                  raise SystemExit(f"release metadata {key} must include a UTC offset")
-              return timestamp.astimezone(timezone.utc)
-
-          scan_at = parse_timestamp("snapshotScanAt")
-          approved_at = parse_timestamp("snapshotApprovedAt")
-          now = datetime.now(timezone.utc)
-          max_age = timedelta(seconds=MAX_AGE_SECONDS)
-
-          if approved_at < scan_at:
-              raise SystemExit("release metadata snapshotApprovedAt is before snapshotScanAt")
-          for key, timestamp in (("snapshotScanAt", scan_at), ("snapshotApprovedAt", approved_at)):
-              if timestamp > now:
-                  raise SystemExit(f"release metadata {key} is in the future")
-              if now - timestamp > max_age:
-                  raise SystemExit(f"release metadata {key} is older than 21600 seconds")
-          PY
-
       - name: Reject a stale release before SSH setup
         shell: bash
         run: |
@@ -577,7 +611,7 @@ jobs:
             "$remote_env bash $(printf '%q' "$remote_script")"
 
       - name: Remove remote staging and local SSH material
-        if: ${{ always() }}
+        if: ${{ always() && steps.ssh.outcome != 'skipped' }}
         shell: bash
         env:
           SSH_HOST: ${{ secrets.TENCENT_HOST }}

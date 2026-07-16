@@ -298,7 +298,7 @@ test('CLI rejects malformed JSON and stale timestamps', async (t) => {
   }
 });
 
-test('package and deploy workflow enforce private six-hour freshness metadata before SSH', () => {
+test('workflow gates private six-hour freshness before production secrets and SSH', () => {
   const packageJson = JSON.parse(readFileSync(packagePath, 'utf8')) as {
     scripts?: Record<string, string>;
   };
@@ -308,9 +308,20 @@ test('package and deploy workflow enforce private six-hour freshness metadata be
   );
 
   const workflow = readFileSync(workflowPath, 'utf8');
+  const productionGateStart = workflow.indexOf('  production_gate:');
   const prepareStart = workflow.indexOf('  prepare:');
+  const controlPlaneStart = workflow.indexOf('  package-control-plane:');
   const deployStart = workflow.indexOf('  deploy:');
-  const prepare = workflow.slice(prepareStart, deployStart);
+  assert.ok(
+    productionGateStart >= 0
+      && prepareStart > productionGateStart
+      && controlPlaneStart > prepareStart
+      && deployStart > controlPlaneStart,
+  );
+
+  const productionGate = workflow.slice(productionGateStart, prepareStart);
+  const prepare = workflow.slice(prepareStart, controlPlaneStart);
+  const controlPlane = workflow.slice(controlPlaneStart, deployStart);
   const deploy = workflow.slice(deployStart);
   assert.match(
     prepare,
@@ -319,34 +330,35 @@ test('package and deploy workflow enforce private six-hour freshness metadata be
   assert.match(prepare, /snapshotScanAt:\s*process\.env\.SNAPSHOT_SCAN_AT/);
   assert.match(prepare, /snapshotApprovedAt:\s*process\.env\.SNAPSHOT_APPROVED_AT/);
   assert.match(
-    deploy,
+    productionGate,
     /expected_keys = \{"releaseSha", "snapshotId", "dataHash", "archiveSha", "snapshotScanAt", "snapshotApprovedAt"\}/,
   );
 
-  const environmentApproval = deploy.indexOf('environment: production');
-  const artifactValidation = deploy.indexOf(
-    '- name: Validate build and control-plane artifacts and public origin',
+  assert.match(productionGate, /needs:\s*prepare/);
+  assert.match(productionGate, /environment:\s*production-approval/);
+  assert.match(
+    productionGate,
+    /actions\/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093/,
   );
-  const freshness = deploy.indexOf('- name: Validate snapshot freshness before SSH setup');
-  const sshSetup = deploy.indexOf('- name: Configure pinned SSH identity and host key');
-  assert.ok(
-    environmentApproval >= 0
-      && environmentApproval < artifactValidation
-      && artifactValidation < freshness
-      && freshness < sshSetup,
-  );
+  assert.match(productionGate, /production-build-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/);
+  assert.match(productionGate, /MAX_AGE_SECONDS = 21600/);
+  assert.match(productionGate, /datetime\.now\(timezone\.utc\)/);
+  assert.match(productionGate, /snapshotScanAt/);
+  assert.match(productionGate, /snapshotApprovedAt/);
+  assert.match(productionGate, /approved_at < scan_at/);
+  assert.match(productionGate, /timestamp > now/);
+  assert.match(productionGate, /now - timestamp > max_age/);
+  assert.doesNotMatch(productionGate, /\$\{\{\s*secrets\./);
+  assert.doesNotMatch(productionGate, /TENCENT_|HOME\/\.ssh|deploy_key|known_hosts|ssh-keygen/);
+  assert.doesNotMatch(productionGate, /(?:^|\n)\s*(?:ssh|scp)\s/m);
 
-  const beforeFreshness = deploy.slice(0, freshness);
-  assert.doesNotMatch(beforeFreshness, /\$\{\{\s*secrets\./);
-  assert.doesNotMatch(beforeFreshness, /HOME\/\.ssh|deploy_key|known_hosts|ssh-keygen/);
-  assert.doesNotMatch(beforeFreshness, /(?:^|\n)\s*(?:ssh|scp)\s/m);
+  assert.match(controlPlane, /needs:\s*production_gate/);
+  assert.match(deploy, /needs:\s*\[prepare, package-control-plane\]/);
+  assert.match(deploy, /environment:\s*production(?:\s|$)/);
+  assert.doesNotMatch(deploy, /Validate snapshot freshness|MAX_AGE_SECONDS = 21600/);
 
-  const freshnessStep = deploy.slice(freshness, sshSetup);
-  assert.match(freshnessStep, /MAX_AGE_SECONDS = 21600/);
-  assert.match(freshnessStep, /datetime\.now\(timezone\.utc\)/);
-  assert.match(freshnessStep, /snapshotScanAt/);
-  assert.match(freshnessStep, /snapshotApprovedAt/);
-  assert.match(freshnessStep, /approved_at < scan_at/);
-  assert.match(freshnessStep, /timestamp > now/);
-  assert.match(freshnessStep, /now - timestamp > max_age/);
+  const cleanupStart = deploy.indexOf('- name: Remove remote staging and local SSH material');
+  assert.ok(cleanupStart >= 0);
+  const cleanup = deploy.slice(cleanupStart);
+  assert.match(cleanup, /if:\s*\$\{\{ always\(\) && steps\.ssh\.outcome != 'skipped' \}\}/);
 });
