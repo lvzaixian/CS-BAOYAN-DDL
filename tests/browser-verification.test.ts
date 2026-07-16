@@ -101,11 +101,14 @@ test('frontend exposes stable browser selectors and accessible filter state', ()
 
 test('CI and deploy gate production packaging behind the same browser suite', () => {
   const ci = read('.github/workflows/ci.yml');
+  const ciDiagnostics = ci.indexOf('Initialize browser diagnostics');
+  const ciUnit = ci.indexOf('pnpm run test:unit');
   const ciBuild = ci.indexOf('pnpm run build');
   const ciChromium = ci.indexOf('playwright install --with-deps chromium');
   const ciE2E = ci.indexOf('pnpm run test:e2e');
   const ciDistUpload = ci.indexOf('path: dist');
   assert.ok(ciBuild >= 0 && ciBuild < ciChromium && ciChromium < ciE2E && ciE2E < ciDistUpload);
+  assert.ok(ciDiagnostics >= 0 && ciDiagnostics < ciUnit);
   assert.match(ci, /if:\s*\$\{\{ failure\(\) \}\}[\s\S]*test-results/);
   assert.match(ci, /Initialize browser diagnostics[\s\S]*browser-diagnostics\/context\.txt/);
   assert.match(ci, /browser-diagnostics\/[\s\S]*if-no-files-found:\s*error/);

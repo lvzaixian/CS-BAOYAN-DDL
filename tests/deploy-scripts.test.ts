@@ -796,9 +796,6 @@ test('Linux activation uses real flock to serialize concurrent releases', async 
   const secondEntered = join(dirname(deployRoot), 'second-entered');
   const releaseGate = join(dirname(deployRoot), 'release-first');
   const blockingSmoke = join(dirname(deployRoot), 'blocking-smoke.sh');
-  t.after(() => {
-    if (!existsSync(releaseGate)) writeFileSync(releaseGate, 'release\n');
-  });
   writeExecutable(
     blockingSmoke,
     `#!/usr/bin/env bash\nset -eu\nif test "$EXPECTED_RELEASE_SHA" = "$FIRST_RELEASE_SHA"; then\n  : > "$FIRST_ENTERED"\n  while test ! -e "$RELEASE_GATE"; do sleep 0.05; done\nelse\n  : > "$SECOND_ENTERED"\nfi\nexec bash "$REAL_SMOKE_SCRIPT"\n`,
@@ -823,19 +820,20 @@ test('Linux activation uses real flock to serialize concurrent releases', async 
     ),
     ...probeEnv,
   });
-  await waitForPath(firstEntered);
-  const secondResultPromise = runScript(activateScript, {
-    ...deployEnv(
-      deployRoot,
-      fakeBin,
-      smokeUrl,
-      'run-flock-second',
-      second,
-      secondArchive.archiveSha,
-    ),
-    ...probeEnv,
-  });
+  let secondResultPromise: Promise<ScriptResult> | null = null;
   try {
+    await waitForPath(firstEntered);
+    secondResultPromise = runScript(activateScript, {
+      ...deployEnv(
+        deployRoot,
+        fakeBin,
+        smokeUrl,
+        'run-flock-second',
+        second,
+        secondArchive.archiveSha,
+      ),
+      ...probeEnv,
+    });
     await new Promise((resolveWait) => setTimeout(resolveWait, 500));
     assert.equal(existsSync(secondEntered), false, 'second activation crossed the real flock');
   } finally {
@@ -843,6 +841,7 @@ test('Linux activation uses real flock to serialize concurrent releases', async 
   }
 
   const firstResult = await firstResultPromise;
+  assert.ok(secondResultPromise, 'second activation must start after the first enters smoke');
   const secondResult = await secondResultPromise;
   assert.equal(firstResult.status, 0, firstResult.stderr || firstResult.stdout);
   assert.equal(secondResult.status, 0, secondResult.stderr || secondResult.stdout);

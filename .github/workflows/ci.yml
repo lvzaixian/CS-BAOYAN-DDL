@@ -28,18 +28,18 @@ jobs:
           node-version: 20
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run test:unit
-      - run: pnpm run snapshot:validate
-      - run: pnpm run check
-      - run: pnpm run build
-      - name: Install Chromium for browser verification
-        run: pnpm exec playwright install --with-deps chromium
       - name: Initialize browser diagnostics
         run: |
           mkdir -p browser-diagnostics
           printf 'commit=%s\nrun=%s\nattempt=%s\n' \
             "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" \
             > browser-diagnostics/context.txt
+      - run: pnpm run test:unit
+      - run: pnpm run snapshot:validate
+      - run: pnpm run check
+      - run: pnpm run build
+      - name: Install Chromium for browser verification
+        run: pnpm exec playwright install --with-deps chromium
       - name: Run deterministic browser verification
         run: pnpm run test:e2e
       - name: Upload browser failure artifacts
