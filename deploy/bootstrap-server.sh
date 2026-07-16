@@ -8,6 +8,7 @@ DEPLOY_ROOT=${DEPLOY_ROOT:-/srv/cs-baoyan-ddl}
 NGINX_TEMPLATE=${NGINX_TEMPLATE:-$SCRIPT_DIR/nginx/cs-baoyan-ddl.conf}
 NGINX_CONFIG=${NGINX_CONFIG:-/etc/nginx/conf.d/cs-baoyan-ddl.conf}
 NGINX_BIN=${NGINX_BIN:-nginx}
+NGINX_MAIN_CONFIG=${NGINX_MAIN_CONFIG:-}
 TLS_CERTIFICATE=${TLS_CERTIFICATE:-}
 TLS_CERTIFICATE_KEY=${TLS_CERTIFICATE_KEY:-}
 
@@ -55,6 +56,18 @@ case "$NGINX_BIN" in
     NGINX_BIN=$resolved_nginx_bin
     ;;
 esac
+
+if test -n "$NGINX_MAIN_CONFIG"; then
+  case "$NGINX_MAIN_CONFIG" in
+    /*) ;;
+    *) fail 'NGINX_MAIN_CONFIG must be an absolute path when set' ;;
+  esac
+  case "$NGINX_MAIN_CONFIG" in
+    *[!A-Za-z0-9._/-]*|/|*//*|*/../*|*/..|*/./*|*/.|*/)
+      fail 'NGINX_MAIN_CONFIG contains unsafe path syntax'
+      ;;
+  esac
+fi
 
 for command_name in python3 curl flock sha256sum tar install id mktemp mv; do
   command -v "$command_name" >/dev/null 2>&1 \
@@ -279,14 +292,30 @@ restore_config() {
   fi
 }
 
-if ! "$NGINX_BIN" -t; then
+nginx_test_config() {
+  if test -n "$NGINX_MAIN_CONFIG"; then
+    "$NGINX_BIN" -t -c "$NGINX_MAIN_CONFIG"
+  else
+    "$NGINX_BIN" -t
+  fi
+}
+
+nginx_reload_config() {
+  if test -n "$NGINX_MAIN_CONFIG"; then
+    "$NGINX_BIN" -s reload -c "$NGINX_MAIN_CONFIG"
+  else
+    "$NGINX_BIN" -s reload
+  fi
+}
+
+if ! nginx_test_config; then
   if ! restore_config; then
     if test "$had_config" -eq 1; then
       fail 'nginx -t rejected the rendered configuration; failed to restore previous config'
     fi
     fail 'nginx -t rejected the rendered configuration; failed to remove rendered config'
   fi
-  if ! "$NGINX_BIN" -t; then
+  if ! nginx_test_config; then
     if test "$had_config" -eq 1; then
       fail 'nginx -t rejected the rendered configuration; previous config restored but failed revalidation'
     fi
@@ -297,20 +326,20 @@ if ! "$NGINX_BIN" -t; then
   fi
   fail 'nginx -t rejected the rendered configuration; rendered config removed and remaining configuration revalidated; no previous config existed'
 fi
-if ! "$NGINX_BIN" -s reload; then
+if ! nginx_reload_config; then
   if ! restore_config; then
     if test "$had_config" -eq 1; then
       fail 'nginx reload failed; failed to restore previous config'
     fi
     fail 'nginx reload failed; failed to remove rendered config'
   fi
-  if ! "$NGINX_BIN" -t; then
+  if ! nginx_test_config; then
     if test "$had_config" -eq 1; then
       fail 'nginx reload failed; previous config restored but failed revalidation'
     fi
     fail 'nginx reload failed; rendered config removed but remaining configuration failed revalidation; no previous config existed'
   fi
-  if ! "$NGINX_BIN" -s reload; then
+  if ! nginx_reload_config; then
     if test "$had_config" -eq 1; then
       fail 'nginx reload failed; previous config restored and revalidated, but recovery reload failed'
     fi

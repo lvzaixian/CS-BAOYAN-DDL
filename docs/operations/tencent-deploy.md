@@ -71,7 +71,7 @@
 
 本节只允许在已批准的主机维护窗口内由 root 执行，不授权当前任务连接主机。窗口内冻结宝塔的保存、应用、重载和证书动作。为降低误操作面，正常变更只复制一个主门禁块；另有两个互斥的中断恢复块。三个块都独立启用 fail-fast，并在使用任何路径前校验 SELECTED_DOMAIN。
 
-当前只读事实是全局 error_log /www/wwwlogs/nginx_error.log crit;，master cmdline 使用 -c /www/server/nginx/conf/nginx.conf。主门禁不信任历史 PID 或 FD 编号：它把 master cmdline 的显式 -c 参数（没有该参数时为合法默认配置）与 nginx -T 的首个 configuration marker 绑定，并遍历 /proc 下 master 的全部 FD 证明至少一个 FD 打开同一日志 dev/inode。已有配置才要求精确配置 marker，并要求 restorecon -n 无待修复；首次安装只要求真实 include /www/server/panel/vhost/nginx/*.conf;。持久备份使用唯一 mktemp 目录与 cp -a，保留内容、mode、owner、timestamps 和允许的 security.selinux 标签。
+当前只读事实是全局 error_log /www/wwwlogs/nginx_error.log crit;，master cmdline 使用 -c /www/server/nginx/conf/nginx.conf。主门禁不信任历史 PID 或 FD 编号：它把 master cmdline 的显式 -c 参数（没有该参数时为合法默认配置）与 nginx -T 的首个 configuration marker 绑定，把推导出的主配置原样传给 bootstrap，并遍历 /proc 下 master 的全部 FD 证明至少一个 FD 打开同一日志 dev/inode。已有配置才要求精确配置 marker，并要求 restorecon -n 无待修复；首次安装要求锚定的非注释 include /www/server/panel/vhost/nginx/*.conf;，bootstrap 后再要求新 vhost 的精确 marker。持久备份使用唯一 mktemp 目录与 cp -a，保留内容、mode、owner、timestamps 和允许的 security.selinux 标签。
 
 #### HTTP/TLS 单块主门禁
 
@@ -81,7 +81,6 @@
 set -Eeuo pipefail
 : "${SELECTED_DOMAIN:?user-approved domain is required}"
 case "$SELECTED_DOMAIN" in *[!a-z0-9.-]*|.*|*..*|*.) exit 1 ;; esac
-
 : "${TASK14_TEMPLATE_MODE:?set http or tls}"
 umask 077
 NGINX_BIN=/www/server/nginx/sbin/nginx
@@ -160,7 +159,7 @@ if test -e "$NGINX_CONFIG"; then
   RESTORECON_PREVIEW=$(restorecon -n -v "$NGINX_CONFIG" 2>&1)
   test -z "$RESTORECON_PREVIEW"
 else
-  printf '%s\n' "$NGINX_T_OUTPUT" | grep -F 'include /www/server/panel/vhost/nginx/*.conf;'
+  printf '%s\n' "$NGINX_T_OUTPUT" | grep -E '^[[:space:]]*include[[:space:]]+/www/server/panel/vhost/nginx/\*\.conf;[[:space:]]*$'
 fi
 
 python3 - "$NGINX_CONFIG" <<'PY'
@@ -280,7 +279,7 @@ WORKER_POLL_INTERVAL_SECONDS=${WORKER_POLL_INTERVAL_SECONDS:-1}
 case "$WORKER_POLL_ATTEMPTS:$WORKER_POLL_INTERVAL_SECONDS" in *[!0-9:]*) exit 1 ;; esac
 test "$WORKER_POLL_ATTEMPTS" -ge 2
 test "$WORKER_POLL_ATTEMPTS" -le 60
-test "$WORKER_POLL_INTERVAL_SECONDS" -le 10
+test "$WORKER_POLL_INTERVAL_SECONDS" -ge 1; test "$WORKER_POLL_INTERVAL_SECONDS" -le 10
 WORKERS_BEFORE=$(collect_valid_workers | tr '\n' ' ')
 WORKERS_BEFORE=${WORKERS_BEFORE% }
 test -n "$WORKERS_BEFORE"
@@ -319,24 +318,24 @@ if metadata(sys.argv[1]) != metadata(sys.argv[2]): raise SystemExit("backup meta
 PY
   BACKUP_CONFIG_SHA256="$BACKUP_CONFIG.sha256"
   sha256sum "$BACKUP_CONFIG" > "$BACKUP_CONFIG_SHA256"
-  printf 'export BACKUP_CONFIG=%q\nexport BACKUP_CONFIG_SHA256=%q\n' "$BACKUP_CONFIG" "$BACKUP_CONFIG_SHA256"
+  printf 'export BACKUP_CONFIG=%q\nexport BACKUP_CONFIG_SHA256=%q\nexport NGINX_MAIN_CONFIG=%q\n' "$BACKUP_CONFIG" "$BACKUP_CONFIG_SHA256" "$NGINX_MAIN_CONFIG"
 else
   FIRST_INSTALL_MARKER="$BACKUP_DIR/site.absent"
   printf 'absent:%s\n' "$NGINX_CONFIG" > "$FIRST_INSTALL_MARKER"
   FIRST_INSTALL_MARKER_SHA256="$FIRST_INSTALL_MARKER.sha256"
   sha256sum "$FIRST_INSTALL_MARKER" > "$FIRST_INSTALL_MARKER_SHA256"
-  printf 'export FIRST_INSTALL_MARKER=%q\nexport FIRST_INSTALL_MARKER_SHA256=%q\n' "$FIRST_INSTALL_MARKER" "$FIRST_INSTALL_MARKER_SHA256"
+  printf 'export FIRST_INSTALL_MARKER=%q\nexport FIRST_INSTALL_MARKER_SHA256=%q\nexport NGINX_MAIN_CONFIG=%q\n' "$FIRST_INSTALL_MARKER" "$FIRST_INSTALL_MARKER_SHA256" "$NGINX_MAIN_CONFIG"
 fi
 
 if test "$TASK14_TEMPLATE_MODE" = http; then
   sudo env DEPLOY_USER=cs-baoyan-deploy SERVER_NAME="$SELECTED_DOMAIN" \
     DEPLOY_ROOT=/srv/cs-baoyan-ddl NGINX_BIN="$NGINX_BIN" \
-    NGINX_TEMPLATE="$NGINX_TEMPLATE" NGINX_CONFIG="$NGINX_CONFIG" \
+    NGINX_TEMPLATE="$NGINX_TEMPLATE" NGINX_CONFIG="$NGINX_CONFIG" NGINX_MAIN_CONFIG="$NGINX_MAIN_CONFIG" \
     bash deploy/bootstrap-server.sh
 else
   sudo env DEPLOY_USER=cs-baoyan-deploy SERVER_NAME="$SELECTED_DOMAIN" \
     DEPLOY_ROOT=/srv/cs-baoyan-ddl NGINX_BIN="$NGINX_BIN" \
-    NGINX_TEMPLATE="$NGINX_TEMPLATE" NGINX_CONFIG="$NGINX_CONFIG" \
+    NGINX_TEMPLATE="$NGINX_TEMPLATE" NGINX_CONFIG="$NGINX_CONFIG" NGINX_MAIN_CONFIG="$NGINX_MAIN_CONFIG" \
     TLS_CERTIFICATE="$TLS_CERTIFICATE" TLS_CERTIFICATE_KEY="$TLS_CERTIFICATE_KEY" \
     bash deploy/bootstrap-server.sh
 fi
@@ -353,6 +352,7 @@ test -n "$WORKERS_AFTER:$NEW_WORKERS"
 
 NGINX_T_OUTPUT_AFTER=$(active_nginx_t)
 test "$(active_main_config_from "$MASTER_CONFIG_ARGUMENT" "$NGINX_T_OUTPUT_AFTER")" = "$NGINX_MAIN_CONFIG"
+printf '%s\n' "$NGINX_T_OUTPUT_AFTER" | grep -Fx "# configuration file $NGINX_CONFIG:"
 test "$(printf '%s\n' "$NGINX_T_OUTPUT_AFTER" | global_error_log_from_t)" = "$NGINX_ERROR_LOG"
 ERROR_LOG_DEV_INODE_AFTER=$(path_dev_inode "$NGINX_ERROR_LOG")
 test "$ERROR_LOG_DEV_INODE_AFTER" = "$ERROR_LOG_DEV_INODE"
@@ -360,7 +360,7 @@ master_has_log_inode
 test "$(stat -Lc '%s' "$NGINX_ERROR_LOG")" -ge "$ERROR_LOG_OFFSET"
 ERROR_OBSERVE_SECONDS=${ERROR_OBSERVE_SECONDS:-5}
 case "$ERROR_OBSERVE_SECONDS" in ''|*[!0-9]*) exit 1 ;; esac
-test "$ERROR_OBSERVE_SECONDS" -le 30
+test "$ERROR_OBSERVE_SECONDS" -ge 1; test "$ERROR_OBSERVE_SECONDS" -le 30
 sleep "$ERROR_OBSERVE_SECONDS"
 test "$(path_dev_inode "$NGINX_ERROR_LOG")" = "$ERROR_LOG_DEV_INODE"
 master_has_log_inode
@@ -410,7 +410,7 @@ fi
 printf '%s\n' 'reload signal command accepted/sent; master, worker, error-log, SELinux, Host/SNI routing gates passed'
 ```
 
-块打印的 BACKUP_CONFIG/BACKUP_CONFIG_SHA256 或 FIRST_INSTALL_MARKER/FIRST_INSTALL_MARKER_SHA256 是唯一恢复输入，必须保存到 root-only 变更记录。HTTP 验收不授权 DNS 或公网；最终 TLS 与 public launch 继续保持 stop gate，由 production reviewer 单独批准。Task 14 不读取发布内容；release.json、SPA、asset 和 release identity 只在 Task 16 activation 后检查。
+块打印的 BACKUP_CONFIG/BACKUP_CONFIG_SHA256 或 FIRST_INSTALL_MARKER/FIRST_INSTALL_MARKER_SHA256，以及同次打印的精确 NGINX_MAIN_CONFIG，是唯一恢复输入，必须保存到 root-only 变更记录。HTTP 验收不授权 DNS 或公网；最终 TLS 与 public launch 继续保持 stop gate，由 production reviewer 单独批准。Task 14 不读取发布内容；release.json、SPA、asset 和 release identity 只在 Task 16 activation 后检查。
 
 #### 已有配置中断恢复
 
@@ -420,12 +420,13 @@ printf '%s\n' 'reload signal command accepted/sent; master, worker, error-log, S
 set -Eeuo pipefail
 : "${SELECTED_DOMAIN:?user-approved domain is required}"
 case "$SELECTED_DOMAIN" in *[!a-z0-9.-]*|.*|*..*|*.) exit 1 ;; esac
-
 : "${BACKUP_CONFIG:?export the exact BACKUP_CONFIG printed by preflight}"
+: "${NGINX_MAIN_CONFIG:?export the exact NGINX_MAIN_CONFIG printed by preflight}"
 BACKUP_CONFIG_SHA256=${BACKUP_CONFIG_SHA256:-$BACKUP_CONFIG.sha256}
 NGINX_BIN=${NGINX_BIN:-/www/server/nginx/sbin/nginx}
 NGINX_CONFIG=${NGINX_CONFIG:-/www/server/panel/vhost/nginx/$SELECTED_DOMAIN.conf}
-case "$BACKUP_CONFIG:$BACKUP_CONFIG_SHA256:$NGINX_CONFIG" in /*:/*:/*) ;; *) exit 1 ;; esac
+case "$BACKUP_CONFIG:$BACKUP_CONFIG_SHA256:$NGINX_CONFIG:$NGINX_MAIN_CONFIG" in /*:/*:/*:/*) ;; *) exit 1 ;; esac
+case "$NGINX_MAIN_CONFIG" in /|*//*|*/../*|*/..|*/./*|*/.|*/|*[!A-Za-z0-9._/-]*) exit 1 ;; esac
 test -f "$BACKUP_CONFIG"
 test -f "$BACKUP_CONFIG_SHA256"
 sha256sum -c "$BACKUP_CONFIG_SHA256"
@@ -455,8 +456,8 @@ def metadata(path):
     return stat.S_IMODE(value.st_mode), value.st_uid, value.st_gid, value.st_mtime_ns, label(path)
 if metadata(sys.argv[1]) != metadata(sys.argv[2]): raise SystemExit("restored metadata mismatch")
 PY
-"$NGINX_BIN" -t
-"$NGINX_BIN" -s reload
+"$NGINX_BIN" -t -c "$NGINX_MAIN_CONFIG"
+"$NGINX_BIN" -s reload -c "$NGINX_MAIN_CONFIG"
 printf '%s\n' 'recovery reload signal command accepted/sent; application not yet verified'
 flock -u 9
 ```
@@ -469,12 +470,13 @@ flock -u 9
 set -Eeuo pipefail
 : "${SELECTED_DOMAIN:?user-approved domain is required}"
 case "$SELECTED_DOMAIN" in *[!a-z0-9.-]*|.*|*..*|*.) exit 1 ;; esac
-
 : "${FIRST_INSTALL_MARKER:?export the exact FIRST_INSTALL_MARKER printed by preflight}"
+: "${NGINX_MAIN_CONFIG:?export the exact NGINX_MAIN_CONFIG printed by preflight}"
 FIRST_INSTALL_MARKER_SHA256=${FIRST_INSTALL_MARKER_SHA256:-$FIRST_INSTALL_MARKER.sha256}
 NGINX_BIN=${NGINX_BIN:-/www/server/nginx/sbin/nginx}
 NGINX_CONFIG=${NGINX_CONFIG:-/www/server/panel/vhost/nginx/$SELECTED_DOMAIN.conf}
-case "$FIRST_INSTALL_MARKER:$FIRST_INSTALL_MARKER_SHA256:$NGINX_CONFIG" in /*:/*:/*) ;; *) exit 1 ;; esac
+case "$FIRST_INSTALL_MARKER:$FIRST_INSTALL_MARKER_SHA256:$NGINX_CONFIG:$NGINX_MAIN_CONFIG" in /*:/*:/*:/*) ;; *) exit 1 ;; esac
+case "$NGINX_MAIN_CONFIG" in /|*//*|*/../*|*/..|*/./*|*/.|*/|*[!A-Za-z0-9._/-]*) exit 1 ;; esac
 test -f "$FIRST_INSTALL_MARKER"
 test -f "$FIRST_INSTALL_MARKER_SHA256"
 sha256sum -c "$FIRST_INSTALL_MARKER_SHA256"
@@ -483,8 +485,8 @@ exec 9<>"${NGINX_CONFIG}.lock"
 flock -n 9
 rm -f -- "$NGINX_CONFIG"
 test ! -e "$NGINX_CONFIG"
-"$NGINX_BIN" -t
-"$NGINX_BIN" -s reload
+"$NGINX_BIN" -t -c "$NGINX_MAIN_CONFIG"
+"$NGINX_BIN" -s reload -c "$NGINX_MAIN_CONFIG"
 printf '%s\n' 'recovery reload signal command accepted/sent; application not yet verified'
 flock -u 9
 ```

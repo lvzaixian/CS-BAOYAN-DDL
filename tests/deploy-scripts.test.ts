@@ -441,7 +441,7 @@ function makeBootstrapHarness(t: TestContext): BootstrapHarness {
       '  : > "$BOOTSTRAP_NGINX_FAIL_ONCE"\n' +
       '  exit 1\n' +
       'fi\n' +
-      'if [ "$*" = "-s reload" ] && [ -n "${BOOTSTRAP_NGINX_RELOAD_FAIL_ONCE:-}" ] && [ ! -e "$BOOTSTRAP_NGINX_RELOAD_FAIL_ONCE" ]; then\n' +
+      'if [ "$1" = "-s" ] && [ "$2" = "reload" ] && [ -n "${BOOTSTRAP_NGINX_RELOAD_FAIL_ONCE:-}" ] && [ ! -e "$BOOTSTRAP_NGINX_RELOAD_FAIL_ONCE" ]; then\n' +
       '  : > "$BOOTSTRAP_NGINX_RELOAD_FAIL_ONCE"\n' +
       '  exit 1\n' +
       'fi\n' +
@@ -1609,6 +1609,103 @@ test('bootstrap hardening: selected binary owns validation and reload identity',
   });
 });
 
+test('bootstrap propagates one active main-config identity through Nginx operations', async (t) => {
+  const mainConfig = '/www/server/nginx/conf/nginx.conf';
+  const withMainConfig = (commands: string[]): string =>
+    `${commands.map((command) => `${command} -c ${mainConfig}`).join('\n')}\n`;
+
+  await t.test('success validates and reloads with the selected main config', (subtest) => {
+    const harness = makeBootstrapHarness(subtest);
+    const result = harness.run({
+      NGINX_MAIN_CONFIG: mainConfig,
+      NGINX_TEMPLATE: nginxTemplatePath,
+    });
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.equal(
+      readFileSync(harness.nginxLog, 'utf8'),
+      withMainConfig(['-t', '-s reload']),
+    );
+  });
+
+  await t.test('validation-failure recovery revalidates with the same main config', (subtest) => {
+    const harness = makeBootstrapHarness(subtest);
+    writeFileSync(harness.configPath, 'previous config\n', 'utf8');
+    const failOnce = join(harness.sandbox, 'selected-nginx-validation-failed-once');
+    const result = harness.run({
+      BOOTSTRAP_NGINX_FAIL_ONCE: failOnce,
+      NGINX_MAIN_CONFIG: mainConfig,
+      NGINX_TEMPLATE: nginxTemplatePath,
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.equal(readFileSync(harness.configPath, 'utf8'), 'previous config\n');
+    assert.equal(
+      readFileSync(harness.nginxLog, 'utf8'),
+      withMainConfig(['-t', '-t']),
+    );
+  });
+
+  await t.test('reload-failure recovery keeps the same main config for every call', (subtest) => {
+    const harness = makeBootstrapHarness(subtest);
+    writeFileSync(harness.configPath, 'previous config\n', 'utf8');
+    const failOnce = join(harness.sandbox, 'selected-nginx-reload-failed-once');
+    const result = harness.run({
+      BOOTSTRAP_NGINX_RELOAD_FAIL_ONCE: failOnce,
+      NGINX_MAIN_CONFIG: mainConfig,
+      NGINX_TEMPLATE: nginxTemplatePath,
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.equal(readFileSync(harness.configPath, 'utf8'), 'previous config\n');
+    assert.equal(
+      readFileSync(harness.nginxLog, 'utf8'),
+      withMainConfig(['-t', '-s reload', '-t', '-s reload']),
+    );
+  });
+});
+
+test('bootstrap leaves Nginx arguments unchanged when NGINX_MAIN_CONFIG is empty', (t) => {
+  const harness = makeBootstrapHarness(t);
+  const result = harness.run({
+    NGINX_MAIN_CONFIG: '',
+    NGINX_TEMPLATE: nginxTemplatePath,
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.ok(existsSync(harness.nginxLog), JSON.stringify(result));
+  assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n-s reload\n');
+});
+
+test('bootstrap rejects unsafe NGINX_MAIN_CONFIG values before publication', async (t) => {
+  const unsafePaths = [
+    'www/server/nginx/conf/nginx.conf',
+    '/',
+    '/www/server/nginx/conf/./nginx.conf',
+    '/www/server/nginx/conf/../nginx.conf',
+    '/www/server/nginx//conf/nginx.conf',
+    '/www/server/nginx/conf/nginx.conf/',
+    '/www/server/nginx/conf/nginx config',
+    '/www/server/nginx/conf/nginx.conf;touch',
+    '/www/server/nginx/conf/nginx.conf\n--flag',
+  ];
+
+  for (const unsafePath of unsafePaths) {
+    await t.test(JSON.stringify(unsafePath), (subtest) => {
+      const harness = makeBootstrapHarness(subtest);
+      const result = harness.run({
+        NGINX_MAIN_CONFIG: unsafePath,
+        NGINX_TEMPLATE: nginxTemplatePath,
+      });
+
+      assert.notEqual(result.status, 0);
+      assert.match(result.stderr, /NGINX_MAIN_CONFIG.*(?:absolute|unsafe)/i);
+      assert.equal(existsSync(harness.configPath), false);
+      assert.equal(existsSync(harness.nginxLog), false);
+    });
+  }
+});
+
 test('bootstrap host gates: xattrs, idempotence, and reload semantics are bounded', async (t) => {
   await t.test('unknown platform-settable xattr is rejected without modifying config', () => {
     const harness = makeBootstrapHarness(t);
@@ -2126,7 +2223,12 @@ test('BaoTa preflight branches on config existence and preserves a unique metada
 
   assert.match(
     task14,
-    /if test -e "\$NGINX_CONFIG"; then[\s\S]*?# configuration file \$NGINX_CONFIG:[\s\S]*?else[\s\S]*?include \/www\/server\/panel\/vhost\/nginx\/\*\.conf;/,
+    /if test -e "\$NGINX_CONFIG"; then[\s\S]*?# configuration file \$NGINX_CONFIG:[\s\S]*?else/,
+  );
+  assert.ok(
+    task14.includes(
+      "grep -E '^[[:space:]]*include[[:space:]]+/www/server/panel/vhost/nginx/\\*\\.conf;[[:space:]]*$'",
+    ),
   );
   assert.match(task14, /BACKUP_DIR=\$\(mktemp -d "\$BACKUP_ROOT\/\$SELECTED_DOMAIN\.XXXXXX"\)/);
   assert.match(task14, /cp -a -- "\$NGINX_CONFIG" "\$BACKUP_CONFIG"/);
@@ -2145,6 +2247,57 @@ test('BaoTa preflight branches on config existence and preserves a unique metada
     /chmod 0600 "\$BACKUP_DIR"\/\*/,
     'the root-only directory must protect the backup without rewriting preserved metadata',
   );
+});
+
+test('BaoTa host gate propagates the active main config and proves the vhost include', () => {
+  const deployment = readFileSync(deployDocumentationPath, 'utf8');
+  const task14 = markdownSection(
+    deployment,
+    '### Task 14 主机身份、备份与执行窗口门禁',
+    '### Task 16 activation 后内容与身份验收',
+  );
+  const existingRecovery = firstBashBlock(
+    markdownSection(deployment, '#### 已有配置中断恢复', '#### 首次安装中断恢复'),
+  );
+  const firstInstallRecovery = firstBashBlock(
+    markdownSection(deployment, '#### 首次安装中断恢复', '### Task 16 activation 后内容与身份验收'),
+  );
+
+  assert.equal(
+    task14.match(/NGINX_MAIN_CONFIG="\$NGINX_MAIN_CONFIG" \\/g)?.length,
+    2,
+    'both BaoTa bootstrap invocations must carry the inferred active main config',
+  );
+  assert.equal(
+    task14.match(/export NGINX_MAIN_CONFIG=%q/g)?.length,
+    2,
+    'both backup states must print the exact main config needed for recovery',
+  );
+  assert.ok(
+    task14.includes(
+      "grep -E '^[[:space:]]*include[[:space:]]+/www/server/panel/vhost/nginx/\\*\\.conf;[[:space:]]*$'",
+    ),
+    'first-install preflight must use an anchored non-comment BaoTa glob include',
+  );
+  assert.doesNotMatch(
+    task14,
+    /grep -F 'include \/www\/server\/panel\/vhost\/nginx\/\*\.conf;'/,
+  );
+  assertTextOrder(task14, [
+    'wait_for_new_worker "$WORKERS_BEFORE"',
+    'NGINX_T_OUTPUT_AFTER=$(active_nginx_t)',
+    'grep -Fx "# configuration file $NGINX_CONFIG:"',
+  ]);
+  assert.match(task14, /test "\$WORKER_POLL_INTERVAL_SECONDS" -ge 1/);
+  assert.match(task14, /test "\$WORKER_POLL_INTERVAL_SECONDS" -le 10/);
+  assert.match(task14, /test "\$ERROR_OBSERVE_SECONDS" -ge 1/);
+  assert.match(task14, /test "\$ERROR_OBSERVE_SECONDS" -le 30/);
+
+  for (const recovery of [existingRecovery, firstInstallRecovery]) {
+    assert.match(recovery, /: "\$\{NGINX_MAIN_CONFIG:\?/);
+    assert.match(recovery, /"\$NGINX_BIN" -t -c "\$NGINX_MAIN_CONFIG"/);
+    assert.match(recovery, /"\$NGINX_BIN" -s reload -c "\$NGINX_MAIN_CONFIG"/);
+  }
 });
 
 test('documented recovery stops before target modification on checksum or flock failure', async (t) => {
@@ -2204,6 +2357,7 @@ test('documented recovery stops before target modification on checksum or flock 
         DOCUMENTED_FLOCK_STATUS: options.flockStatus ?? '0',
         NGINX_BIN: nginx,
         NGINX_CONFIG: config,
+        NGINX_MAIN_CONFIG: join(sandbox, 'nginx', 'nginx.conf'),
         PATH: `${fakeBin}:${process.env.PATH ?? ''}`,
         SELECTED_DOMAIN: 'ddl.example.com',
       },
@@ -2249,9 +2403,12 @@ test('BaoTa worker gate rejects PID-set false positives and times out without a 
   const procRoot = join(sandbox, 'proc');
   const nginx = join(sandbox, 'selected-nginx');
   const otherBinary = join(sandbox, 'other-nginx');
+  const fakeBin = join(sandbox, 'bin');
   mkdirSync(procRoot, { recursive: true });
+  mkdirSync(fakeBin, { recursive: true });
   writeExecutable(nginx, '#!/bin/sh\nexit 0\n');
   writeExecutable(otherBinary, '#!/bin/sh\nexit 0\n');
+  writeExecutable(join(fakeBin, 'sleep'), '#!/bin/sh\nexit 0\n');
 
   const addProcess = (
     pid: number,
@@ -2276,9 +2433,10 @@ test('BaoTa worker gate rejects PID-set false positives and times out without a 
     ...process.env,
     MASTER_PID: '910',
     NGINX_REAL: realpathSync(nginx),
+    PATH: `${fakeBin}:${process.env.PATH ?? ''}`,
     PROC_ROOT: procRoot,
     WORKER_POLL_ATTEMPTS: '2',
-    WORKER_POLL_INTERVAL_SECONDS: '0',
+    WORKER_POLL_INTERVAL_SECONDS: '1',
   };
   const collected = spawnSync(
     'bash',
