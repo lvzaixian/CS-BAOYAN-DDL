@@ -37,6 +37,8 @@ pnpm run snapshot:import -- \
 导入必须满足：
 
 - 所有公开项目都有稳定 `projectId` 和官方链接；
+- 所有开放项目都显式提供 `eventMode`、`eventTime` 和 `formatLocation`；`eventMode` 只能是 `online`、`offline`、`hybrid` 或 `unknown`；
+- `eventMode` 只能由本轮官方正文、官方报名系统、官方公众号或官方附件确认。不得从住宿、报销、城市、校区或活动名称推断；整体安排未公布、条件式或不同人群采用不同形式时必须使用 `unknown`；
 - 明确截止项目按 `deadlineEpochMs` 升序排列；
 - 截止未知项目位于明确截止之后，过期项目位于所有开放项目之后；
 - pending/WAF 项目不进入 `opportunities`；
@@ -62,6 +64,7 @@ pnpm run snapshot:diff -- \
 - 所有删除记录；
 - 所有从 pending 升为 confirmed 的记录；
 - 截止时间、报名入口、推荐信模板、食宿交通和资格限制的冲突；
+- 活动形式、活动时间和地点的官方原文及其证据状态；
 - 共用官方链接导致的项目重命名或拆分。
 
 删除必须由官方关闭、明确过期或可解释的数据纠正支持。聚合站缺失、搜索无命中或某区域代理未发现都不能单独作为删除依据。审阅发现无法确认时，回到私有扫描数据降级为 pending 后重新导入。
@@ -117,6 +120,7 @@ pnpm run snapshot:check-freshness -- \
 - 扫描失败：保留现有批准快照，记录失败来源并重试。
 - 候选为空或无开放项目：导入应失败关闭，不得用空数据替换现有站点。
 - 官网与聚合站冲突：采用可读的当轮官方证据；无法确认则降级 pending。
+- 活动形式无法从官方来源确认：项目仍可保留，但 `eventMode` 必须为 `unknown`，并保留诚实的 `formatLocation` 原文或“未公布”。
 - WAF、HTTP 412、登录或公众号正文不可读：不得复制聚合站事实冒充官方核验。
 - 批准中断或校验失败：保留现有 `current.json` 和 staging 证据，不手工拼接 hash 或 snapshot ID。
 - 构建或 E2E 失败：不提交、不合并、不部署；先保留诊断 artifact 并修复。

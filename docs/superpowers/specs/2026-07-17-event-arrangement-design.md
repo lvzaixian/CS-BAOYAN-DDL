@@ -73,7 +73,7 @@ The importer fixture proves all four modes, sparse expired-row behavior, exact s
 
 ## UI And Accessibility
 
-Mode labels are `线上`, `线下`, `混合`, and `待公布`. List badges use Lucide icons and text so color is never the sole signal. They have stable compact dimensions, wrap safely with existing verification and school tags, and do not change row height unpredictably on narrow screens.
+Mode labels are `线上`, `线下`, `混合`, and `未核验`. The unknown label describes the public evidence state without claiming that the institution plans a later announcement. List badges use Lucide icons and text so color is never the sole signal. They have stable compact dimensions, wrap safely with existing verification and school tags, and do not change row height unpredictably on narrow screens.
 
 The detail section is placed after deadline information and before logistics. Fact statuses remain visible beside the corresponding source wording. Filter buttons expose `aria-pressed`, counts, and explicit Chinese labels. URL values use stable English enum values under `modes`.
 
