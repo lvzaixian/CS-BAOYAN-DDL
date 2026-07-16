@@ -18,6 +18,7 @@
 
   let cursor = $state(pickInitialMonth());
   let visibleFeedId = $state<string>();
+  let expandedDayKey = $state<string | null>(null);
 
   $effect(() => {
     if (visibleFeedId === undefined) {
@@ -25,6 +26,7 @@
       return;
     }
     if (feedId === visibleFeedId) return;
+    clearExpandedDay();
     visibleFeedId = feedId;
     cursor = pickInitialMonth();
   });
@@ -43,6 +45,16 @@
       arr.sort((a, b) => (a.deadlineMs ?? 0) - (b.deadlineMs ?? 0));
     }
     return map;
+  });
+
+  const expandedItems = $derived(
+    expandedDayKey === null ? [] : byDay.get(expandedDayKey) ?? [],
+  );
+
+  $effect(() => {
+    if (expandedDayKey !== null && (byDay.get(expandedDayKey)?.length ?? 0) <= 3) {
+      clearExpandedDay();
+    }
   });
 
   const grid = $derived.by(() => {
@@ -68,17 +80,37 @@
 
   const monthLabel = $derived(`${cursor.y} 年 ${cursor.m + 1} 月`);
 
+  function clearExpandedDay() {
+    expandedDayKey = null;
+  }
+
+  function toggleDay(key: string) {
+    expandedDayKey = expandedDayKey === key ? null : key;
+  }
+
+  function dayDetailsId(key: string) {
+    return `deadline-calendar-day-${key}`;
+  }
+
+  function dayLabel(key: string) {
+    const [year, month, day] = key.split('-').map(Number);
+    return `${year}年${month}月${day}日`;
+  }
+
   function prev() {
+    clearExpandedDay();
     const m = cursor.m === 0 ? 11 : cursor.m - 1;
     const y = cursor.m === 0 ? cursor.y - 1 : cursor.y;
     cursor = { y, m };
   }
   function next() {
+    clearExpandedDay();
     const m = cursor.m === 11 ? 0 : cursor.m + 1;
     const y = cursor.m === 11 ? cursor.y + 1 : cursor.y;
     cursor = { y, m };
   }
   function jumpToday() {
+    clearExpandedDay();
     const d = new Date(clock.now);
     cursor = { y: d.getFullYear(), m: d.getMonth() };
   }
@@ -93,7 +125,7 @@
   }
 </script>
 
-<div class="surface-1 border border-line rounded-xl overflow-hidden flex flex-col">
+<section aria-label="截止日历" class="surface-1 border border-line rounded-xl overflow-hidden flex flex-col min-w-0">
   <!-- header -->
   <div class="px-4 py-2.5 border-b border-line flex items-center gap-3 surface-2">
     <CalendarRange class="w-4 h-4 text-fg-2" />
@@ -125,14 +157,21 @@
       {@const items = byDay.get(cell.key) ?? []}
       {@const isToday = cell.key === todayKey}
       <div
-        class="relative border-r border-b border-line p-1.5 sm:p-2 flex flex-col gap-1 min-h-[88px] {cell.inMonth ? '' : 'opacity-40'} {(i + 1) % 7 === 0 ? 'border-r-0' : ''} {i >= 35 ? 'border-b-0' : ''}"
+        class="relative border-r border-b border-line p-1.5 sm:p-2 flex flex-col gap-1 min-h-[88px] {cell.inMonth ? '' : 'surface-2'} {(i + 1) % 7 === 0 ? 'border-r-0' : ''} {i >= 35 ? 'border-b-0' : ''}"
       >
         <div class="flex items-center justify-between">
           <span class="text-[11px] tabular {isToday ? 'urge-far font-semibold' : 'text-fg-3'}">
             {new Date(cell.ms).getDate()}
           </span>
           {#if items.length > 3}
-            <span class="text-[10px] text-fg-4 tabular">+{items.length - 3}</span>
+            <button
+              type="button"
+              class="text-[10px] text-fg-3 hover:text-fg-0 tabular rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1"
+              onclick={() => toggleDay(cell.key)}
+              aria-label="{expandedDayKey === cell.key ? '收起' : '展开'} {dayLabel(cell.key)}全部 {items.length} 个截止项目"
+              aria-expanded={expandedDayKey === cell.key}
+              aria-controls={dayDetailsId(cell.key)}
+            >+{items.length - 3}</button>
           {/if}
         </div>
         <div class="flex flex-col gap-0.5 min-h-0">
@@ -150,4 +189,33 @@
       </div>
     {/each}
   </div>
-</div>
+
+  {#if expandedDayKey !== null}
+    <section
+      id={dayDetailsId(expandedDayKey)}
+      aria-label="{dayLabel(expandedDayKey)}全部截止项目"
+      class="min-w-0 border-t border-line"
+    >
+      <div class="px-3 sm:px-4 py-2.5 surface-2 flex items-baseline gap-2 min-w-0">
+        <h2 class="text-sm font-medium text-fg-0 min-w-0">{dayLabel(expandedDayKey)}截止项目</h2>
+        <span class="text-xs text-fg-3 tabular shrink-0">{expandedItems.length} 项</span>
+      </div>
+      <ul class="min-w-0 divide-y divide-line">
+        {#each expandedItems as r (rowKey(r))}
+          <li class="min-w-0">
+            <button
+              type="button"
+              onclick={() => onSelect(rowKey(r))}
+              aria-haspopup="dialog"
+              aria-label="查看截止项目详情：{r.name} {r.project}"
+              class="w-full min-w-0 px-3 sm:px-4 py-2.5 text-left hover:surface-2 focus-visible:surface-2 transition grid grid-cols-1 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] gap-0.5 sm:gap-3"
+            >
+              <span class="min-w-0 text-sm text-fg-0 break-words">{r.name}<span class="text-fg-3"> · {r.institute}</span></span>
+              <span class="min-w-0 text-xs sm:text-sm text-fg-1 break-words">{r.project}</span>
+            </button>
+          </li>
+        {/each}
+      </ul>
+    </section>
+  {/if}
+</section>

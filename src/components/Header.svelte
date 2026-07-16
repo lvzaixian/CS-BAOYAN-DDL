@@ -71,12 +71,12 @@
       <button
         role="tab"
         aria-selected={filters.view === 'calendar'}
-        aria-label="日历视图"
+        aria-label="截止日历视图"
         onclick={() => setView('calendar')}
         class="px-2 py-1 rounded text-xs font-medium flex items-center gap-1.5 transition {filters.view === 'calendar' ? 'surface-3 text-fg-0' : 'text-fg-2 hover:text-fg-1'}"
       >
         <Calendar class="w-3.5 h-3.5" />
-        <span class="hidden sm:inline">日历</span>
+        <span class="hidden sm:inline">截止日历</span>
       </button>
     </div>
 

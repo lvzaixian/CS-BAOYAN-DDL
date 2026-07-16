@@ -50,30 +50,53 @@ test('browser tooling keeps the deterministic fixture in dist-e2e only', () => {
   assert.match(isolationCheck, /E2E_ACTIVE_SOONER/);
 
   const fixture = JSON.parse(read('e2e/fixtures/current.json')) as {
+    schemaVersion: number;
     counts: Record<string, number>;
     opportunities: Array<{
       projectId: string;
       verificationStatus: string;
       deadlineEpochMs: number | null;
+      eventArrangement?: { mode?: string };
     }>;
   };
   const fixedNow = Date.parse('2026-07-16T12:00:00+08:00');
   assert.deepEqual(validateSnapshot(fixture, fixedNow), []);
   assert.deepEqual(validateApprovedSnapshot(fixture, fixedNow), []);
+  assert.equal(fixture.schemaVersion, 2);
   assert.deepEqual(fixture.counts, {
-    confirmedOpen: 2,
+    confirmedOpen: 7,
     confirmedUnknownDeadline: 1,
     pendingExcluded: 0,
     expired: 1,
   });
   assert.deepEqual(
     fixture.opportunities.map((row) => row.verificationStatus),
-    ['confirmed-open', 'confirmed-open', 'confirmed-unknown-deadline', 'expired'],
+    [
+      'confirmed-open',
+      'confirmed-open',
+      'confirmed-open',
+      'confirmed-open',
+      'confirmed-open',
+      'confirmed-open',
+      'confirmed-open',
+      'confirmed-unknown-deadline',
+      'expired',
+    ],
   );
-  assert.ok(
-    (fixture.opportunities[0].deadlineEpochMs as number) <
-      (fixture.opportunities[1].deadlineEpochMs as number),
+  assert.deepEqual(
+    new Set(fixture.opportunities.map((row) => row.eventArrangement?.mode)),
+    new Set(['online', 'offline', 'hybrid', 'unknown']),
   );
+  assert.ok(fixture.opportunities.every((row) => row.eventArrangement?.mode));
+  const sameDayCounts = new Map<string, number>();
+  for (const row of fixture.opportunities) {
+    if (row.deadlineEpochMs === null) continue;
+    const day = new Date(row.deadlineEpochMs).toLocaleDateString('sv-SE', {
+      timeZone: 'Asia/Shanghai',
+    });
+    sameDayCounts.set(day, (sameDayCounts.get(day) ?? 0) + 1);
+  }
+  assert.ok([...sameDayCounts.values()].some((count) => count >= 5));
 });
 
 test('frontend exposes stable browser selectors and accessible filter state', () => {

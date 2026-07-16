@@ -3,12 +3,33 @@ import { expect, test, type Locator, type Page, type TestInfo } from '@playwrigh
 import { PNG } from 'pngjs';
 
 const FIXED_NOW = Date.parse('2026-07-16T12:00:00+08:00');
+const KEYS = {
+  redwood: '2028|红杉大学|人工智能学院|夏令营',
+  orange: '2028|橙川大学|计算机科学学院|科研训练营',
+  silver: '2028|银湖大学|数据科学学院|夏令营',
+  pine: '2028|松岭大学|电子信息学院|开放日',
+  cloud: '2028|云海大学|智能系统研究院|暑期学校',
+  bluebay: '2028|蓝湾大学|计算机学院|预推免',
+  greenfield: '2028|青禾大学|软件学院|开放日',
+  farmountain: '2028|远山大学|网络空间安全学院|夏令营',
+} as const;
 const EXPECTED_KEYS = [
-  '2028|红杉大学|人工智能学院|夏令营',
-  '2028|蓝湾大学|计算机学院|预推免',
-  '2028|青禾大学|软件学院|开放日',
-  '2028|远山大学|网络空间安全学院|夏令营',
+  KEYS.redwood,
+  KEYS.orange,
+  KEYS.silver,
+  KEYS.pine,
+  KEYS.cloud,
+  KEYS.bluebay,
+  KEYS.greenfield,
+  KEYS.farmountain,
 ];
+const CROWDED_DAY_ITEMS = [
+  { name: '红杉大学', project: '2026年优秀大学生夏令营' },
+  { name: '橙川大学', project: '2026年量子智算训练计划' },
+  { name: '银湖大学', project: '2026年数据智能夏令营' },
+  { name: '松岭大学', project: '2026年电子信息开放日' },
+  { name: '云海大学', project: '2026年智能系统暑期学校' },
+] as const;
 
 async function openFixture(page: Page): Promise<void> {
   await page.addInitScript((now) => {
@@ -24,7 +45,7 @@ async function openFixture(page: Page): Promise<void> {
     content:
       '*, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }',
   });
-  await expect(page.locator('[data-row-key]')).toHaveCount(4);
+  await expect(page.locator('[data-row-key]')).toHaveCount(8);
 }
 
 async function expectNoHorizontalOverflow(page: Page, label: string): Promise<void> {
@@ -136,7 +157,7 @@ test('uses the fixture and renders exact ordered groups and active deadlines', a
     })),
   );
   expect(groups).toEqual([
-    { group: 'active-timed', rows: 2 },
+    { group: 'active-timed', rows: 6 },
     { group: 'active-unknown', rows: 1 },
     { group: 'expired', rows: 1 },
   ]);
@@ -148,7 +169,14 @@ test('uses the fixture and renders exact ordered groups and active deadlines', a
   const activeDeadlines = await page
     .locator('[data-row-group="active-timed"] [data-row-key]')
     .evaluateAll((nodes) => nodes.map((node) => Number(node.getAttribute('data-deadline-ms'))));
-  expect(activeDeadlines).toEqual([1784368800000, 1785513540000]);
+  expect(activeDeadlines).toEqual([
+    1784368800000,
+    1784372400000,
+    1784376000000,
+    1784379600000,
+    1784383200000,
+    1785513540000,
+  ]);
   expect(activeDeadlines).toEqual([...activeDeadlines].sort((a, b) => a - b));
   await expect(
     page.locator('[data-row-group="active-unknown"] [data-row-key]'),
@@ -161,11 +189,22 @@ test('opens deterministic details with ordered facts and exact source links', as
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole('heading', { level: 2 })).toHaveText([
     '截止信息',
+    '活动安排',
     '食宿与交通',
     '推荐信',
     '材料',
     '信息来源',
   ]);
+  await expect(dialog.getByText('2026年8月3日至8月5日')).toBeVisible();
+  await expect(dialog.getByText('腾讯会议，链接另行通知')).toBeVisible();
+  const officialCta = dialog
+    .locator('.detail-panel__footer')
+    .getByRole('link', { name: '打开官方来源：红杉大学官方通知' });
+  await expect(officialCta).toContainText('查看官方通知');
+  await expect(officialCta).toHaveAttribute(
+    'href',
+    'https://admissions.redwood.example.test/2026/summer-camp',
+  );
 
   const sourceSection = dialog.locator('section').last();
   const sourceLinks = sourceSection.getByRole('link');
@@ -231,62 +270,121 @@ test('keeps desktop sidebar and mobile panels within their viewport', async ({ p
   expect(Math.round(detailBox!.height)).toBe(viewport!.height);
 });
 
-test('search and OR filters persist in the URL and clear completely', async ({ page }, testInfo) => {
-  const search = page.getByRole('searchbox', { name: '搜索学校和学院' });
-  await search.fill('红杉');
-  await expectRowKeys(page, [EXPECTED_KEYS[0]]);
-  await search.fill('大学');
-  await expectRowKeys(page, EXPECTED_KEYS);
+test('search matches project names and activity types', async ({ page }) => {
+  const search = page.getByRole('searchbox', { name: '搜索学校、学院、项目和活动类型' });
 
+  await search.fill('量子智算');
+  await expectRowKeys(page, [KEYS.orange]);
+  await search.fill('科研训练营');
+  await expectRowKeys(page, [KEYS.orange]);
+});
+
+test('event mode filters use OR semantics and clear completely', async ({ page }, testInfo) => {
   let panel = await filterPanel(page, testInfo.project.name);
-  const activeStatus = panel.getByRole('button', { name: '筛选状态：已开营' });
-  await activeStatus.click();
-  await expect(activeStatus).toHaveAttribute('aria-pressed', 'true');
+  const online = panel.getByRole('button', { name: '筛选形式：线上' });
+  await online.click();
+  await expect(online).toHaveAttribute('aria-pressed', 'true');
   await closeMobileFilterPanel(page, testInfo.project.name);
-  await expectRowKeys(page, EXPECTED_KEYS.slice(0, 3));
+  await expectRowKeys(page, [KEYS.redwood, KEYS.cloud]);
 
   panel = await filterPanel(page, testInfo.project.name);
-  const expiredStatus = panel.getByRole('button', { name: '筛选状态：已结营' });
-  await expiredStatus.click();
-  await expect(expiredStatus).toHaveAttribute('aria-pressed', 'true');
+  const hybrid = panel.getByRole('button', { name: '筛选形式：混合' });
+  await hybrid.click();
+  await expect(hybrid).toHaveAttribute('aria-pressed', 'true');
   await closeMobileFilterPanel(page, testInfo.project.name);
-  await expectRowKeys(page, EXPECTED_KEYS);
+  await expectRowKeys(page, [KEYS.redwood, KEYS.silver, KEYS.cloud, KEYS.farmountain]);
+  await expect.poll(() => new URL(page.url()).searchParams.get('modes')).toBe('online,hybrid');
 
-  panel = await filterPanel(page, testInfo.project.name);
-  const tier985 = panel.getByRole('button', { name: '筛选档次：985' });
-  await tier985.click();
-  await expect(tier985).toHaveAttribute('aria-pressed', 'true');
-  await closeMobileFilterPanel(page, testInfo.project.name);
-  await expectRowKeys(page, [EXPECTED_KEYS[0], EXPECTED_KEYS[2]]);
-
-  panel = await filterPanel(page, testInfo.project.name);
-  const tier211 = panel.getByRole('button', { name: '筛选档次：211' });
-  await tier211.click();
-  await expect(tier211).toHaveAttribute('aria-pressed', 'true');
-  await closeMobileFilterPanel(page, testInfo.project.name);
-  await expectRowKeys(page, EXPECTED_KEYS.slice(0, 3));
-
-  panel = await filterPanel(page, testInfo.project.name);
-  const beijing = panel.getByRole('button', { name: '筛选省份：北京' });
-  const shanghai = panel.getByRole('button', { name: '筛选省份：上海' });
-  await beijing.click();
-  await shanghai.click();
-  await expect(beijing).toHaveAttribute('aria-pressed', 'true');
-  await expect(shanghai).toHaveAttribute('aria-pressed', 'true');
-  await closeMobileFilterPanel(page, testInfo.project.name);
-  await expectRowKeys(page, EXPECTED_KEYS.slice(0, 2));
-
-  await expect.poll(() => new URL(page.url()).searchParams.get('q')).toBe('大学');
-  expect(new URL(page.url()).searchParams.get('tags')).toBe('985,211');
-  expect(new URL(page.url()).searchParams.get('status')).toBe('已开营,已结营');
-  expect(new URL(page.url()).searchParams.get('prov')).toBe('北京,上海');
-
-  await page.reload();
-  await expect(search).toHaveValue('大学');
-  await expectRowKeys(page, EXPECTED_KEYS.slice(0, 2));
   await page.getByRole('button', { name: '清空全部' }).click();
   await expectRowKeys(page, EXPECTED_KEYS);
   await expect.poll(() => new URL(page.url()).search).toBe('');
+});
+
+test('restores URL filters, migrates legacy status values and clears them', async ({ page }, testInfo) => {
+  await page.goto(
+    '/?q=%E5%A4%A7%E5%AD%A6&tags=985&status=%E5%B7%B2%E5%BC%80%E8%90%A5,%E5%B7%B2%E7%BB%93%E8%90%A5&modes=online,hybrid&prov=%E5%8C%97%E4%BA%AC,%E4%B8%8A%E6%B5%B7',
+  );
+  const search = page.getByRole('searchbox', { name: '搜索学校、学院、项目和活动类型' });
+  await expect(search).toHaveValue('大学');
+  await expectRowKeys(page, [KEYS.redwood, KEYS.silver]);
+  await expect.poll(() => new URL(page.url()).searchParams.get('status')).toBe('开放,已结束');
+
+  let panel = await filterPanel(page, testInfo.project.name);
+  await expect(panel.getByRole('button', { name: '筛选状态：开放' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await expect(panel.getByRole('button', { name: '筛选状态：已结束' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await expect(panel.getByRole('button', { name: '筛选形式：线上' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await expect(panel.getByRole('button', { name: '筛选形式：混合' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await closeMobileFilterPanel(page, testInfo.project.name);
+
+  await page.reload();
+  await expect(search).toHaveValue('大学');
+  await expectRowKeys(page, [KEYS.redwood, KEYS.silver]);
+  await page.getByRole('button', { name: '清空全部' }).click();
+  await expectRowKeys(page, EXPECTED_KEYS);
+  await expect.poll(() => new URL(page.url()).search).toBe('');
+});
+
+test('hides the tier hierarchy when every tier count is zero', async ({ page }, testInfo) => {
+  await page.getByLabel('数据源').selectOption('e2e-no-tier');
+  await expect(page.locator('[data-row-key]')).toHaveCount(1);
+
+  const panel = await filterPanel(page, testInfo.project.name);
+  await expect(panel.getByRole('heading', { name: '档次' })).toHaveCount(0);
+  await expect(panel.getByRole('button', { name: /^筛选档次：/ })).toHaveCount(0);
+});
+
+test('deadline calendar expands every crowded-day item and opens details', async ({ page }) => {
+  await page.getByRole('tab', { name: '截止日历视图' }).click();
+  const calendar = page.getByRole('region', { name: '截止日历' });
+  await expect(calendar).toBeVisible();
+  await expectNoHorizontalOverflow(page, 'deadline calendar');
+
+  const more = calendar.getByRole('button', {
+    name: /^(展开|收起) 2026年7月18日全部 5 个截止项目$/,
+  });
+  await expect(more).toHaveText('+2');
+  await expect(more).toHaveAttribute('aria-expanded', 'false');
+  await expect(more).toHaveAttribute('aria-controls', 'deadline-calendar-day-2026-07-18');
+  await more.focus();
+  await page.keyboard.press('Enter');
+  await expect(more).toHaveAttribute('aria-expanded', 'true');
+
+  const expanded = page.locator('#deadline-calendar-day-2026-07-18');
+  await expect(expanded).toBeVisible();
+  const expandedItems = expanded.getByRole('button', { name: /^查看截止项目详情：/ });
+  await expect(expandedItems).toHaveCount(5);
+  for (const [index, item] of CROWDED_DAY_ITEMS.entries()) {
+    await expect(expandedItems.nth(index)).toContainText(item.name);
+    await expect(expandedItems.nth(index)).toContainText(item.project);
+  }
+  await expectNoHorizontalOverflow(page, 'expanded deadline calendar');
+
+  await expandedItems.nth(4).click();
+  const detail = page.getByRole('dialog', { name: '项目详情' });
+  await expect(detail).toContainText('云海大学');
+  await page.keyboard.press('Escape');
+  await expect(expandedItems.nth(4)).toBeFocused();
+
+  await more.focus();
+  await page.keyboard.press('Space');
+  await expect(more).toHaveAttribute('aria-expanded', 'false');
+  await expect(expanded).toHaveCount(0);
+  await more.click();
+  await expect(expanded).toBeVisible();
+  await page.getByLabel('数据源').selectOption('e2e-no-tier');
+  await expect(expanded).toHaveCount(0);
 });
 
 test('row and detail dialogs support keyboard entry, trap, escape and focus restore', async ({ page }) => {
@@ -316,7 +414,7 @@ test('row and detail dialogs support keyboard entry, trap, escape and focus rest
 });
 
 test('global shortcuts navigate rows and the help dialog isolates and restores focus', async ({ page }) => {
-  const search = page.getByRole('searchbox', { name: '搜索学校和学院' });
+  const search = page.getByRole('searchbox', { name: '搜索学校、学院、项目和活动类型' });
   await page.keyboard.press('/');
   await expect(search).toBeFocused();
   await page.keyboard.press('Escape');
@@ -326,7 +424,7 @@ test('global shortcuts navigate rows and the help dialog isolates and restores f
   await page.keyboard.press('Enter');
   const detail = page.getByRole('dialog', { name: '项目详情' });
   await expect(detail).toBeVisible();
-  await expect(detail).toContainText('蓝湾大学');
+  await expect(detail).toContainText('橙川大学');
 
   const detailClose = detail.getByRole('button', { name: '关闭项目详情' });
   await expect(detailClose).toBeFocused();
@@ -392,7 +490,9 @@ test('mobile filter dialog traps focus, escapes and restores its trigger', async
 test('list, chips, drawer and long detail facts never overflow horizontally', async ({ page }, testInfo) => {
   await expectNoHorizontalOverflow(page, 'list');
   const longQuery = `NO_MATCH_${'UNBROKEN'.repeat(35)}`;
-  await page.getByRole('searchbox', { name: '搜索学校和学院' }).fill(longQuery);
+  await page
+    .getByRole('searchbox', { name: '搜索学校、学院、项目和活动类型' })
+    .fill(longQuery);
   const searchChip = page.getByRole('button', { name: /搜索:/ });
   await expect(searchChip).toBeVisible();
   await expect(page.locator('[data-row-key]')).toHaveCount(0);
@@ -439,6 +539,12 @@ test('has no serious or critical axe violations in list and open panels', async 
   await page.getByRole('button', { name: '切换主题' }).click();
   await expect(page.locator('html')).toHaveClass(/dark/);
   await assertAxe('dark list');
+  await page.getByRole('tab', { name: '截止日历视图' }).click();
+  await page
+    .getByRole('region', { name: '截止日历' })
+    .getByRole('button', { name: '展开 2026年7月18日全部 5 个截止项目' })
+    .click();
+  await assertAxe('expanded deadline calendar');
 });
 
 test('emits reviewed nonblank list and panel screenshots', async ({ page }, testInfo) => {
