@@ -39,6 +39,10 @@ const baotaTlsTemplatePath = resolve(
   'deploy/nginx/cs-baoyan-ddl-bt-tls.conf',
 );
 const deployDocumentationPath = resolve(repositoryRoot, 'docs/operations/tencent-deploy.md');
+const productionLaunchPlanPath = resolve(
+  repositoryRoot,
+  'docs/superpowers/plans/2026-07-16-production-launch-refresh-plan.md',
+);
 const rollbackDocumentationPath = resolve(repositoryRoot, 'docs/operations/rollback.md');
 const expectedTitle = 'CS 保研 DDL · 倒计时';
 
@@ -61,6 +65,24 @@ function assertTextOrder(text: string, needles: string[]): void {
     assert.ok(next > cursor, `expected ordered token after offset ${cursor}: ${needle}`);
     cursor = next;
   }
+}
+
+function markdownSection(source: string, heading: string, nextHeading: string): string {
+  const start = source.indexOf(heading);
+  const end = source.indexOf(nextHeading, start + heading.length);
+  assert.ok(start >= 0, `missing Markdown heading: ${heading}`);
+  assert.ok(end > start, `missing Markdown boundary after: ${heading}`);
+  return source.slice(start, end);
+}
+
+function bashBlocks(source: string): string[] {
+  return [...source.matchAll(/```bash\n([\s\S]*?)\n```/g)].map((match) => match[1]);
+}
+
+function firstBashBlock(source: string): string {
+  const blocks = bashBlocks(source);
+  assert.ok(blocks.length > 0, 'expected a fenced bash block');
+  return blocks[0];
 }
 
 function writeExecutable(path: string, content: string): void {
@@ -2017,8 +2039,8 @@ test('bootstrap host gates: operations require SELinux, process, backup, and rec
   assert.match(deployment, /reload signal command accepted\/sent/i);
   assert.match(deployment, /不(?:表示|证明)[^。\n]*(?:应用|生效|worker)/i);
   assert.match(deployment, /NGINX_PID_FILE/);
-  assert.match(deployment, /\/proc\/\$MASTER_PID\/exe/);
-  assert.match(deployment, /\/proc\/\$MASTER_PID\/cmdline/);
+  assert.match(deployment, /\$PROC_ROOT\/\$MASTER_PID\/exe/);
+  assert.match(deployment, /\$PROC_ROOT\/\$MASTER_PID\/cmdline/);
   assert.match(deployment, /"\$NGINX_BIN" -V/);
   assert.match(deployment, /"\$NGINX_BIN" -T/);
   assert.match(deployment, /include/);
@@ -2026,7 +2048,7 @@ test('bootstrap host gates: operations require SELinux, process, backup, and rec
   assert.match(deployment, /WORKERS_AFTER/);
   assert.match(deployment, /NEW_WORKERS/);
   assert.match(deployment, /error\.log/);
-  assert.match(deployment, /Host[^。\n]*SNI[^。\n]*内容探针/i);
+  assert.match(deployment, /Host[^。\n]*SNI[^。\n]*路由探针/i);
 
   assert.match(deployment, /flock --version/);
   assert.match(deployment, /SCRATCH_LOCK/);
@@ -2036,7 +2058,7 @@ test('bootstrap host gates: operations require SELinux, process, backup, and rec
   assert.match(deployment, /mode & 0o022/);
   assert.match(deployment, /冻结[^。\n]*宝塔[^。\n]*(?:保存|重载|配置)/);
 
-  assert.match(deployment, /BACKUP_ROOT=\/root\//);
+  assert.match(deployment, /BACKUP_ROOT=\$\{BACKUP_ROOT:-\/root\//);
   assert.match(deployment, /install -d -m 0700/);
   assert.match(deployment, /sha256sum[^\n]*BACKUP/);
   assert.match(deployment, /已有配置中断恢复/);
@@ -2045,6 +2067,297 @@ test('bootstrap host gates: operations require SELinux, process, backup, and rec
   assert.match(deployment, /rm -f -- "\$NGINX_CONFIG"/);
 
   assert.doesNotMatch(bootstrap, /BACKUP_ROOT|restorecon|WORKERS_BEFORE|SCRATCH_LOCK/);
+});
+
+test('BaoTa host-gate command blocks are independently fail-fast and domain-first', () => {
+  const deployment = readFileSync(deployDocumentationPath, 'utf8');
+  const task14 = markdownSection(
+    deployment,
+    '### Task 14 主机身份、备份与执行窗口门禁',
+    '### Task 16 activation 后内容与身份验收',
+  );
+  const blocks = bashBlocks(task14);
+
+  assert.equal(
+    blocks.length,
+    3,
+    'Task 14 should remain one executable gate plus two recovery blocks',
+  );
+  assert.ok(
+    task14.split('\n').length < 430,
+    'Task 14 host gates should remain compact enough to review and copy',
+  );
+  assert.equal(
+    task14.match(/# BEGIN VALIDATED_WORKER_GATE/g)?.length,
+    1,
+    'worker validation helpers must not be duplicated across command blocks',
+  );
+  for (const [index, block] of blocks.entries()) {
+    assert.ok(
+      block.trimStart().startsWith('set -Eeuo pipefail'),
+      `Task 14 bash block ${index + 1} must enable fail-fast semantics first`,
+    );
+    const requiredDomain = block.indexOf(
+      ': "${SELECTED_DOMAIN:?user-approved domain is required}"',
+    );
+    const validatedDomain = block.indexOf('case "$SELECTED_DOMAIN" in');
+    const firstPathUse = block.search(
+      /(?:NGINX_BIN|NGINX_CONFIG|NGINX_PID_FILE|NGINX_ERROR_LOG|BACKUP_ROOT|BACKUP_CONFIG|FIRST_INSTALL_MARKER|TLS_CERTIFICATE|HTTP_HEADERS|TLS_HEADERS|\/dev\/null|https?:|\/www\/)/,
+    );
+    assert.ok(requiredDomain >= 0, `Task 14 bash block ${index + 1} requires a domain`);
+    assert.ok(
+      validatedDomain > requiredDomain,
+      `Task 14 bash block ${index + 1} validates the required domain`,
+    );
+    assert.ok(
+      firstPathUse > validatedDomain,
+      `Task 14 bash block ${index + 1} validates the domain before path use`,
+    );
+  }
+});
+
+test('BaoTa preflight branches on config existence and preserves a unique metadata-complete backup', () => {
+  const deployment = readFileSync(deployDocumentationPath, 'utf8');
+  const task14 = markdownSection(
+    deployment,
+    '### Task 14 主机身份、备份与执行窗口门禁',
+    '### Task 16 activation 后内容与身份验收',
+  );
+
+  assert.match(
+    task14,
+    /if test -e "\$NGINX_CONFIG"; then[\s\S]*?# configuration file \$NGINX_CONFIG:[\s\S]*?else[\s\S]*?include \/www\/server\/panel\/vhost\/nginx\/\*\.conf;/,
+  );
+  assert.match(task14, /BACKUP_DIR=\$\(mktemp -d "\$BACKUP_ROOT\/\$SELECTED_DOMAIN\.XXXXXX"\)/);
+  assert.match(task14, /cp -a -- "\$NGINX_CONFIG" "\$BACKUP_CONFIG"/);
+  assert.doesNotMatch(task14, /BACKUP_STAMP|date -u \+%Y%m%dT%H%M%SZ/);
+  assertTextOrder(task14, [
+    'RESTORECON_PREVIEW=$(restorecon -n -v "$NGINX_CONFIG"',
+    'test -z "$RESTORECON_PREVIEW"',
+    'BACKUP_DIR=$(mktemp -d "$BACKUP_ROOT/$SELECTED_DOMAIN.XXXXXX")',
+    'cp -a -- "$NGINX_CONFIG" "$BACKUP_CONFIG"',
+  ]);
+  assert.match(task14, /cmp -s -- "\$BACKUP_CONFIG" "\$NGINX_CONFIG"/);
+  assert.match(task14, /security\.selinux/);
+  assert.match(task14, /st_mtime_ns/);
+  assert.doesNotMatch(
+    task14,
+    /chmod 0600 "\$BACKUP_DIR"\/\*/,
+    'the root-only directory must protect the backup without rewriting preserved metadata',
+  );
+});
+
+test('documented recovery stops before target modification on checksum or flock failure', async (t) => {
+  const deployment = readFileSync(deployDocumentationPath, 'utf8');
+  const existingRecovery = firstBashBlock(
+    markdownSection(deployment, '#### 已有配置中断恢复', '#### 首次安装中断恢复'),
+  );
+
+  const runRecovery = (
+    subtest: TestContext,
+    options: { corruptChecksum?: boolean; flockStatus?: string },
+  ): { config: string; result: ReturnType<typeof spawnSync> } => {
+    const sandbox = mkdtempSync(join(tmpdir(), 'documented-nginx-recovery-'));
+    subtest.after(() => rmSync(sandbox, { recursive: true, force: true }));
+    const fakeBin = join(sandbox, 'bin');
+    const config = join(sandbox, 'nginx', 'ddl.example.com.conf');
+    const backup = join(sandbox, 'backup', 'site.conf');
+    mkdirSync(fakeBin, { recursive: true });
+    mkdirSync(dirname(config), { recursive: true });
+    mkdirSync(dirname(backup), { recursive: true });
+    writeFileSync(config, 'active config must survive\n', 'utf8');
+    writeFileSync(backup, 'verified prior config\n', 'utf8');
+    const backupHash = options.corruptChecksum
+      ? '0'.repeat(64)
+      : createHash('sha256').update(readFileSync(backup)).digest('hex');
+    writeFileSync(`${backup}.sha256`, `${backupHash}  ${backup}\n`, 'utf8');
+
+    writeExecutable(
+      join(fakeBin, 'sha256sum'),
+      '#!/bin/sh\n' +
+        'if [ -x /usr/bin/sha256sum ]; then exec /usr/bin/sha256sum "$@"; fi\n' +
+        'if [ "$1" = "-c" ]; then shift; exec shasum -a 256 -c "$@"; fi\n' +
+        'exec shasum -a 256 "$@"\n',
+    );
+    writeExecutable(
+      join(fakeBin, 'flock'),
+      '#!/bin/sh\nexit "${DOCUMENTED_FLOCK_STATUS:-0}"\n',
+    );
+    writeExecutable(
+      join(fakeBin, 'install'),
+      '#!/bin/sh\n' +
+        'while [ "$#" -gt 2 ]; do\n' +
+        '  case "$1" in -m|-o|-g) shift 2 ;; *) shift ;; esac\n' +
+        'done\n' +
+        'cp -- "$1" "$2"\n',
+    );
+    const nginx = join(fakeBin, 'selected-nginx');
+    writeExecutable(nginx, '#!/bin/sh\nexit 0\n');
+
+    const result = spawnSync('bash', ['-c', existingRecovery], {
+      cwd: sandbox,
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        BACKUP_CONFIG: backup,
+        BACKUP_CONFIG_SHA256: `${backup}.sha256`,
+        DOCUMENTED_FLOCK_STATUS: options.flockStatus ?? '0',
+        NGINX_BIN: nginx,
+        NGINX_CONFIG: config,
+        PATH: `${fakeBin}:${process.env.PATH ?? ''}`,
+        SELECTED_DOMAIN: 'ddl.example.com',
+      },
+    });
+    return { config, result };
+  };
+
+  await t.test('checksum failure', (subtest) => {
+    const { config, result } = runRecovery(subtest, { corruptChecksum: true });
+    assert.notEqual(result.status, 0, result.stderr || result.stdout);
+    assert.equal(readFileSync(config, 'utf8'), 'active config must survive\n');
+  });
+
+  await t.test('flock failure', (subtest) => {
+    const { config, result } = runRecovery(subtest, { flockStatus: '1' });
+    assert.notEqual(result.status, 0, result.stderr || result.stdout);
+    assert.equal(readFileSync(config, 'utf8'), 'active config must survive\n');
+  });
+});
+
+test('BaoTa worker gate rejects PID-set false positives and times out without a stable worker', async (t) => {
+  const deployment = readFileSync(deployDocumentationPath, 'utf8');
+  const task14 = markdownSection(
+    deployment,
+    '### Task 14 主机身份、备份与执行窗口门禁',
+    '### Task 16 activation 后内容与身份验收',
+  );
+  const startMarker = '# BEGIN VALIDATED_WORKER_GATE';
+  const endMarker = '# END VALIDATED_WORKER_GATE';
+  const start = task14.indexOf(startMarker);
+  const end = task14.indexOf(endMarker, start + startMarker.length);
+  assert.ok(start >= 0 && end > start, 'documented worker functions must be extractable');
+  const workerFunctions = task14.slice(start + startMarker.length, end);
+
+  assert.doesNotMatch(workerFunctions, /comm -13|sort -n/);
+  assert.match(workerFunctions, /PPid:/);
+  assert.match(workerFunctions, /nginx: worker process/);
+  assert.match(workerFunctions, /\/exe/);
+  assert.match(workerFunctions, /previous_new_workers/);
+
+  const sandbox = mkdtempSync(join(tmpdir(), 'documented-worker-gate-'));
+  t.after(() => rmSync(sandbox, { recursive: true, force: true }));
+  const procRoot = join(sandbox, 'proc');
+  const nginx = join(sandbox, 'selected-nginx');
+  const otherBinary = join(sandbox, 'other-nginx');
+  mkdirSync(procRoot, { recursive: true });
+  writeExecutable(nginx, '#!/bin/sh\nexit 0\n');
+  writeExecutable(otherBinary, '#!/bin/sh\nexit 0\n');
+
+  const addProcess = (
+    pid: number,
+    parentPid: number,
+    command: string,
+    executable: string,
+  ): void => {
+    const processRoot = join(procRoot, String(pid));
+    mkdirSync(processRoot, { recursive: true });
+    writeFileSync(join(processRoot, 'status'), `Name:\tnginx\nPPid:\t${parentPid}\n`, 'utf8');
+    writeFileSync(join(processRoot, 'cmdline'), Buffer.from(`${command}\0`, 'utf8'));
+    symlinkSync(executable, join(processRoot, 'exe'));
+  };
+
+  addProcess(101, 910, 'nginx: worker process', nginx);
+  addProcess(201, 911, 'nginx: worker process', nginx);
+  addProcess(202, 910, 'nginx: cache manager process', nginx);
+  addProcess(203, 910, 'nginx: worker process', otherBinary);
+  addProcess(204, 910, 'nginx: worker process', nginx);
+
+  const workerEnv = {
+    ...process.env,
+    MASTER_PID: '910',
+    NGINX_REAL: realpathSync(nginx),
+    PROC_ROOT: procRoot,
+    WORKER_POLL_ATTEMPTS: '2',
+    WORKER_POLL_INTERVAL_SECONDS: '0',
+  };
+  const collected = spawnSync(
+    'bash',
+    ['-c', `set -Eeuo pipefail\n${workerFunctions}\ncollect_valid_workers`],
+    { encoding: 'utf8', env: workerEnv },
+  );
+  assert.equal(collected.status, 0, collected.stderr || collected.stdout);
+  assert.deepEqual(collected.stdout.trim().split(/\s+/), ['101', '204']);
+
+  const stable = spawnSync(
+    'bash',
+    ['-c', `set -Eeuo pipefail\n${workerFunctions}\nwait_for_new_worker '101'`],
+    { encoding: 'utf8', env: workerEnv },
+  );
+  assert.equal(stable.status, 0, stable.stderr || stable.stdout);
+  assert.equal(stable.stdout.trim(), '204');
+
+  rmSync(join(procRoot, '204'), { recursive: true, force: true });
+  const timedOut = spawnSync(
+    'bash',
+    ['-c', `set -Eeuo pipefail\n${workerFunctions}\nwait_for_new_worker '101'`],
+    { encoding: 'utf8', env: workerEnv },
+  );
+  assert.notEqual(timedOut.status, 0);
+  assert.match(timedOut.stderr, /stable new nginx worker/i);
+});
+
+test('BaoTa error-log gate is bound to the selected master and fails closed on rotation', () => {
+  const deployment = readFileSync(deployDocumentationPath, 'utf8');
+  const task14 = markdownSection(
+    deployment,
+    '### Task 14 主机身份、备份与执行窗口门禁',
+    '### Task 16 activation 后内容与身份验收',
+  );
+
+  assert.doesNotMatch(task14, /\/www\/server\/nginx\/logs\/error\.log/);
+  assert.match(task14, /\/www\/wwwlogs\/nginx_error\.log/);
+  assert.match(task14, /--conf-path=/);
+  assert.match(task14, /NGINX_MAIN_CONFIG/);
+  assert.match(task14, /# configuration file .*NGINX_MAIN_CONFIG/);
+  assert.match(task14, /GLOBAL_ERROR_LOG/);
+  assert.match(task14, /depth/);
+  assert.match(task14, /"\$PROC_ROOT\/\$MASTER_PID\/fd\/2"/);
+  assert.match(task14, /"\$PROC_ROOT\/\$MASTER_PID\/fd\/11"/);
+  assert.match(task14, /ERROR_LOG_DEV_INODE/);
+  assert.match(task14, /ERROR_LOG_OFFSET/);
+  assert.match(task14, /ERROR_LOG_DEV_INODE_AFTER/);
+  assert.match(task14, /test "\$ERROR_LOG_DEV_INODE_AFTER" = "\$ERROR_LOG_DEV_INODE"/);
+  assert.match(task14, /ERROR_OBSERVE_SECONDS/);
+  assert.match(task14, /emerg\|alert\|crit/);
+});
+
+test('Task 14 routing gates do not depend on Task 16 activation content', () => {
+  const deployment = readFileSync(deployDocumentationPath, 'utf8');
+  const task14 = markdownSection(
+    deployment,
+    '### Task 14 主机身份、备份与执行窗口门禁',
+    '### Task 16 activation 后内容与身份验收',
+  );
+  const task16 = markdownSection(
+    deployment,
+    '### Task 16 activation 后内容与身份验收',
+    '## SSH 主机密钥外部核验',
+  );
+  const plan = readFileSync(productionLaunchPlanPath, 'utf8');
+  const plannedTask14 = markdownSection(plan, '### Task 14:', '### Task 15:');
+  const plannedTask16 = markdownSection(plan, '### Task 16:', '### Task 17:');
+
+  assert.match(task14, /预期 404/);
+  assert.match(task14, /Host[^。\n]*SNI[^。\n]*(?:vhost|虚拟主机)/i);
+  assert.doesNotMatch(task14, /test -f \/srv\/cs-baoyan-ddl\/current\/release\.json/);
+  assert.doesNotMatch(plannedTask14, /DDL content|SPA deep link|release\.json|asset/i);
+
+  for (const token of ['release.json', 'SPA', 'asset', 'release identity']) {
+    assert.ok(task16.includes(token), `Task 16 operations must include ${token}`);
+    assert.ok(plannedTask16.includes(token), `Task 16 plan must include ${token}`);
+  }
+  assert.match(task16, /activate-release\.sh|activation/i);
+  assert.match(plannedTask16, /activate-release\.sh|activation/i);
 });
 
 test('activation and rollback durably sync release, transaction, link, and state mutations', () => {

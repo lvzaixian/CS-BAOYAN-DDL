@@ -249,11 +249,11 @@ Present the selected domain, exact DNS record, certificate method, certificate a
 
 - [ ] **Step 2: Create the dedicated host identity and directories**
 
-After approval, create `cs-baoyan-deploy` with a matching primary group and no sudo, install its restricted deploy public key, and run the reviewed BaoTa bootstrap using the selected domain and paths.
+After approval, create `cs-baoyan-deploy` with a matching primary group and no sudo and install its restricted deploy public key. Before each reviewed BaoTa bootstrap, freeze BaoTa save/apply/reload actions and run the executable host preflight: bind PID file, master exe/cmdline, validated worker set, global error-log directive and master FDs; verify the existing vhost SELinux label when present; prove the first-install glob include when absent; and create a unique root-only `cp -a` backup or absence marker with SHA-256. Run the post-bootstrap bounded worker and error-log gate before any routing decision.
 
 - [ ] **Step 3: Configure DNS and TLS**
 
-Create only the approved DNS record. Issue a certificate for the exact domain through the approved BaoTa/ACME path, then rerun bootstrap with the versioned `deploy/nginx/cs-baoyan-ddl-bt-tls.conf` template and approved certificate paths.
+Create only the approved DNS record. Issue a certificate for the exact domain through the approved BaoTa/ACME path, then rerun preflight and bootstrap with the versioned `deploy/nginx/cs-baoyan-ddl-bt-tls.conf` template and approved certificate paths. Re-run the bounded master/worker/error-log gate and the no-publication TLS routing probes; do not wait for Task 16 payload activation.
 
 - [ ] **Step 4: Configure GitHub production controls**
 
@@ -267,10 +267,14 @@ Expected evidence:
 DNS A/AAAA -> approved host
 certificate SAN -> exact selected domain
 nginx -t -> success
+existing vhost -> exact nginx -T marker and restorecon -n clean
+first install -> exact BaoTa glob include visible
+master -> selected binary and cmdline unchanged
+worker -> new validated PID survives two consecutive bounded polls
+global error log -> /www/wwwlogs/nginx_error.log crit, master FD binding stable, no severe delta
 HTTP selected Host -> 308 to exact HTTPS domain
-HTTPS selected SNI/Host -> selected certificate and DDL content
-unknown Host/SNI -> no DDL content
-SPA deep link -> index fallback; missing asset -> 404
+HTTPS selected SNI/Host -> selected certificate and expected pre-activation 404 from the selected vhost
+unknown Host/SNI/no-SNI -> connection rejected
 deploy user -> no sudo, matching primary group
 production environment -> reviewer and main policy
 main protection -> status context `verify` from workflow `CI` required, force pushes disabled
@@ -464,7 +468,7 @@ Verify the workflow run identifies the exact merged SHA and that its post-approv
 
 - [ ] **Step 8: Verify the public release**
 
-Run `deploy/smoke.sh` with the exact HTTPS origin and expected release identity. Validate on desktop, iPhone, and Redmi. Record screenshots and command evidence.
+After the workflow has run `activate-release.sh` and switched `current`, run `deploy/smoke.sh` with the exact HTTPS origin and expected release identity. This Task 16 activation gate must verify `release.json`, the exact release identity triple, the same-origin JavaScript asset, SPA deep-link fallback, and missing asset 404. Then validate on desktop, iPhone, and Redmi and record screenshots and command evidence.
 
 ### Task 17: Schedule Private Discovery
 

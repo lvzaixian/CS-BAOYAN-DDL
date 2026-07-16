@@ -69,261 +69,386 @@
 
 ### Task 14 主机身份、备份与执行窗口门禁
 
-以下门禁只允许在 Task 14 已批准的主机维护窗口内由 root 执行；本手册不授权当前任务连接主机。执行窗口开始后必须冻结宝塔站点配置保存、应用、重载和证书面板动作，直到 worker、日志、SELinux 与本机探针全部验收完成。先在同一个 root shell 固定真实路径：
+本节只允许在已批准的主机维护窗口内由 root 执行，不授权当前任务连接主机。窗口内冻结宝塔的保存、应用、重载和证书动作。为降低误操作面，正常变更只复制一个主门禁块；另有两个互斥的中断恢复块。三个块都独立启用 fail-fast，并在使用任何路径前校验 SELECTED_DOMAIN。
+
+当前只读事实是全局 error_log /www/wwwlogs/nginx_error.log crit;，检查时 master PID 910 的 FD 2/11 指向该文件。主门禁不信任这些历史值：它从 PID file、nginx -V/-T 和 /proc 重新证明 Nginx 身份、BaoTa include、全局日志及 dev/inode/offset。已有配置才要求精确配置 marker，并要求 restorecon -n 无待修复；首次安装只要求真实 include /www/server/panel/vhost/nginx/*.conf;。持久备份使用唯一 mktemp 目录与 cp -a，保留内容、mode、owner、timestamps 和允许的 security.selinux 标签。
+
+#### HTTP/TLS 单块主门禁
+
+从仓库根目录执行。先显式设置 TASK14_TEMPLATE_MODE=http；最终 TLS 窗口改为 tls，并额外导出已批准的 TLS_CERTIFICATE 与 TLS_CERTIFICATE_KEY 绝对路径。块内依次完成 preflight、持久备份、bootstrap、master/worker/error-log/SELinux 复验及本机 Host/SNI 虚拟主机路由探针。选定路由在尚无发布内容时预期 404；错误 Host、错误 SNI 和无 SNI 必须被拒绝。reload signal command accepted/sent 只代表命令被接受，不表示配置已应用；只有后续 worker、日志与路由门禁全部通过才接受本次主机变更。
 
 ```bash
-test -n "${SELECTED_DOMAIN:?user-approved domain is required}"
+set -Eeuo pipefail
+: "${SELECTED_DOMAIN:?user-approved domain is required}"
+case "$SELECTED_DOMAIN" in *[!a-z0-9.-]*|.*|*..*|*.) exit 1 ;; esac
+
+: "${TASK14_TEMPLATE_MODE:?set http or tls}"
+umask 077
 NGINX_BIN=/www/server/nginx/sbin/nginx
 NGINX_CONFIG="/www/server/panel/vhost/nginx/$SELECTED_DOMAIN.conf"
-NGINX_PID_FILE=/www/server/nginx/logs/nginx.pid
-NGINX_ERROR_LOG=/www/server/nginx/logs/error.log
+NGINX_PID_FILE=${NGINX_PID_FILE:-/www/server/nginx/logs/nginx.pid}
+BACKUP_ROOT=${BACKUP_ROOT:-/root/cs-baoyan-ddl-nginx-backups}
+PROC_ROOT=${PROC_ROOT:-/proc}
+case "$TASK14_TEMPLATE_MODE" in
+  http) NGINX_TEMPLATE="$PWD/deploy/nginx/cs-baoyan-ddl-bt-http.conf" ;;
+  tls)
+    : "${TLS_CERTIFICATE:?Task 14 approved certificate path is required}"
+    : "${TLS_CERTIFICATE_KEY:?Task 14 approved certificate key path is required}"
+    NGINX_TEMPLATE="$PWD/deploy/nginx/cs-baoyan-ddl-bt-tls.conf"
+    ;;
+  *) exit 1 ;;
+esac
 test -x "$NGINX_BIN"
 test -r "$NGINX_PID_FILE"
-test -r "$NGINX_ERROR_LOG"
-```
+case "$NGINX_CONFIG:$BACKUP_ROOT" in /*:/*) ;; *) exit 1 ;; esac
 
-bootstrap 前必须把 PID file、运行中 master 和所选二进制绑定，并审查构建、完整配置与 include 证据：
-
-```bash
 MASTER_PID=$(cat "$NGINX_PID_FILE")
 case "$MASTER_PID" in ''|*[!0-9]*) exit 1 ;; esac
-test -d "/proc/$MASTER_PID"
-test "$(readlink -f "/proc/$MASTER_PID/exe")" = "$(readlink -f "$NGINX_BIN")"
-MASTER_CMDLINE=$(tr '\0' ' ' < "/proc/$MASTER_PID/cmdline")
+NGINX_REAL=$(readlink -f "$NGINX_BIN")
+test "$(readlink -f "$PROC_ROOT/$MASTER_PID/exe")" = "$NGINX_REAL"
+MASTER_CMDLINE=$(tr '\0' ' ' < "$PROC_ROOT/$MASTER_PID/cmdline")
+MASTER_CMDLINE=${MASTER_CMDLINE% }
 case "$MASTER_CMDLINE" in *nginx*master*process*) ;; *) exit 1 ;; esac
 
-"$NGINX_BIN" -V 2>&1
-NGINX_T_OUTPUT=$("$NGINX_BIN" -T 2>&1) || exit 1
-printf '%s\n' "$NGINX_T_OUTPUT" | grep -F 'include'
-printf '%s\n' "$NGINX_T_OUTPUT" | grep -F "# configuration file $NGINX_CONFIG:"
+NGINX_V_OUTPUT=$("$NGINX_BIN" -V 2>&1)
+printf '%s\n' "$NGINX_V_OUTPUT"
+NGINX_MAIN_CONFIG=$(printf '%s\n' "$NGINX_V_OUTPUT" | sed -n 's/.*--conf-path=\([^[:space:]]*\).*/\1/p')
+case "$NGINX_MAIN_CONFIG" in /*) ;; *) exit 1 ;; esac
+NGINX_MAIN_MARKER="# configuration file $NGINX_MAIN_CONFIG:"
+NGINX_T_OUTPUT=$("$NGINX_BIN" -T 2>&1)
+if test -e "$NGINX_CONFIG"; then
+  test ! -L "$NGINX_CONFIG"
+  printf '%s\n' "$NGINX_T_OUTPUT" | grep -Fx "# configuration file $NGINX_CONFIG:"
+  RESTORECON_PREVIEW=$(restorecon -n -v "$NGINX_CONFIG" 2>&1)
+  test -z "$RESTORECON_PREVIEW"
+else
+  printf '%s\n' "$NGINX_T_OUTPUT" | grep -F 'include /www/server/panel/vhost/nginx/*.conf;'
+fi
 
-WORKERS_BEFORE=$(ps -o pid= --ppid "$MASTER_PID" | awk '{$1=$1};1' | sort -n)
-test -n "$WORKERS_BEFORE"
-ERROR_BYTES_BEFORE=$(stat -c '%s' "$NGINX_ERROR_LOG")
-```
-
-vhost 文件的全部祖先必须由 root 拥有，且 group/other 不可写；以下检查也拒绝祖先符号链接：
-
-```bash
 python3 - "$NGINX_CONFIG" <<'PY'
-import os
-import pathlib
-import stat
-import sys
-
+import os, pathlib, stat, sys
 directory = pathlib.Path(sys.argv[1]).parent
 for ancestor in (directory, *directory.parents):
-    metadata = os.lstat(ancestor)
-    mode = stat.S_IMODE(metadata.st_mode)
-    if stat.S_ISLNK(metadata.st_mode) or metadata.st_uid != 0 or mode & 0o022:
+    value = os.lstat(ancestor)
+    mode = stat.S_IMODE(value.st_mode)
+    if stat.S_ISLNK(value.st_mode) or value.st_uid != 0 or mode & 0o022:
         raise SystemExit(f"unsafe vhost ancestor: {ancestor}")
 PY
-```
 
-不能只依赖 fake lock 测试。Task 14 必须先在 root-only scratch 文件上证明真实 util-linux `flock` 会拒绝第二个非阻塞持有者：
-
-```bash
 flock --version
-umask 077
 SCRATCH_LOCK=$(mktemp /root/cs-baoyan-ddl-flock.XXXXXX)
+trap 'rm -f -- "${SCRATCH_LOCK:-}"' EXIT
 exec 8<>"$SCRATCH_LOCK"
 flock -n 8
-if flock -n "$SCRATCH_LOCK" -c true; then
-  exit 1
-fi
+if flock -n "$SCRATCH_LOCK" -c true; then exit 1; fi
 flock -u 8
 exec 8>&-
 rm -f -- "$SCRATCH_LOCK"
-```
+SCRATCH_LOCK=
+trap - EXIT
 
-SELinux 检查不修改标签。bootstrap 前记录状态；bootstrap 后重复执行并要求 `restorecon -n` 不提示需要修复：
+# BEGIN VALIDATED_WORKER_GATE
+canonical_path() {
+  python3 - "$1" <<'PY'
+import os, sys
+print(os.path.realpath(sys.argv[1]))
+PY
+}
+collect_valid_workers() {
+  local status_path pid parent_pid worker_cmdline worker_exe
+  for status_path in "$PROC_ROOT"/[0-9]*/status; do
+    test -e "$status_path" || continue
+    pid=${status_path%/status}; pid=${pid##*/}
+    case "$pid" in ''|*[!0-9]*) continue ;; esac
+    parent_pid=$(awk '$1 == "PPid:" { print $2; exit }' "$status_path")
+    test "$parent_pid" = "$MASTER_PID" || continue
+    test -r "$PROC_ROOT/$pid/cmdline" || continue
+    worker_cmdline=$(tr '\0' ' ' < "$PROC_ROOT/$pid/cmdline")
+    worker_cmdline=${worker_cmdline% }
+    test "$worker_cmdline" = 'nginx: worker process' || continue
+    worker_exe=$(canonical_path "$PROC_ROOT/$pid/exe") || continue
+    test "$worker_exe" = "$NGINX_REAL" || continue
+    printf '%s\n' "$pid"
+  done
+}
+wait_for_new_worker() {
+  local before_workers=$1 attempt=1 current_new_workers previous_new_workers= pid
+  while test "$attempt" -le "$WORKER_POLL_ATTEMPTS"; do
+    current_new_workers=
+    while IFS= read -r pid; do
+      test -n "$pid" || continue
+      case " $before_workers " in *" $pid "*) continue ;; esac
+      current_new_workers="${current_new_workers:+$current_new_workers }$pid"
+    done < <(collect_valid_workers)
+    for pid in $current_new_workers; do
+      case " $previous_new_workers " in *" $pid "*) printf '%s\n' "$pid"; return 0 ;; esac
+    done
+    previous_new_workers=$current_new_workers
+    attempt=$((attempt + 1))
+    test "$attempt" -gt "$WORKER_POLL_ATTEMPTS" || sleep "$WORKER_POLL_INTERVAL_SECONDS"
+  done
+  printf '%s\n' 'no stable new nginx worker survived two consecutive polls' >&2
+  return 1
+}
+# END VALIDATED_WORKER_GATE
 
-```bash
+global_error_log_from_t() {
+  awk -v main_marker="$NGINX_MAIN_MARKER" '
+    BEGIN { depth=0; count=0; in_main=0; seen_main=0 }
+    $0 == main_marker { in_main=1; seen_main++; next }
+    in_main && /^# configuration file / { in_main=0 }
+    !in_main { next }
+    {
+      line=$0; sub(/[[:space:]]*#.*/, "", line)
+      if (depth == 0 && $1 == "error_log") {
+        if ($3 != "crit;") exit 2
+        path=$2; count++
+      }
+      opens=gsub(/{/, "{", line); closes=gsub(/}/, "}", line)
+      depth += opens - closes
+      if (depth < 0) exit 3
+    }
+    END {
+      if (seen_main != 1 || count != 1 || depth != 0) exit 4
+      print path
+    }
+  '
+}
+
+WORKER_POLL_ATTEMPTS=${WORKER_POLL_ATTEMPTS:-20}
+WORKER_POLL_INTERVAL_SECONDS=${WORKER_POLL_INTERVAL_SECONDS:-1}
+case "$WORKER_POLL_ATTEMPTS:$WORKER_POLL_INTERVAL_SECONDS" in *[!0-9:]*) exit 1 ;; esac
+test "$WORKER_POLL_ATTEMPTS" -ge 2
+test "$WORKER_POLL_ATTEMPTS" -le 60
+test "$WORKER_POLL_INTERVAL_SECONDS" -le 10
+WORKERS_BEFORE=$(collect_valid_workers | tr '\n' ' ')
+WORKERS_BEFORE=${WORKERS_BEFORE% }
+test -n "$WORKERS_BEFORE"
+
+GLOBAL_ERROR_LOG=$(printf '%s\n' "$NGINX_T_OUTPUT" | global_error_log_from_t)
+test "$GLOBAL_ERROR_LOG" = /www/wwwlogs/nginx_error.log
+NGINX_ERROR_LOG=$GLOBAL_ERROR_LOG
+ERROR_LOG_DEV_INODE=$(stat -Lc '%d:%i' "$NGINX_ERROR_LOG")
+ERROR_LOG_OFFSET=$(stat -Lc '%s' "$NGINX_ERROR_LOG")
+test "$(stat -Lc '%d:%i' "$PROC_ROOT/$MASTER_PID/fd/2")" = "$ERROR_LOG_DEV_INODE"
+test "$(stat -Lc '%d:%i' "$PROC_ROOT/$MASTER_PID/fd/11")" = "$ERROR_LOG_DEV_INODE"
 getenforce
-ls -lZ "$NGINX_CONFIG" "${NGINX_CONFIG}.lock" 2>/dev/null || true
-restorecon -n -v "$NGINX_CONFIG" "${NGINX_CONFIG}.lock" 2>/dev/null || true
-```
+test ! -e "$NGINX_CONFIG" || ls -lZ "$NGINX_CONFIG"
 
-bootstrap 前必须制作 root-only 持久备份或“首次安装”缺失标记，并分别记录 SHA-256。临时脚本内备份不能代替该证据：
-
-```bash
-BACKUP_ROOT=/root/cs-baoyan-ddl-nginx-backups
 install -d -m 0700 -o root -g root "$BACKUP_ROOT"
-BACKUP_STAMP=$(date -u +%Y%m%dT%H%M%SZ)
+BACKUP_DIR=$(mktemp -d "$BACKUP_ROOT/$SELECTED_DOMAIN.XXXXXX")
+chmod 0700 "$BACKUP_DIR"
 if test -e "$NGINX_CONFIG"; then
-  BACKUP_CONFIG="$BACKUP_ROOT/$SELECTED_DOMAIN.$BACKUP_STAMP.conf"
-  install -m 0600 -o root -g root "$NGINX_CONFIG" "$BACKUP_CONFIG"
-  sha256sum "$BACKUP_CONFIG" > "$BACKUP_CONFIG.sha256"
-  chmod 0600 "$BACKUP_CONFIG.sha256"
+  BACKUP_CONFIG="$BACKUP_DIR/site.conf"
+  cp -a -- "$NGINX_CONFIG" "$BACKUP_CONFIG"
+  cmp -s -- "$BACKUP_CONFIG" "$NGINX_CONFIG"
+  python3 - "$NGINX_CONFIG" "$BACKUP_CONFIG" <<'PY'
+import errno, os, stat, sys
+def label(path):
+    try:
+        return os.getxattr(path, "security.selinux", follow_symlinks=False)
+    except (AttributeError, TypeError):
+        return None
+    except OSError as error:
+        if error.errno in {getattr(errno, "ENODATA", -1), errno.ENOTSUP}: return None
+        raise
+def metadata(path):
+    value = os.lstat(path)
+    return stat.S_IMODE(value.st_mode), value.st_uid, value.st_gid, value.st_mtime_ns, label(path)
+if metadata(sys.argv[1]) != metadata(sys.argv[2]): raise SystemExit("backup metadata mismatch")
+PY
+  BACKUP_CONFIG_SHA256="$BACKUP_CONFIG.sha256"
+  sha256sum "$BACKUP_CONFIG" > "$BACKUP_CONFIG_SHA256"
+  printf 'export BACKUP_CONFIG=%q\nexport BACKUP_CONFIG_SHA256=%q\n' "$BACKUP_CONFIG" "$BACKUP_CONFIG_SHA256"
 else
-  FIRST_INSTALL_MARKER="$BACKUP_ROOT/$SELECTED_DOMAIN.$BACKUP_STAMP.absent"
+  FIRST_INSTALL_MARKER="$BACKUP_DIR/site.absent"
   printf 'absent:%s\n' "$NGINX_CONFIG" > "$FIRST_INSTALL_MARKER"
-  chmod 0600 "$FIRST_INSTALL_MARKER"
-  sha256sum "$FIRST_INSTALL_MARKER" > "$FIRST_INSTALL_MARKER.sha256"
-  chmod 0600 "$FIRST_INSTALL_MARKER.sha256"
+  FIRST_INSTALL_MARKER_SHA256="$FIRST_INSTALL_MARKER.sha256"
+  sha256sum "$FIRST_INSTALL_MARKER" > "$FIRST_INSTALL_MARKER_SHA256"
+  printf 'export FIRST_INSTALL_MARKER=%q\nexport FIRST_INSTALL_MARKER_SHA256=%q\n' "$FIRST_INSTALL_MARKER" "$FIRST_INSTALL_MARKER_SHA256"
 fi
-```
 
-bootstrap 返回后，仍在同一冻结窗口内确认 master 身份不变、至少出现一个新 worker，并审查本次窗口新增的 error log：
+if test "$TASK14_TEMPLATE_MODE" = http; then
+  sudo env DEPLOY_USER=cs-baoyan-deploy SERVER_NAME="$SELECTED_DOMAIN" \
+    DEPLOY_ROOT=/srv/cs-baoyan-ddl NGINX_BIN="$NGINX_BIN" \
+    NGINX_TEMPLATE="$NGINX_TEMPLATE" NGINX_CONFIG="$NGINX_CONFIG" \
+    bash deploy/bootstrap-server.sh
+else
+  sudo env DEPLOY_USER=cs-baoyan-deploy SERVER_NAME="$SELECTED_DOMAIN" \
+    DEPLOY_ROOT=/srv/cs-baoyan-ddl NGINX_BIN="$NGINX_BIN" \
+    NGINX_TEMPLATE="$NGINX_TEMPLATE" NGINX_CONFIG="$NGINX_CONFIG" \
+    TLS_CERTIFICATE="$TLS_CERTIFICATE" TLS_CERTIFICATE_KEY="$TLS_CERTIFICATE_KEY" \
+    bash deploy/bootstrap-server.sh
+fi
 
-```bash
 MASTER_PID_AFTER=$(cat "$NGINX_PID_FILE")
 test "$MASTER_PID_AFTER" = "$MASTER_PID"
-test "$(readlink -f "/proc/$MASTER_PID_AFTER/exe")" = "$(readlink -f "$NGINX_BIN")"
-MASTER_CMDLINE_AFTER=$(tr '\0' ' ' < "/proc/$MASTER_PID_AFTER/cmdline")
-test "$MASTER_CMDLINE_AFTER" = "$MASTER_CMDLINE"
+test "$(readlink -f "$PROC_ROOT/$MASTER_PID/exe")" = "$NGINX_REAL"
+MASTER_CMDLINE_AFTER=$(tr '\0' ' ' < "$PROC_ROOT/$MASTER_PID/cmdline")
+test "${MASTER_CMDLINE_AFTER% }" = "$MASTER_CMDLINE"
+WORKERS_AFTER=$(collect_valid_workers | tr '\n' ' ')
+WORKERS_AFTER=${WORKERS_AFTER% }
+NEW_WORKERS=$(wait_for_new_worker "$WORKERS_BEFORE")
+test -n "$WORKERS_AFTER:$NEW_WORKERS"
 
-WORKERS_AFTER=$(ps -o pid= --ppid "$MASTER_PID_AFTER" | awk '{$1=$1};1' | sort -n)
-NEW_WORKERS=$(comm -13 \
-  <(printf '%s\n' "$WORKERS_BEFORE") \
-  <(printf '%s\n' "$WORKERS_AFTER"))
-test -n "$NEW_WORKERS"
-
-ERROR_BYTES_AFTER=$(stat -c '%s' "$NGINX_ERROR_LOG")
-test "$ERROR_BYTES_AFTER" -ge "$ERROR_BYTES_BEFORE"
-if test "$ERROR_BYTES_AFTER" -gt "$ERROR_BYTES_BEFORE"; then
-  ERROR_LOG_DELTA=$(tail -c "+$((ERROR_BYTES_BEFORE + 1))" "$NGINX_ERROR_LOG")
+NGINX_T_OUTPUT_AFTER=$("$NGINX_BIN" -T 2>&1)
+test "$(printf '%s\n' "$NGINX_T_OUTPUT_AFTER" | global_error_log_from_t)" = "$NGINX_ERROR_LOG"
+ERROR_LOG_DEV_INODE_AFTER=$(stat -Lc '%d:%i' "$NGINX_ERROR_LOG")
+test "$ERROR_LOG_DEV_INODE_AFTER" = "$ERROR_LOG_DEV_INODE"
+test "$(stat -Lc '%d:%i' "$PROC_ROOT/$MASTER_PID/fd/2")" = "$ERROR_LOG_DEV_INODE"
+test "$(stat -Lc '%d:%i' "$PROC_ROOT/$MASTER_PID/fd/11")" = "$ERROR_LOG_DEV_INODE"
+test "$(stat -Lc '%s' "$NGINX_ERROR_LOG")" -ge "$ERROR_LOG_OFFSET"
+ERROR_OBSERVE_SECONDS=${ERROR_OBSERVE_SECONDS:-5}
+case "$ERROR_OBSERVE_SECONDS" in ''|*[!0-9]*) exit 1 ;; esac
+test "$ERROR_OBSERVE_SECONDS" -le 30
+sleep "$ERROR_OBSERVE_SECONDS"
+test "$(stat -Lc '%d:%i' "$NGINX_ERROR_LOG")" = "$ERROR_LOG_DEV_INODE"
+ERROR_LOG_SIZE_OBSERVED=$(stat -Lc '%s' "$NGINX_ERROR_LOG")
+test "$ERROR_LOG_SIZE_OBSERVED" -ge "$ERROR_LOG_OFFSET"
+if test "$ERROR_LOG_SIZE_OBSERVED" -gt "$ERROR_LOG_OFFSET"; then
+  ERROR_LOG_DELTA=$(tail -c "+$((ERROR_LOG_OFFSET + 1))" "$NGINX_ERROR_LOG")
   printf '%s\n' "$ERROR_LOG_DELTA"
-  if printf '%s\n' "$ERROR_LOG_DELTA" | grep -Eiq '\[(emerg|alert|crit|error)\]'; then
-    exit 1
-  fi
+  ! printf '%s\n' "$ERROR_LOG_DELTA" | grep -Eiq '\[(emerg|alert|crit)\]'
 fi
-
-getenforce
 ls -lZ "$NGINX_CONFIG" "${NGINX_CONFIG}.lock"
-RESTORECON_PREVIEW=$(restorecon -n -v "$NGINX_CONFIG" "${NGINX_CONFIG}.lock" 2>&1 || true)
-test -z "$RESTORECON_PREVIEW" || { printf '%s\n' "$RESTORECON_PREVIEW" >&2; exit 1; }
+RESTORECON_PREVIEW=$(restorecon -n -v "$NGINX_CONFIG" "${NGINX_CONFIG}.lock" 2>&1)
+test -z "$RESTORECON_PREVIEW"
+
+if test "$TASK14_TEMPLATE_MODE" = http; then
+  HTTP_HEADERS=$(mktemp); trap 'rm -f -- "$HTTP_HEADERS"' EXIT
+  selected_status=$(curl --silent --show-error --output /dev/null --dump-header "$HTTP_HEADERS" \
+    --write-out '%{http_code}' --resolve "$SELECTED_DOMAIN:80:127.0.0.1" \
+    "http://$SELECTED_DOMAIN/__task14_pre_activation__")
+  test "$selected_status" = 404
+  grep -Eiq '^X-Content-Type-Options:[[:space:]]*nosniff' "$HTTP_HEADERS"
+  rejected_status=$(curl --silent --output /dev/null --write-out '%{http_code}' \
+    --header 'Host: rejected.invalid' http://127.0.0.1/ || true)
+  test "$rejected_status" = 000
+else
+  TLS_HEADERS=$(mktemp); trap 'rm -f -- "$TLS_HEADERS"' EXIT
+  selected_tls_status=$(curl --silent --show-error --output /dev/null --dump-header "$TLS_HEADERS" \
+    --write-out '%{http_code}' --resolve "$SELECTED_DOMAIN:443:127.0.0.1" \
+    "https://$SELECTED_DOMAIN/__task14_pre_activation__")
+  test "$selected_tls_status" = 404
+  grep -Eiq '^X-Content-Type-Options:[[:space:]]*nosniff' "$TLS_HEADERS"
+  redirect_location=$(curl --silent --show-error --output /dev/null --write-out '%{redirect_url}' \
+    --resolve "$SELECTED_DOMAIN:80:127.0.0.1" "http://$SELECTED_DOMAIN/__task14_pre_activation__")
+  test "$redirect_location" = "https://$SELECTED_DOMAIN/__task14_pre_activation__"
+  rejected_host_status=$(curl --insecure --silent --output /dev/null --write-out '%{http_code}' \
+    --resolve "$SELECTED_DOMAIN:443:127.0.0.1" --header 'Host: rejected.invalid' \
+    "https://$SELECTED_DOMAIN/" || true)
+  test "$rejected_host_status" = 000
+  mismatched_sni_status=$(curl --insecure --silent --output /dev/null --write-out '%{http_code}' \
+    --resolve "rejected.invalid:443:127.0.0.1" --header "Host: $SELECTED_DOMAIN" \
+    https://rejected.invalid/ || true)
+  test "$mismatched_sni_status" = 000
+  absent_sni_status=$(curl --insecure --silent --output /dev/null --write-out '%{http_code}' \
+    --header "Host: $SELECTED_DOMAIN" https://127.0.0.1/ || true)
+  test "$absent_sni_status" = 000
+fi
+printf '%s\n' 'reload signal command accepted/sent; master, worker, error-log, SELinux, Host/SNI routing gates passed'
 ```
 
-最后必须运行对应小节中的 Host、SNI 和内容探针。只有 master 身份、worker 换代、error log、SELinux 和本机探针全部通过，Task 14 才能判定新配置已应用；bootstrap 自身不作该声明。
+块打印的 BACKUP_CONFIG/BACKUP_CONFIG_SHA256 或 FIRST_INSTALL_MARKER/FIRST_INSTALL_MARKER_SHA256 是唯一恢复输入，必须保存到 root-only 变更记录。HTTP 验收不授权 DNS 或公网；最终 TLS 与 public launch 继续保持 stop gate，由 production reviewer 单独批准。Task 14 不读取发布内容；release.json、SPA、asset 和 release identity 只在 Task 16 activation 后检查。
 
 #### 已有配置中断恢复
 
-仅当持久备份与 checksum 都存在时执行；恢复仍须持有同一 vhost lock，并在 signal command 被接受后重新执行上述 Task 14 后置门禁：
+仅使用同一次主门禁打印的持久备份。checksum 与非阻塞 flock 在目标修改前完成；任一失败都保留目标。恢复以 cp -a 复制到同目录临时文件后原子重命名，并比较内容、mode、owner、mtime 与 security.selinux。最后的 signal command accepted/sent 仍不证明恢复配置已应用，恢复后保持 stop gate。
 
 ```bash
+set -Eeuo pipefail
+: "${SELECTED_DOMAIN:?user-approved domain is required}"
+case "$SELECTED_DOMAIN" in *[!a-z0-9.-]*|.*|*..*|*.) exit 1 ;; esac
+
+: "${BACKUP_CONFIG:?export the exact BACKUP_CONFIG printed by preflight}"
+BACKUP_CONFIG_SHA256=${BACKUP_CONFIG_SHA256:-$BACKUP_CONFIG.sha256}
+NGINX_BIN=${NGINX_BIN:-/www/server/nginx/sbin/nginx}
+NGINX_CONFIG=${NGINX_CONFIG:-/www/server/panel/vhost/nginx/$SELECTED_DOMAIN.conf}
+case "$BACKUP_CONFIG:$BACKUP_CONFIG_SHA256:$NGINX_CONFIG" in /*:/*:/*) ;; *) exit 1 ;; esac
 test -f "$BACKUP_CONFIG"
-test -f "$BACKUP_CONFIG.sha256"
-sha256sum -c "$BACKUP_CONFIG.sha256"
+test -f "$BACKUP_CONFIG_SHA256"
+sha256sum -c "$BACKUP_CONFIG_SHA256"
 exec 9<>"${NGINX_CONFIG}.lock"
 flock -n 9
+
+RECOVERY_TEMP=
+trap 'test -z "${RECOVERY_TEMP:-}" || rm -f -- "$RECOVERY_TEMP"' EXIT
 RECOVERY_TEMP=$(mktemp "${NGINX_CONFIG}.recovery.XXXXXX")
-install -m 0644 -o root -g root "$BACKUP_CONFIG" "$RECOVERY_TEMP"
+rm -f -- "$RECOVERY_TEMP"
+cp -a -- "$BACKUP_CONFIG" "$RECOVERY_TEMP"
 mv -f -- "$RECOVERY_TEMP" "$NGINX_CONFIG"
+RECOVERY_TEMP=
+cmp -s -- "$BACKUP_CONFIG" "$NGINX_CONFIG"
+python3 - "$BACKUP_CONFIG" "$NGINX_CONFIG" <<'PY'
+import errno, os, stat, sys
+def label(path):
+    try:
+        return os.getxattr(path, "security.selinux", follow_symlinks=False)
+    except (AttributeError, TypeError):
+        return None
+    except OSError as error:
+        if error.errno in {getattr(errno, "ENODATA", -1), errno.ENOTSUP}: return None
+        raise
+def metadata(path):
+    value = os.lstat(path)
+    return stat.S_IMODE(value.st_mode), value.st_uid, value.st_gid, value.st_mtime_ns, label(path)
+if metadata(sys.argv[1]) != metadata(sys.argv[2]): raise SystemExit("restored metadata mismatch")
+PY
 "$NGINX_BIN" -t
 "$NGINX_BIN" -s reload
 printf '%s\n' 'recovery reload signal command accepted/sent; application not yet verified'
+flock -u 9
 ```
 
 #### 首次安装中断恢复
 
-仅当缺失标记与 checksum 证明 bootstrap 前没有该 vhost 时执行；删除本次文件后重新验证并发送 reload signal，再执行 Task 14 后置门禁：
+仅使用同一次主门禁打印的缺失标记。checksum、标记内容和非阻塞 flock 都在删除目标前完成；任一失败都不修改目标。删除后验证剩余配置并发送 signal，仍保持 stop gate。
 
 ```bash
+set -Eeuo pipefail
+: "${SELECTED_DOMAIN:?user-approved domain is required}"
+case "$SELECTED_DOMAIN" in *[!a-z0-9.-]*|.*|*..*|*.) exit 1 ;; esac
+
+: "${FIRST_INSTALL_MARKER:?export the exact FIRST_INSTALL_MARKER printed by preflight}"
+FIRST_INSTALL_MARKER_SHA256=${FIRST_INSTALL_MARKER_SHA256:-$FIRST_INSTALL_MARKER.sha256}
+NGINX_BIN=${NGINX_BIN:-/www/server/nginx/sbin/nginx}
+NGINX_CONFIG=${NGINX_CONFIG:-/www/server/panel/vhost/nginx/$SELECTED_DOMAIN.conf}
+case "$FIRST_INSTALL_MARKER:$FIRST_INSTALL_MARKER_SHA256:$NGINX_CONFIG" in /*:/*:/*) ;; *) exit 1 ;; esac
 test -f "$FIRST_INSTALL_MARKER"
-test -f "$FIRST_INSTALL_MARKER.sha256"
-sha256sum -c "$FIRST_INSTALL_MARKER.sha256"
+test -f "$FIRST_INSTALL_MARKER_SHA256"
+sha256sum -c "$FIRST_INSTALL_MARKER_SHA256"
 grep -Fx "absent:$NGINX_CONFIG" "$FIRST_INSTALL_MARKER"
 exec 9<>"${NGINX_CONFIG}.lock"
 flock -n 9
 rm -f -- "$NGINX_CONFIG"
+test ! -e "$NGINX_CONFIG"
 "$NGINX_BIN" -t
 "$NGINX_BIN" -s reload
 printf '%s\n' 'recovery reload signal command accepted/sent; application not yet verified'
+flock -u 9
 ```
 
-以上是受控人工中断恢复，不在 bootstrap 中新增事务控制面。
+以上恢复是受控人工中断路径，不在 bootstrap 中新增持久事务控制面。
 
-### 宝塔 HTTP 受控验收
+### Task 16 activation 后内容与身份验收
 
-以下命令必须从仓库根目录运行。`SELECTED_DOMAIN` 只能填写用户在生产变更评审中明确批准的小写域名；验证失败立即停止：
+只有 Task 16 已运行 `activate-release.sh` 并成功切换 `current` 后，才验证 `release.json`、SPA、JavaScript asset 和 release identity。Task 14 不读取这些文件，因此不会等待尚未 activation 的内容。下面的 `smoke.sh` 同时验证精确三元身份、首页、同源 asset、SPA 深链和缺失 asset 的 404：
 
 ```bash
-test -n "${SELECTED_DOMAIN:?user-approved domain is required}"
+set -Eeuo pipefail
+: "${SELECTED_DOMAIN:?user-approved domain is required}"
 case "$SELECTED_DOMAIN" in *[!a-z0-9.-]*|.*|*..*|*.) exit 1 ;; esac
 
-sudo env \
-  DEPLOY_USER=cs-baoyan-deploy \
-  SERVER_NAME="$SELECTED_DOMAIN" \
-  DEPLOY_ROOT=/srv/cs-baoyan-ddl \
-  NGINX_BIN=/www/server/nginx/sbin/nginx \
-  NGINX_TEMPLATE="$PWD/deploy/nginx/cs-baoyan-ddl-bt-http.conf" \
-  NGINX_CONFIG="/www/server/panel/vhost/nginx/$SELECTED_DOMAIN.conf" \
-  bash deploy/bootstrap-server.sh
-```
-
-bootstrap 返回 0 只证明配置已写入、选定的 Nginx 二进制通过 `-t`，且同一二进制接受了 `-s reload` signal command；不证明配置已应用。只有 Task 14 已确认 worker 换代和 error log，并且后续获批的发布步骤已经创建 `current/release.json`，才执行内容与 Host 路由检查：
-
-```bash
+: "${EXPECTED_RELEASE_SHA:?Task 16 release identity SHA is required}"
+: "${EXPECTED_SNAPSHOT_ID:?Task 16 snapshot identity is required}"
+: "${EXPECTED_DATA_HASH:?Task 16 data hash is required}"
 test -f /srv/cs-baoyan-ddl/current/release.json
-curl --fail --silent --show-error \
-  --resolve "$SELECTED_DOMAIN:80:127.0.0.1" \
-  "http://$SELECTED_DOMAIN/release.json"
-
-rejected_status=$(
-  curl --silent --output /dev/null --write-out '%{http_code}' \
-    --header 'Host: rejected.invalid' http://127.0.0.1/ || true
-)
-test "$rejected_status" = 000
+SMOKE_URL="https://$SELECTED_DOMAIN" \
+EXPECTED_RELEASE_SHA="$EXPECTED_RELEASE_SHA" \
+EXPECTED_SNAPSHOT_ID="$EXPECTED_SNAPSHOT_ID" \
+EXPECTED_DATA_HASH="$EXPECTED_DATA_HASH" \
+bash deploy/smoke.sh
 ```
-
-这一步只验证本机宝塔 include、精确 Host 拒绝、静态文件路由和 HTTP vhost，不授权创建 DNS 记录、开放公网发布或把 HTTP 写入 `PUBLIC_BASE_URL`。如果 `nginx -t`、reload signal command、选定域名请求或错误 Host 拒绝中的任一项失败，应保留 stop gate，并按 bootstrap 错误信息区分“旧配置已恢复且重新验证”“旧配置恢复但重新验证或 reload signal command 被拒绝”和“首次安装的新配置已删除”；不得笼统宣称回滚成功，也不得绕过验证继续上线。
-
-### 宝塔最终 TLS 配置
-
-只有 Task 14 已批准 `SELECTED_DOMAIN`、证书与私钥的精确绝对路径，并且证书资产已由获批流程放置到主机后，才可运行最终命令。不要使用示例路径，不要让 bootstrap 创建、复制或修改证书：
-
-```bash
-test -n "${SELECTED_DOMAIN:?user-approved domain is required}"
-case "$SELECTED_DOMAIN" in *[!a-z0-9.-]*|.*|*..*|*.) exit 1 ;; esac
-test -n "${TLS_CERTIFICATE:?Task 14 approved certificate path is required}"
-test -n "${TLS_CERTIFICATE_KEY:?Task 14 approved certificate key path is required}"
-
-sudo env \
-  DEPLOY_USER=cs-baoyan-deploy \
-  SERVER_NAME="$SELECTED_DOMAIN" \
-  DEPLOY_ROOT=/srv/cs-baoyan-ddl \
-  NGINX_BIN=/www/server/nginx/sbin/nginx \
-  NGINX_TEMPLATE="$PWD/deploy/nginx/cs-baoyan-ddl-bt-tls.conf" \
-  NGINX_CONFIG="/www/server/panel/vhost/nginx/$SELECTED_DOMAIN.conf" \
-  TLS_CERTIFICATE="$TLS_CERTIFICATE" \
-  TLS_CERTIFICATE_KEY="$TLS_CERTIFICATE_KEY" \
-  bash deploy/bootstrap-server.sh
-```
-
-最终发布完成且 `current/release.json` 存在后，再做本机 HTTPS 内容、错误 Host、SNI 不匹配和无 SNI 检查。下面三个负向结果必须都是 000；这些是真实 Task 14 门禁，不能由模板结构测试替代：
-
-```bash
-test -f /srv/cs-baoyan-ddl/current/release.json
-curl --fail --silent --show-error \
-  --resolve "$SELECTED_DOMAIN:443:127.0.0.1" \
-  "https://$SELECTED_DOMAIN/release.json"
-
-rejected_host_status=$(
-  curl --insecure --silent --output /dev/null --write-out '%{http_code}' \
-    --resolve "$SELECTED_DOMAIN:443:127.0.0.1" \
-    --header 'Host: rejected.invalid' \
-    "https://$SELECTED_DOMAIN/" || true
-)
-test "$rejected_host_status" = 000
-
-mismatched_sni_status=$(
-  curl --insecure --silent --output /dev/null --write-out '%{http_code}' \
-    --resolve "rejected.invalid:443:127.0.0.1" \
-    --header "Host: $SELECTED_DOMAIN" \
-    https://rejected.invalid/ || true
-)
-test "$mismatched_sni_status" = 000
-
-absent_sni_status=$(
-  curl --insecure --silent --output /dev/null --write-out '%{http_code}' \
-    --header "Host: $SELECTED_DOMAIN" \
-    https://127.0.0.1/ || true
-)
-test "$absent_sni_status" = 000
-```
-
-最终 TLS bootstrap 和本机 HTTPS 验证成功仍不等于 public launch 已获批准。production reviewer 必须继续核对 DNS、证书域名与有效期、公开 smoke 身份三元组和回滚命令，再单独批准公网发布。
 
 ## SSH 主机密钥外部核验
 
