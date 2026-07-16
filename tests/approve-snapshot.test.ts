@@ -38,6 +38,7 @@ const fixture = JSON.parse(
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const approveCliPath = resolve(repositoryRoot, 'scripts/snapshot/approve-snapshot.ts');
 const validateCliPath = resolve(repositoryRoot, 'scripts/snapshot/validate-current.ts');
+const snapshotIntegrityPath = resolve(repositoryRoot, 'src/lib/snapshot-integrity.ts');
 const approvedAt = '2026-07-16T09:35:00+08:00';
 
 function candidate(): SnapshotCandidate {
@@ -97,6 +98,30 @@ function reverseObjectKeys(value: unknown): unknown {
       .map(([key, child]) => [key, reverseObjectKeys(child)]),
   );
 }
+
+test('snapshot integrity rules have one shared source outside the approval CLI', () => {
+  assert.ok(existsSync(snapshotIntegrityPath), 'src/lib/snapshot-integrity.ts must exist');
+
+  const integritySource = readFileSync(snapshotIntegrityPath, 'utf8');
+  const approvalSource = readFileSync(approveCliPath, 'utf8');
+  for (const script of [
+    'import-scouting-data.ts',
+    'diff-snapshots.ts',
+    'validate-current.ts',
+  ]) {
+    const source = readFileSync(resolve(repositoryRoot, 'scripts/snapshot', script), 'utf8');
+    assert.match(source, /src\/lib\/snapshot-integrity\.js/);
+    assert.doesNotMatch(source, /from ['"]\.\/approve-snapshot\.js['"]/);
+  }
+
+  assert.match(approvalSource, /src\/lib\/snapshot-integrity\.js/);
+  assert.doesNotMatch(approvalSource, /function canonicalPayload\b/);
+  assert.equal(
+    [...integritySource.matchAll(/schemaVersion:\s*input\.schemaVersion/g)].length,
+    1,
+    'canonical payload top-level fields must be constructed once',
+  );
+});
 
 test('canonical SHA-256 matches a hard-coded known answer', () => {
   const input: SnapshotCandidate = {

@@ -5,7 +5,9 @@ export type VerificationStatus =
 
 export type FactStatus = 'confirmed' | 'not-published' | 'unverified' | 'not-applicable';
 
-export type EventMode = 'online' | 'offline' | 'hybrid' | 'unknown';
+export const EVENT_MODES = ['online', 'offline', 'hybrid', 'unknown'] as const;
+
+export type EventMode = (typeof EVENT_MODES)[number];
 
 export type DiscoveryKind = 'official' | 'baoyan-notice' | 'cs-baoyan' | 'other-discovery';
 

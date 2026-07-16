@@ -1,5 +1,4 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { constants } from 'node:fs';
 import {
   lstat,
   mkdir,
@@ -11,13 +10,28 @@ import type { FileHandle } from 'node:fs/promises';
 import { basename, dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import {
+  canonicalDataHash,
+  deriveSnapshotId,
+  isValidIsoTimestamp,
+  readRegularJsonFile,
+  validateApprovedSnapshot,
+} from '../../src/lib/snapshot-integrity.js';
+import type { RegularJsonFile } from '../../src/lib/snapshot-integrity.js';
 import type {
-  LegacySnapshotCandidateV1,
   PublicSnapshot,
   ReadablePublicSnapshot,
   SnapshotCandidate,
 } from '../../src/lib/snapshot-types.js';
-import { validateCandidate, validateSnapshot } from '../../src/lib/snapshot-validation.js';
+import { validateCandidate } from '../../src/lib/snapshot-validation.js';
+
+export {
+  canonicalDataHash,
+  readRegularJsonFile,
+  validateApprovedSnapshot,
+};
+export { MAX_SNAPSHOT_JSON_BYTES } from '../../src/lib/snapshot-integrity.js';
+export type { RegularJsonFile } from '../../src/lib/snapshot-integrity.js';
 
 type JsonObject = Record<string, unknown>;
 
@@ -41,15 +55,6 @@ interface ApprovedFileState {
   fingerprint: FileFingerprint;
 }
 
-export interface RegularJsonFile {
-  value: unknown;
-  text: string;
-  dev: number;
-  ino: number;
-  size: number;
-  mtimeMs: number;
-}
-
 export interface ApproveSnapshotIoHooks {
   beforeRename?: () => Promise<void>;
   openDirectory?: (path: string) => Promise<FileHandle>;
@@ -64,7 +69,6 @@ export interface ApproveSnapshotFileOptions {
 
 const usage =
   'Usage: snapshot:approve -- --candidate PATH --approved PATH [--approved-at ISO_TIMESTAMP]';
-export const MAX_SNAPSHOT_JSON_BYTES = 16 * 1024 * 1024;
 
 function isObject(value: unknown): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -80,130 +84,6 @@ function quoted(value: string): string {
 
 function safeError(error: unknown): string {
   return JSON.stringify(error instanceof Error ? error.message : String(error));
-}
-
-function codePointCompare(left: string, right: string): number {
-  const leftPoints = [...left];
-  const rightPoints = [...right];
-  const length = Math.min(leftPoints.length, rightPoints.length);
-  for (let index = 0; index < length; index += 1) {
-    const difference = leftPoints[index].codePointAt(0)! - rightPoints[index].codePointAt(0)!;
-    if (difference !== 0) return difference;
-  }
-  return leftPoints.length - rightPoints.length;
-}
-
-function canonicalize(value: unknown): unknown {
-  if (Array.isArray(value)) return value.map(canonicalize);
-  if (value === null || typeof value !== 'object') return value;
-  const object = value as JsonObject;
-  const sorted: JsonObject = {};
-  for (const key of Object.keys(object).sort(codePointCompare)) {
-    sorted[key] = canonicalize(object[key]);
-  }
-  return sorted;
-}
-
-type CanonicalSnapshotInput =
-  | LegacySnapshotCandidateV1
-  | ReadablePublicSnapshot
-  | SnapshotCandidate;
-
-function canonicalPayload(input: CanonicalSnapshotInput) {
-  return {
-    schemaVersion: input.schemaVersion,
-    scanAt: input.scanAt,
-    defaultFeedId: input.defaultFeedId,
-    feeds: input.feeds,
-    counts: input.counts,
-    opportunities: input.opportunities,
-  };
-}
-
-function hashCanonicalPayload(payload: unknown): string {
-  const canonicalJson = JSON.stringify(canonicalize(payload));
-  return createHash('sha256').update(canonicalJson).digest('hex');
-}
-
-export function canonicalDataHash(input: CanonicalSnapshotInput): string {
-  return hashCanonicalPayload(canonicalPayload(input));
-}
-
-function canonicalDataHashFromObject(input: JsonObject): string {
-  return hashCanonicalPayload({
-    schemaVersion: input.schemaVersion,
-    scanAt: input.scanAt,
-    defaultFeedId: input.defaultFeedId,
-    feeds: input.feeds,
-    counts: input.counts,
-    opportunities: input.opportunities,
-  });
-}
-
-function isValidIsoTimestamp(value: string): boolean {
-  const match =
-    /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,3}))?(?:Z|[+-](\d{2}):(\d{2}))$/.exec(
-      value,
-    );
-  if (match === null) return false;
-  const [, yearText, monthText, dayText, hourText, minuteText, secondText, , offsetHour, offsetMinute] =
-    match;
-  const year = Number(yearText);
-  const month = Number(monthText);
-  const day = Number(dayText);
-  const daysInMonth = month >= 1 && month <= 12
-    ? new Date(Date.UTC(year, month, 0)).getUTCDate()
-    : 0;
-  return (
-    day >= 1
-    && day <= daysInMonth
-    && Number(hourText) <= 23
-    && Number(minuteText) <= 59
-    && Number(secondText) <= 59
-    && (offsetHour === undefined || Number(offsetHour) <= 23)
-    && (offsetMinute === undefined || Number(offsetMinute) <= 59)
-    && Number.isFinite(Date.parse(value))
-  );
-}
-
-function snapshotIdFor(approvedAt: string, dataHash: string): string {
-  return `${new Date(Date.parse(approvedAt)).toISOString()}-${dataHash.slice(0, 12)}`;
-}
-
-function isRepositorySnapshotId(value: string): boolean {
-  const match = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)-[0-9a-f]{12}$/.exec(value);
-  return match !== null && isValidIsoTimestamp(match[1]);
-}
-
-export function validateApprovedSnapshot(input: unknown, nowMs = Date.now()): string[] {
-  const errors = validateSnapshot(input, nowMs);
-  if (!isObject(input)) return errors;
-
-  let recomputedHash: string;
-  try {
-    recomputedHash = canonicalDataHashFromObject(input);
-  } catch {
-    errors.push('snapshot.dataHash: canonical hash could not be recomputed');
-    return errors;
-  }
-
-  if (input.dataHash !== recomputedHash) {
-    errors.push('snapshot.dataHash: must equal the lowercase canonical SHA-256 hash');
-  }
-  if (
-    typeof input.approvedAt === 'string'
-    && isValidIsoTimestamp(input.approvedAt)
-    && input.snapshotId !== snapshotIdFor(input.approvedAt, recomputedHash)
-  ) {
-    errors.push('snapshot.snapshotId: must be derived from approvedAt and the canonical hash');
-  }
-  if (
-    typeof input.previousSnapshotId === 'string'
-    && !isRepositorySnapshotId(input.previousSnapshotId)
-  ) {
-    errors.push('snapshot.previousSnapshotId: expected the repository snapshot ID format');
-  }
-  return errors;
 }
 
 export function approveCandidate(
@@ -237,7 +117,7 @@ export function approveCandidate(
   const dataHash = canonicalDataHash(candidate);
   const sealed: PublicSnapshot = {
     ...structuredClone(candidate),
-    snapshotId: snapshotIdFor(approvedAt, dataHash),
+    snapshotId: deriveSnapshotId(approvedAt, dataHash),
     approvedAt,
     previousSnapshotId: current?.snapshotId ?? null,
     dataHash,
@@ -269,73 +149,6 @@ function parseCliOptions(argv: string[]): CliOptions {
     throw new Error(`missing required argument\n${usage}`);
   }
   return { candidate, approved, approvedAt: values.get('--approved-at') };
-}
-
-async function readRegularText(path: string, label: string): Promise<Omit<RegularJsonFile, 'value'>> {
-  let pathInfo: Awaited<ReturnType<typeof lstat>>;
-  try {
-    pathInfo = await lstat(path);
-  } catch (error) {
-    throw new Error(`${label} could not be read at ${quoted(path)}: ${safeError(error)}`);
-  }
-  if (pathInfo.isSymbolicLink()) {
-    throw new Error(`${label} must not be a symlink at ${quoted(path)}`);
-  }
-  if (!pathInfo.isFile()) {
-    throw new Error(`${label} must be a regular file at ${quoted(path)}`);
-  }
-  if (pathInfo.size > MAX_SNAPSHOT_JSON_BYTES) {
-    throw new Error(`${label} exceeds the JSON size limit at ${quoted(path)}`);
-  }
-
-  let handle: FileHandle;
-  try {
-    handle = await open(path, constants.O_RDONLY | constants.O_NOFOLLOW);
-  } catch (error) {
-    throw new Error(`${label} could not be read at ${quoted(path)}: ${safeError(error)}`);
-  }
-  try {
-    const openedInfo = await handle.stat();
-    if (
-      !openedInfo.isFile()
-      || openedInfo.dev !== pathInfo.dev
-      || openedInfo.ino !== pathInfo.ino
-    ) {
-      throw new Error(`${label} changed while being opened at ${quoted(path)}`);
-    }
-    if (openedInfo.size > MAX_SNAPSHOT_JSON_BYTES) {
-      throw new Error(`${label} exceeds the JSON size limit at ${quoted(path)}`);
-    }
-    const text = await handle.readFile({ encoding: 'utf8' });
-    if (Buffer.byteLength(text, 'utf8') > MAX_SNAPSHOT_JSON_BYTES) {
-      throw new Error(`${label} exceeds the JSON size limit at ${quoted(path)}`);
-    }
-    return {
-      text,
-      dev: openedInfo.dev,
-      ino: openedInfo.ino,
-      size: openedInfo.size,
-      mtimeMs: openedInfo.mtimeMs,
-    };
-  } finally {
-    await handle.close().catch(() => undefined);
-  }
-}
-
-function parseJson(text: string, path: string, label: string): unknown {
-  try {
-    return JSON.parse(text) as unknown;
-  } catch (error) {
-    throw new Error(`${label} is not valid JSON at ${quoted(path)}: ${safeError(error)}`);
-  }
-}
-
-export async function readRegularJsonFile(
-  path: string,
-  label: string,
-): Promise<RegularJsonFile> {
-  const file = await readRegularText(path, label);
-  return { ...file, value: parseJson(file.text, path, label) };
 }
 
 function bytesHash(contents: string): string {
@@ -382,9 +195,9 @@ async function assertApprovedFileUnchanged(
   if (!expected.exists || info.isSymbolicLink() || !info.isFile()) {
     throw new Error('approved snapshot changed concurrently before atomic rename');
   }
-  let file: Omit<RegularJsonFile, 'value'>;
+  let file: RegularJsonFile;
   try {
-    file = await readRegularText(path, 'approved snapshot');
+    file = await readRegularJsonFile(path, 'approved snapshot');
   } catch {
     throw new Error('approved snapshot changed concurrently before atomic rename');
   }

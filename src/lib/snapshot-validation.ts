@@ -1,6 +1,6 @@
+import { EVENT_MODES } from './snapshot-types.js';
 import type {
   DiscoveryKind,
-  EventMode,
   FactStatus,
   VerificationStatus,
 } from './snapshot-types.js';
@@ -18,7 +18,6 @@ const factStatuses: readonly FactStatus[] = [
   'unverified',
   'not-applicable',
 ];
-const eventModes: readonly EventMode[] = ['online', 'offline', 'hybrid', 'unknown'];
 const discoveryKinds: readonly DiscoveryKind[] = [
   'official',
   'baoyan-notice',
@@ -425,7 +424,7 @@ function validateFact(value: unknown, path: string, errors: string[]): void {
 function validateEventArrangement(value: unknown, path: string, errors: string[]): void {
   const arrangement = validateShape(value, path, eventArrangementKeys, [], errors);
   if (arrangement === undefined) return;
-  enumValue(arrangement, 'mode', path, eventModes, errors);
+  enumValue(arrangement, 'mode', path, EVENT_MODES, errors);
   validateFact(arrangement.time, `${path}.time`, errors);
   validateFact(arrangement.formatLocation, `${path}.formatLocation`, errors);
 }

@@ -1,7 +1,10 @@
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { readRegularJsonFile, validateApprovedSnapshot } from './approve-snapshot.js';
+import {
+  readRegularJsonFile,
+  validateApprovedSnapshot,
+} from '../../src/lib/snapshot-integrity.js';
 import type { PublicSnapshot } from '../../src/lib/snapshot-types.js';
 
 interface CliOptions {

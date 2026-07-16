@@ -3,6 +3,8 @@ import { lstat, mkdir, open, readFile, rename, stat, unlink } from 'node:fs/prom
 import { basename, dirname, isAbsolute, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import { validateApprovedSnapshot } from '../../src/lib/snapshot-integrity.js';
+import { EVENT_MODES } from '../../src/lib/snapshot-types.js';
 import type {
   EventMode,
   FieldFactGroup,
@@ -12,7 +14,6 @@ import type {
   VerificationStatus,
 } from '../../src/lib/snapshot-types.js';
 import { validateCandidate } from '../../src/lib/snapshot-validation.js';
-import { validateApprovedSnapshot } from './approve-snapshot.js';
 
 type JsonObject = Record<string, unknown>;
 
@@ -60,7 +61,6 @@ const unverifiedPattern =
   /未核实|待核实|待系统核实|未确认|未明确|无法核实|不确定|疑似|传闻|可能|交流群|群聊|截图|(?:请)?以[^，。；\n]*系统[^，。；\n]*为准/;
 const notPublishedPattern =
   /未公布|待公布|暂未公布|未提及|未在[^，。；\n]*(?:列出|提及|说明|要求)|暂无|待定|后续通知/;
-const eventModes: readonly EventMode[] = ['online', 'offline', 'hybrid', 'unknown'];
 const httpUrlTokenPattern = /https?:\/\/[^\s<>"'`，。；！？、（）()【】{}]+/giu;
 const unixSlashTokenPattern = /(?<!\/)\/(?!\/)[^\s\\<>"'`，。；！？、（）()\[\]【】{}]+/gu;
 const unixSystemRoots = new Set([
@@ -580,7 +580,7 @@ function factGroup(
 function eventMode(row: JsonObject, path: string, expired: boolean): EventMode {
   if (expired) return 'unknown';
   const value = row.eventMode;
-  if (typeof value !== 'string' || !eventModes.includes(value as EventMode)) {
+  if (typeof value !== 'string' || !EVENT_MODES.includes(value as EventMode)) {
     throw new Error(`${path}.eventMode must be an allowed event mode`);
   }
   return value as EventMode;

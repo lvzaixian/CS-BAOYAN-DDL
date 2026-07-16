@@ -12,8 +12,8 @@ import { validateCandidate } from '../../src/lib/snapshot-validation.js';
 import {
   readRegularJsonFile,
   validateApprovedSnapshot,
-} from './approve-snapshot.js';
-import type { RegularJsonFile } from './approve-snapshot.js';
+} from '../../src/lib/snapshot-integrity.js';
+import type { RegularJsonFile } from '../../src/lib/snapshot-integrity.js';
 
 export interface SnapshotDiff {
   added: string[];

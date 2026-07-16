@@ -31,6 +31,28 @@ function validLegacySnapshotV1(): Record<string, any> {
   return snapshot;
 }
 
+test('event modes are derived from one exported tuple shared by importer and validator', () => {
+  const typesSource = readFileSync(
+    new URL('../src/lib/snapshot-types.ts', import.meta.url),
+    'utf8',
+  );
+  const importerSource = readFileSync(
+    new URL('../scripts/snapshot/import-scouting-data.ts', import.meta.url),
+    'utf8',
+  );
+  const validatorSource = readFileSync(
+    new URL('../src/lib/snapshot-validation.ts', import.meta.url),
+    'utf8',
+  );
+
+  assert.match(typesSource, /export const EVENT_MODES\s*=\s*\[[^\]]+\]\s*as const/);
+  assert.match(typesSource, /type EventMode\s*=\s*\(typeof EVENT_MODES\)\[number\]/);
+  for (const source of [importerSource, validatorSource]) {
+    assert.match(source, /\bEVENT_MODES\b/);
+    assert.doesNotMatch(source, /const eventModes\b/);
+  }
+});
+
 function setOnlyOpportunityStatus(
   snapshot: Record<string, any>,
   status: 'confirmed-open' | 'confirmed-unknown-deadline' | 'expired',

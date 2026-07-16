@@ -24,7 +24,7 @@ import {
   writeCandidateAtomically,
   type IdentityContext,
 } from '../scripts/snapshot/import-scouting-data.js';
-import { canonicalDataHash } from '../scripts/snapshot/approve-snapshot.js';
+import { canonicalDataHash } from '../src/lib/snapshot-integrity.js';
 import { validateCandidate } from '../src/lib/snapshot-validation.js';
 import type {
   LegacyPublicSnapshotV1,
