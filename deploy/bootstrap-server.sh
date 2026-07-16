@@ -86,6 +86,56 @@ import os
 import stat
 import sys
 
+
+def inspect_extended_attributes(target: str):
+    unsupported = {errno.ENOTSUP}
+    if hasattr(errno, "EOPNOTSUPP"):
+        unsupported.add(errno.EOPNOTSUPP)
+
+    if hasattr(os, "listxattr"):
+        try:
+            return os.listxattr(target, follow_symlinks=False)
+        except TypeError:
+            return os.listxattr(target)
+        except OSError as error:
+            if error.errno in unsupported:
+                return []
+            raise
+
+    if sys.platform == "darwin":
+        import ctypes
+
+        libc = ctypes.CDLL(None, use_errno=True)
+        listxattr = libc.listxattr
+        listxattr.argtypes = [
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+            ctypes.c_int,
+        ]
+        listxattr.restype = ctypes.c_ssize_t
+        encoded_target = os.fsencode(target)
+        size = listxattr(encoded_target, None, 0, 0)
+        if size < 0:
+            error_number = ctypes.get_errno()
+            if error_number in unsupported:
+                return []
+            raise OSError(error_number, os.strerror(error_number), target)
+        if size == 0:
+            return []
+        buffer = ctypes.create_string_buffer(size)
+        used = listxattr(encoded_target, buffer, size, 0)
+        if used < 0:
+            error_number = ctypes.get_errno()
+            raise OSError(error_number, os.strerror(error_number), target)
+        return [
+            os.fsdecode(name)
+            for name in buffer.raw[:used].split(b"\0")
+            if name
+        ]
+
+    return []
+
 path = sys.argv[1]
 try:
     metadata = os.lstat(path)
@@ -106,23 +156,19 @@ if metadata.st_uid != os.geteuid():
 if metadata.st_gid != os.getegid():
     raise SystemExit(f"{prefix} group GID must match the effective process: {path}")
 
-if hasattr(os, "listxattr"):
-    try:
-        extended_attributes = os.listxattr(path, follow_symlinks=False)
-    except TypeError:
-        extended_attributes = os.listxattr(path)
-    except OSError as error:
-        unsupported = {errno.ENOTSUP}
-        if hasattr(errno, "EOPNOTSUPP"):
-            unsupported.add(errno.EOPNOTSUPP)
-        if error.errno in unsupported:
-            extended_attributes = []
-        else:
-            raise SystemExit(
-                f"{prefix} extended attributes could not be inspected: {path}"
-            ) from error
-    if extended_attributes:
-        raise SystemExit(f"{prefix} must not have extended attributes: {path}")
+try:
+    extended_attributes = inspect_extended_attributes(path)
+except OSError as error:
+    raise SystemExit(
+        f"{prefix} extended attributes could not be inspected: {path}"
+    ) from error
+allowed_extended_attributes = {"security.selinux"}
+unknown_extended_attributes = sorted(set(extended_attributes) - allowed_extended_attributes)
+if unknown_extended_attributes:
+    raise SystemExit(
+        f"{prefix} has unsupported extended attributes: "
+        + ", ".join(unknown_extended_attributes)
+    )
 PY
 
 # DEPLOY_ROOT must be group-writable so the dedicated deploy user can atomically
@@ -271,11 +317,12 @@ if ! "$NGINX_BIN" -s reload; then
     fail 'nginx reload failed; rendered config removed and remaining configuration revalidated, but recovery reload failed; no previous config existed'
   fi
   if test "$had_config" -eq 1; then
-    fail 'nginx reload failed; previous config restored, revalidated, and reloaded'
+    fail 'nginx reload signal command failed; previous config restored and revalidated; recovery reload signal command accepted by selected Nginx binary; worker replacement not verified'
   fi
-  fail 'nginx reload failed; rendered config removed and remaining configuration revalidated and reloaded; no previous config existed'
+  fail 'nginx reload signal command failed; rendered config removed and remaining configuration revalidated; recovery reload signal command accepted by selected Nginx binary; worker replacement not verified; no previous config existed'
 fi
 
 printf 'bootstrap complete: root=%s user=%s server_name=%s\n' \
   "$DEPLOY_ROOT" "$DEPLOY_USER" "$SERVER_NAME"
+printf 'Nginx reload signal command accepted by selected Nginx binary; configuration application is not verified.\n'
 printf 'No firewall, sshd, DNS, or certificate files were changed.\n'

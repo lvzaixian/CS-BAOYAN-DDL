@@ -68,6 +68,31 @@ function writeExecutable(path: string, content: string): void {
   chmodSync(path, 0o755);
 }
 
+function setUnknownExtendedAttribute(path: string): string {
+  const names = process.platform === 'darwin'
+    ? ['com.openai.bootstrap-test', 'user.openai.bootstrap-test']
+    : ['user.openai.bootstrap-test', 'com.openai.bootstrap-test'];
+
+  const failures: string[] = [];
+  for (const name of names) {
+    const result = process.platform === 'darwin'
+      ? spawnSync('xattr', ['-w', name, 'bootstrap-test', path], { encoding: 'utf8' })
+      : spawnSync(
+          'python3',
+          [
+            '-c',
+            'import os, sys\nos.setxattr(sys.argv[1], sys.argv[2], b"bootstrap-test")\n',
+            path,
+            name,
+          ],
+          { encoding: 'utf8' },
+        );
+    if (result.status === 0) return name;
+    failures.push(`${name}: ${result.stderr.trim()}`);
+  }
+  throw new Error(`could not set a test xattr on ${path}: ${failures.join('; ')}`);
+}
+
 function makeDeployRoot(
   t: TestContext,
   options: { fakeFlock?: boolean } = {},
@@ -406,10 +431,24 @@ function makeBootstrapHarness(t: TestContext): BootstrapHarness {
   const source = readFileSync(bootstrapScript, 'utf8');
   const rootExpression = '${EUID:-$(id -u)}';
   assert.equal(source.split(rootExpression).length - 1, 1, 'root gate changed unexpectedly');
-  const testableSource = source.replace(
+  let testableSource = source.replace(
     rootExpression,
     '${BOOTSTRAP_TEST_EUID:-${EUID:-$(id -u)}}',
   );
+  if (process.platform === 'darwin') {
+    // APFS attaches protected provenance to test fixtures. Permit it only in
+    // the generated test copy; production remains limited to security.selinux.
+    const productionAllowlist = 'allowed_extended_attributes = {"security.selinux"}';
+    assert.equal(
+      source.split(productionAllowlist).length - 1,
+      1,
+      'production xattr allowlist changed unexpectedly',
+    );
+    testableSource = testableSource.replace(
+      productionAllowlist,
+      'allowed_extended_attributes = {"security.selinux", "com.apple.provenance"}',
+    );
+  }
   const testableScript = join(sandbox, 'bootstrap-server.sh');
   writeExecutable(testableScript, testableSource);
 
@@ -1537,13 +1576,86 @@ test('bootstrap hardening: selected binary owns validation and reload identity',
     });
 
     assert.notEqual(result.status, 0);
-    assert.match(result.stderr, /previous config restored, revalidated, and reloaded/);
+    assert.match(result.stderr, /recovery reload signal command accepted/);
+    assert.doesNotMatch(result.stderr, /\b(?:applied|active|reloaded|serving)\b/i);
     assert.equal(readFileSync(harness.configPath, 'utf8'), 'previous config\n');
     assert.equal(
       readFileSync(harness.nginxLog, 'utf8'),
       '-t\n-s reload\n-t\n-s reload\n',
     );
     assert.equal(existsSync(harness.systemctlLog), false);
+  });
+});
+
+test('bootstrap host gates: xattrs, idempotence, and reload semantics are bounded', async (t) => {
+  await t.test('unknown platform-settable xattr is rejected without modifying config', () => {
+    const harness = makeBootstrapHarness(t);
+    writeFileSync(harness.configPath, 'xattr-protected config\n', 'utf8');
+    const xattrName = setUnknownExtendedAttribute(harness.configPath);
+
+    const result = harness.run({ NGINX_TEMPLATE: nginxTemplatePath });
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /unsupported extended attributes/i);
+    assert.ok(result.stderr.includes(xattrName), result.stderr);
+    assert.equal(readFileSync(harness.configPath, 'utf8'), 'xattr-protected config\n');
+    assert.equal(existsSync(harness.installLog), false);
+    assert.equal(existsSync(harness.mvLog), false);
+  });
+
+  await t.test('metadata validator allowlists only security.selinux', () => {
+    const source = readFileSync(bootstrapScript, 'utf8');
+    assert.match(
+      source,
+      /allowed_extended_attributes\s*=\s*\{"security\.selinux"\}/,
+    );
+    assert.match(
+      source,
+      /unknown_extended_attributes\s*=\s*sorted\(set\(extended_attributes\) - allowed_extended_attributes\)/,
+    );
+    assert.doesNotMatch(source, /removexattr|setxattr/);
+  });
+
+  await t.test('two consecutive bootstraps remain idempotent', () => {
+    const harness = makeBootstrapHarness(t);
+    const first = harness.run({ NGINX_TEMPLATE: nginxTemplatePath });
+    assert.equal(first.status, 0, first.stderr || first.stdout);
+    const firstConfig = readFileSync(harness.configPath, 'utf8');
+
+    const second = harness.run({ NGINX_TEMPLATE: nginxTemplatePath });
+    assert.equal(second.status, 0, second.stderr || second.stdout);
+    assert.equal(readFileSync(harness.configPath, 'utf8'), firstConfig);
+    assert.equal(
+      readFileSync(harness.nginxLog, 'utf8'),
+      '-t\n-s reload\n-t\n-s reload\n',
+    );
+    assert.equal(readFileSync(harness.flockLog, 'utf8'), '-n 9\n-n 9\n');
+  });
+
+  await t.test('successful signal command does not claim configuration application', () => {
+    const harness = makeBootstrapHarness(t);
+    const result = harness.run({ NGINX_TEMPLATE: nginxTemplatePath });
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.match(result.stdout, /reload signal command accepted by selected Nginx binary/i);
+    assert.doesNotMatch(
+      result.stdout,
+      /configuration (?:applied|active)|workers? reloaded|now serving/i,
+    );
+  });
+
+  await t.test('recovery signal acceptance does not claim worker reload', () => {
+    const harness = makeBootstrapHarness(t);
+    writeFileSync(harness.configPath, 'previous config\n', 'utf8');
+    const failOnce = join(harness.sandbox, 'selected-nginx-reload-failed-once');
+    const result = harness.run({
+      BOOTSTRAP_NGINX_RELOAD_FAIL_ONCE: failOnce,
+      NGINX_TEMPLATE: nginxTemplatePath,
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /recovery reload signal command accepted/);
+    assert.doesNotMatch(result.stderr, /\b(?:applied|active|reloaded|serving)\b/i);
   });
 });
 
@@ -1593,7 +1705,7 @@ test('bootstrap hardening: existing config identity and metadata are strict', as
     assert.equal(existsSync(harness.mvLog), false);
   });
 
-  await t.test('validator requires regular single-link process ownership without xattrs', () => {
+  await t.test('validator requires regular single-link process ownership and xattr inspection', () => {
     const source = readFileSync(bootstrapScript, 'utf8');
     assert.match(source, /stat\.S_ISREG/);
     assert.match(source, /st_nlink/);
@@ -1824,7 +1936,8 @@ test('bootstrap review: BaoTa bootstrap reports validation and reload recovery e
     });
 
     assert.notEqual(result.status, 0);
-    assert.match(result.stderr, /previous config restored, revalidated, and reloaded/);
+    assert.match(result.stderr, /recovery reload signal command accepted/);
+    assert.doesNotMatch(result.stderr, /\b(?:applied|active|reloaded|serving)\b/i);
     assert.equal(readFileSync(harness.configPath, 'utf8'), 'previous TLS config\n');
     assert.equal(
       readFileSync(harness.nginxLog, 'utf8'),
@@ -1854,7 +1967,7 @@ test('bootstrap review: operations describe atomic Nginx recovery without TLS ov
   assert.match(deployment, /同一目录[^。\n]*临时文件[^。\n]*原子重命名/);
   assert.match(
     deployment,
-    /首次 `nginx -t` 失败[^。\n]*reload 失败[^。\n]*恢复旧配置[^。\n]*重新验证/,
+    /首次 `nginx -t` 失败[^。\n]*reload signal command 被拒绝[^。\n]*恢复旧配置[^。\n]*重新验证/,
   );
   assert.match(
     deployment,
@@ -1889,6 +2002,49 @@ test('bootstrap hardening: operations document identity, SNI, metadata, and lock
     deployment,
     /--header "Host: \$SELECTED_DOMAIN"[\s\S]{0,200}https:\/\/127\.0\.0\.1\//,
   );
+});
+
+test('bootstrap host gates: operations require SELinux, process, backup, and recovery evidence', () => {
+  const deployment = readFileSync(deployDocumentationPath, 'utf8');
+  const bootstrap = readFileSync(bootstrapScript, 'utf8');
+
+  assert.match(deployment, /`security\.selinux`[^。\n]*(?:允许|allowlist)/i);
+  assert.match(deployment, /其余[^。\n]*xattr[^。\n]*fail closed/i);
+  assert.match(deployment, /getenforce/);
+  assert.match(deployment, /ls -lZ/);
+  assert.match(deployment, /restorecon -n/);
+
+  assert.match(deployment, /reload signal command accepted\/sent/i);
+  assert.match(deployment, /不(?:表示|证明)[^。\n]*(?:应用|生效|worker)/i);
+  assert.match(deployment, /NGINX_PID_FILE/);
+  assert.match(deployment, /\/proc\/\$MASTER_PID\/exe/);
+  assert.match(deployment, /\/proc\/\$MASTER_PID\/cmdline/);
+  assert.match(deployment, /"\$NGINX_BIN" -V/);
+  assert.match(deployment, /"\$NGINX_BIN" -T/);
+  assert.match(deployment, /include/);
+  assert.match(deployment, /WORKERS_BEFORE/);
+  assert.match(deployment, /WORKERS_AFTER/);
+  assert.match(deployment, /NEW_WORKERS/);
+  assert.match(deployment, /error\.log/);
+  assert.match(deployment, /Host[^。\n]*SNI[^。\n]*内容探针/i);
+
+  assert.match(deployment, /flock --version/);
+  assert.match(deployment, /SCRATCH_LOCK/);
+  assert.match(deployment, /flock -n 8/);
+  assert.match(deployment, /flock -n "\$SCRATCH_LOCK" -c true/);
+  assert.match(deployment, /st_uid != 0/);
+  assert.match(deployment, /mode & 0o022/);
+  assert.match(deployment, /冻结[^。\n]*宝塔[^。\n]*(?:保存|重载|配置)/);
+
+  assert.match(deployment, /BACKUP_ROOT=\/root\//);
+  assert.match(deployment, /install -d -m 0700/);
+  assert.match(deployment, /sha256sum[^\n]*BACKUP/);
+  assert.match(deployment, /已有配置中断恢复/);
+  assert.match(deployment, /首次安装中断恢复/);
+  assert.match(deployment, /sha256sum -c/);
+  assert.match(deployment, /rm -f -- "\$NGINX_CONFIG"/);
+
+  assert.doesNotMatch(bootstrap, /BACKUP_ROOT|restorecon|WORKERS_BEFORE|SCRATCH_LOCK/);
 });
 
 test('activation and rollback durably sync release, transaction, link, and state mutations', () => {

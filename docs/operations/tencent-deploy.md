@@ -31,7 +31,7 @@
 
    标准模板声明了一个 HTTP `default_server` 用于拒绝未知 Host。若真实主机已经有同地址同端口的 `default_server`，直接安装会产生冲突，禁止绕过 `nginx -t` 或删除现有站点。宝塔模板不声明第二个 `default_server`，而是在本站 vhost 内校验精确 Host；最终 TLS 模板同时检查 Host 和 `$ssl_server_name` SNI 域名，缺失或不匹配都返回 444。只能在确认现有默认路由会接管其他 Host 后使用。
 
-   bootstrap 对已有 `NGINX_CONFIG` 使用严格的受支持契约：该路径不能是符号链接，现有对象必须是单链接普通文件、`0644`，所有者 UID 与属组 GID 都必须匹配 bootstrap 的有效进程，并且在平台提供扩展属性查询时不得带任何扩展属性。任一条件不满足都会在备份和发布前停止；脚本不会静默修改权限、所有权、链接或扩展属性。管理员必须先独立审查并显式迁移不受支持的既有配置。
+   bootstrap 对已有 `NGINX_CONFIG` 使用严格的受支持契约：该路径不能是符号链接，现有对象必须是单链接普通文件、`0644`，所有者 UID 与属组 GID 都必须匹配 bootstrap 的有效进程。扩展属性只允许 SELinux 的 `security.selinux` allowlist 项，其余 xattr 一律 fail closed；脚本不调用 xattr 写入或删除操作，不主动删除或改写安全标签，也不会静默修改权限、所有权或链接。任一条件不满足都会在备份和发布前停止，管理员必须先独立审查并显式迁移不受支持的既有配置。
 
    每次运行都使用持久的 `${NGINX_CONFIG}.lock` 路径；该路径不能是符号链接，脚本以非阻塞方式获取 `flock`，并把锁持有到验证、reload 和任何恢复流程全部结束。锁已被其他进程持有时，本次运行会在备份或修改目标配置前失败。
 
@@ -63,9 +63,176 @@
      transactions/
    ```
 
-   `/srv/cs-baoyan-ddl` 由 `root:cs-baoyan-deploy` 以 `0775` 管理，使部署用户通过同名专用组更新 `current`；发布目录由部署用户拥有，Nginx 只需读取和遍历。脚本渲染明确的 `server_name`，通过在目标配置同一目录创建临时文件并原子重命名来发布新配置，然后依次运行选定的 `NGINX_BIN -t` 和 `NGINX_BIN -s reload`；不通过服务名切换到另一套 Nginx 实例。
+   `/srv/cs-baoyan-ddl` 由 `root:cs-baoyan-deploy` 以 `0775` 管理，使部署用户通过同名专用组更新 `current`；发布目录由部署用户拥有，Nginx 只需读取和遍历。脚本渲染明确的 `server_name`，通过在目标配置同一目录创建临时文件并原子重命名来发布新配置，然后依次运行选定的 `NGINX_BIN -t` 和 `NGINX_BIN -s reload`；不通过服务名切换到另一套 Nginx 实例。`-s reload` 返回 0 只表示 reload signal command accepted/sent，不表示配置已应用、worker 已换代或站点已开始提供新内容。
 
-   首次 `nginx -t` 失败或 reload 失败时，如果存在旧配置，脚本会用同样的同目录原子重命名恢复旧配置，并使用同一个选定的 `NGINX_BIN -t` 重新验证；reload 失败分支还会使用该选定二进制的 `NGINX_BIN -s reload` 检查恢复后的 reload 是否成功，最终错误信息只陈述实际完成的恢复步骤。原先不存在配置时，脚本会删除本次新配置并重新验证剩余 Nginx 配置，不会把这种情况描述为“恢复了旧配置”。无论选择 HTTP 还是 TLS 模板，脚本只承诺没有修改 firewall、`sshd`、DNS 和 certificate files；安装 TLS 模板本身会改变站点的 TLS 配置，但不会创建、复制或修改证书文件。
+   首次 `nginx -t` 失败或 reload signal command 被拒绝时，如果存在旧配置，脚本会用同样的同目录原子重命名恢复旧配置，并使用同一个选定的 `NGINX_BIN -t` 重新验证；恢复分支再次调用 `NGINX_BIN -s reload` 时也只记录 signal command 是否被接受，不宣称恢复配置已经应用。原先不存在配置时，脚本会删除本次新配置并重新验证剩余 Nginx 配置，不会把这种情况描述为“恢复了旧配置”。无论选择 HTTP 还是 TLS 模板，脚本只承诺没有修改 firewall、`sshd`、DNS 和 certificate files；安装 TLS 模板本身会改变站点的 TLS 配置，但不会创建、复制或修改证书文件。
+
+### Task 14 主机身份、备份与执行窗口门禁
+
+以下门禁只允许在 Task 14 已批准的主机维护窗口内由 root 执行；本手册不授权当前任务连接主机。执行窗口开始后必须冻结宝塔站点配置保存、应用、重载和证书面板动作，直到 worker、日志、SELinux 与本机探针全部验收完成。先在同一个 root shell 固定真实路径：
+
+```bash
+test -n "${SELECTED_DOMAIN:?user-approved domain is required}"
+NGINX_BIN=/www/server/nginx/sbin/nginx
+NGINX_CONFIG="/www/server/panel/vhost/nginx/$SELECTED_DOMAIN.conf"
+NGINX_PID_FILE=/www/server/nginx/logs/nginx.pid
+NGINX_ERROR_LOG=/www/server/nginx/logs/error.log
+test -x "$NGINX_BIN"
+test -r "$NGINX_PID_FILE"
+test -r "$NGINX_ERROR_LOG"
+```
+
+bootstrap 前必须把 PID file、运行中 master 和所选二进制绑定，并审查构建、完整配置与 include 证据：
+
+```bash
+MASTER_PID=$(cat "$NGINX_PID_FILE")
+case "$MASTER_PID" in ''|*[!0-9]*) exit 1 ;; esac
+test -d "/proc/$MASTER_PID"
+test "$(readlink -f "/proc/$MASTER_PID/exe")" = "$(readlink -f "$NGINX_BIN")"
+MASTER_CMDLINE=$(tr '\0' ' ' < "/proc/$MASTER_PID/cmdline")
+case "$MASTER_CMDLINE" in *nginx*master*process*) ;; *) exit 1 ;; esac
+
+"$NGINX_BIN" -V 2>&1
+NGINX_T_OUTPUT=$("$NGINX_BIN" -T 2>&1) || exit 1
+printf '%s\n' "$NGINX_T_OUTPUT" | grep -F 'include'
+printf '%s\n' "$NGINX_T_OUTPUT" | grep -F "# configuration file $NGINX_CONFIG:"
+
+WORKERS_BEFORE=$(ps -o pid= --ppid "$MASTER_PID" | awk '{$1=$1};1' | sort -n)
+test -n "$WORKERS_BEFORE"
+ERROR_BYTES_BEFORE=$(stat -c '%s' "$NGINX_ERROR_LOG")
+```
+
+vhost 文件的全部祖先必须由 root 拥有，且 group/other 不可写；以下检查也拒绝祖先符号链接：
+
+```bash
+python3 - "$NGINX_CONFIG" <<'PY'
+import os
+import pathlib
+import stat
+import sys
+
+directory = pathlib.Path(sys.argv[1]).parent
+for ancestor in (directory, *directory.parents):
+    metadata = os.lstat(ancestor)
+    mode = stat.S_IMODE(metadata.st_mode)
+    if stat.S_ISLNK(metadata.st_mode) or metadata.st_uid != 0 or mode & 0o022:
+        raise SystemExit(f"unsafe vhost ancestor: {ancestor}")
+PY
+```
+
+不能只依赖 fake lock 测试。Task 14 必须先在 root-only scratch 文件上证明真实 util-linux `flock` 会拒绝第二个非阻塞持有者：
+
+```bash
+flock --version
+umask 077
+SCRATCH_LOCK=$(mktemp /root/cs-baoyan-ddl-flock.XXXXXX)
+exec 8<>"$SCRATCH_LOCK"
+flock -n 8
+if flock -n "$SCRATCH_LOCK" -c true; then
+  exit 1
+fi
+flock -u 8
+exec 8>&-
+rm -f -- "$SCRATCH_LOCK"
+```
+
+SELinux 检查不修改标签。bootstrap 前记录状态；bootstrap 后重复执行并要求 `restorecon -n` 不提示需要修复：
+
+```bash
+getenforce
+ls -lZ "$NGINX_CONFIG" "${NGINX_CONFIG}.lock" 2>/dev/null || true
+restorecon -n -v "$NGINX_CONFIG" "${NGINX_CONFIG}.lock" 2>/dev/null || true
+```
+
+bootstrap 前必须制作 root-only 持久备份或“首次安装”缺失标记，并分别记录 SHA-256。临时脚本内备份不能代替该证据：
+
+```bash
+BACKUP_ROOT=/root/cs-baoyan-ddl-nginx-backups
+install -d -m 0700 -o root -g root "$BACKUP_ROOT"
+BACKUP_STAMP=$(date -u +%Y%m%dT%H%M%SZ)
+if test -e "$NGINX_CONFIG"; then
+  BACKUP_CONFIG="$BACKUP_ROOT/$SELECTED_DOMAIN.$BACKUP_STAMP.conf"
+  install -m 0600 -o root -g root "$NGINX_CONFIG" "$BACKUP_CONFIG"
+  sha256sum "$BACKUP_CONFIG" > "$BACKUP_CONFIG.sha256"
+  chmod 0600 "$BACKUP_CONFIG.sha256"
+else
+  FIRST_INSTALL_MARKER="$BACKUP_ROOT/$SELECTED_DOMAIN.$BACKUP_STAMP.absent"
+  printf 'absent:%s\n' "$NGINX_CONFIG" > "$FIRST_INSTALL_MARKER"
+  chmod 0600 "$FIRST_INSTALL_MARKER"
+  sha256sum "$FIRST_INSTALL_MARKER" > "$FIRST_INSTALL_MARKER.sha256"
+  chmod 0600 "$FIRST_INSTALL_MARKER.sha256"
+fi
+```
+
+bootstrap 返回后，仍在同一冻结窗口内确认 master 身份不变、至少出现一个新 worker，并审查本次窗口新增的 error log：
+
+```bash
+MASTER_PID_AFTER=$(cat "$NGINX_PID_FILE")
+test "$MASTER_PID_AFTER" = "$MASTER_PID"
+test "$(readlink -f "/proc/$MASTER_PID_AFTER/exe")" = "$(readlink -f "$NGINX_BIN")"
+MASTER_CMDLINE_AFTER=$(tr '\0' ' ' < "/proc/$MASTER_PID_AFTER/cmdline")
+test "$MASTER_CMDLINE_AFTER" = "$MASTER_CMDLINE"
+
+WORKERS_AFTER=$(ps -o pid= --ppid "$MASTER_PID_AFTER" | awk '{$1=$1};1' | sort -n)
+NEW_WORKERS=$(comm -13 \
+  <(printf '%s\n' "$WORKERS_BEFORE") \
+  <(printf '%s\n' "$WORKERS_AFTER"))
+test -n "$NEW_WORKERS"
+
+ERROR_BYTES_AFTER=$(stat -c '%s' "$NGINX_ERROR_LOG")
+test "$ERROR_BYTES_AFTER" -ge "$ERROR_BYTES_BEFORE"
+if test "$ERROR_BYTES_AFTER" -gt "$ERROR_BYTES_BEFORE"; then
+  ERROR_LOG_DELTA=$(tail -c "+$((ERROR_BYTES_BEFORE + 1))" "$NGINX_ERROR_LOG")
+  printf '%s\n' "$ERROR_LOG_DELTA"
+  if printf '%s\n' "$ERROR_LOG_DELTA" | grep -Eiq '\[(emerg|alert|crit|error)\]'; then
+    exit 1
+  fi
+fi
+
+getenforce
+ls -lZ "$NGINX_CONFIG" "${NGINX_CONFIG}.lock"
+RESTORECON_PREVIEW=$(restorecon -n -v "$NGINX_CONFIG" "${NGINX_CONFIG}.lock" 2>&1 || true)
+test -z "$RESTORECON_PREVIEW" || { printf '%s\n' "$RESTORECON_PREVIEW" >&2; exit 1; }
+```
+
+最后必须运行对应小节中的 Host、SNI 和内容探针。只有 master 身份、worker 换代、error log、SELinux 和本机探针全部通过，Task 14 才能判定新配置已应用；bootstrap 自身不作该声明。
+
+#### 已有配置中断恢复
+
+仅当持久备份与 checksum 都存在时执行；恢复仍须持有同一 vhost lock，并在 signal command 被接受后重新执行上述 Task 14 后置门禁：
+
+```bash
+test -f "$BACKUP_CONFIG"
+test -f "$BACKUP_CONFIG.sha256"
+sha256sum -c "$BACKUP_CONFIG.sha256"
+exec 9<>"${NGINX_CONFIG}.lock"
+flock -n 9
+RECOVERY_TEMP=$(mktemp "${NGINX_CONFIG}.recovery.XXXXXX")
+install -m 0644 -o root -g root "$BACKUP_CONFIG" "$RECOVERY_TEMP"
+mv -f -- "$RECOVERY_TEMP" "$NGINX_CONFIG"
+"$NGINX_BIN" -t
+"$NGINX_BIN" -s reload
+printf '%s\n' 'recovery reload signal command accepted/sent; application not yet verified'
+```
+
+#### 首次安装中断恢复
+
+仅当缺失标记与 checksum 证明 bootstrap 前没有该 vhost 时执行；删除本次文件后重新验证并发送 reload signal，再执行 Task 14 后置门禁：
+
+```bash
+test -f "$FIRST_INSTALL_MARKER"
+test -f "$FIRST_INSTALL_MARKER.sha256"
+sha256sum -c "$FIRST_INSTALL_MARKER.sha256"
+grep -Fx "absent:$NGINX_CONFIG" "$FIRST_INSTALL_MARKER"
+exec 9<>"${NGINX_CONFIG}.lock"
+flock -n 9
+rm -f -- "$NGINX_CONFIG"
+"$NGINX_BIN" -t
+"$NGINX_BIN" -s reload
+printf '%s\n' 'recovery reload signal command accepted/sent; application not yet verified'
+```
+
+以上是受控人工中断恢复，不在 bootstrap 中新增事务控制面。
 
 ### 宝塔 HTTP 受控验收
 
@@ -85,7 +252,7 @@ sudo env \
   bash deploy/bootstrap-server.sh
 ```
 
-bootstrap 成功只证明配置已写入、选定的 Nginx 二进制通过 `-t` 且通过同一二进制的 `-s reload` 完成 reload。只有后续获批的发布步骤已经创建 `current/release.json`，才执行内容与 Host 路由检查：
+bootstrap 返回 0 只证明配置已写入、选定的 Nginx 二进制通过 `-t`，且同一二进制接受了 `-s reload` signal command；不证明配置已应用。只有 Task 14 已确认 worker 换代和 error log，并且后续获批的发布步骤已经创建 `current/release.json`，才执行内容与 Host 路由检查：
 
 ```bash
 test -f /srv/cs-baoyan-ddl/current/release.json
@@ -100,7 +267,7 @@ rejected_status=$(
 test "$rejected_status" = 000
 ```
 
-这一步只验证本机宝塔 include、精确 Host 拒绝、静态文件路由和 HTTP vhost，不授权创建 DNS 记录、开放公网发布或把 HTTP 写入 `PUBLIC_BASE_URL`。如果 `nginx -t`、reload、选定域名请求或错误 Host 拒绝中的任一项失败，应保留 stop gate，并按 bootstrap 错误信息区分“旧配置已恢复且重新验证”“旧配置恢复但重新验证或 reload 失败”和“首次安装的新配置已删除”；不得笼统宣称回滚成功，也不得绕过验证继续上线。
+这一步只验证本机宝塔 include、精确 Host 拒绝、静态文件路由和 HTTP vhost，不授权创建 DNS 记录、开放公网发布或把 HTTP 写入 `PUBLIC_BASE_URL`。如果 `nginx -t`、reload signal command、选定域名请求或错误 Host 拒绝中的任一项失败，应保留 stop gate，并按 bootstrap 错误信息区分“旧配置已恢复且重新验证”“旧配置恢复但重新验证或 reload signal command 被拒绝”和“首次安装的新配置已删除”；不得笼统宣称回滚成功，也不得绕过验证继续上线。
 
 ### 宝塔最终 TLS 配置
 
