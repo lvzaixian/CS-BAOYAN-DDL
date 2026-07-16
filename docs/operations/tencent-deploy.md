@@ -71,7 +71,7 @@
 
 本节只允许在已批准的主机维护窗口内由 root 执行，不授权当前任务连接主机。窗口内冻结宝塔的保存、应用、重载和证书动作。为降低误操作面，正常变更只复制一个主门禁块；另有两个互斥的中断恢复块。三个块都独立启用 fail-fast，并在使用任何路径前校验 SELECTED_DOMAIN。
 
-当前只读事实是全局 error_log /www/wwwlogs/nginx_error.log crit;，检查时 master PID 910 的 FD 2/11 指向该文件。主门禁不信任这些历史值：它从 PID file、nginx -V/-T 和 /proc 重新证明 Nginx 身份、BaoTa include、全局日志及 dev/inode/offset。已有配置才要求精确配置 marker，并要求 restorecon -n 无待修复；首次安装只要求真实 include /www/server/panel/vhost/nginx/*.conf;。持久备份使用唯一 mktemp 目录与 cp -a，保留内容、mode、owner、timestamps 和允许的 security.selinux 标签。
+当前只读事实是全局 error_log /www/wwwlogs/nginx_error.log crit;，master cmdline 使用 -c /www/server/nginx/conf/nginx.conf。主门禁不信任历史 PID 或 FD 编号：它把 master cmdline 的显式 -c 参数（没有该参数时为合法默认配置）与 nginx -T 的首个 configuration marker 绑定，并遍历 /proc 下 master 的全部 FD 证明至少一个 FD 打开同一日志 dev/inode。已有配置才要求精确配置 marker，并要求 restorecon -n 无待修复；首次安装只要求真实 include /www/server/panel/vhost/nginx/*.conf;。持久备份使用唯一 mktemp 目录与 cp -a，保留内容、mode、owner、timestamps 和允许的 security.selinux 标签。
 
 #### HTTP/TLS 单块主门禁
 
@@ -110,12 +110,50 @@ MASTER_CMDLINE=$(tr '\0' ' ' < "$PROC_ROOT/$MASTER_PID/cmdline")
 MASTER_CMDLINE=${MASTER_CMDLINE% }
 case "$MASTER_CMDLINE" in *nginx*master*process*) ;; *) exit 1 ;; esac
 
+# BEGIN ACTIVE_MASTER_CONFIG_GATE
+master_config_argument() {
+  python3 - "$1" <<'PY'
+import os, re, sys
+command = sys.argv[1]
+flags = re.findall(r"(?:^|\s)-c(?=\s|$)", command)
+matches = re.findall(r"(?:^|\s)-c\s+(\S+)", command)
+if len(flags) != len(matches) or len(matches) > 1:
+    raise SystemExit("ambiguous master -c argument")
+if matches:
+    path = matches[0]
+    if not os.path.isabs(path) or any(part in (".", "..") for part in path.split("/")):
+        raise SystemExit("unsafe master -c path")
+    print(path)
+PY
+}
+first_config_marker() {
+  sed -n 's/^# configuration file \(\/.*\):$/\1/p' | sed -n '1p'
+}
+active_main_config_from() {
+  local master_config=$1 nginx_t_output=$2 main_config
+  main_config=$(printf '%s\n' "$nginx_t_output" | first_config_marker)
+  case "$main_config" in /*) ;; *) return 1 ;; esac
+  if test -n "$master_config" && test "$master_config" != "$main_config"; then
+    printf '%s\n' 'master -c path does not match the first nginx -T marker' >&2
+    return 1
+  fi
+  printf '%s\n' "$main_config"
+}
+active_nginx_t() {
+  if test -n "$MASTER_CONFIG_ARGUMENT"; then
+    "$NGINX_BIN" -T -c "$MASTER_CONFIG_ARGUMENT" 2>&1
+  else
+    "$NGINX_BIN" -T 2>&1
+  fi
+}
+# END ACTIVE_MASTER_CONFIG_GATE
+
+MASTER_CONFIG_ARGUMENT=$(master_config_argument "$MASTER_CMDLINE")
 NGINX_V_OUTPUT=$("$NGINX_BIN" -V 2>&1)
 printf '%s\n' "$NGINX_V_OUTPUT"
-NGINX_MAIN_CONFIG=$(printf '%s\n' "$NGINX_V_OUTPUT" | sed -n 's/.*--conf-path=\([^[:space:]]*\).*/\1/p')
-case "$NGINX_MAIN_CONFIG" in /*) ;; *) exit 1 ;; esac
+NGINX_T_OUTPUT=$(active_nginx_t)
+NGINX_MAIN_CONFIG=$(active_main_config_from "$MASTER_CONFIG_ARGUMENT" "$NGINX_T_OUTPUT")
 NGINX_MAIN_MARKER="# configuration file $NGINX_MAIN_CONFIG:"
-NGINX_T_OUTPUT=$("$NGINX_BIN" -T 2>&1)
 if test -e "$NGINX_CONFIG"; then
   test ! -L "$NGINX_CONFIG"
   printf '%s\n' "$NGINX_T_OUTPUT" | grep -Fx "# configuration file $NGINX_CONFIG:"
@@ -192,6 +230,28 @@ wait_for_new_worker() {
 }
 # END VALIDATED_WORKER_GATE
 
+# BEGIN MASTER_LOG_FD_GATE
+path_dev_inode() {
+  python3 - "$1" <<'PY'
+import os, sys
+value = os.stat(sys.argv[1])
+print(f"{value.st_dev}:{value.st_ino}")
+PY
+}
+master_has_log_inode() {
+  local fd_path fd_dev_inode
+  for fd_path in "$PROC_ROOT/$MASTER_PID/fd"/*; do
+    test -e "$fd_path" || continue
+    fd_dev_inode=$(path_dev_inode "$fd_path" 2>/dev/null) || continue
+    if test "$fd_dev_inode" = "$ERROR_LOG_DEV_INODE"; then
+      return 0
+    fi
+  done
+  printf '%s\n' 'master does not hold the active error log inode' >&2
+  return 1
+}
+# END MASTER_LOG_FD_GATE
+
 global_error_log_from_t() {
   awk -v main_marker="$NGINX_MAIN_MARKER" '
     BEGIN { depth=0; count=0; in_main=0; seen_main=0 }
@@ -228,10 +288,10 @@ test -n "$WORKERS_BEFORE"
 GLOBAL_ERROR_LOG=$(printf '%s\n' "$NGINX_T_OUTPUT" | global_error_log_from_t)
 test "$GLOBAL_ERROR_LOG" = /www/wwwlogs/nginx_error.log
 NGINX_ERROR_LOG=$GLOBAL_ERROR_LOG
-ERROR_LOG_DEV_INODE=$(stat -Lc '%d:%i' "$NGINX_ERROR_LOG")
+ERROR_LOG_DEV_INODE=$(path_dev_inode "$NGINX_ERROR_LOG")
 ERROR_LOG_OFFSET=$(stat -Lc '%s' "$NGINX_ERROR_LOG")
-test "$(stat -Lc '%d:%i' "$PROC_ROOT/$MASTER_PID/fd/2")" = "$ERROR_LOG_DEV_INODE"
-test "$(stat -Lc '%d:%i' "$PROC_ROOT/$MASTER_PID/fd/11")" = "$ERROR_LOG_DEV_INODE"
+master_has_log_inode
+printf 'error log dev:inode=%s offset=%s\n' "$ERROR_LOG_DEV_INODE" "$ERROR_LOG_OFFSET"
 getenforce
 test ! -e "$NGINX_CONFIG" || ls -lZ "$NGINX_CONFIG"
 
@@ -291,18 +351,19 @@ WORKERS_AFTER=${WORKERS_AFTER% }
 NEW_WORKERS=$(wait_for_new_worker "$WORKERS_BEFORE")
 test -n "$WORKERS_AFTER:$NEW_WORKERS"
 
-NGINX_T_OUTPUT_AFTER=$("$NGINX_BIN" -T 2>&1)
+NGINX_T_OUTPUT_AFTER=$(active_nginx_t)
+test "$(active_main_config_from "$MASTER_CONFIG_ARGUMENT" "$NGINX_T_OUTPUT_AFTER")" = "$NGINX_MAIN_CONFIG"
 test "$(printf '%s\n' "$NGINX_T_OUTPUT_AFTER" | global_error_log_from_t)" = "$NGINX_ERROR_LOG"
-ERROR_LOG_DEV_INODE_AFTER=$(stat -Lc '%d:%i' "$NGINX_ERROR_LOG")
+ERROR_LOG_DEV_INODE_AFTER=$(path_dev_inode "$NGINX_ERROR_LOG")
 test "$ERROR_LOG_DEV_INODE_AFTER" = "$ERROR_LOG_DEV_INODE"
-test "$(stat -Lc '%d:%i' "$PROC_ROOT/$MASTER_PID/fd/2")" = "$ERROR_LOG_DEV_INODE"
-test "$(stat -Lc '%d:%i' "$PROC_ROOT/$MASTER_PID/fd/11")" = "$ERROR_LOG_DEV_INODE"
+master_has_log_inode
 test "$(stat -Lc '%s' "$NGINX_ERROR_LOG")" -ge "$ERROR_LOG_OFFSET"
 ERROR_OBSERVE_SECONDS=${ERROR_OBSERVE_SECONDS:-5}
 case "$ERROR_OBSERVE_SECONDS" in ''|*[!0-9]*) exit 1 ;; esac
 test "$ERROR_OBSERVE_SECONDS" -le 30
 sleep "$ERROR_OBSERVE_SECONDS"
-test "$(stat -Lc '%d:%i' "$NGINX_ERROR_LOG")" = "$ERROR_LOG_DEV_INODE"
+test "$(path_dev_inode "$NGINX_ERROR_LOG")" = "$ERROR_LOG_DEV_INODE"
+master_has_log_inode
 ERROR_LOG_SIZE_OBSERVED=$(stat -Lc '%s' "$NGINX_ERROR_LOG")
 test "$ERROR_LOG_SIZE_OBSERVED" -ge "$ERROR_LOG_OFFSET"
 if test "$ERROR_LOG_SIZE_OBSERVED" -gt "$ERROR_LOG_OFFSET"; then

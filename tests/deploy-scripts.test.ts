@@ -2306,6 +2306,112 @@ test('BaoTa worker gate rejects PID-set false positives and times out without a 
   assert.match(timedOut.stderr, /stable new nginx worker/i);
 });
 
+test('BaoTa active-master config gate supports BaoTa without --conf-path and the default config', () => {
+  const deployment = readFileSync(deployDocumentationPath, 'utf8');
+  const task14 = markdownSection(
+    deployment,
+    '### Task 14 主机身份、备份与执行窗口门禁',
+    '### Task 16 activation 后内容与身份验收',
+  );
+  const startMarker = '# BEGIN ACTIVE_MASTER_CONFIG_GATE';
+  const endMarker = '# END ACTIVE_MASTER_CONFIG_GATE';
+  const start = task14.indexOf(startMarker);
+  const end = task14.indexOf(endMarker, start + startMarker.length);
+  assert.ok(start >= 0 && end > start, 'active-master config helpers must be extractable');
+  const configFunctions = task14.slice(start + startMarker.length, end);
+
+  assert.doesNotMatch(task14, /--conf-path/);
+  assert.match(configFunctions, /master_config_argument/);
+  assert.match(configFunctions, /first_config_marker/);
+
+  const nginxTFixture = [
+    '# configuration file /www/server/nginx/conf/nginx.conf:',
+    'error_log /www/wwwlogs/nginx_error.log crit;',
+    '# configuration file /www/server/panel/vhost/nginx/site.conf:',
+    'server { listen 80; }',
+  ].join('\n');
+  const result = spawnSync(
+    'bash',
+    [
+      '-c',
+      `set -Eeuo pipefail
+${configFunctions}
+test "$NGINX_V_FIXTURE" = 'configure arguments: --prefix=/www/server/nginx'
+explicit_arg=$(master_config_argument 'nginx: master process /www/server/nginx/sbin/nginx -c /www/server/nginx/conf/nginx.conf')
+test "$explicit_arg" = /www/server/nginx/conf/nginx.conf
+test "$(active_main_config_from "$explicit_arg" "$NGINX_T_FIXTURE")" = /www/server/nginx/conf/nginx.conf
+default_arg=$(master_config_argument 'nginx: master process /www/server/nginx/sbin/nginx')
+test -z "$default_arg"
+test "$(active_main_config_from "$default_arg" "$NGINX_T_FIXTURE")" = /www/server/nginx/conf/nginx.conf
+if active_main_config_from /etc/nginx/other.conf "$NGINX_T_FIXTURE"; then exit 90; fi`,
+    ],
+    {
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        NGINX_T_FIXTURE: nginxTFixture,
+        NGINX_V_FIXTURE: 'configure arguments: --prefix=/www/server/nginx',
+      },
+    },
+  );
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+});
+
+test('BaoTa master log gate accepts FD renumbering and rejects no inode match', (t) => {
+  const deployment = readFileSync(deployDocumentationPath, 'utf8');
+  const task14 = markdownSection(
+    deployment,
+    '### Task 14 主机身份、备份与执行窗口门禁',
+    '### Task 16 activation 后内容与身份验收',
+  );
+  const startMarker = '# BEGIN MASTER_LOG_FD_GATE';
+  const endMarker = '# END MASTER_LOG_FD_GATE';
+  const start = task14.indexOf(startMarker);
+  const end = task14.indexOf(endMarker, start + startMarker.length);
+  assert.ok(start >= 0 && end > start, 'master log FD helpers must be extractable');
+  const fdFunctions = task14.slice(start + startMarker.length, end);
+
+  assert.match(fdFunctions, /"\$PROC_ROOT\/\$MASTER_PID\/fd"\/\*/);
+  assert.doesNotMatch(task14, /\$MASTER_PID\/fd\/(?:2|11)/);
+
+  const sandbox = mkdtempSync(join(tmpdir(), 'documented-master-log-fd-'));
+  t.after(() => rmSync(sandbox, { recursive: true, force: true }));
+  const procRoot = join(sandbox, 'proc');
+  const fdRoot = join(procRoot, '910', 'fd');
+  const errorLog = join(sandbox, 'nginx-error.log');
+  const unrelated = join(sandbox, 'unrelated.log');
+  mkdirSync(fdRoot, { recursive: true });
+  writeFileSync(errorLog, 'active log\n', 'utf8');
+  writeFileSync(unrelated, 'other log\n', 'utf8');
+  symlinkSync(unrelated, join(fdRoot, '2'));
+  symlinkSync(errorLog, join(fdRoot, '19'));
+  const metadata = statSync(errorLog);
+  const env = {
+    ...process.env,
+    ERROR_LOG_DEV_INODE: `${metadata.dev}:${metadata.ino}`,
+    MASTER_PID: '910',
+    PROC_ROOT: procRoot,
+  };
+  const runGate = () => spawnSync(
+    'bash',
+    ['-c', `set -Eeuo pipefail
+${fdFunctions}
+master_has_log_inode`],
+    { encoding: 'utf8', env },
+  );
+
+  const originalFd = runGate();
+  assert.equal(originalFd.status, 0, originalFd.stderr || originalFd.stdout);
+  rmSync(join(fdRoot, '19'));
+  symlinkSync(errorLog, join(fdRoot, '7'));
+  const renumberedFd = runGate();
+  assert.equal(renumberedFd.status, 0, renumberedFd.stderr || renumberedFd.stdout);
+  rmSync(join(fdRoot, '7'));
+  const missingFd = runGate();
+  assert.notEqual(missingFd.status, 0);
+  assert.match(missingFd.stderr, /master does not hold the active error log inode/i);
+});
+
 test('BaoTa error-log gate is bound to the selected master and fails closed on rotation', () => {
   const deployment = readFileSync(deployDocumentationPath, 'utf8');
   const task14 = markdownSection(
@@ -2316,13 +2422,15 @@ test('BaoTa error-log gate is bound to the selected master and fails closed on r
 
   assert.doesNotMatch(task14, /\/www\/server\/nginx\/logs\/error\.log/);
   assert.match(task14, /\/www\/wwwlogs\/nginx_error\.log/);
-  assert.match(task14, /--conf-path=/);
+  assert.doesNotMatch(task14, /--conf-path/);
   assert.match(task14, /NGINX_MAIN_CONFIG/);
   assert.match(task14, /# configuration file .*NGINX_MAIN_CONFIG/);
+  assert.match(task14, /MASTER_CONFIG_ARGUMENT/);
   assert.match(task14, /GLOBAL_ERROR_LOG/);
   assert.match(task14, /depth/);
-  assert.match(task14, /"\$PROC_ROOT\/\$MASTER_PID\/fd\/2"/);
-  assert.match(task14, /"\$PROC_ROOT\/\$MASTER_PID\/fd\/11"/);
+  assert.match(task14, /master_has_log_inode/);
+  assert.match(task14, /"\$PROC_ROOT\/\$MASTER_PID\/fd"\/\*/);
+  assert.doesNotMatch(task14, /\$MASTER_PID\/fd\/(?:2|11)/);
   assert.match(task14, /ERROR_LOG_DEV_INODE/);
   assert.match(task14, /ERROR_LOG_OFFSET/);
   assert.match(task14, /ERROR_LOG_DEV_INODE_AFTER/);
