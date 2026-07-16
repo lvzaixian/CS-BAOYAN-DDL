@@ -56,7 +56,7 @@ case "$NGINX_BIN" in
     ;;
 esac
 
-for command_name in python3 curl systemctl flock sha256sum tar install id mktemp; do
+for command_name in python3 curl systemctl flock sha256sum tar install id mktemp mv; do
   command -v "$command_name" >/dev/null 2>&1 \
     || fail "required command is missing: $command_name"
 done
@@ -77,8 +77,12 @@ install -d -m 0750 -o "$DEPLOY_USER" -g "$deploy_group" "$DEPLOY_ROOT/transactio
 
 rendered_config=$(mktemp)
 backup_config=$(mktemp)
+config_temp=
 had_config=0
 cleanup() {
+  if test -n "$config_temp"; then
+    rm -f -- "$config_temp"
+  fi
   rm -f -- "$rendered_config" "$backup_config"
 }
 trap cleanup EXIT
@@ -142,27 +146,78 @@ if test -f "$NGINX_CONFIG"; then
   cp -p -- "$NGINX_CONFIG" "$backup_config"
   had_config=1
 fi
-install -m 0644 -o root -g root "$rendered_config" "$NGINX_CONFIG"
+
+replace_config() {
+  source_config=$1
+  config_temp=$(mktemp "${NGINX_CONFIG}.tmp.XXXXXX") \
+    || return 1
+  if ! install -m 0644 -o root -g root "$source_config" "$config_temp"; then
+    rm -f -- "$config_temp"
+    config_temp=
+    return 1
+  fi
+  if ! mv -f -- "$config_temp" "$NGINX_CONFIG"; then
+    rm -f -- "$config_temp"
+    config_temp=
+    return 1
+  fi
+  config_temp=
+}
+
+replace_config "$rendered_config" \
+  || fail 'could not atomically install the rendered Nginx configuration'
 
 restore_config() {
   if test "$had_config" -eq 1; then
-    install -m 0644 -o root -g root "$backup_config" "$NGINX_CONFIG"
+    replace_config "$backup_config"
   else
     rm -f -- "$NGINX_CONFIG"
   fi
 }
 
 if ! "$NGINX_BIN" -t; then
-  restore_config
-  fail 'nginx -t rejected the rendered configuration; previous config restored'
+  if ! restore_config; then
+    if test "$had_config" -eq 1; then
+      fail 'nginx -t rejected the rendered configuration; failed to restore previous config'
+    fi
+    fail 'nginx -t rejected the rendered configuration; failed to remove rendered config'
+  fi
+  if ! "$NGINX_BIN" -t; then
+    if test "$had_config" -eq 1; then
+      fail 'nginx -t rejected the rendered configuration; previous config restored but failed revalidation'
+    fi
+    fail 'nginx -t rejected the rendered configuration; rendered config removed but remaining configuration failed revalidation; no previous config existed'
+  fi
+  if test "$had_config" -eq 1; then
+    fail 'nginx -t rejected the rendered configuration; previous config restored and revalidated'
+  fi
+  fail 'nginx -t rejected the rendered configuration; rendered config removed and remaining configuration revalidated; no previous config existed'
 fi
 if ! systemctl reload nginx; then
-  restore_config
-  "$NGINX_BIN" -t >/dev/null 2>&1 || true
-  systemctl reload nginx >/dev/null 2>&1 || true
-  fail 'nginx reload failed; previous config restored'
+  if ! restore_config; then
+    if test "$had_config" -eq 1; then
+      fail 'nginx reload failed; failed to restore previous config'
+    fi
+    fail 'nginx reload failed; failed to remove rendered config'
+  fi
+  if ! "$NGINX_BIN" -t; then
+    if test "$had_config" -eq 1; then
+      fail 'nginx reload failed; previous config restored but failed revalidation'
+    fi
+    fail 'nginx reload failed; rendered config removed but remaining configuration failed revalidation; no previous config existed'
+  fi
+  if ! systemctl reload nginx; then
+    if test "$had_config" -eq 1; then
+      fail 'nginx reload failed; previous config restored and revalidated, but recovery reload failed'
+    fi
+    fail 'nginx reload failed; rendered config removed and remaining configuration revalidated, but recovery reload failed; no previous config existed'
+  fi
+  if test "$had_config" -eq 1; then
+    fail 'nginx reload failed; previous config restored, revalidated, and reloaded'
+  fi
+  fail 'nginx reload failed; rendered config removed and remaining configuration revalidated and reloaded; no previous config existed'
 fi
 
 printf 'bootstrap complete: root=%s user=%s server_name=%s\n' \
   "$DEPLOY_ROOT" "$DEPLOY_USER" "$SERVER_NAME"
-printf 'No firewall, sshd, DNS, or TLS settings were changed.\n'
+printf 'No firewall, sshd, DNS, or certificate files were changed.\n'

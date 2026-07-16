@@ -59,7 +59,9 @@
      transactions/
    ```
 
-   `/srv/cs-baoyan-ddl` 由 `root:cs-baoyan-deploy` 以 `0775` 管理，使部署用户通过同名专用组更新 `current`；发布目录由部署用户拥有，Nginx 只需读取和遍历。脚本渲染明确的 `server_name`，运行选定的 `NGINX_BIN -t` 后才重载；配置验证或 reload 失败时原子恢复旧配置，并用同一个 Nginx 二进制重新验证。它不会触碰防火墙、`sshd`、DNS 或 TLS 资产。
+   `/srv/cs-baoyan-ddl` 由 `root:cs-baoyan-deploy` 以 `0775` 管理，使部署用户通过同名专用组更新 `current`；发布目录由部署用户拥有，Nginx 只需读取和遍历。脚本渲染明确的 `server_name`，通过在目标配置同一目录创建临时文件并原子重命名来发布新配置，然后运行选定的 `NGINX_BIN -t`，成功后才 reload。
+
+   首次 `nginx -t` 失败或 reload 失败时，如果存在旧配置，脚本会用同样的同目录原子重命名恢复旧配置，并使用同一个 `NGINX_BIN -t` 重新验证；reload 失败分支还会检查恢复后的 reload 是否成功，最终错误信息只陈述实际完成的恢复步骤。原先不存在配置时，脚本会删除本次新配置并重新验证剩余 Nginx 配置，不会把这种情况描述为“恢复了旧配置”。无论选择 HTTP 还是 TLS 模板，脚本只承诺没有修改 firewall、`sshd`、DNS 和 certificate files；安装 TLS 模板本身会改变站点的 TLS 配置，但不会创建、复制或修改证书文件。
 
 ### 宝塔 HTTP 受控验收
 
@@ -94,7 +96,7 @@ rejected_status=$(
 test "$rejected_status" = 000
 ```
 
-这一步只验证本机宝塔 include、精确 Host 拒绝、静态文件路由和 HTTP vhost，不授权创建 DNS 记录、开放公网发布或把 HTTP 写入 `PUBLIC_BASE_URL`。如果 `nginx -t`、reload、选定域名请求或错误 Host 拒绝中的任一项失败，应保留 stop gate，检查已恢复的原配置，不得绕过验证继续上线。
+这一步只验证本机宝塔 include、精确 Host 拒绝、静态文件路由和 HTTP vhost，不授权创建 DNS 记录、开放公网发布或把 HTTP 写入 `PUBLIC_BASE_URL`。如果 `nginx -t`、reload、选定域名请求或错误 Host 拒绝中的任一项失败，应保留 stop gate，并按 bootstrap 错误信息区分“旧配置已恢复且重新验证”“旧配置恢复但重新验证或 reload 失败”和“首次安装的新配置已删除”；不得笼统宣称回滚成功，也不得绕过验证继续上线。
 
 ### 宝塔最终 TLS 配置
 

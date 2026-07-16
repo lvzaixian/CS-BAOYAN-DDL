@@ -302,6 +302,8 @@ function runScript(path: string, env: NodeJS.ProcessEnv): Promise<ScriptResult> 
 interface BootstrapHarness {
   configPath: string;
   customNginx: string;
+  installLog: string;
+  mvLog: string;
   nginxLog: string;
   sandbox: string;
   systemctlLog: string;
@@ -318,9 +320,12 @@ function makeBootstrapHarness(t: TestContext): BootstrapHarness {
   const fakeBin = join(sandbox, 'bin');
   const deployRoot = join(sandbox, 'deploy-root');
   const configPath = join(sandbox, 'nginx', 'site.conf');
+  const installLog = join(sandbox, 'install.log');
+  const mvLog = join(sandbox, 'mv.log');
   const nginxLog = join(sandbox, 'nginx.log');
   const systemctlLog = join(sandbox, 'systemctl.log');
   mkdirSync(fakeBin, { recursive: true });
+  mkdirSync(dirname(configPath), { recursive: true });
 
   writeExecutable(
     join(fakeBin, 'id'),
@@ -344,8 +349,17 @@ function makeBootstrapHarness(t: TestContext): BootstrapHarness {
       'done\n' +
       'if [ "$directory" -eq 1 ]; then mkdir -p -- "$@"; exit 0; fi\n' +
       '[ "$#" -eq 2 ] || exit 2\n' +
+      'printf "%s\\n" "$2" >> "$BOOTSTRAP_INSTALL_LOG"\n' +
       'mkdir -p -- "${2%/*}"\n' +
       'cp -- "$1" "$2"\n',
+  );
+  writeExecutable(
+    join(fakeBin, 'mv'),
+    '#!/bin/sh\n' +
+      'destination=\n' +
+      'for argument do destination=$argument; done\n' +
+      'printf "%s\\n" "$destination" >> "$BOOTSTRAP_MV_LOG"\n' +
+      'exec /bin/mv "$@"\n',
   );
   writeExecutable(
     join(fakeBin, 'systemctl'),
@@ -361,13 +375,17 @@ function makeBootstrapHarness(t: TestContext): BootstrapHarness {
     writeExecutable(join(fakeBin, commandName), '#!/bin/sh\nexit 0\n');
   }
 
-  const customNginx = join(fakeBin, 'selected-nginx');
-  writeExecutable(
-    customNginx,
+  const nginxStub =
     '#!/bin/sh\n' +
       'printf "%s\\n" "$*" >> "$BOOTSTRAP_NGINX_LOG"\n' +
-      'exit "${BOOTSTRAP_NGINX_STATUS:-0}"\n',
-  );
+      'if [ -n "${BOOTSTRAP_NGINX_FAIL_ONCE:-}" ] && [ ! -e "$BOOTSTRAP_NGINX_FAIL_ONCE" ]; then\n' +
+      '  : > "$BOOTSTRAP_NGINX_FAIL_ONCE"\n' +
+      '  exit 1\n' +
+      'fi\n' +
+      'exit "${BOOTSTRAP_NGINX_STATUS:-0}"\n';
+  const customNginx = join(fakeBin, 'selected-nginx');
+  writeExecutable(customNginx, nginxStub);
+  writeExecutable(join(fakeBin, 'nginx'), nginxStub);
 
   const source = readFileSync(bootstrapScript, 'utf8');
   const rootExpression = '${EUID:-$(id -u)}';
@@ -382,6 +400,8 @@ function makeBootstrapHarness(t: TestContext): BootstrapHarness {
   return {
     configPath,
     customNginx,
+    installLog,
+    mvLog,
     nginxLog,
     sandbox,
     systemctlLog,
@@ -392,6 +412,8 @@ function makeBootstrapHarness(t: TestContext): BootstrapHarness {
         env: {
           ...process.env,
           BOOTSTRAP_DEPLOY_USER: 'deploy-test',
+          BOOTSTRAP_INSTALL_LOG: installLog,
+          BOOTSTRAP_MV_LOG: mvLog,
           BOOTSTRAP_NGINX_LOG: nginxLog,
           BOOTSTRAP_SYSTEMCTL_LOG: systemctlLog,
           BOOTSTRAP_TEST_EUID: '0',
@@ -1441,6 +1463,56 @@ test('bootstrap validates both BaoTa templates with the selected Nginx binary', 
   });
 });
 
+test('bootstrap review: TLS completion names only untouched external surfaces', (t) => {
+  const harness = makeBootstrapHarness(t);
+  const result = harness.run({
+    NGINX_TEMPLATE: baotaTlsTemplatePath,
+    TLS_CERTIFICATE: '/cert/live/fullchain.pem',
+    TLS_CERTIFICATE_KEY: '/cert/live/privkey.pem',
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(
+    result.stdout,
+    /No firewall, sshd, DNS, or certificate files were changed\./,
+  );
+  assert.doesNotMatch(result.stdout, /TLS settings were changed/);
+});
+
+test('bootstrap review: standard template succeeds with empty TLS inputs and default nginx', (t) => {
+  const harness = makeBootstrapHarness(t);
+  const result = harness.run({
+    NGINX_BIN: '',
+    NGINX_TEMPLATE: nginxTemplatePath,
+    TLS_CERTIFICATE: '',
+    TLS_CERTIFICATE_KEY: '',
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n');
+  const config = readFileSync(harness.configPath, 'utf8');
+  assert.match(config, /server_name ddl\.example\.com;/);
+  assert.doesNotMatch(config, /__TLS_CERTIFICATE(?:_KEY)?__/);
+  assert.match(
+    result.stdout,
+    /No firewall, sshd, DNS, or certificate files were changed\./,
+  );
+});
+
+test('bootstrap review: successful config publication uses a same-directory atomic rename', (t) => {
+  const harness = makeBootstrapHarness(t);
+  const result = harness.run({ NGINX_TEMPLATE: nginxTemplatePath });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.ok(existsSync(harness.installLog), 'config install must be recorded');
+  const installTargets = readFileSync(harness.installLog, 'utf8').trim().split('\n');
+  assert.equal(installTargets.length, 1);
+  assert.equal(dirname(installTargets[0]), dirname(harness.configPath));
+  assert.notEqual(installTargets[0], harness.configPath);
+  assert.ok(existsSync(harness.mvLog), 'atomic config rename must be recorded');
+  assert.equal(readFileSync(harness.mvLog, 'utf8'), `${harness.configPath}\n`);
+});
+
 test('selected Nginx binary rejects missing, non-executable, and shell-command values', async (t) => {
   await t.test('absolute binary must be executable', () => {
     const harness = makeBootstrapHarness(t);
@@ -1516,8 +1588,8 @@ test('BaoTa TLS bootstrap requires safe absolute certificate paths', async (t) =
   }
 });
 
-test('BaoTa bootstrap restores the prior config for validation and reload failures', async (t) => {
-  await t.test('HTTP validation failure restores the prior config', () => {
+test('bootstrap review: BaoTa bootstrap reports validation and reload recovery exactly', async (t) => {
+  await t.test('persistent validation failure restores but cannot revalidate the prior config', () => {
     assert.ok(existsSync(baotaHttpTemplatePath), 'BaoTa HTTP template must exist');
     const harness = makeBootstrapHarness(t);
     mkdirSync(dirname(harness.configPath), { recursive: true });
@@ -1528,9 +1600,52 @@ test('BaoTa bootstrap restores the prior config for validation and reload failur
     });
 
     assert.notEqual(result.status, 0);
-    assert.match(result.stderr, /previous config restored/);
+    assert.match(result.stderr, /previous config restored but failed revalidation/);
     assert.equal(readFileSync(harness.configPath, 'utf8'), 'previous HTTP config\n');
-    assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n');
+    assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n-t\n');
+  });
+
+  await t.test('initial validation failure atomically restores and revalidates the prior config', () => {
+    const harness = makeBootstrapHarness(t);
+    mkdirSync(dirname(harness.configPath), { recursive: true });
+    writeFileSync(harness.configPath, 'previous HTTP config\n', 'utf8');
+    const failOnce = join(harness.sandbox, 'nginx-failed-once');
+    const result = harness.run({
+      BOOTSTRAP_NGINX_FAIL_ONCE: failOnce,
+      NGINX_TEMPLATE: baotaHttpTemplatePath,
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /previous config restored and revalidated/);
+    assert.equal(readFileSync(harness.configPath, 'utf8'), 'previous HTTP config\n');
+    assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n-t\n');
+    const installTargets = readFileSync(harness.installLog, 'utf8').trim().split('\n');
+    assert.equal(installTargets.length, 2);
+    for (const target of installTargets) {
+      assert.equal(dirname(target), dirname(harness.configPath));
+      assert.notEqual(target, harness.configPath);
+    }
+    assert.equal(
+      readFileSync(harness.mvLog, 'utf8'),
+      `${harness.configPath}\n${harness.configPath}\n`,
+    );
+  });
+
+  await t.test('first-install validation failure removes the candidate and revalidates the remainder', () => {
+    const harness = makeBootstrapHarness(t);
+    const failOnce = join(harness.sandbox, 'nginx-failed-once');
+    const result = harness.run({
+      BOOTSTRAP_NGINX_FAIL_ONCE: failOnce,
+      NGINX_TEMPLATE: baotaHttpTemplatePath,
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.match(
+      result.stderr,
+      /rendered config removed and remaining configuration revalidated; no previous config existed/,
+    );
+    assert.equal(existsSync(harness.configPath), false);
+    assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n-t\n');
   });
 
   await t.test('TLS reload failure restores and revalidates the prior config', () => {
@@ -1547,7 +1662,7 @@ test('BaoTa bootstrap restores the prior config for validation and reload failur
     });
 
     assert.notEqual(result.status, 0);
-    assert.match(result.stderr, /previous config restored/);
+    assert.match(result.stderr, /previous config restored, revalidated, and reloaded/);
     assert.equal(readFileSync(harness.configPath, 'utf8'), 'previous TLS config\n');
     assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n-t\n');
     assert.equal(readFileSync(harness.systemctlLog, 'utf8'), 'reload nginx\nreload nginx\n');
@@ -1567,6 +1682,21 @@ test('BaoTa operations require a selected domain and keep final TLS launch gated
   assert.match(deployment, /TLS_CERTIFICATE="\$TLS_CERTIFICATE"/);
   assert.match(deployment, /TLS_CERTIFICATE_KEY="\$TLS_CERTIFICATE_KEY"/);
   assert.match(deployment, /TLS[^。\n]*public launch[^。\n]*(?:stop gate|停止门)/i);
+});
+
+test('bootstrap review: operations describe atomic Nginx recovery without TLS overclaiming', () => {
+  const deployment = readFileSync(deployDocumentationPath, 'utf8');
+  assert.match(deployment, /同一目录[^。\n]*临时文件[^。\n]*原子重命名/);
+  assert.match(
+    deployment,
+    /首次 `nginx -t` 失败[^。\n]*reload 失败[^。\n]*恢复旧配置[^。\n]*重新验证/,
+  );
+  assert.match(
+    deployment,
+    /原先不存在配置[^。\n]*删除本次新配置[^。\n]*不会[^。\n]*恢复了旧配置/,
+  );
+  assert.match(deployment, /certificate files/);
+  assert.doesNotMatch(deployment, /不会触碰[^。\n]*TLS 资产/);
 });
 
 test('activation and rollback durably sync release, transaction, link, and state mutations', () => {
