@@ -108,6 +108,7 @@ test('snapshot integrity rules have one shared source outside the approval CLI',
     'import-scouting-data.ts',
     'diff-snapshots.ts',
     'validate-current.ts',
+    'check-freshness.ts',
   ]) {
     const source = readFileSync(resolve(repositoryRoot, 'scripts/snapshot', script), 'utf8');
     assert.match(source, /src\/lib\/snapshot-integrity\.js/);

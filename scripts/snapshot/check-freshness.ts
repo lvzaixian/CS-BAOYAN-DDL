@@ -1,7 +1,7 @@
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { readRegularJsonFile } from './approve-snapshot.js';
+import { readRegularJsonFile } from '../../src/lib/snapshot-integrity.js';
 
 type JsonObject = Record<string, unknown>;
 
