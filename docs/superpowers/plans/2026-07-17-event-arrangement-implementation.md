@@ -4,7 +4,7 @@
 
 **Goal:** Add trustworthy online/offline/hybrid activity information end to end, remove misleading empty UI, rebuild the approved public snapshot, and re-establish full launch-readiness evidence.
 
-**Architecture:** Extend the strict approved-snapshot contract with a required nested event-arrangement object. Classify mode deterministically from the official form/location field only, preserve source wording as fact groups, expose the normalized mode through list/detail/filter/URL surfaces, and migrate the unlaunched snapshot atomically.
+**Architecture:** Introduce a strict schema v2 with a required nested event-arrangement object while retaining strict v1/v2 approval reads and v2-only candidate writes. Mode is explicitly verified in the private scouting stage, source wording remains in fact groups, and the normalized mode is exposed through list/detail/filter/URL surfaces.
 
 **Tech Stack:** Svelte 5, TypeScript, Node.js 20, pnpm 10.28.2, Lucide Svelte, Playwright, strict JSON validation, approved static snapshots.
 
@@ -32,8 +32,9 @@
 - Modify: `scripts/snapshot/import-scouting-data.ts`
 
 - [ ] Add `EventMode` and `EventArrangement` public types.
-- [ ] Add deterministic mode classification from `formatLocation` only.
-- [ ] Map `eventTime` and `formatLocation` through existing fact-status semantics.
+- [ ] Add strict historical v1/current v2 validation and v2-only candidate generation.
+- [ ] Require an explicit active-row `eventMode`; never infer it in the importer.
+- [ ] Map `eventTime` and `formatLocation` through existing fact-status semantics and sparse expired fallback.
 - [ ] Require and strictly validate the nested arrangement.
 - [ ] Run focused tests until GREEN, then run all snapshot/import/approval/diff tests.
 - [ ] Dispatch independent contract and code-quality reviews; resolve every blocking finding.
@@ -93,7 +94,7 @@
 - [ ] Import the latest private scouting JSON.
 - [ ] Compare old/new project IDs, feed IDs, verification-status counts, and official-source coverage.
 - [ ] Report deterministic mode and fact-status coverage counts.
-- [ ] Approve through a temporary new path with `previousSnapshotId: null`, validate it, then atomically replace the pre-launch approved file.
+- [ ] Approve v2 against the validated v1 current snapshot, retain lineage, validate it, then atomically replace the approved file.
 - [ ] Re-run public-boundary and privacy checks.
 
 ### Task 7: Run Full Real-Data Verification
@@ -121,7 +122,8 @@
 
 ### Task 9: Fresh Scan And External Release Gate
 
-- [ ] If the approved source is older than six hours, run the admissions scan again and repeat Tasks 6-8 for the launch snapshot.
+- [ ] Update the canonical `scan-cs-admissions-events` workbook contract/validator for required active-row `eventMode` and conservative official-review rules.
+- [ ] Run a fresh admissions scan that emits the v2-required field, then repeat Tasks 6-8 for the launch snapshot.
 - [ ] Stop for explicit authorization before GitHub environment/permission changes, push, PR readiness/merge, server mutation, or production deployment.
 - [ ] After authorization, prove local HEAD, remote branch, PR head, and green CI are the same SHA before merge.
 - [ ] Deploy only the fresh approved snapshot and verify HTTPS release identity, activity modes, deep links, and all three target viewports on the public domain.

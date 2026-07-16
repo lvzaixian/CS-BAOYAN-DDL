@@ -4,7 +4,7 @@
 
 Restore a core CS-BAOYAN-DDL workflow that the current verified-data rebuild lost: users must be able to see and filter whether an admissions event is online, offline, hybrid, or not yet published, while retaining the exact official-source wording for the event time and location.
 
-This is a pre-launch contract correction. No public production release consumes the current schema, so the repository keeps `schemaVersion: 1` and replaces the unlaunched approved snapshot atomically after proving that all project identities and record counts are preserved.
+This is a breaking public-contract correction. New candidates and approvals use `schemaVersion: 2`. Migration code reads strict historical v1 and strict v2 snapshots, while candidate generation writes only v2. This preserves auditable lineage without silently changing the meaning of schema v1.
 
 ## Product Outcome
 
@@ -43,25 +43,26 @@ interface EventArrangement {
 }
 ```
 
-`FieldFactGroup.summary` retains the source workbook wording. The importer maps `eventTime` into `time` and `formatLocation` into `formatLocation`; it never copies private evidence paths or personal application state.
+`FieldFactGroup.summary` retains the source workbook wording. The private scouting contract adds required `eventMode` for active rows, populated during official-source review with one of the four public enum values. The importer maps that explicit value, `eventTime`, and `formatLocation`; it never infers mode from free text and never copies private evidence paths or personal application state.
 
 The arrangement is required even when the source is sparse. Missing or explicitly unpublished text becomes `{ status: 'not-published', summary: '未公布' }`; uncertain or future-notice wording becomes `{ status: 'unverified', summary: '待官方公布' }` only when the existing fact-status rules support that conclusion.
 
-## Mode Classification
+## Mode Ownership
 
-The deterministic classifier reads only `formatLocation` and follows these rules in order:
+Mode is owned by the private scouting and official-verification stage, not the public importer. Reviewers assign it conservatively:
 
-1. Explicit hybrid wording such as `混合`, `相结合`, or the simultaneous presence of online and offline signals produces `hybrid`.
-2. Explicit online signals such as `线上`, `云端`, `腾讯会议`, or `网络远程`, without an offline signal, produce `online`.
-3. Explicit offline signals such as `线下`, `现场`, `到校`, or an explicitly named campus/校区, without an online signal, produce `offline`.
-4. Everything else produces `unknown`.
+1. Confirmed whole-event online participation produces `online`.
+2. Confirmed whole-event on-site participation produces `offline`.
+3. An official whole-event mixed/combined arrangement produces `hybrid`.
+4. Unpublished, conditional, optional, invitation-dependent, or population-specific conflicting wording produces `unknown` unless the notice explicitly defines the overall program as mixed.
 
-The classifier must not infer mode from accommodation, meals, reimbursement, transportation, a city name alone, or event type. Mixed subprogram wording remains `hybrid`; the detail text preserves the distinctions for users.
+The importer requires the explicit enum for active rows and rejects missing or unsupported values. It must not infer mode from `formatLocation`, accommodation, meals, reimbursement, transportation, a city name, or event type. Sparse historical expired rows receive `unknown` with not-published facts at the migration boundary.
 
 ## Validation And Privacy
 
 Candidate and approved-snapshot validation must:
 
+- read strict historical v1 and current v2 approvals, but accept only v2 candidates;
 - require exactly `mode`, `time`, and `formatLocation` under `eventArrangement`;
 - reject unsupported mode values and extra keys;
 - validate both fact groups with the existing strict fact validator;
@@ -80,10 +81,10 @@ The detail section is placed after deadline information and before logistics. Fa
 
 The source of truth is the latest private scouting JSON. Migration performs these checks before replacing `data/approved/current.json`:
 
-1. import a candidate without treating the old pre-launch snapshot as deployable schema evidence;
+1. validate the existing v1 approval as strict historical input and import a v2 candidate using it for identity continuity;
 2. compare old and new `projectId` sets and status counts;
 3. require zero lost or added project identities unless a fresh official scan intentionally changed them;
-4. approve to a new temporary path so the first launch snapshot has `previousSnapshotId: null`;
+4. approve the v2 candidate while retaining the v1 snapshot ID in `previousSnapshotId`;
 5. validate the new approved snapshot, then replace the repository snapshot as a generated artifact;
 6. prove no submitted IDs, private paths, or private scouting-only fields are public.
 
@@ -92,7 +93,7 @@ Because release freshness is six hours, an older source workbook may be used for
 ## Failure Semantics
 
 - Unknown official wording is displayed as unknown, never guessed.
-- A missing required arrangement fails candidate validation.
+- A missing required arrangement or active source `eventMode` fails candidate generation/validation.
 - An invalid mode fails validation and cannot be approved.
 - A failed import, identity comparison, approval, build, or browser check leaves the existing approved file unchanged.
 - A stale final snapshot blocks release even if all feature tests pass.
