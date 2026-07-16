@@ -10,7 +10,13 @@
   } from 'lucide-svelte';
   import type { DerivedSchool } from '$lib/types';
   import { formatRemainingShort, formatDateShort, progressAgainst } from '$lib/time';
-  import { eventModeLabel, expiredDeadlineText, rowKey, sourceLinkLabel } from '$lib/filter';
+  import {
+    eventModeLabel,
+    expiredDeadlineText,
+    opportunityStatusLabel,
+    rowKey,
+    sourceLinkLabel,
+  } from '$lib/filter';
   import { getInitials, getLogoUrl } from '$lib/logos';
   import { resolveProvince } from '$data/provinces';
 
@@ -30,9 +36,7 @@
   const relativeDeadline = $derived(expiredDeadlineText(school));
   const sourceLabel = $derived(sourceLinkLabel(school));
   const modeLabel = $derived(eventModeLabel(school.eventArrangement.mode));
-  const verificationLabel = $derived(
-    school.verificationStatus === 'expired' ? '已过期' : '已核验',
-  );
+  const statusLabel = $derived(opportunityStatusLabel(school));
   const displayTags = $derived(
     school.tags.filter((tag) => tag !== '已开营' && tag !== '已结营'),
   );
@@ -90,14 +94,14 @@
             {expired
               ? 'bg-zinc-100 text-zinc-600 ring-zinc-200 dark:bg-zinc-500/15 dark:text-fg-3 dark:ring-zinc-500/30'
               : 'bg-emerald-100 text-emerald-700 ring-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30'}"
-          aria-label="核验状态：{verificationLabel}"
+          aria-label="项目状态：{statusLabel}"
         >
           {#if expired}
             <Archive class="w-3 h-3" aria-hidden="true" />
           {:else}
             <BadgeCheck class="w-3 h-3" aria-hidden="true" />
           {/if}
-          {verificationLabel}
+          {statusLabel}
         </span>
         <span
           class="inline-flex items-center gap-1 text-[10.5px] font-medium px-1.5 py-0.5 rounded ring-1 bg-violet-100 text-violet-700 ring-violet-200 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30"
@@ -126,7 +130,7 @@
           >{t}</span>
         {/each}
         {#if province}
-          <span class="text-fg-4 text-[10.5px]">· {province}</span>
+          <span class="text-fg-4 text-[10.5px]">· 院校所在地：{province}</span>
         {/if}
       </div>
     </div>

@@ -32,9 +32,10 @@ test('renders compact project identity and icon-plus-text mode badges for public
 
   assert.match(
     schoolRowSource,
-    /school\.verificationStatus === 'expired'\s*\?\s*'已过期'\s*:\s*'已核验'/,
+    /const statusLabel = \$derived\(opportunityStatusLabel\(school\)\)/,
   );
-  assert.match(markup, /\{verificationLabel\}/);
+  assert.match(markup, /\{statusLabel\}/);
+  assert.doesNotMatch(schoolRowSource, /verificationLabel/);
   assert.match(markup, /\{#each displayTags as t\}/);
   assert.doesNotMatch(schoolRowSource, /t === '(已开营|已结营)'/);
   assert.doesNotMatch(markup, />\s*(已开营|已结营)\s*</);
@@ -71,8 +72,6 @@ test('shows deadline and application facts with legacy-safe fallbacks', () => {
     detailPanelSource,
     /const deadlineStatus = \$derived\(expiredDeadlineText\(school\)\)/,
   );
-  assert.match(detailPanelSource, /school\.deadlineOriginal\.includes\('官方未公布具体时刻'\)/);
-  assert.match(detailPanelSource, /官方未公布具体时刻，按当日末排序/);
   assert.match(detailPanelSource, /verifiedAtMs === null\s*\?\s*'未记录'/);
   assert.match(detailPanelSource, /eventModeLabel\(school\.eventArrangement\.mode\)/);
   assert.match(detailPanelSource, /school\.eventArrangement\.time\.summary/);
@@ -85,6 +84,45 @@ test('shows deadline and application facts with legacy-safe fallbacks', () => {
   assert.match(detailPanelSource, /school\.materials\.summary/);
 });
 
+test('shows a precise normalized deadline only when the official text includes hour and minute', () => {
+  const declaration = detailPanelSource.match(
+    /const explicitDeadlineTimePattern = (\/[^\n]+\/);/,
+  );
+  assert.ok(declaration, 'missing explicit deadline time pattern');
+  const pattern = new RegExp(declaration[1].slice(1, -1));
+
+  for (const text of [
+    '2026年8月12日23:59前完成报名',
+    '2026年8月12日23：59前完成报名',
+    '2026年8月12日18点30分截止',
+    '2026年8月12日18时30分截止',
+  ]) {
+    assert.equal(pattern.test(text), true, `expected explicit time in: ${text}`);
+  }
+  for (const text of [
+    '2026年8月12日截止',
+    '2026年8月12日截止；官方未公布具体时刻',
+    '2026年8月12日18点截止',
+    '2026年8月12日29:99截止',
+  ]) {
+    assert.equal(pattern.test(text), false, `expected date-only deadline in: ${text}`);
+  }
+
+  assert.match(
+    detailPanelSource,
+    /explicitDeadlineTimePattern\.test\(school\.deadlineOriginal\)/,
+  );
+  assert.match(
+    detailPanelSource,
+    /deadlineHasExplicitTime\s*\?\s*formatDateTime\(school\.deadlineMs\)/,
+  );
+  assert.match(detailPanelSource, /按当日末排序（官方未公布具体时刻）/);
+  assert.doesNotMatch(
+    detailPanelSource,
+    /school\.deadlineOriginal\.includes\('官方未公布具体时刻'\)/,
+  );
+});
+
 test('shows project and event type in the detail header and keeps the official CTA honest', () => {
   const footer = detailPanelSource.slice(detailPanelSource.indexOf('<!-- footer cta -->'));
 
@@ -92,6 +130,11 @@ test('shows project and event type in the detail header and keeps the official C
   assert.match(detailPanelSource, /\{school\.eventType\}/);
   assert.match(footer, />\s*查看官方通知\s*</);
   assert.doesNotMatch(footer, /立即报名/);
+});
+
+test('labels province as the school location in list and detail views', () => {
+  assert.match(schoolRowSource, />· 院校所在地：\{province\}</);
+  assert.match(detailPanelSource, />院校所在地：\{province\}</);
 });
 
 test('orders official and discovery sources without promoting legacy links', () => {

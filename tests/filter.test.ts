@@ -306,6 +306,11 @@ test('overrides a null relative deadline only for expired rows', () => {
 
 test('wires status counts and deadline/source labels through authoritative helpers', () => {
   assert.match(filterPanelSource, /countStatuses\(rows\)/);
+  assert.match(schoolRowSource, /opportunityStatusLabel\(school\)/);
+  assert.doesNotMatch(
+    schoolRowSource,
+    /school\.verificationStatus === 'expired'\s*\?\s*'已过期'\s*:\s*'已核验'/,
+  );
   assert.match(schoolRowSource, /expiredDeadlineText\(school\)/);
   assert.match(schoolRowSource, /sourceLinkLabel\(school\)/);
   assert.match(detailPanelSource, /expiredDeadlineText\(school\)/);

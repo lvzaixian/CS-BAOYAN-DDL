@@ -24,21 +24,22 @@
     unverified: '未核验',
     'not-applicable': '不适用',
   };
+  const explicitDeadlineTimePattern = /(?:^|[^\d])(?:[01]?\d|2[0-3])\s*[:：]\s*[0-5]\d(?!\d)|(?:^|[^\d])(?:[01]?\d|2[0-3])\s*[点时]\s*[0-5]?\d\s*分/;
 
   let { school, onClose }: { school: DerivedSchool; onClose: () => void } = $props();
 
   const logo = $derived(getLogoUrl(school.name));
   const province = $derived(resolveProvince(school.name, school.province));
   const deadlineStatus = $derived(expiredDeadlineText(school));
-  const deadlineIsDateOnly = $derived(
-    school.deadlineOriginal.includes('官方未公布具体时刻'),
+  const deadlineHasExplicitTime = $derived(
+    explicitDeadlineTimePattern.test(school.deadlineOriginal),
   );
   const normalizedDeadline = $derived(
     school.deadlineMs === null
       ? '未公布'
-      : deadlineIsDateOnly
-        ? `${formatDate(school.deadlineMs)} · 官方未公布具体时刻，按当日末排序`
-        : formatDateTime(school.deadlineMs),
+      : deadlineHasExplicitTime
+        ? formatDateTime(school.deadlineMs)
+        : `${formatDate(school.deadlineMs)} · 按当日末排序（官方未公布具体时刻）`,
   );
   const modeLabel = $derived(eventModeLabel(school.eventArrangement.mode));
   const sourceLabel = $derived(sourceLinkLabel(school));
@@ -130,7 +131,7 @@
         <div class="text-fg-1 text-sm mt-1">{school.project}</div>
         <div class="text-fg-3 text-xs mt-0.5">{school.eventType}</div>
         {#if province}
-          <div class="text-fg-4 text-xs mt-1">{province}</div>
+          <div class="text-fg-4 text-xs mt-1">院校所在地：{province}</div>
         {/if}
       </div>
       <button
