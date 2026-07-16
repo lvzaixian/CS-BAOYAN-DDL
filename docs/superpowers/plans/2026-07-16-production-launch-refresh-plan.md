@@ -308,19 +308,25 @@ Use `$scan-cs-admissions-events` with up to 12 non-overlapping regional discover
 After the skill run, set and validate named inputs rather than relying on a guessed filename:
 
 ```bash
+: "${SCOUTING_WORKSPACE:?set SCOUTING_WORKSPACE to the private scan workspace root}"
 : "${SCOUTING_JSON:?set SCOUTING_JSON to the skill-emitted validated JSON path}"
+: "${SCOUTING_VALIDATOR:?set SCOUTING_VALIDATOR to the trusted validator script path}"
 : "${SUBMITTED_JSON:?set SUBMITTED_JSON to the current private submitted-ID JSON path}"
+test -d "$SCOUTING_WORKSPACE"
 test -f "$SCOUTING_JSON"
+test -f "$SCOUTING_VALIDATOR"
 test -f "$SUBMITTED_JSON"
+SCOUTING_WORKSPACE=$(realpath "$SCOUTING_WORKSPACE")
 SCOUTING_JSON=$(realpath "$SCOUTING_JSON")
+SCOUTING_VALIDATOR=$(realpath "$SCOUTING_VALIDATOR")
 SUBMITTED_JSON=$(realpath "$SUBMITTED_JSON")
-case "$SCOUTING_JSON" in /Users/maxwellbrooks/Workspace/profile_space/outputs/*) ;; *) exit 1 ;; esac
+case "$SCOUTING_JSON" in "$SCOUTING_WORKSPACE"/outputs/*) ;; *) exit 1 ;; esac
 ```
 
 - [ ] **Step 2: Validate the private scouting corpus**
 
 ```bash
-node /Users/maxwellbrooks/.codex/skills/scan-cs-admissions-events/scripts/validate_scouting_data.mjs \
+node "$SCOUTING_VALIDATOR" \
   "$SCOUTING_JSON" \
   "$SUBMITTED_JSON"
 ```
@@ -474,7 +480,7 @@ After the workflow has run `activate-release.sh` and switched `current`, run `de
 
 **Files:**
 - Modify: `docs/operations/data-refresh.md`
-- Modify privately after approval: Codex automation configuration for `/Users/maxwellbrooks/Workspace/profile_space`
+- Modify privately after approval: Codex automation configuration for the private scanning workspace identified by `$SCOUTING_WORKSPACE`
 
 - [ ] **Step 1: Create an isolated tooling branch from released main**
 
@@ -487,7 +493,7 @@ Expected: the tooling branch starts from the exact first-release main commit and
 
 - [ ] **Step 2: Record the exact v1 cadence**
 
-Use one two-hour recurring Codex automation in the `profile_space` local environment. The v1 automation runs every two hours around the clock; this is intentionally more frequent than the minimum 08:00-24:00 plus overnight requirement because the automation scheduler supports a stable hourly interval without a daily exclusion window.
+Use one two-hour recurring Codex automation in the private scanning workspace identified by `$SCOUTING_WORKSPACE`. The v1 automation runs every two hours around the clock; this is intentionally more frequent than the minimum 08:00-24:00 plus overnight requirement because the automation scheduler supports a stable hourly interval without a daily exclusion window.
 
 - [ ] **Step 3: Define the bounded automation task**
 

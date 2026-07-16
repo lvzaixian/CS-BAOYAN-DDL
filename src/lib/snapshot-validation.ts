@@ -29,15 +29,21 @@ const deniedOfficialHosts = new Set([
   'www.baoyantongzhi.com',
   'baoyantongzhi.com',
 ]);
+const privateFieldNames = [
+  ['submitted', 'ProjectIds'].join(''),
+  ['welfare', 'Score'].join(''),
+  ['cityPlatform', 'Value'].join(''),
+  ['social', 'Value'].join(''),
+  ['recommendation', 'Tier'].join(''),
+] as const;
+const privateFieldNameSet = new Set(privateFieldNames.map((name) => name.toLowerCase()));
 const privateMarkerPattern = new RegExp(
   [
-    'submitted(?:ProjectIds)?',
-    'targets[\\\\/]submitted',
-    'welfare(?:Score)?',
-    ['cityPlatform', 'Value'].join(''),
-    ['social', 'Value'].join(''),
-    ['recommendation', 'Tier'].join(''),
-    'profile_space[\\\\/]targets',
+    ...privateFieldNames.map(
+      (name) => `(?:^|[^a-z0-9_$])${name}(?:[^a-z0-9_$]|$)`,
+    ),
+    'targets[\\\\/]submitted(?:[\\\\/]|$)',
+    'profile_space[\\\\/]targets(?:[\\\\/]|$)',
   ].join('|'),
   'i',
 );
@@ -47,7 +53,8 @@ const privateValuePatterns: ReadonlyArray<{ pattern: RegExp; label: string }> = 
     label: 'email address',
   },
   {
-    pattern: /(?:^|[^a-z0-9])1[3-9][0-9][ -]?[0-9]{4}[ -]?[0-9]{4}(?:[^a-z0-9]|$)/i,
+    pattern:
+      /(?:^|[^a-z0-9])(?:(?:\+|%2b)86[ -]?)?1[3-9][0-9][ -]?[0-9]{4}[ -]?[0-9]{4}(?:[^a-z0-9]|$)/i,
     label: 'Chinese mainland mobile number',
   },
   { pattern: /\bfile:\/+\S*/i, label: 'file URI' },
@@ -118,12 +125,37 @@ function childPath(path: string, key: string): string {
   return /^[a-z_$][a-z0-9_$]*$/i.test(key) ? `${path}.${key}` : `${path}[${JSON.stringify(key)}]`;
 }
 
-function validatePrivateText(value: string, path: string, errors: string[]): void {
-  for (const { pattern, label } of privateValuePatterns) {
-    if (pattern.test(value)) {
-      errors.push(`${path}: contains a ${label}`);
-      return;
+function decodedTextVariants(value: string): string[] {
+  const variants = [value];
+  let current = value;
+
+  for (let round = 0; round < 2; round += 1) {
+    try {
+      const decoded = decodeURIComponent(current);
+      if (decoded === current) break;
+      variants.push(decoded);
+      current = decoded;
+    } catch {
+      break;
     }
+  }
+  return variants;
+}
+
+function validatePrivateText(value: string, path: string, errors: string[]): void {
+  for (const variant of decodedTextVariants(value)) {
+    for (const { pattern, label } of privateValuePatterns) {
+      if (pattern.test(variant)) {
+        errors.push(`${path}: contains a ${label}`);
+        return;
+      }
+    }
+  }
+}
+
+function validatePrivateKey(key: string, path: string, errors: string[]): void {
+  if (privateFieldNameSet.has(key.toLowerCase())) {
+    errors.push(`${path}: contains a private publication marker`);
   }
 }
 
@@ -151,7 +183,7 @@ function validateNoPrivateValues(
 
   for (const [key, child] of Object.entries(value)) {
     const pathToChild = childPath(path, key);
-    validatePrivateText(key, pathToChild, errors);
+    validatePrivateKey(key, pathToChild, errors);
     validateNoPrivateValues(child, pathToChild, errors, seen);
   }
 }

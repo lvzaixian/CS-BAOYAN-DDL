@@ -52,6 +52,27 @@ const privateValueCases: Array<{
     mutate: (value) => (value.opportunities[0].logistics.summary = '咨询 138-0013-8000'),
   },
   {
+    name: 'compact international Chinese mainland mobile number',
+    path: 'snapshot.opportunities[0].description',
+    mutate: (value) => (value.opportunities[0].description = '咨询 +8613800138000'),
+  },
+  {
+    name: 'spaced international Chinese mainland mobile number',
+    path: 'snapshot.opportunities[0].logistics.summary',
+    mutate: (value) => (value.opportunities[0].logistics.summary = '咨询 +86 138 0013 8000'),
+  },
+  {
+    name: 'hyphenated international Chinese mainland mobile number',
+    path: 'snapshot.opportunities[0].materials.summary',
+    mutate: (value) => (value.opportunities[0].materials.summary = '咨询 +86-138-0013-8000'),
+  },
+  {
+    name: 'encoded international Chinese mainland mobile number',
+    path: 'snapshot.opportunities[0].recommendation.summary',
+    mutate: (value) =>
+      (value.opportunities[0].recommendation.summary = '咨询 %2B8613800138000'),
+  },
+  {
     name: 'macOS user-local path',
     path: 'snapshot.opportunities[0].materials.summary',
     mutate: (value) => (value.opportunities[0].materials.summary = '/Users/alice/private.json'),
@@ -92,6 +113,24 @@ const privateValueCases: Array<{
     name: 'private profile target marker',
     path: 'snapshot.feeds[0].label',
     mutate: (value) => (value.feeds[0].label = 'profile_space/targets/private'),
+  },
+  {
+    name: 'double-encoded email address',
+    path: 'snapshot.opportunities[0].description',
+    mutate: (value) => (value.opportunities[0].description = '联系 student%2540example.com'),
+  },
+  {
+    name: 'encoded private profile target marker',
+    path: 'snapshot.opportunities[0].materials.summary',
+    mutate: (value) =>
+      (value.opportunities[0].materials.summary = 'profile_space%2Ftargets%2Fprivate'),
+  },
+  {
+    name: 'double-encoded private profile target marker',
+    path: 'snapshot.opportunities[0].recommendation.summary',
+    mutate: (value) =>
+      (value.opportunities[0].recommendation.summary =
+        'profile_space%252Ftargets%252Fprivate'),
   },
 ];
 
@@ -153,12 +192,35 @@ test('approved snapshot rejects private values with their public field paths', a
 test('privacy validation does not reject normal public URLs or embedded long URL IDs', () => {
   const candidate = validCandidate();
   candidate.opportunities[0].description =
-    '详情：https://apply.example.edu.cn/notices/84d17857554739?channel=public';
+    'Application submitted successfully. Student welfare information: https://apply.example.edu.cn/application-submitted/student-welfare/84d17857554739?channel=public';
   const snapshot = validSnapshot();
   snapshot.opportunities[0].description = candidate.opportunities[0].description;
 
   assert.deepEqual(validateCandidate(candidate, nowMs), []);
   assert.deepEqual(validateSnapshot(snapshot, nowMs), []);
+});
+
+test('privacy validation matches exact private keys but not similarly named keys', () => {
+  const privateCandidate = validCandidate();
+  privateCandidate.opportunities[0].recommendationTier = 'A';
+  const privateErrors = validateCandidate(privateCandidate, nowMs).join('\n');
+  assert.match(
+    privateErrors,
+    /snapshot\.opportunities\[0\]\.recommendationTier: contains a private publication marker/i,
+  );
+
+  const publicCandidate = validCandidate();
+  publicCandidate.opportunities[0].recommendationTierLabel = 'Public recommendation label';
+  const publicErrors = validateCandidate(publicCandidate, nowMs).join('\n');
+  assert.doesNotMatch(publicErrors, /private publication marker/i);
+});
+
+test('malformed percent encoding does not throw or create a privacy error', () => {
+  const candidate = validCandidate();
+  candidate.opportunities[0].description = '公开说明 %E0%A4%A';
+
+  assert.doesNotThrow(() => validateCandidate(candidate, nowMs));
+  assert.deepEqual(validateCandidate(candidate, nowMs), []);
 });
 
 test('candidate rejects every approval-only metadata field', async (t) => {

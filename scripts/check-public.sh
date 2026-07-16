@@ -10,7 +10,7 @@ if test -n "$tracked_staging"; then
   exit 1
 fi
 
-tracked_work="$(git ls-files -- ':(top)work/**')"
+tracked_work="$(git ls-files -- ':(top)work' ':(top)work/**')"
 if test -n "$tracked_work"; then
   printf '%s\n' 'tracked work file is forbidden' >&2
   printf '%s\n' "$tracked_work" >&2
@@ -25,8 +25,8 @@ for forbidden in public/CNAME .github/workflows/update_json.yml; do
   fi
 done
 
-private_pattern='submittedProjectIds|targets/submitted|welfareScore|cityPlatformValue|socialValue|recommendationTier|profile_space/targets|(^|[^[:alnum:].:/])/(Users|home)/[[:alnum:]_.-]+|file:/+([^/[:space:]]+/)?(Users|home)/[[:alnum:]_.-]+|[[:alpha:]]:[/\\][Uu]sers[/\\][[:alnum:]_.-]+'
-contact_pattern='[[:alnum:]._%+-]+(@|%40)[[:alnum:].-]+\.[[:alpha:]]{2,}|(^|[^[:alnum:]])1[3-9][0-9][ -]?[0-9]{4}[ -]?[0-9]{4}([^[:alnum:]]|$)'
+private_pattern='(^|[^[:alnum:]_$])(submittedProjectIds|welfareScore|cityPlatformValue|socialValue|recommendationTier)([^[:alnum:]_$]|$)|targets[/\\]submitted|profile_space[/\\]targets|(^|[^[:alnum:].:/])/(Users|home)/[[:alnum:]_.-]+|file:/+([^/[:space:]]+/)?(Users|home)/[[:alnum:]_.-]+|[[:alpha:]]:[/\\][Uu]sers[/\\][[:alnum:]_.-]+'
+contact_pattern='[[:alnum:]._%+-]+(@|%40)[[:alnum:].-]+\.[[:alpha:]]{2,}|(^|[^[:alnum:]])((\+|%2B)86[ -]?)?1[3-9][0-9][ -]?[0-9]{4}[ -]?[0-9]{4}([^[:alnum:]]|$)'
 
 sanitize_reviewed_contacts() {
   sed -E '
@@ -48,7 +48,7 @@ scan_git_context() {
   fi
 
   set +e
-  output="$("${grep_command[@]}" -a -n -i -E "$pattern" -- data src public index.html 2>&1)"
+  output="$("${grep_command[@]}" -a -n -i -E "$pattern" -- data docs src public index.html 2>&1)"
   status=$?
   set -e
 

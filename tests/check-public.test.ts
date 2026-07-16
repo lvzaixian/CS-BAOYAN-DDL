@@ -1,5 +1,12 @@
 import assert from 'node:assert/strict';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -25,7 +32,11 @@ function createRepository(t: TestContext): string {
   const repo = mkdtempSync(join(tmpdir(), 'check-public-'));
   t.after(() => rmSync(repo, { recursive: true, force: true }));
   git(repo, ['init', '-q']);
-  writeFileSync(join(repo, '.gitignore'), '/work/\ndata/staging/*.json\n', 'utf8');
+  writeFileSync(
+    join(repo, '.gitignore'),
+    readFileSync(join(repositoryRoot, '.gitignore'), 'utf8'),
+    'utf8',
+  );
   git(repo, ['add', '.gitignore']);
   return repo;
 }
@@ -56,27 +67,15 @@ function assertPrivateLeak(repo: string): void {
   assert.match(result.stderr, /private (?:contact )?data found/i);
 }
 
-test('root work directory is ignored by default', () => {
-  const result = run(repositoryRoot, 'git', ['check-ignore', '-q', '--', 'work/private.json']);
+function createRootWorkEntry(repo: string, type: 'file' | 'symlink'): void {
+  if (type === 'file') {
+    write(repo, 'work', '{"project":"private"}\n');
+  } else {
+    symlinkSync('private-target', join(repo, 'work'));
+  }
+}
 
-  assert.equal(result.status, 0, result.stderr || result.stdout);
-});
-
-test('rejects a work file that is force-staged despite the ignore rule', (t) => {
-  const repo = createRepository(t);
-  write(repo, 'work/private.json', '{"project":"private"}\n');
-  git(repo, ['add', '-f', '--', 'work/private.json']);
-
-  const result = check(repo);
-  assert.notEqual(result.status, 0);
-  assert.match(result.stderr, /tracked work file is forbidden/i);
-  assert.match(result.stderr, /work\/private\.json/i);
-});
-
-test('rejects a work file already tracked in HEAD', (t) => {
-  const repo = createRepository(t);
-  write(repo, 'work/private.json', '{"project":"private"}\n');
-  git(repo, ['add', '-f', '--', 'work/private.json']);
+function commitIndex(repo: string, message: string): void {
   git(repo, [
     '-c',
     'user.name=Test User',
@@ -84,8 +83,63 @@ test('rejects a work file already tracked in HEAD', (t) => {
     'user.email=test@example.com',
     'commit',
     '-qm',
-    'track work file',
+    message,
   ]);
+}
+
+test('root work ignore covers a regular file, directory, and symbolic link', async (t) => {
+  const cases: Array<[string, (repo: string) => void]> = [
+    ['regular file', (repo) => createRootWorkEntry(repo, 'file')],
+    ['directory', (repo) => mkdirSync(join(repo, 'work'))],
+    ['symbolic link', (repo) => createRootWorkEntry(repo, 'symlink')],
+  ];
+
+  for (const [name, prepare] of cases) {
+    await t.test(name, (subtest) => {
+      const repo = createRepository(subtest);
+      prepare(repo);
+      const result = run(repo, 'git', ['check-ignore', '-q', '--', 'work']);
+
+      assert.equal(result.status, 0, result.stderr || result.stdout);
+    });
+  }
+});
+
+test('rejects force-added root work files and symbolic links', async (t) => {
+  for (const type of ['file', 'symlink'] as const) {
+    await t.test(type, (subtest) => {
+      const repo = createRepository(subtest);
+      createRootWorkEntry(repo, type);
+      git(repo, ['add', '-f', '--', 'work']);
+
+      const result = check(repo);
+      assert.notEqual(result.status, 0);
+      assert.match(result.stderr, /tracked work file is forbidden/i);
+      assert.match(result.stderr, /(?:^|\n)work(?:\n|$)/i);
+    });
+  }
+});
+
+test('rejects root work files and symbolic links already tracked in HEAD', async (t) => {
+  for (const type of ['file', 'symlink'] as const) {
+    await t.test(type, (subtest) => {
+      const repo = createRepository(subtest);
+      createRootWorkEntry(repo, type);
+      git(repo, ['add', '-f', '--', 'work']);
+      commitIndex(repo, `track root work ${type}`);
+
+      const result = check(repo);
+      assert.notEqual(result.status, 0);
+      assert.match(result.stderr, /tracked work file is forbidden/i);
+      assert.match(result.stderr, /(?:^|\n)work(?:\n|$)/i);
+    });
+  }
+});
+
+test('rejects a force-added file below the root work directory', (t) => {
+  const repo = createRepository(t);
+  write(repo, 'work/private.json', '{"project":"private"}\n');
+  git(repo, ['add', '-f', '--', 'work/private.json']);
 
   const result = check(repo);
   assert.notEqual(result.status, 0);
@@ -133,6 +187,10 @@ test('rejects every private token and contact category', async (t) => {
     ['Chinese mobile number', '{"phone":"13800138000"}'],
     ['hyphenated Chinese mobile number', '{"phone":"138-0013-8000"}'],
     ['spaced Chinese mobile number', '{"phone":"138 0013 8000"}'],
+    ['international Chinese mobile number', '{"phone":"+8613800138000"}'],
+    ['spaced international Chinese mobile number', '{"phone":"+86 138 0013 8000"}'],
+    ['hyphenated international Chinese mobile number', '{"phone":"+86-138-0013-8000"}'],
+    ['encoded international Chinese mobile number', '{"phone":"%2B8613800138000"}'],
   ] as const;
 
   for (const [name, content] of cases) {
@@ -151,6 +209,22 @@ test('does not mistake an embedded legacy URL hash for a mobile number', (t) => 
     repo,
     'src/data/legacy.json',
     '{"url":"https://legacy.example/84d17857554739/details"}\n',
+  );
+
+  assertPasses(repo);
+});
+
+test('allows ordinary submitted and welfare prose in public data and docs', (t) => {
+  const repo = createRepository(t);
+  writeTracked(
+    repo,
+    'data/approved/current.json',
+    '{"message":"Application submitted successfully","summary":"Student welfare information"}\n',
+  );
+  writeTracked(
+    repo,
+    'docs/public-guide.md',
+    'Application submitted successfully. Student welfare information is public.\n',
   );
 
   assertPasses(repo);
@@ -218,6 +292,22 @@ test('checks the worktree even when the staged index is clean', (t) => {
   const repo = createRepository(t);
   writeTracked(repo, 'data/approved/current.json', '{"project":"clean index"}\n');
   write(repo, 'data/approved/current.json', '{"contact":"private@example.com"}\n');
+
+  assertPrivateLeak(repo);
+});
+
+test('rejects a private local path in docs from the worktree side', (t) => {
+  const repo = createRepository(t);
+  writeTracked(repo, 'docs/plan.md', 'Public deployment plan\n');
+  write(repo, 'docs/plan.md', 'Private source: /Users/alice/private.json\n');
+
+  assertPrivateLeak(repo);
+});
+
+test('rejects a private marker in docs from the index side', (t) => {
+  const repo = createRepository(t);
+  writeTracked(repo, 'docs/plan.md', 'Internal field: recommendationTier\n');
+  write(repo, 'docs/plan.md', 'Public deployment plan\n');
 
   assertPrivateLeak(repo);
 });
