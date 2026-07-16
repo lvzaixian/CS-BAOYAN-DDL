@@ -187,6 +187,7 @@ PY
 # DEPLOY_ROOT must be group-writable so the dedicated deploy user can atomically
 # replace only the current symlink. Nginx needs read/traverse access only.
 install -d -m 0775 -o root -g "$deploy_group" "$DEPLOY_ROOT"
+install -d -m 0755 -o root -g root "$DEPLOY_ROOT/acme-webroot"
 install -d -m 0755 -o "$DEPLOY_USER" -g "$deploy_group" "$DEPLOY_ROOT/releases"
 install -d -m 0750 -o "$DEPLOY_USER" -g "$deploy_group" "$DEPLOY_ROOT/shared"
 install -d -m 0750 -o "$DEPLOY_USER" -g "$deploy_group" "$DEPLOY_ROOT/shared/staging"

@@ -1463,6 +1463,14 @@ test('BaoTa HTTP template avoids a competing default server and preserves the st
   assert.match(template, /server_name __SERVER_NAME__;/);
   assert.match(template, /if \(\$host != "__SERVER_NAME__"\)/);
   assert.match(template, /root __DEPLOY_ROOT__\/current;/);
+  assert.match(
+    template,
+    /location \^~ \/\.well-known\/acme-challenge\/ \{[\s\S]*?root __DEPLOY_ROOT__\/acme-webroot;[\s\S]*?disable_symlinks on from=__DEPLOY_ROOT__\/acme-webroot;[\s\S]*?try_files \$uri =404;[\s\S]*?default_type text\/plain;/,
+  );
+  assertTextOrder(template, [
+    'location ^~ /.well-known/acme-challenge/ {',
+    'location ~ (^|/)\\.',
+  ]);
   assert.match(template, /location = \/release\.json[\s\S]*?Cache-Control "no-store, no-cache, must-revalidate"/);
   assert.match(template, /location ~ \(\^\|\/\)\\\.[\s\S]*?return 404;/);
   assert.match(template, /location \/assets\/[\s\S]*?Cache-Control "public, max-age=31536000, immutable"/);
@@ -1490,7 +1498,18 @@ test('BaoTa TLS template defines exact-domain redirect and final HTTPS routing',
   assert.match(template, /http2 on;/);
   assert.match(template, /ssl_certificate __TLS_CERTIFICATE__;/);
   assert.match(template, /ssl_certificate_key __TLS_CERTIFICATE_KEY__;/);
-  assert.match(template, /return 308 https:\/\/__SERVER_NAME__\$request_uri;/);
+  assert.match(
+    template,
+    /location \^~ \/\.well-known\/acme-challenge\/ \{[\s\S]*?root __DEPLOY_ROOT__\/acme-webroot;[\s\S]*?disable_symlinks on from=__DEPLOY_ROOT__\/acme-webroot;[\s\S]*?try_files \$uri =404;[\s\S]*?default_type text\/plain;/,
+  );
+  assert.match(
+    template,
+    /location \/ \{\s*return 308 https:\/\/__SERVER_NAME__\$request_uri;\s*\}/,
+  );
+  assertTextOrder(template, [
+    'location ^~ /.well-known/acme-challenge/ {',
+    'location / {\n        return 308 https://__SERVER_NAME__$request_uri;',
+  ]);
   assert.equal(template.match(/if \(\$host != "__SERVER_NAME__"\)/g)?.length, 2);
   assert.match(template, /root __DEPLOY_ROOT__\/current;/);
   assert.match(template, /location = \/release\.json[\s\S]*?Cache-Control "no-store, no-cache, must-revalidate"/);
@@ -1510,6 +1529,15 @@ test('BaoTa TLS template defines exact-domain redirect and final HTTPS routing',
 test('bootstrap validates both BaoTa templates with the selected Nginx binary', async (t) => {
   await t.test('absolute binary renders the HTTP template', () => {
     assert.ok(existsSync(baotaHttpTemplatePath), 'BaoTa HTTP template must exist');
+    const bootstrapSource = readFileSync(bootstrapScript, 'utf8');
+    assert.match(
+      bootstrapSource,
+      /install -d -m 0755 -o root -g root "\$DEPLOY_ROOT\/acme-webroot"/,
+    );
+    assert.doesNotMatch(
+      bootstrapSource,
+      /install -d[^\n]*-o "\$DEPLOY_USER"[^\n]*"\$DEPLOY_ROOT\/acme-webroot"/,
+    );
     const harness = makeBootstrapHarness(t);
     const result = harness.run({ NGINX_TEMPLATE: baotaHttpTemplatePath });
 
@@ -1517,6 +1545,7 @@ test('bootstrap validates both BaoTa templates with the selected Nginx binary', 
     const config = readFileSync(harness.configPath, 'utf8');
     assert.match(config, /server_name ddl\.example\.com;/);
     assert.match(config, new RegExp(`root ${resolve(harness.sandbox, 'deploy-root')}/current;`));
+    assert.ok(existsSync(join(resolve(harness.sandbox, 'deploy-root'), 'acme-webroot')));
     assert.doesNotMatch(config, /__[A-Z_]+__/);
     assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n-s reload\n');
   });
