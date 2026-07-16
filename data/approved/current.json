@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "scanAt": "2026-07-16T11:20:00+08:00",
+  "scanAt": "2026-07-16T21:41:00+08:00",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -11,90 +11,50 @@
     }
   ],
   "counts": {
-    "confirmedOpen": 69,
-    "confirmedUnknownDeadline": 9,
-    "pendingExcluded": 34,
+    "confirmedOpen": 67,
+    "confirmedUnknownDeadline": 15,
+    "pendingExcluded": 45,
     "expired": 14
   },
   "opportunities": [
     {
-      "projectId": "2027|中国科学院空天信息创新研究院|空天信息技术|2026暑期学校",
+      "projectId": "2027|山东大学|智能通信技术研究院|2026夏令营",
       "feedId": "camp2027",
-      "name": "中国科学院空天信息创新研究院",
-      "institute": "空天信息技术",
-      "project": "2026年度全国大学生空天信息技术暑期学校",
-      "eventType": "暑期学校",
-      "description": "2026年度全国大学生空天信息技术暑期学校",
+      "name": "山东大学",
+      "institute": "智能通信技术研究院",
+      "project": "智能通信技术研究院2026年优秀大学生夏令营",
+      "eventType": "优秀大学生夏令营",
+      "description": "智能通信技术研究院2026年优秀大学生夏令营",
       "verificationStatus": "confirmed-open",
-      "deadline": "2026-07-17T23:59:00+08:00",
-      "deadlineOriginal": "即日起至7月17日（视具体情况可酌情延长；官方未写时分）",
-      "deadlineEpochMs": 1784303940000,
-      "website": "https://aircas.ac.cn/tzgg/202606/t20260624_8232672.html",
+      "deadline": "2026-07-17T23:00:00+08:00",
+      "deadlineOriginal": "2026年7月17日23:00截止",
+      "deadlineEpochMs": 1784300400000,
+      "website": "https://iict.sdu.edu.cn/info/1027/1317.htm",
       "tags": [],
-      "verifiedAt": "2026-07-16T07:10:00+08:00",
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
       "discoverySources": [
         {
           "kind": "official",
           "label": "官方链接",
-          "url": "https://aircas.ac.cn/tzgg/202606/t20260624_8232672.html"
+          "url": "https://iict.sdu.edu.cn/info/1027/1317.htm"
         },
         {
           "kind": "baoyan-notice",
           "label": "保研通知网",
-          "url": "https://www.baoyantongzhi.com/notice/detail/133254"
+          "url": "https://www.baoyantongzhi.com/notice/detail/187377"
         }
       ],
       "logistics": {
-        "status": "confirmed",
-        "summary": "住宿：不适用（线上）；餐食：不适用（线上）；交通：不适用（线上）；报销：不适用（线上）"
+        "status": "not-published",
+        "summary": "未公布"
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：0封；公开通知未要求；推荐信模板：无"
+        "summary": "推荐信数量：公开简章未见统一推荐信要求；推荐信模板：未见学院推荐信模板"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：低；材料清单：在线申请信息；正文未列独立材料包"
-      }
-    },
-    {
-      "projectId": "2027|东南大学|统计与数据科学学院|优秀大学生夏令营",
-      "feedId": "camp2027",
-      "name": "东南大学",
-      "institute": "统计与数据科学学院",
-      "project": "统计与数据科学学院优秀大学生夏令营",
-      "eventType": "夏令营",
-      "description": "统计与数据科学学院优秀大学生夏令营",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-07-18T00:00:00+08:00",
-      "deadlineOriginal": "报名提交截止时间为2026年7月17日24:00",
-      "deadlineEpochMs": 1784304000000,
-      "website": "https://mp.weixin.qq.com/s/npvSBUE6djxxKg1i9GGO_w",
-      "tags": [],
-      "verifiedAt": "2026-07-16T07:00:00+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://mp.weixin.qq.com/s/npvSBUE6djxxKg1i9GGO_w"
-        },
-        {
-          "kind": "baoyan-notice",
-          "label": "保研通知网",
-          "url": "https://www.baoyantongzhi.com/notice/detail/159396"
-        }
-      ],
-      "logistics": {
-        "status": "confirmed",
-        "summary": "住宿：自理；餐食：学院提供午餐券；交通：自理"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：2封；推荐信模板：学院官方模板，须手写签名"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：简历、个人陈述、成绩排名、英语、2封推荐信等"
+        "summary": "材料复杂度：中；材料清单：按官方通知或报名系统提交"
       }
     },
     {
@@ -181,12 +141,12 @@
       "eventType": "优秀大学生开放日",
       "description": "匡亚明学院交叉学科优秀大学生开放日",
       "verificationStatus": "confirmed-open",
-      "deadline": "2026-07-18T23:59:00+08:00",
-      "deadlineOriginal": "2026年7月18日24:00截止",
-      "deadlineEpochMs": 1784390340000,
+      "deadline": "2026-07-19T00:00:00+08:00",
+      "deadlineOriginal": "2026年7月18日24:00截止（规范化为7月19日00:00）",
+      "deadlineEpochMs": 1784390400000,
       "website": "https://dii.nju.edu.cn/c3/f5/c11317a836597/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-16T11:20:00+08:00",
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -288,6 +248,46 @@
       }
     },
     {
+      "projectId": "2027|中国农业科学院|深圳农业基因组研究所|2026优秀大学生学术活动开放日",
+      "feedId": "camp2027",
+      "name": "中国农业科学院",
+      "institute": "深圳农业基因组研究所",
+      "project": "深圳农业基因组研究所2026年优秀大学生学术活动开放日",
+      "eventType": "学术活动开放日",
+      "description": "深圳农业基因组研究所2026年优秀大学生学术活动开放日",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-19T14:00:00+08:00",
+      "deadlineOriginal": "2026年7月19日14:00前完成网上报名并邮件提交PDF",
+      "deadlineEpochMs": 1784440800000,
+      "website": "https://agis.caas.cn/xwzx/yw/f48a1bba135d4b21a6b899087128432f.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://agis.caas.cn/xwzx/yw/f48a1bba135d4b21a6b899087128432f.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/212871"
+        }
+      ],
+      "logistics": {
+        "status": "confirmed",
+        "summary": "住宿：开放日期间免费住宿；餐食：开放日期间免费餐食；交通：报销来深单程车票；报销：按高铁/动车二等座、硬卧或硬座标准，入营时提交发票"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：公开通知未见专家推荐信要求；推荐信模板：无"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：按官方通知或报名系统提交"
+      }
+    },
+    {
       "projectId": "2027|云南大学|软件学院（人工智能学院）|2026全国优秀大学生夏令营",
       "feedId": "camp2027",
       "name": "云南大学",
@@ -365,46 +365,6 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：中；材料清单：申请表、盖章成绩单、身份证、成果证明、信息汇总表；邮件提交"
-      }
-    },
-    {
-      "projectId": "2027|中山大学|海洋工程与技术学院|推免预报名",
-      "feedId": "camp2027",
-      "name": "中山大学",
-      "institute": "海洋工程与技术学院",
-      "project": "海洋工程与技术学院推免预报名",
-      "eventType": "推免预报名",
-      "description": "海洋工程与技术学院推免预报名",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-07-19T23:59:00+08:00",
-      "deadlineOriginal": "2026年7月1日起至7月19日23:59前填写问卷",
-      "deadlineEpochMs": 1784476740000,
-      "website": "https://soet.sysu.edu.cn/zh-hans/article/1403",
-      "tags": [],
-      "verifiedAt": "2026-07-16T07:05:00+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://soet.sysu.edu.cn/zh-hans/article/1403"
-        },
-        {
-          "kind": "baoyan-notice",
-          "label": "保研通知网",
-          "url": "https://www.baoyantongzhi.com/notice/detail/158776"
-        }
-      ],
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：硕士0封；直博2封；推荐信模板：直博有官方专家推荐书"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：双通道、成绩排名、证件、英语；简历与成果可选"
       }
     },
     {
@@ -523,46 +483,6 @@
       }
     },
     {
-      "projectId": "2027|国防科技大学|电子对抗学院|网络空间安全前沿技术暑期学校",
-      "feedId": "camp2027",
-      "name": "国防科技大学",
-      "institute": "电子对抗学院",
-      "project": "网络空间安全前沿技术研究生暑期学校",
-      "eventType": "研究生暑期学校",
-      "description": "网络空间安全前沿技术研究生暑期学校",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-07-20T21:00:00+08:00",
-      "deadlineOriginal": "报名截止时间为2026年7月20日21时",
-      "deadlineEpochMs": 1784552400000,
-      "website": "https://mp.weixin.qq.com/s/49XiAG3zd7MUBkiGft4AxQ?click_id=1152860574",
-      "tags": [],
-      "verifiedAt": "2026-07-16T07:00:00+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://mp.weixin.qq.com/s/49XiAG3zd7MUBkiGft4AxQ?click_id=1152860574"
-        },
-        {
-          "kind": "baoyan-notice",
-          "label": "保研通知网",
-          "url": "https://www.baoyantongzhi.com/notice/detail/216269"
-        }
-      ],
-      "logistics": {
-        "status": "confirmed",
-        "summary": "住宿：提供住宿；餐食：提供餐食；交通：往返交通自理；报销：不报销往返交通"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：0封；申请表原则上需推荐单位盖章；推荐信模板：无专家推荐信模板"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：中；材料清单：报名表、身份证明、成绩和科研材料"
-      }
-    },
-    {
       "projectId": "2027|中南大学|电子信息学院|2026暑期招生宣讲开放日",
       "feedId": "camp2027",
       "name": "中南大学",
@@ -675,6 +595,76 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：中低；材料清单：CV、成绩单、班级排名证明"
+      }
+    },
+    {
+      "projectId": "2027|国防科技大学|电子科学学院|推免预报名第二批",
+      "feedId": "camp2027",
+      "name": "国防科技大学",
+      "institute": "电子科学学院",
+      "project": "电子科学学院接收2027级地方院校推免硕士第二批",
+      "eventType": "推免预报名/复试",
+      "description": "电子科学学院接收2027级地方院校推免硕士第二批",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-22T23:59:00+08:00",
+      "deadlineOriginal": "7月22日前完成校级预报名；材料于7月22日24:00前提交",
+      "deadlineEpochMs": 1784735940000,
+      "website": "https://yjszs.nudt.edu.cn/pubweb/homePageList/newDetailed.view?keyId=14887",
+      "tags": [],
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yjszs.nudt.edu.cn/pubweb/homePageList/newDetailed.view?keyId=14887"
+        }
+      ],
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：公开方案未见专家推荐信要求；推荐信模板：无"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：很高；材料清单：问卷、校级平台、申请表、成绩排名、学籍、科研成果、政审等合并PDF"
+      }
+    },
+    {
+      "projectId": "2027|国防科技大学|电子科学学院|2026学术创新营第二批",
+      "feedId": "camp2027",
+      "name": "国防科技大学",
+      "institute": "电子科学学院",
+      "project": "电子科学学院2026年学术创新营第二批",
+      "eventType": "学术创新营",
+      "description": "电子科学学院2026年学术创新营第二批",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-23T00:00:00+08:00",
+      "deadlineOriginal": "7月22日24:00前完成问卷和材料提交",
+      "deadlineEpochMs": 1784736000000,
+      "website": "https://yjszs.nudt.edu.cn/pubweb/homePageList/newDetailed.view?keyId=14886",
+      "tags": [],
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yjszs.nudt.edu.cn/pubweb/homePageList/newDetailed.view?keyId=14886"
+        }
+      ],
+      "logistics": {
+        "status": "confirmed",
+        "summary": "住宿：正式营员免费住宿；餐食：正式营员免费餐食；交通：往返先自理；市内交通不报；报销：后续经推免录取为该院研究生者，按不高于高铁二等座标准据实报销往返差旅"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：公开方案未见专家推荐信要求；推荐信模板：无"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：高；材料清单：申请表、成绩排名、学籍、科研成果、照片、政审等合并PDF"
       }
     },
     {
@@ -1213,6 +1203,46 @@
       }
     },
     {
+      "projectId": "2027|山东大学|齐鲁交通学院|2026夏令营",
+      "feedId": "camp2027",
+      "name": "山东大学",
+      "institute": "齐鲁交通学院",
+      "project": "齐鲁交通学院2026年全国优秀大学生暑期夏令营",
+      "eventType": "优秀大学生夏令营",
+      "description": "齐鲁交通学院2026年全国优秀大学生暑期夏令营",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-30T17:00:00+08:00",
+      "deadlineOriginal": "2026年7月30日17:00截止",
+      "deadlineEpochMs": 1785402000000,
+      "website": "https://www.qltrans.sdu.edu.cn/info/1112/5612.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://www.qltrans.sdu.edu.cn/info/1112/5612.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/226610"
+        }
+      ],
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：公开简章未见统一推荐信要求；推荐信模板：未见学院推荐信模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：按官方通知或报名系统提交"
+      }
+    },
+    {
       "projectId": "2027|空军工程大学|研究生院|直接选拔招录推免预报名",
       "feedId": "camp2027",
       "name": "空军工程大学",
@@ -1318,86 +1348,6 @@
       }
     },
     {
-      "projectId": "2027|南京理工大学|智能科学与技术学院|校园开放日",
-      "feedId": "camp2027",
-      "name": "南京理工大学",
-      "institute": "智能科学与技术学院",
-      "project": "智能科学与技术学院校园开放日",
-      "eventType": "校园开放日",
-      "description": "智能科学与技术学院校园开放日",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-07-30T23:59:00+08:00",
-      "deadlineOriginal": "系统7月30日23:59截止；邮件材料7月31日08:00前",
-      "deadlineEpochMs": 1785427140000,
-      "website": "https://mp.weixin.qq.com/s/7OeiqkUnCHoliCJR1BBIjQ",
-      "tags": [],
-      "verifiedAt": "2026-07-16T07:00:00+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://mp.weixin.qq.com/s/7OeiqkUnCHoliCJR1BBIjQ"
-        },
-        {
-          "kind": "baoyan-notice",
-          "label": "保研通知网",
-          "url": "https://www.baoyantongzhi.com/notice/detail/176350"
-        }
-      ],
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：公开正文未见要求"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：中高；材料清单：六类材料合并PDF并制作目录页"
-      }
-    },
-    {
-      "projectId": "2027|南京理工大学|计算机科学与工程学院（人工智能学院、软件学院）|校园开放日",
-      "feedId": "camp2027",
-      "name": "南京理工大学",
-      "institute": "计算机科学与工程学院（人工智能学院、软件学院）",
-      "project": "计算机科学与工程学院（人工智能学院、软件学院）校园开放日",
-      "eventType": "校园开放日",
-      "description": "计算机科学与工程学院（人工智能学院、软件学院）校园开放日",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-07-30T23:59:00+08:00",
-      "deadlineOriginal": "报名时间2026年7月5日-7月30日（官方未写时分）；官方未公布具体时刻",
-      "deadlineEpochMs": 1785427140000,
-      "website": "https://mp.weixin.qq.com/s/WpList0QghYx0-tMN5WBRA",
-      "tags": [],
-      "verifiedAt": "2026-07-16T07:00:00+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://mp.weixin.qq.com/s/WpList0QghYx0-tMN5WBRA"
-        },
-        {
-          "kind": "baoyan-notice",
-          "label": "保研通知网",
-          "url": "https://www.baoyantongzhi.com/notice/detail/176349"
-        }
-      ],
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：公开正文未见要求"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：中；材料清单：系统报名及邮件PDF，具体清单见官方通知"
-      }
-    },
-    {
       "projectId": "2027|东南大学|自动化学院|接收推荐免试研究生报名",
       "feedId": "camp2027",
       "name": "东南大学",
@@ -1491,7 +1441,7 @@
       "deadlineEpochMs": 1785513540000,
       "website": "https://sist.shanghaitech.edu.cn/2026/0715/c2863a1125416/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-16T07:04:00+08:00",
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1550,86 +1500,6 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：中；材料清单：简历、成绩单、1页研究动机、补充材料，压缩包命名学校-姓名"
-      }
-    },
-    {
-      "projectId": "2027|南京理工大学|自动化学院|校园开放日",
-      "feedId": "camp2027",
-      "name": "南京理工大学",
-      "institute": "自动化学院",
-      "project": "自动化学院校园开放日",
-      "eventType": "校园开放日",
-      "description": "自动化学院校园开放日",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-07-31T23:59:00+08:00",
-      "deadlineOriginal": "现在至2026年7月31日截止（官方未写时分）；官方未公布具体时刻",
-      "deadlineEpochMs": 1785513540000,
-      "website": "https://mp.weixin.qq.com/s/rJIie407i4V3I-aW5iIeWQ",
-      "tags": [],
-      "verifiedAt": "2026-07-16T07:00:00+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://mp.weixin.qq.com/s/rJIie407i4V3I-aW5iIeWQ"
-        },
-        {
-          "kind": "baoyan-notice",
-          "label": "保研通知网",
-          "url": "https://www.baoyantongzhi.com/notice/detail/160507"
-        }
-      ],
-      "logistics": {
-        "status": "confirmed",
-        "summary": "住宿：不适用（线上）；餐食：不适用（线上）；交通：不适用（线上）；报销：不适用（线上）"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：公开通知未见要求；推荐信模板：无"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：中；材料清单：按官方通知合并PDF"
-      }
-    },
-    {
-      "projectId": "2027|东南大学|统计与数据科学学院|推免预报名",
-      "feedId": "camp2027",
-      "name": "东南大学",
-      "institute": "统计与数据科学学院",
-      "project": "统计与数据科学学院推免预报名",
-      "eventType": "推免预报名",
-      "description": "统计与数据科学学院推免预报名",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-08-01T12:00:00+08:00",
-      "deadlineOriginal": "2026年7月9日12:00至8月1日12:00",
-      "deadlineEpochMs": 1785556800000,
-      "website": "https://stat.seu.edu.cn/2026/0708/c60842a575966/page.htm",
-      "tags": [],
-      "verifiedAt": "2026-07-16T07:00:00+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://stat.seu.edu.cn/2026/0708/c60842a575966/page.htm"
-        },
-        {
-          "kind": "baoyan-notice",
-          "label": "保研通知网",
-          "url": "https://www.baoyantongzhi.com/notice/detail/190333"
-        }
-      ],
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：硕士0封；直博2封；推荐信模板：直博使用系统模板"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：申请表、成绩排名、语言、科研成果及直博推荐材料"
       }
     },
     {
@@ -1823,30 +1693,30 @@
       }
     },
     {
-      "projectId": "2027|复旦大学|智能复杂体系基础理论与关键技术实验室|推免招生",
+      "projectId": "2027|中山大学|计算机学院|推免预报名",
       "feedId": "camp2027",
-      "name": "复旦大学",
-      "institute": "智能复杂体系基础理论与关键技术实验室",
-      "project": "智能复杂体系基础理论与关键技术实验室推免招生",
-      "eventType": "实验室推免招生",
-      "description": "智能复杂体系基础理论与关键技术实验室推免招生",
+      "name": "中山大学",
+      "institute": "计算机学院",
+      "project": "计算机学院接收2027年推免生报名",
+      "eventType": "推免预报名",
+      "description": "计算机学院接收2027年推免生报名",
       "verificationStatus": "confirmed-open",
-      "deadline": "2026-08-10T17:00:00+08:00",
-      "deadlineOriginal": "即日起至8月10日17:00",
-      "deadlineEpochMs": 1786352400000,
-      "website": "https://mp.weixin.qq.com/s/k1fdaJ80QGd5-gTQwdm0RQ",
+      "deadline": "2026-08-12T23:59:00+08:00",
+      "deadlineOriginal": "2026年8月12日23:59前完成报名",
+      "deadlineEpochMs": 1786550340000,
+      "website": "https://cse.sysu.edu.cn/article/3587",
       "tags": [],
-      "verifiedAt": "2026-07-16T07:00:00+08:00",
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
       "discoverySources": [
         {
           "kind": "official",
           "label": "官方链接",
-          "url": "https://mp.weixin.qq.com/s/k1fdaJ80QGd5-gTQwdm0RQ"
+          "url": "https://cse.sysu.edu.cn/article/3587"
         },
         {
           "kind": "baoyan-notice",
           "label": "保研通知网",
-          "url": "https://www.baoyantongzhi.com/notice/detail/208259"
+          "url": "https://www.baoyantongzhi.com/notice/detail/226718"
         }
       ],
       "logistics": {
@@ -1855,11 +1725,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：公开通知未见要求"
+        "summary": "推荐信数量：硕士0封；直博2封签字推荐信；推荐信模板：直博需2封专家签字推荐信，按学院要求提交"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：中高；材料清单：按官方通知提交预报名和证明材料"
+        "summary": "材料复杂度：高；材料清单：系统材料、个人视频、线上评测；直博另需推荐信"
       }
     },
     {
@@ -2083,46 +1953,6 @@
       }
     },
     {
-      "projectId": "2027|上海财经大学|计算机与人工智能学院|推免预报名",
-      "feedId": "camp2027",
-      "name": "上海财经大学",
-      "institute": "计算机与人工智能学院",
-      "project": "计算机与人工智能学院推免预报名",
-      "eventType": "推免预报名",
-      "description": "计算机与人工智能学院推免预报名",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-08-21T00:00:00+08:00",
-      "deadlineOriginal": "即日起至8月20日24时",
-      "deadlineEpochMs": 1787241600000,
-      "website": "https://mp.weixin.qq.com/s/mnZWvB8mSItZ8zvW5KgkNg",
-      "tags": [],
-      "verifiedAt": "2026-07-16T07:00:00+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://mp.weixin.qq.com/s/mnZWvB8mSItZ8zvW5KgkNg"
-        },
-        {
-          "kind": "baoyan-notice",
-          "label": "保研通知网",
-          "url": "https://www.baoyantongzhi.com/notice/detail/187057"
-        }
-      ],
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：所有申请人2封；推荐信模板：系统模板"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：申请表、陈述、2封推荐信、成绩排名、语言、证件、学籍和科研材料"
-      }
-    },
-    {
       "projectId": "2027|电子科技大学|信息与通信工程学院|2026优秀本科生选拔计划",
       "feedId": "camp2027",
       "name": "电子科技大学",
@@ -2155,6 +1985,126 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：高；材料清单：签字盖章申请表、承诺书、盖章成绩单、简历、证件、学籍和成果；系统+导师双投"
+      }
+    },
+    {
+      "projectId": "2027|同济大学|上海自主智能无人系统科学中心|推免预报名",
+      "feedId": "camp2027",
+      "name": "同济大学",
+      "institute": "上海自主智能无人系统科学中心",
+      "project": "上海自主智能无人系统科学中心推免预报名",
+      "eventType": "推免预报名",
+      "description": "上海自主智能无人系统科学中心推免预报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-23T17:00:00+08:00",
+      "deadlineOriginal": "2026年8月23日17:00前完成系统、邮件和问卷提交",
+      "deadlineEpochMs": 1787475600000,
+      "website": "https://srias.tongji.edu.cn/cb/69/c17827a379753/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://srias.tongji.edu.cn/cb/69/c17827a379753/page.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/226713"
+        }
+      ],
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：硕士公开材料未要求；直博须2封在线推荐信；推荐信模板：直博推荐人通过系统在线提交，按系统要求填写"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：高；材料清单：预报名系统、邮件材料、问卷；直博另需2封在线推荐"
+      }
+    },
+    {
+      "projectId": "2027|中山大学|网络空间安全学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "中山大学",
+      "institute": "网络空间安全学院",
+      "project": "网络空间安全学院接收2027年推免生报名",
+      "eventType": "推免预报名",
+      "description": "网络空间安全学院接收2027年推免生报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-25T23:59:00+08:00",
+      "deadlineOriginal": "2026年8月25日23:59前完成报名",
+      "deadlineEpochMs": 1787673540000,
+      "website": "https://scst.sysu.edu.cn/article/502",
+      "tags": [],
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://scst.sysu.edu.cn/article/502"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/226720"
+        }
+      ],
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：硕士公开通知未要求；直博需研究计划，未见统一推荐信要求；推荐信模板：无统一推荐信模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中高；材料清单：按官方通知或报名系统提交"
+      }
+    },
+    {
+      "projectId": "2027|天津大学|计算机/软件/网络安全/人工智能学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "天津大学",
+      "institute": "计算机/软件/网络安全/人工智能学院",
+      "project": "计算机/软件/网络安全/人工智能学院推免预报名",
+      "eventType": "校级推免预报名",
+      "description": "计算机/软件/网络安全/人工智能学院推免预报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-25T23:59:00+08:00",
+      "deadlineOriginal": "校级系统开放至9月20日；网安首批8月25日23:59，计算机/软件/AI等首批8月26日23:59",
+      "deadlineEpochMs": 1787673540000,
+      "website": "https://yzb.tju.edu.cn/xwzx/tkss_xw/202607/t20260702_324675.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yzb.tju.edu.cn/xwzx/tkss_xw/202607/t20260702_324675.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/176045"
+        }
+      ],
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": "待官方公布"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：系统填报并上传电子证明"
       }
     },
     {
@@ -2195,46 +2145,6 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：中；材料清单：申请表、成绩单、英语、科研获奖等；单位细则未出"
-      }
-    },
-    {
-      "projectId": "2027|中国科学院大学|电子电气与通信工程学院|推免接收",
-      "feedId": "camp2027",
-      "name": "中国科学院大学",
-      "institute": "电子电气与通信工程学院",
-      "project": "电子电气与通信工程学院接收2027级推免研究生",
-      "eventType": "推免接收",
-      "description": "电子电气与通信工程学院接收2027级推免研究生",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-08-31T23:59:00+08:00",
-      "deadlineOriginal": "报名时间2026年7月3日至8月31日；材料8月31日前；官方未公布具体时刻",
-      "deadlineEpochMs": 1788191940000,
-      "website": "https://eece.ucas.ac.cn/index.php/zh-cn/2014-06-13-06-51-06/2715-2027",
-      "tags": [],
-      "verifiedAt": "2026-07-16T07:10:00+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://eece.ucas.ac.cn/index.php/zh-cn/2014-06-13-06-51-06/2715-2027"
-        },
-        {
-          "kind": "baoyan-notice",
-          "label": "保研通知网",
-          "url": "https://www.baoyantongzhi.com/notice/detail/176041"
-        }
-      ],
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：硕士0封；直博2封教授或相当职称专家推荐信；推荐信模板：直博有学院官方模板"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：申请表、证件、盖章成绩、英语、简历、成果；系统+邮件双通道"
       }
     },
     {
@@ -2318,46 +2228,6 @@
       }
     },
     {
-      "projectId": "2027|南开大学|软件学院|推免预报名",
-      "feedId": "camp2027",
-      "name": "南开大学",
-      "institute": "软件学院",
-      "project": "软件学院推免预报名",
-      "eventType": "推免预报名",
-      "description": "软件学院推免预报名",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-09-01T23:59:00+08:00",
-      "deadlineOriginal": "系统截止2026年9月1日；补充PDF截止9月3日23:59；官方未公布具体时刻",
-      "deadlineEpochMs": 1788278340000,
-      "website": "https://cs.nankai.edu.cn/info/1076/3673.htm",
-      "tags": [],
-      "verifiedAt": "2026-07-16T07:04:55+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://cs.nankai.edu.cn/info/1076/3673.htm"
-        },
-        {
-          "kind": "baoyan-notice",
-          "label": "保研通知网",
-          "url": "https://www.baoyantongzhi.com/notice/detail/210790"
-        }
-      ],
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：所有申请人2封，须签字；推荐信模板：学院官方模板"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：签字申请表、证件、盖章成绩排名、英语、成果和2封推荐信"
-      }
-    },
-    {
       "projectId": "2027|中南财经政法大学|信息工程学院|2026优秀大学生研学营",
       "feedId": "camp2027",
       "name": "中南财经政法大学",
@@ -2395,6 +2265,41 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：很高；材料清单：证件、申请表、自述、研究计划、2封推荐信、盖章成绩排名、英语和科研奖项；目录式PDF"
+      }
+    },
+    {
+      "projectId": "2027|大连理工大学|计算机科学与技术学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "大连理工大学",
+      "institute": "计算机科学与技术学院",
+      "project": "计算机科学与技术学院推免预报名",
+      "eventType": "推免预报名",
+      "description": "计算机科学与技术学院推免预报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-07T09:00:00+08:00",
+      "deadlineOriginal": "2026年7月13日09:00至9月7日09:00",
+      "deadlineEpochMs": 1788742800000,
+      "website": "https://gs.dlut.edu.cn/info/1173/51492.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://gs.dlut.edu.cn/info/1173/51492.htm"
+        }
+      ],
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": "待官方公布"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：按官方通知或报名系统提交"
       }
     },
     {
@@ -2553,30 +2458,25 @@
       }
     },
     {
-      "projectId": "2027|天津大学|计算机/软件/网络安全/人工智能学院|推免预报名",
+      "projectId": "2027|大连理工大学|人工智能学院|推免预报名",
       "feedId": "camp2027",
-      "name": "天津大学",
-      "institute": "计算机/软件/网络安全/人工智能学院",
-      "project": "计算机/软件/网络安全/人工智能学院推免预报名",
-      "eventType": "校级推免预报名",
-      "description": "计算机/软件/网络安全/人工智能学院推免预报名",
+      "name": "大连理工大学",
+      "institute": "人工智能学院",
+      "project": "人工智能学院推免预报名",
+      "eventType": "推免预报名",
+      "description": "人工智能学院推免预报名",
       "verificationStatus": "confirmed-open",
-      "deadline": "2026-09-20T23:59:00+08:00",
-      "deadlineOriginal": "校级系统7月7日12:00开放至9月20日；学院集中审核更早；官方未公布具体时刻",
-      "deadlineEpochMs": 1789919940000,
-      "website": "https://yzb.tju.edu.cn/xwzx/tkss_xw/202607/t20260702_324675.htm",
+      "deadline": "2026-09-15T12:00:00+08:00",
+      "deadlineOriginal": "2026年7月13日09:00至9月15日12:00",
+      "deadlineEpochMs": 1789444800000,
+      "website": "https://gs.dlut.edu.cn/info/1173/51492.htm",
       "tags": [],
-      "verifiedAt": "2026-07-16T07:04:55+08:00",
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
       "discoverySources": [
         {
           "kind": "official",
           "label": "官方链接",
-          "url": "https://yzb.tju.edu.cn/xwzx/tkss_xw/202607/t20260702_324675.htm"
-        },
-        {
-          "kind": "baoyan-notice",
-          "label": "保研通知网",
-          "url": "https://www.baoyantongzhi.com/notice/detail/176045"
+          "url": "https://gs.dlut.edu.cn/info/1173/51492.htm"
         }
       ],
       "logistics": {
@@ -2589,7 +2489,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：中；材料清单：系统填报并上传电子证明"
+        "summary": "材料复杂度：中；材料清单：按官方通知或报名系统提交"
       }
     },
     {
@@ -2773,46 +2673,6 @@
       }
     },
     {
-      "projectId": "2027|中国科学院大学|国家空间科学中心|推免接收",
-      "feedId": "camp2027",
-      "name": "中国科学院大学",
-      "institute": "国家空间科学中心",
-      "project": "国家空间科学中心接收推免硕士、直博生",
-      "eventType": "推免接收",
-      "description": "国家空间科学中心接收推免硕士、直博生",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "7月3日至9月28日使用国科大系统；9月28日起切换研招网，最终截止未公布",
-      "deadlineEpochMs": null,
-      "website": "https://www.nssc.ac.cn/yjsb/zsxx/zsdt/202607/t20260703_8241596.html",
-      "tags": [],
-      "verifiedAt": "2026-07-16T07:10:00+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://www.nssc.ac.cn/yjsb/zsxx/zsdt/202607/t20260703_8241596.html"
-        },
-        {
-          "kind": "baoyan-notice",
-          "label": "保研通知网",
-          "url": "https://www.baoyantongzhi.com/notice/detail/178895"
-        }
-      ],
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：0封；公开通知未要求；推荐信模板：无"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：中高；材料清单：系统报名、合并PDF、后续体检和研招网确认"
-      }
-    },
-    {
       "projectId": "2027|南京大学|计算机软件研究所|本科生开放日提前招生",
       "feedId": "camp2027",
       "name": "南京大学",
@@ -2953,6 +2813,146 @@
       }
     },
     {
+      "projectId": "2027|西安电子科技大学|人工智能学院吴凯团队|2027推免招募",
+      "feedId": "camp2027",
+      "name": "西安电子科技大学",
+      "institute": "人工智能学院吴凯团队",
+      "project": "人工智能学院吴凯团队2027推免招募",
+      "eventType": "课题组提前招生",
+      "description": "人工智能学院吴凯团队2027推免招募",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "官方教师主页发布2027级招募，未公布统一截止",
+      "deadlineEpochMs": null,
+      "website": "https://web.xidian.edu.cn/kwu/index.html",
+      "tags": [],
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://web.xidian.edu.cn/kwu/index.html"
+        }
+      ],
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信模板：无"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：低；材料清单：课题组联系为主，首轮建议只发简历"
+      }
+    },
+    {
+      "projectId": "2027|西安电子科技大学|王善峰课题组|2027推免硕士招募",
+      "feedId": "camp2027",
+      "name": "西安电子科技大学",
+      "institute": "王善峰课题组",
+      "project": "王善峰课题组2027推免硕士招募",
+      "eventType": "课题组提前招生",
+      "description": "王善峰课题组2027推免硕士招募",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "官方教师主页发布2027级招募，未公布统一截止",
+      "deadlineEpochMs": null,
+      "website": "https://web.xidian.edu.cn/sfwang/zsxx.html",
+      "tags": [],
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://web.xidian.edu.cn/sfwang/zsxx.html"
+        }
+      ],
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信模板：无"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：低；材料清单：课题组联系为主，首轮建议只发简历"
+      }
+    },
+    {
+      "projectId": "2027|西安电子科技大学|网络与信息安全学院刘德成课题组|2027推免硕士招募",
+      "feedId": "camp2027",
+      "name": "西安电子科技大学",
+      "institute": "网络与信息安全学院刘德成课题组",
+      "project": "网络与信息安全学院刘德成课题组2027推免硕士招募",
+      "eventType": "课题组提前招生",
+      "description": "网络与信息安全学院刘德成课题组2027推免硕士招募",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "官方教师主页发布2027级招募，未公布统一截止",
+      "deadlineEpochMs": null,
+      "website": "https://web.xidian.edu.cn/dchliu/index.html",
+      "tags": [],
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://web.xidian.edu.cn/dchliu/index.html"
+        }
+      ],
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信模板：无"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：低；材料清单：课题组联系为主，首轮建议只发简历"
+      }
+    },
+    {
+      "projectId": "2027|西安电子科技大学|网络与信息安全学院曹进团队|2027推免硕士招募",
+      "feedId": "camp2027",
+      "name": "西安电子科技大学",
+      "institute": "网络与信息安全学院曹进团队",
+      "project": "网络与信息安全学院曹进团队2027推免硕士招募",
+      "eventType": "课题组提前招生",
+      "description": "网络与信息安全学院曹进团队2027推免硕士招募",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "官方教师主页发布2027级招募，未公布统一截止",
+      "deadlineEpochMs": null,
+      "website": "https://web.xidian.edu.cn/jcao/index.html",
+      "tags": [],
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://web.xidian.edu.cn/jcao/index.html"
+        }
+      ],
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信模板：无"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：低；材料清单：课题组联系为主，首轮建议只发简历"
+      }
+    },
+    {
       "projectId": "2027|西安电子科技大学|通信工程学院刘毅课题组|推免硕士预报名",
       "feedId": "camp2027",
       "name": "西安电子科技大学",
@@ -2985,6 +2985,111 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：低；材料清单：页面仅要求联系申请；首轮建议只发简历"
+      }
+    },
+    {
+      "projectId": "2027|西安电子科技大学|通信工程学院董文倩课题组|2027推免硕士招募",
+      "feedId": "camp2027",
+      "name": "西安电子科技大学",
+      "institute": "通信工程学院董文倩课题组",
+      "project": "通信工程学院董文倩课题组2027推免硕士招募",
+      "eventType": "课题组提前招生",
+      "description": "通信工程学院董文倩课题组2027推免硕士招募",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "官方教师主页发布2027级招募，未公布统一截止",
+      "deadlineEpochMs": null,
+      "website": "https://web.xidian.edu.cn/wqdong/",
+      "tags": [],
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://web.xidian.edu.cn/wqdong/"
+        }
+      ],
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信模板：无"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：低；材料清单：课题组联系为主，首轮建议只发简历"
+      }
+    },
+    {
+      "projectId": "2027|重庆邮电大学|计算机科学与技术学院陈鹏团队|2027级硕士提前招生",
+      "feedId": "camp2027",
+      "name": "重庆邮电大学",
+      "institute": "计算机科学与技术学院陈鹏团队",
+      "project": "计算机科学与技术学院陈鹏团队2027级硕士提前招生",
+      "eventType": "课题组提前招生",
+      "description": "计算机科学与技术学院陈鹏团队2027级硕士提前招生",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "官方教师主页发布提前招生，未公布统一截止",
+      "deadlineEpochMs": null,
+      "website": "https://faculty.cqupt.edu.cn/chenpeng/zh_CN/index/125984/list/index.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://faculty.cqupt.edu.cn/chenpeng/zh_CN/index/125984/list/index.htm"
+        }
+      ],
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信模板：无"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：低；材料清单：页面以课题组联系为主，首轮建议只发简历"
+      }
+    },
+    {
+      "projectId": "2027|重庆邮电大学|雷大江项目组|2027级研究生提前招生",
+      "feedId": "camp2027",
+      "name": "重庆邮电大学",
+      "institute": "雷大江项目组",
+      "project": "雷大江项目组2027级研究生提前招生",
+      "eventType": "课题组提前招生",
+      "description": "雷大江项目组2027级研究生提前招生",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "官方教师主页发布提前招生，未公布统一截止",
+      "deadlineEpochMs": null,
+      "website": "https://faculty.cqupt.edu.cn/leidj/en/index.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-16T21:41:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://faculty.cqupt.edu.cn/leidj/en/index.htm"
+        }
+      ],
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信模板：无"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：低；材料清单：页面以课题组联系为主，首轮建议只发简历"
       }
     },
     {
@@ -3478,8 +3583,8 @@
       }
     }
   ],
-  "snapshotId": "2026-07-16T03:27:49.146Z-dbba370214b2",
-  "approvedAt": "2026-07-16T03:27:49.146Z",
-  "previousSnapshotId": "2026-07-16T01:35:00.000Z-b782e22d3fe8",
-  "dataHash": "dbba370214b27d2bb6ad84ec85f8a07dd4a51f61ac2f5a929559ef6ed90d926b"
+  "snapshotId": "2026-07-16T15:03:58.000Z-09f201c04834",
+  "approvedAt": "2026-07-16T15:03:58Z",
+  "previousSnapshotId": "2026-07-16T03:27:49.146Z-dbba370214b2",
+  "dataHash": "09f201c04834c1070e00aea79ebbbbe09344c062abe72c6b69caa41de73a8be7"
 }
