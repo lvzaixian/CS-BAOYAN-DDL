@@ -26,18 +26,41 @@ function source(path: string): string {
   return existsSync(path) ? readFileSync(path, 'utf8') : '';
 }
 
-function fakeResponse(status: number, contentType: string, body: string) {
+function fakeResponse(
+  status: number,
+  contentType: string,
+  body: string | string[],
+  contentLength?: string,
+) {
+  const chunks = (Array.isArray(body) ? body : [body]).map((chunk) => Buffer.from(chunk));
+  const state = { chunksRead: 0, destroyed: false };
   return {
     ok: status >= 200 && status < 300,
     status,
+    statusCode: status,
     headers: {
       get(name: string) {
-        return name.toLowerCase() === 'content-type' ? contentType : null;
+        if (name.toLowerCase() === 'content-type') return contentType;
+        if (name.toLowerCase() === 'content-length') return contentLength ?? null;
+        return null;
       },
     },
-    async text() {
-      return body;
+    body: {
+      async *[Symbol.asyncIterator]() {
+        for (const chunk of chunks) {
+          if (state.destroyed) return;
+          state.chunksRead += 1;
+          yield chunk;
+        }
+      },
     },
+    destroy() {
+      state.destroyed = true;
+    },
+    async text() {
+      return Buffer.concat(chunks).toString('utf8');
+    },
+    state,
   };
 }
 
@@ -90,6 +113,9 @@ test('monitor implementation reuses repository snapshot integrity and freshness 
   assert.notEqual(monitor, '', 'scripts/monitor-public.mjs must exist');
   assert.match(monitor, /src\/lib\/snapshot-integrity\.js/);
   assert.match(monitor, /snapshot\/check-freshness\.js/);
+  assert.match(monitor, /\/data\/current\.json/);
+  assert.match(monitor, /\/data\/release\.json/);
+  assert.doesNotMatch(monitor, /readRegularJsonFile|approvedPath|globalThis\.fetch|dependencies\.fetch/);
   assert.doesNotMatch(monitor, /createHash|createHmac|sha256/i);
 });
 
@@ -135,30 +161,37 @@ test('accepts only a credential-free HTTPS origin with no path, query, or fragme
 
 test('rejects private or loopback DNS answers before HTTP requests', async () => {
   const monitorPublicRelease = exported('monitorPublicRelease');
-  let fetchCalls = 0;
-  await assert.rejects(
-    monitorPublicRelease(
-      {
-        publicBaseUrl: 'https://admissions.example',
-        expectedSha,
-        maxSnapshotAgeHours: '24',
-        approvedSnapshot,
-        nowMs,
-      },
-      {
-        resolveHost: async () => [{ address: '10.20.30.40', family: 4 }],
-        fetch: async () => {
-          fetchCalls += 1;
-          throw new Error('fetch must not run');
+  let requestCalls = 0;
+  const rejectAddresses = async (addresses: Array<{ address: string; family: number }>) => {
+    await assert.rejects(
+      monitorPublicRelease(
+        {
+          publicBaseUrl: 'https://admissions.example',
+          expectedSha,
+          maxSnapshotAgeHours: '24',
+          nowMs,
         },
-        readCertificate: async () => {
-          throw new Error('TLS must not run');
+        {
+          resolveHost: async () => addresses,
+          requestHttps: async () => {
+            requestCalls += 1;
+            throw new Error('HTTPS must not run');
+          },
+          readCertificate: async () => {
+            throw new Error('TLS must not run');
+          },
         },
-      },
-    ),
-    /private|loopback|public address/i,
-  );
-  assert.equal(fetchCalls, 0);
+      ),
+      /private|loopback|public address/i,
+    );
+  };
+
+  await rejectAddresses([{ address: '10.20.30.40', family: 4 }]);
+  await rejectAddresses([
+    { address: '8.8.8.8', family: 4 },
+    { address: '127.0.0.1', family: 4 },
+  ]);
+  assert.equal(requestCalls, 0);
 });
 
 test('release metadata has exactly the three strict identity fields', async (t) => {
@@ -187,13 +220,34 @@ test('release metadata has exactly the three strict identity fields', async (t) 
       `{"releaseSha":"${'b'.repeat(40)}","releaseSha":"${expectedSha}",`
       + `"snapshotId":"${releaseIdentity.snapshotId}","dataHash":"${releaseIdentity.dataHash}"}`,
     ),
-    /duplicate.*releaseSha/i,
+    /duplicate.*key/i,
+  );
+  for (const escapedDuplicate of [
+    `{"\\u0072eleaseSha":"${'b'.repeat(40)}","releaseSha":"${expectedSha}",`
+      + `"snapshotId":"${releaseIdentity.snapshotId}","dataHash":"${releaseIdentity.dataHash}"}`,
+    `{"rele\\u0061seSha":"${'b'.repeat(40)}","releaseSha":"${expectedSha}",`
+      + `"snapshotId":"${releaseIdentity.snapshotId}","dataHash":"${releaseIdentity.dataHash}"}`,
+  ]) {
+    assert.throws(() => parseRelease(escapedDuplicate), /duplicate.*key/i);
+  }
+  const parseStrictJson = exported('parseStrictJson');
+  assert.throws(
+    () => parseStrictJson('{"private-token-key":1,"private-token-\\u006bey":2}', 'JSON response'),
+    (error: Error) => {
+      assert.match(error.message, /duplicate.*key/i);
+      assert.doesNotMatch(error.message, /private-token-key/i);
+      return true;
+    },
   );
 
   const mismatches: Array<[string, Record<string, unknown>, RegExp]> = [
     ['release SHA', { ...releaseIdentity, releaseSha: 'b'.repeat(40) }, /releaseSha.*expected/i],
-    ['snapshot ID', { ...releaseIdentity, snapshotId: `2026-07-17T00:00:00.000Z-${'b'.repeat(12)}` }, /snapshotId.*approved/i],
-    ['data hash', { ...releaseIdentity, dataHash: 'b'.repeat(64) }, /dataHash.*approved/i],
+    [
+      'snapshot ID',
+      { ...releaseIdentity, snapshotId: `2026-07-17T00:00:00.000Z-${'b'.repeat(12)}` },
+      /snapshotId.*current snapshot/i,
+    ],
+    ['data hash', { ...releaseIdentity, dataHash: 'b'.repeat(64) }, /dataHash.*current snapshot/i],
   ];
   for (const [name, identity, pattern] of mismatches) {
     await t.test(name, () => {
@@ -274,44 +328,267 @@ test('certificate SAN and remaining full-day boundary are strict', () => {
   );
 });
 
-test('normal monitor path uses injected network fixtures and validates homepage, release, and TLS', async () => {
+test('bound TLS adapter connects to the verified IP while preserving SNI and hostname checks', async () => {
+  const readBoundCertificate = exported('readBoundCertificate');
+  let capturedOptions: Record<string, any> | undefined;
+  const certificate = {
+    subject: { CN: 'admissions.example' },
+    subjectaltname: 'DNS:admissions.example',
+    valid_to: new Date(nowMs + 30 * dayMs).toUTCString(),
+  };
+  const connectImpl = (options: Record<string, any>, onSecure: () => void) => {
+    capturedOptions = options;
+    const socket = {
+      getPeerCertificate() {
+        return certificate;
+      },
+      setTimeout() {},
+      on() {},
+      end() {},
+    };
+    queueMicrotask(onSecure);
+    return socket;
+  };
+
+  assert.deepEqual(
+    await readBoundCertificate(
+      'admissions.example',
+      443,
+      { address: '8.8.8.8', family: 4 },
+      connectImpl,
+    ),
+    certificate,
+  );
+  assert.ok(capturedOptions);
+  assert.equal(capturedOptions.host, '8.8.8.8');
+  assert.equal(capturedOptions.family, 4);
+  assert.equal(capturedOptions.port, 443);
+  assert.equal(capturedOptions.servername, 'admissions.example');
+  assert.equal(capturedOptions.rejectUnauthorized, true);
+  assert.equal(
+    capturedOptions.checkServerIdentity('ignored.example', {
+      subjectaltname: 'DNS:admissions.example',
+    }),
+    undefined,
+  );
+  assert.ok(
+    capturedOptions.checkServerIdentity('ignored.example', {
+      subjectaltname: 'DNS:other.example',
+    }) instanceof Error,
+  );
+});
+
+test('bound HTTPS adapter connects to the verified IP while preserving Host, SNI, and hostname checks', async () => {
+  const requestBoundHttps = exported('requestBoundHttps');
+  let capturedOptions: Record<string, any> | undefined;
+  const requestImpl = (
+    options: Record<string, any>,
+    onResponse: (response: Record<string, unknown>) => void,
+  ) => {
+    capturedOptions = options;
+    return {
+      setTimeout() {},
+      on() {},
+      end() {
+        onResponse({ statusCode: 200, headers: {}, destroy() {} });
+      },
+    };
+  };
+
+  await requestBoundHttps(
+    'https://admissions.example:8443/data/current.json',
+    {
+      address: { address: '8.8.8.8', family: 4 },
+      hostname: 'admissions.example',
+      headers: { accept: 'application/json' },
+    },
+    requestImpl,
+  );
+
+  assert.ok(capturedOptions);
+  assert.equal(capturedOptions.protocol, 'https:');
+  assert.equal(capturedOptions.hostname, '8.8.8.8');
+  assert.equal(capturedOptions.family, 4);
+  assert.equal(capturedOptions.port, '8443');
+  assert.equal(capturedOptions.path, '/data/current.json');
+  assert.equal(capturedOptions.headers.host, 'admissions.example:8443');
+  assert.equal(capturedOptions.servername, 'admissions.example');
+  assert.equal(capturedOptions.rejectUnauthorized, true);
+  assert.equal(Object.hasOwn(capturedOptions, 'lookup'), false);
+  assert.equal(
+    capturedOptions.checkServerIdentity('ignored.example', {
+      subjectaltname: 'DNS:admissions.example',
+    }),
+    undefined,
+  );
+  assert.ok(
+    capturedOptions.checkServerIdentity('ignored.example', {
+      subjectaltname: 'DNS:other.example',
+    }) instanceof Error,
+  );
+});
+
+test('normal monitor path binds public HTTPS checks to one validated address and remote data files', async () => {
   const monitorPublicRelease = exported('monitorPublicRelease');
-  const requests: Array<{ url: string; redirect: unknown }> = [];
+  const requests: Array<{ url: string; address: unknown; hostname: unknown }> = [];
+  const certificateConnections: Array<{ hostname: string; port: number; address: unknown }> = [];
+  let resolveCalls = 0;
   const result = await monitorPublicRelease(
     {
       publicBaseUrl: 'https://admissions.example',
       expectedSha,
       maxSnapshotAgeHours: '24',
-      approvedSnapshot,
+      approvedPath: '/must-not-be-read/local-approved.json',
       nowMs,
     },
     {
-      resolveHost: async () => [{ address: '8.8.8.8', family: 4 }],
-      fetch: async (url: string, options: Record<string, unknown>) => {
-        requests.push({ url, redirect: options.redirect });
-        if (url.endsWith('/release.json')) {
+      resolveHost: async () => {
+        resolveCalls += 1;
+        return [
+          { address: '8.8.8.8', family: 4 },
+          { address: '1.1.1.1', family: 4 },
+        ];
+      },
+      fetch: async () => {
+        throw new Error('built-in fetch must not be used');
+      },
+      requestHttps: async (url: string, options: Record<string, unknown>) => {
+        requests.push({ url, address: options.address, hostname: options.hostname });
+        if (url.endsWith('/data/current.json')) {
+          return fakeResponse(200, 'application/json; charset=utf-8', JSON.stringify(approvedSnapshot));
+        }
+        if (url.endsWith('/data/release.json')) {
           return fakeResponse(200, 'application/json; charset=utf-8', JSON.stringify(releaseIdentity));
         }
         return fakeResponse(200, 'text/html; charset=utf-8', '<!doctype html><html><body>ok</body></html>');
       },
-      readCertificate: async () => ({
-        subject: { CN: 'admissions.example' },
-        subjectaltname: 'DNS:admissions.example',
-        valid_to: new Date(nowMs + 30 * dayMs).toUTCString(),
-      }),
+      readCertificate: async (hostname: string, port: number, address: unknown) => {
+        certificateConnections.push({ hostname, port, address });
+        return {
+          subject: { CN: 'admissions.example' },
+          subjectaltname: 'DNS:admissions.example',
+          valid_to: new Date(nowMs + 30 * dayMs).toUTCString(),
+        };
+      },
     },
   );
 
+  const selectedAddress = { address: '8.8.8.8', family: 4 };
   assert.deepEqual(requests, [
-    { url: 'https://admissions.example/', redirect: 'error' },
-    { url: 'https://admissions.example/release.json', redirect: 'error' },
+    { url: 'https://admissions.example/', address: selectedAddress, hostname: 'admissions.example' },
+    {
+      url: 'https://admissions.example/data/current.json',
+      address: selectedAddress,
+      hostname: 'admissions.example',
+    },
+    {
+      url: 'https://admissions.example/data/release.json',
+      address: selectedAddress,
+      hostname: 'admissions.example',
+    },
   ]);
+  assert.deepEqual(certificateConnections, [
+    { hostname: 'admissions.example', port: 443, address: selectedAddress },
+  ]);
+  assert.equal(resolveCalls, 1);
   assert.deepEqual(result.release, releaseIdentity);
   assert.equal(result.origin, 'https://admissions.example');
   assert.equal(result.certificateDaysRemaining, 30);
 });
 
-test('homepage and release fetches fail closed without recording response bodies', async (t) => {
+test('remote current integrity, freshness, schema, and release identity fail closed', async (t) => {
+  const monitorPublicRelease = exported('monitorPublicRelease');
+  const runMonitor = async ({
+    currentText = JSON.stringify(approvedSnapshot),
+    currentStatus = 200,
+    release = releaseIdentity,
+    checkedAt = nowMs,
+    maxAgeHours = '24',
+  }: {
+    currentText?: string;
+    currentStatus?: number;
+    release?: Record<string, unknown>;
+    checkedAt?: number;
+    maxAgeHours?: string;
+  }) => monitorPublicRelease(
+    {
+      publicBaseUrl: 'https://admissions.example',
+      expectedSha,
+      maxSnapshotAgeHours: maxAgeHours,
+      nowMs: checkedAt,
+    },
+    {
+      resolveHost: async () => [{ address: '8.8.8.8', family: 4 }],
+      readCertificate: async () => ({
+        subject: { CN: 'admissions.example' },
+        subjectaltname: 'DNS:admissions.example',
+        valid_to: new Date(checkedAt + 30 * dayMs).toUTCString(),
+      }),
+      requestHttps: async (url: string) => {
+        if (url.endsWith('/data/current.json')) {
+          return fakeResponse(currentStatus, 'application/json', currentText);
+        }
+        if (url.endsWith('/data/release.json')) {
+          return fakeResponse(200, 'application/json', JSON.stringify(release));
+        }
+        return fakeResponse(200, 'text/html', '<html><body>ok</body></html>');
+      },
+    },
+  );
+
+  await t.test('missing remote current', async () => {
+    await assert.rejects(runMonitor({ currentStatus: 404 }), /current snapshot.*status 404/i);
+  });
+  await t.test('tampered canonical data hash', async () => {
+    await assert.rejects(
+      runMonitor({
+        currentText: JSON.stringify({ ...approvedSnapshot, dataHash: 'b'.repeat(64) }),
+      }),
+      /canonical SHA-256 hash/i,
+    );
+  });
+  await t.test('unknown current schema field', async () => {
+    await assert.rejects(
+      runMonitor({
+        currentText: JSON.stringify({ ...approvedSnapshot, notInTheSchema: true }),
+      }),
+      /unknown property/i,
+    );
+  });
+  await t.test('Unicode escaped duplicate current key', async () => {
+    await assert.rejects(
+      runMonitor({
+        currentText: JSON.stringify(approvedSnapshot).replace(
+          /^\{/,
+          '{"\\u0073chemaVersion":999,',
+        ),
+      }),
+      /duplicate.*key/i,
+    );
+  });
+  await t.test('stale remote current', async () => {
+    await assert.rejects(
+      runMonitor({ maxAgeHours: '0.5' }),
+      /freshness.*older/i,
+    );
+  });
+
+  for (const [name, release, pattern] of [
+    ['expected SHA', { ...releaseIdentity, releaseSha: 'b'.repeat(40) }, /releaseSha.*expected/i],
+    [
+      'current snapshot ID',
+      { ...releaseIdentity, snapshotId: `2026-07-17T00:00:00.000Z-${'b'.repeat(12)}` },
+      /snapshotId.*current snapshot/i,
+    ],
+    ['current data hash', { ...releaseIdentity, dataHash: 'b'.repeat(64) }, /dataHash.*current snapshot/i],
+  ] as const) {
+    await t.test(`release mismatch: ${name}`, async () => {
+      await assert.rejects(runMonitor({ release }), pattern);
+    });
+  }
+});
+
+test('homepage and data response streams fail closed without recording response bodies', async (t) => {
   const monitorPublicRelease = exported('monitorPublicRelease');
   const baseDependencies = {
     resolveHost: async () => [{ address: '8.8.8.8', family: 4 }],
@@ -325,17 +602,31 @@ test('homepage and release fetches fail closed without recording response bodies
     publicBaseUrl: 'https://admissions.example',
     expectedSha,
     maxSnapshotAgeHours: '24',
-    approvedSnapshot,
     nowMs,
   };
 
+  const responseFor = (
+    url: string,
+    overrides: Partial<Record<'homepage' | 'current' | 'release', ReturnType<typeof fakeResponse>>> = {},
+  ) => {
+    if (url.endsWith('/data/current.json')) {
+      return overrides.current
+        ?? fakeResponse(200, 'application/json', JSON.stringify(approvedSnapshot));
+    }
+    if (url.endsWith('/data/release.json')) {
+      return overrides.release
+        ?? fakeResponse(200, 'application/json', JSON.stringify(releaseIdentity));
+    }
+    return overrides.homepage
+      ?? fakeResponse(200, 'text/html', '<html><body>ok</body></html>');
+  };
+
   await t.test('non-HTML homepage', async () => {
+    const homepage = fakeResponse(200, 'text/plain', 'private-token-must-not-appear');
     await assert.rejects(
       monitorPublicRelease(config, {
         ...baseDependencies,
-        fetch: async (url: string) => url.endsWith('/release.json')
-          ? fakeResponse(200, 'application/json', JSON.stringify(releaseIdentity))
-          : fakeResponse(200, 'text/plain', 'private-token-must-not-appear'),
+        requestHttps: async (url: string) => responseFor(url, { homepage }),
       }),
       (error: Error) => {
         assert.match(error.message, /homepage.*HTML/i);
@@ -345,15 +636,33 @@ test('homepage and release fetches fail closed without recording response bodies
     );
   });
 
-  await t.test('oversized release response', async () => {
+  await t.test('chunked oversized release stops at the first over-limit chunk', async () => {
+    const oversized = fakeResponse(
+      200,
+      'application/json',
+      ['x'.repeat(9_000), 'y'.repeat(9_000), 'private-token-must-not-be-read'],
+    );
     await assert.rejects(
       monitorPublicRelease(config, {
         ...baseDependencies,
-        fetch: async (url: string) => url.endsWith('/release.json')
-          ? fakeResponse(200, 'application/json', 'x'.repeat(20_000))
-          : fakeResponse(200, 'text/html', '<html><body>ok</body></html>'),
+        requestHttps: async (url: string) => responseFor(url, { release: oversized }),
       }),
       /release response.*large/i,
     );
+    assert.equal(oversized.state.chunksRead, 2);
+    assert.equal(oversized.state.destroyed, true);
+  });
+
+  await t.test('declared oversized release is destroyed before reading', async () => {
+    const oversized = fakeResponse(200, 'application/json', '{}', '20000');
+    await assert.rejects(
+      monitorPublicRelease(config, {
+        ...baseDependencies,
+        requestHttps: async (url: string) => responseFor(url, { release: oversized }),
+      }),
+      /release response.*large/i,
+    );
+    assert.equal(oversized.state.chunksRead, 0);
+    assert.equal(oversized.state.destroyed, true);
   });
 });

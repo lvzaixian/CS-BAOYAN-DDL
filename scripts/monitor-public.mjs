@@ -1,5 +1,6 @@
 import { lookup } from 'node:dns/promises';
 import { mkdir, writeFile } from 'node:fs/promises';
+import { request as httpsRequest } from 'node:https';
 import { isIP } from 'node:net';
 import { dirname, resolve } from 'node:path';
 import { checkServerIdentity, connect as connectTls } from 'node:tls';
@@ -7,7 +8,7 @@ import { pathToFileURL } from 'node:url';
 
 import {
   isValidIsoTimestamp,
-  readRegularJsonFile,
+  MAX_SNAPSHOT_JSON_BYTES,
   validateApprovedSnapshot,
 } from '../src/lib/snapshot-integrity.js';
 import { checkSnapshotFreshness } from './snapshot/check-freshness.js';
@@ -18,6 +19,7 @@ const homepageByteLimit = 1024 * 1024;
 const releaseByteLimit = 16 * 1024;
 const requestTimeoutMs = 15_000;
 const releaseKeys = ['dataHash', 'releaseSha', 'snapshotId'];
+const maxJsonDepth = 512;
 
 class MonitorError extends Error {
   constructor(stage, message) {
@@ -29,6 +31,120 @@ class MonitorError extends Error {
 
 function isObject(value) {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+export function parseStrictJson(text, label = 'JSON response') {
+  if (typeof text !== 'string') throw new Error(`${label} must be text`);
+  let index = 0;
+
+  const invalid = () => {
+    throw new Error(`${label} is not valid JSON`);
+  };
+  const skipWhitespace = () => {
+    while (/\s/.test(text[index] ?? '') && text.charCodeAt(index) <= 0x20) index += 1;
+  };
+  const readString = () => {
+    if (text[index] !== '"') invalid();
+    const start = index;
+    index += 1;
+    while (index < text.length) {
+      const character = text[index];
+      if (character === '"') {
+        index += 1;
+        try {
+          return JSON.parse(text.slice(start, index));
+        } catch {
+          invalid();
+        }
+      }
+      if (text.charCodeAt(index) <= 0x1f) invalid();
+      if (character === '\\') {
+        index += 1;
+        const escape = text[index];
+        if ('"\\/bfnrt'.includes(escape ?? '')) {
+          index += 1;
+          continue;
+        }
+        if (escape === 'u' && /^[0-9a-fA-F]{4}$/.test(text.slice(index + 1, index + 5))) {
+          index += 5;
+          continue;
+        }
+        invalid();
+      }
+      index += 1;
+    }
+    invalid();
+  };
+  const readPrimitive = () => {
+    const start = index;
+    while (index < text.length && !/[\s,\]}]/.test(text[index])) index += 1;
+    if (start === index) invalid();
+    try {
+      JSON.parse(text.slice(start, index));
+    } catch {
+      invalid();
+    }
+  };
+  const readValue = (depth) => {
+    if (depth > maxJsonDepth) throw new Error(`${label} exceeds the nesting limit`);
+    skipWhitespace();
+    if (text[index] === '"') {
+      readString();
+      return;
+    }
+    if (text[index] === '[') {
+      index += 1;
+      skipWhitespace();
+      if (text[index] === ']') {
+        index += 1;
+        return;
+      }
+      while (index < text.length) {
+        readValue(depth + 1);
+        skipWhitespace();
+        if (text[index] === ']') {
+          index += 1;
+          return;
+        }
+        if (text[index] !== ',') invalid();
+        index += 1;
+      }
+      invalid();
+    }
+    if (text[index] === '{') {
+      index += 1;
+      const keys = new Set();
+      skipWhitespace();
+      if (text[index] === '}') {
+        index += 1;
+        return;
+      }
+      while (index < text.length) {
+        skipWhitespace();
+        const key = readString();
+        if (keys.has(key)) throw new Error(`${label} contains a duplicate JSON object key`);
+        keys.add(key);
+        skipWhitespace();
+        if (text[index] !== ':') invalid();
+        index += 1;
+        readValue(depth + 1);
+        skipWhitespace();
+        if (text[index] === '}') {
+          index += 1;
+          return;
+        }
+        if (text[index] !== ',') invalid();
+        index += 1;
+      }
+      invalid();
+    }
+    readPrimitive();
+  };
+
+  readValue(0);
+  skipWhitespace();
+  if (index !== text.length) invalid();
+  return JSON.parse(text);
 }
 
 function messageOf(error) {
@@ -178,33 +294,24 @@ function assertReleaseSchema(value) {
 
 export function parseRelease(text) {
   if (typeof text !== 'string') throw new Error('release response must be text');
-  for (const key of releaseKeys) {
-    const occurrences = text.match(new RegExp(`"${key}"\\s*:`, 'g'))?.length ?? 0;
-    if (occurrences > 1) throw new Error(`release response contains duplicate ${key}`);
-  }
-  let value;
-  try {
-    value = JSON.parse(text);
-  } catch {
-    throw new Error('release response is not valid JSON');
-  }
+  const value = parseStrictJson(text, 'release response');
   return assertReleaseSchema(value);
 }
 
-export function assertReleaseIdentity(release, approvedSnapshot, expectedSha) {
+export function assertReleaseIdentity(release, currentSnapshot, expectedSha) {
   assertReleaseSchema(release);
   if (!/^[0-9a-f]{40}$/.test(expectedSha)) {
     throw new Error('expected GITHUB_SHA must be exactly 40 lowercase hexadecimal characters');
   }
-  if (!isObject(approvedSnapshot)) throw new Error('approved snapshot must be an object');
+  if (!isObject(currentSnapshot)) throw new Error('current snapshot must be an object');
   if (release.releaseSha !== expectedSha) {
     throw new Error('releaseSha does not match the expected GITHUB_SHA');
   }
-  if (release.snapshotId !== approvedSnapshot.snapshotId) {
-    throw new Error('snapshotId does not match the approved snapshot');
+  if (release.snapshotId !== currentSnapshot.snapshotId) {
+    throw new Error('snapshotId does not match the current snapshot');
   }
-  if (release.dataHash !== approvedSnapshot.dataHash) {
-    throw new Error('dataHash does not match the approved snapshot');
+  if (release.dataHash !== currentSnapshot.dataHash) {
+    throw new Error('dataHash does not match the current snapshot');
   }
 }
 
@@ -237,16 +344,18 @@ async function resolveHost(hostname) {
   return lookup(hostname, { all: true, verbatim: true });
 }
 
-function readCertificate(hostname, port) {
+export function readBoundCertificate(hostname, port, address, connectImpl = connectTls) {
   return new Promise((resolveCertificate, rejectCertificate) => {
     let settled = false;
     const options = {
-      host: hostname,
+      host: address.address,
+      family: address.family,
       port,
       rejectUnauthorized: true,
       ...(isIP(hostname) === 0 ? { servername: hostname } : {}),
+      checkServerIdentity: (_servername, certificate) => checkServerIdentity(hostname, certificate),
     };
-    const socket = connectTls(options, () => {
+    const socket = connectImpl(options, () => {
       const certificate = socket.getPeerCertificate(false);
       settled = true;
       socket.end();
@@ -258,6 +367,55 @@ function readCertificate(hostname, port) {
     socket.on('error', (error) => {
       if (!settled) rejectCertificate(error);
     });
+  });
+}
+
+export function requestBoundHttps(urlValue, options, requestImpl = httpsRequest) {
+  const url = new URL(urlValue);
+  const { address, headers, hostname } = options;
+  return new Promise((resolveResponse, rejectResponse) => {
+    let settled = false;
+    const request = requestImpl({
+      protocol: 'https:',
+      hostname: address.address,
+      family: address.family,
+      port: url.port || 443,
+      path: `${url.pathname}${url.search}`,
+      method: 'GET',
+      agent: false,
+      rejectUnauthorized: true,
+      ...(isIP(hostname) === 0 ? { servername: hostname } : {}),
+      checkServerIdentity: (_servername, certificate) => checkServerIdentity(hostname, certificate),
+      headers: {
+        ...headers,
+        host: url.host,
+      },
+    }, (response) => {
+      settled = true;
+      resolveResponse({
+        ok: response.statusCode !== undefined
+          && response.statusCode >= 200
+          && response.statusCode < 300,
+        status: response.statusCode,
+        headers: {
+          get(name) {
+            const value = response.headers[name.toLowerCase()];
+            return Array.isArray(value) ? value.join(', ') : value ?? null;
+          },
+        },
+        body: response,
+        destroy() {
+          response.destroy();
+        },
+      });
+    });
+    request.setTimeout(requestTimeoutMs, () => {
+      request.destroy(new Error('HTTPS request timed out'));
+    });
+    request.on('error', (error) => {
+      if (!settled) rejectResponse(error);
+    });
+    request.end();
   });
 }
 
@@ -275,14 +433,26 @@ async function readBoundedText(response, label, expectedContentType, byteLimit) 
   const contentLength = response.headers?.get?.('content-length');
   if (contentLength !== null && contentLength !== undefined) {
     if (!/^\d+$/.test(contentLength) || Number(contentLength) > byteLimit) {
+      response.destroy?.();
       throw new Error(`${label} response is too large`);
     }
   }
-  const text = await response.text();
-  if (Buffer.byteLength(text, 'utf8') > byteLimit) {
-    throw new Error(`${label} response is too large`);
+  const body = response.body;
+  if (body === null || body === undefined || typeof body[Symbol.asyncIterator] !== 'function') {
+    throw new Error(`${label} response body is not a readable stream`);
   }
-  return text;
+  const chunks = [];
+  let bytesRead = 0;
+  for await (const chunk of body) {
+    const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    bytesRead += buffer.byteLength;
+    if (bytesRead > byteLimit) {
+      response.destroy?.();
+      throw new Error(`${label} response is too large`);
+    }
+    chunks.push(buffer);
+  }
+  return Buffer.concat(chunks, bytesRead).toString('utf8');
 }
 
 async function atStage(stage, operation) {
@@ -302,21 +472,6 @@ export async function monitorPublicRelease(config, dependencies = {}) {
     async () => parseMaxSnapshotAgeHours(config.maxSnapshotAgeHours),
   );
   const minimumCertificateDays = config.minimumCertificateDays ?? 21;
-  const approvedSnapshot = config.approvedSnapshot ?? await atStage(
-    'snapshot-read',
-    async () => (
-      await readRegularJsonFile(
-        config.approvedPath ?? 'data/approved/current.json',
-        'approved snapshot',
-      )
-    ).value,
-  );
-
-  await atStage('snapshot-integrity', async () => {
-    const errors = validateApprovedSnapshot(approvedSnapshot, nowMs);
-    if (errors.length > 0) throw new Error(errors.join('; '));
-    assertSnapshotFreshness(approvedSnapshot, nowMs, maxAgeMs);
-  });
 
   const hostname = unbracket(originUrl.hostname);
   const addresses = await atStage(
@@ -324,12 +479,15 @@ export async function monitorPublicRelease(config, dependencies = {}) {
     async () => (dependencies.resolveHost ?? resolveHost)(hostname),
   );
   await atStage('dns', async () => assertPublicAddresses(addresses));
+  const firstAddress = typeof addresses[0] === 'string' ? addresses[0] : addresses[0].address;
+  const selectedAddress = { address: firstAddress, family: isIP(firstAddress) };
 
   const certificate = await atStage(
     'tls',
-    async () => (dependencies.readCertificate ?? readCertificate)(
+    async () => (dependencies.readCertificate ?? readBoundCertificate)(
       hostname,
       Number(originUrl.port || '443'),
+      selectedAddress,
     ),
   );
   const certificateDaysRemaining = await atStage(
@@ -337,12 +495,11 @@ export async function monitorPublicRelease(config, dependencies = {}) {
     async () => assertCertificate(certificate, hostname, nowMs, minimumCertificateDays),
   );
 
-  const fetchImpl = dependencies.fetch ?? globalThis.fetch;
-  if (typeof fetchImpl !== 'function') throw new MonitorError('http', 'fetch is unavailable');
+  const requestHttps = dependencies.requestHttps ?? requestBoundHttps;
+  if (typeof requestHttps !== 'function') throw new MonitorError('http', 'HTTPS request is unavailable');
   const requestOptions = {
-    method: 'GET',
-    redirect: 'error',
-    signal: AbortSignal.timeout(requestTimeoutMs),
+    address: selectedAddress,
+    hostname,
     headers: {
       accept: 'text/html,application/json;q=0.9',
       'user-agent': 'CS-BAOYAN-DDL-public-monitor/1',
@@ -350,7 +507,7 @@ export async function monitorPublicRelease(config, dependencies = {}) {
   };
   const homepageResponse = await atStage(
     'homepage',
-    async () => fetchImpl(`${originUrl.origin}/`, requestOptions),
+    async () => requestHttps(`${originUrl.origin}/`, requestOptions),
   );
   const homepage = await atStage(
     'homepage',
@@ -360,9 +517,38 @@ export async function monitorPublicRelease(config, dependencies = {}) {
     throw new MonitorError('homepage', 'homepage is not recognizable HTML');
   }
 
+  const currentResponse = await atStage(
+    'snapshot-read',
+    async () => requestHttps(`${originUrl.origin}/data/current.json`, {
+      ...requestOptions,
+      headers: {
+        ...requestOptions.headers,
+        accept: 'application/json',
+      },
+    }),
+  );
+  const currentText = await atStage(
+    'snapshot-read',
+    async () => readBoundedText(
+      currentResponse,
+      'current snapshot response',
+      /^application\/json(?:\s*;|$)/i,
+      MAX_SNAPSHOT_JSON_BYTES,
+    ),
+  );
+  const approvedSnapshot = await atStage(
+    'snapshot-integrity',
+    async () => parseStrictJson(currentText, 'current snapshot response'),
+  );
+  await atStage('snapshot-integrity', async () => {
+    const errors = validateApprovedSnapshot(approvedSnapshot, nowMs);
+    if (errors.length > 0) throw new Error(errors.join('; '));
+    assertSnapshotFreshness(approvedSnapshot, nowMs, maxAgeMs);
+  });
+
   const releaseResponse = await atStage(
     'release',
-    async () => fetchImpl(`${originUrl.origin}/release.json`, {
+    async () => requestHttps(`${originUrl.origin}/data/release.json`, {
       ...requestOptions,
       headers: {
         ...requestOptions.headers,
@@ -408,7 +594,6 @@ async function runCli() {
       expectedSha: process.env.GITHUB_SHA,
       maxSnapshotAgeHours: process.env.MAX_SNAPSHOT_AGE_HOURS,
       minimumCertificateDays: Number(process.env.CERT_MIN_VALID_DAYS ?? '21'),
-      approvedPath: 'data/approved/current.json',
     });
     console.log(
       `Public monitor passed: releaseSha=${result.release.releaseSha} `
