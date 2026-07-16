@@ -4,9 +4,10 @@ import { basename, dirname, isAbsolute, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import type {
+  EventMode,
   FieldFactGroup,
   PublicOpportunity,
-  PublicSnapshot,
+  ReadablePublicSnapshot,
   SnapshotCandidate,
   VerificationStatus,
 } from '../../src/lib/snapshot-types.js';
@@ -15,7 +16,7 @@ import { validateCandidate, validateSnapshot } from '../../src/lib/snapshot-vali
 type JsonObject = Record<string, unknown>;
 
 export interface IdentityContext {
-  previous: PublicSnapshot | null;
+  previous: ReadablePublicSnapshot | null;
   aliases: Record<string, string>;
 }
 
@@ -58,6 +59,7 @@ const unverifiedPattern =
   /未核实|待核实|待系统核实|未确认|未明确|无法核实|不确定|疑似|传闻|可能|交流群|群聊|截图|(?:请)?以[^，。；\n]*系统[^，。；\n]*为准/;
 const notPublishedPattern =
   /未公布|待公布|暂未公布|未提及|未在[^，。；\n]*(?:列出|提及|说明|要求)|暂无|待定|后续通知/;
+const eventModes: readonly EventMode[] = ['online', 'offline', 'hybrid', 'unknown'];
 const httpUrlTokenPattern = /https?:\/\/[^\s<>"'`，。；！？、（）()【】{}]+/giu;
 const unixSlashTokenPattern = /(?<!\/)\/(?!\/)[^\s\\<>"'`，。；！？、（）()\[\]【】{}]+/gu;
 const unixSystemRoots = new Set([
@@ -568,8 +570,19 @@ function factGroup(
   }
   return {
     status: 'confirmed',
-    summary: confirmed.map(({ label, value }) => `${label}：${value}`).join('；'),
+    summary: confirmed
+      .map(({ label, value }) => fields.length === 1 ? value : `${label}：${value}`)
+      .join('；'),
   };
+}
+
+function eventMode(row: JsonObject, path: string, expired: boolean): EventMode {
+  if (expired) return 'unknown';
+  const value = row.eventMode;
+  if (typeof value !== 'string' || !eventModes.includes(value as EventMode)) {
+    throw new Error(`${path}.eventMode must be an allowed event mode`);
+  }
+  return value as EventMode;
 }
 
 function mapRow(
@@ -650,6 +663,11 @@ function mapRow(
         ? optionalString(row, 'verifiedAt') ?? scanAt
         : requiredString(row, 'verifiedAt', path),
       discoverySources,
+      eventArrangement: {
+        mode: eventMode(row, path, expired),
+        time: factGroup(row, [{ key: 'eventTime', label: '活动时间' }]),
+        formatLocation: factGroup(row, [{ key: 'formatLocation', label: '形式地点' }]),
+      },
       logistics: factGroup(row, [
         { key: 'accommodation', label: '住宿' },
         { key: 'meals', label: '餐食' },
@@ -731,7 +749,7 @@ export function importScoutingData(
     .map(({ opportunity }) => opportunity)
     .sort(opportunityOrder);
   const candidate: SnapshotCandidate = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     scanAt,
     defaultFeedId: `camp${newestActiveCycle}`,
     feeds: cycles.map((cycle) => ({
@@ -806,9 +824,11 @@ async function readJson(path: string, label: string): Promise<unknown> {
   }
 }
 
-async function readOptionalApproved(path: string | undefined): Promise<PublicSnapshot | null> {
+async function readOptionalApproved(
+  path: string | undefined,
+): Promise<ReadablePublicSnapshot | null> {
   if (path === undefined) return null;
-  return await readJson(path, 'approved snapshot') as PublicSnapshot;
+  return await readJson(path, 'approved snapshot') as ReadablePublicSnapshot;
 }
 
 function aliasesFrom(input: unknown): Record<string, string> {

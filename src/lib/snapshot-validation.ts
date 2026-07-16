@@ -1,5 +1,6 @@
 import type {
   DiscoveryKind,
+  EventMode,
   FactStatus,
   VerificationStatus,
 } from './snapshot-types.js';
@@ -17,6 +18,7 @@ const factStatuses: readonly FactStatus[] = [
   'unverified',
   'not-applicable',
 ];
+const eventModes: readonly EventMode[] = ['online', 'offline', 'hybrid', 'unknown'];
 const discoveryKinds: readonly DiscoveryKind[] = [
   'official',
   'baoyan-notice',
@@ -85,7 +87,7 @@ const countKeys = [
   'pendingExcluded',
   'expired',
 ] as const;
-const opportunityKeys = [
+const opportunityKeysV1 = [
   'projectId',
   'feedId',
   'name',
@@ -105,8 +107,10 @@ const opportunityKeys = [
   'recommendation',
   'materials',
 ] as const;
+const opportunityKeysV2 = [...opportunityKeysV1, 'eventArrangement'] as const;
 const sourceKeys = ['kind', 'label', 'url'] as const;
 const factKeys = ['status', 'summary'] as const;
+const eventArrangementKeys = ['mode', 'time', 'formatLocation'] as const;
 const maxPrivacyScanNodes = 50_000;
 const maxPrivacyScanDepth = 256;
 
@@ -418,6 +422,14 @@ function validateFact(value: unknown, path: string, errors: string[]): void {
   stringValue(fact, 'summary', path, errors);
 }
 
+function validateEventArrangement(value: unknown, path: string, errors: string[]): void {
+  const arrangement = validateShape(value, path, eventArrangementKeys, [], errors);
+  if (arrangement === undefined) return;
+  enumValue(arrangement, 'mode', path, eventModes, errors);
+  validateFact(arrangement.time, `${path}.time`, errors);
+  validateFact(arrangement.formatLocation, `${path}.formatLocation`, errors);
+}
+
 function validateSource(value: unknown, path: string, errors: string[]): DiscoveryKind | undefined {
   const source = validateShape(value, path, sourceKeys, [], errors);
   if (source === undefined) return undefined;
@@ -437,12 +449,19 @@ function validateSource(value: unknown, path: string, errors: string[]): Discove
 function validateOpportunity(
   value: unknown,
   index: number,
+  schemaVersion: 1 | 2,
   knownFeedIds: Set<string>,
   nowMs: number,
   errors: string[],
 ): OpportunityOrderValue {
   const path = `snapshot.opportunities[${index}]`;
-  const opportunity = validateShape(value, path, opportunityKeys, ['province'], errors);
+  const opportunity = validateShape(
+    value,
+    path,
+    schemaVersion === 1 ? opportunityKeysV1 : opportunityKeysV2,
+    ['province'],
+    errors,
+  );
   if (opportunity === undefined) return { path };
 
   const projectId = stringValue(opportunity, 'projectId', path, errors, true);
@@ -513,6 +532,9 @@ function validateOpportunity(
     errors.push(`${path}.discoverySources: expected an explicit official discovery source`);
   }
 
+  if (schemaVersion === 2) {
+    validateEventArrangement(opportunity.eventArrangement, `${path}.eventArrangement`, errors);
+  }
   validateFact(opportunity.logistics, `${path}.logistics`, errors);
   validateFact(opportunity.recommendation, `${path}.recommendation`, errors);
   validateFact(opportunity.materials, `${path}.materials`, errors);
@@ -631,8 +653,17 @@ function validateInput(input: unknown, approved: boolean, nowMs: number): string
   const snapshot = validateShape(input, 'snapshot', requiredKeys, [], errors);
   if (snapshot === undefined) return errors;
 
-  if (snapshot.schemaVersion !== 1) {
-    errors.push('snapshot.schemaVersion: expected exactly 1');
+  let schemaVersion: 1 | 2;
+  if (approved) {
+    if (snapshot.schemaVersion !== 1 && snapshot.schemaVersion !== 2) {
+      errors.push('snapshot.schemaVersion: expected exactly 1 or 2');
+    }
+    schemaVersion = snapshot.schemaVersion === 1 ? 1 : 2;
+  } else {
+    if (snapshot.schemaVersion !== 2) {
+      errors.push('snapshot.schemaVersion: expected exactly 2');
+    }
+    schemaVersion = snapshot.schemaVersion === 1 ? 1 : 2;
   }
   const scanAt = timestampValue(snapshot, 'scanAt', 'snapshot', errors);
   const scanAtMs = scanAt !== undefined && isValidIsoTimestamp(scanAt) ? Date.parse(scanAt) : undefined;
@@ -674,7 +705,14 @@ function validateInput(input: unknown, approved: boolean, nowMs: number): string
           continue;
         }
         opportunities.push(
-          validateOpportunity(snapshot.opportunities[index], index, knownFeedIds, nowMs, errors),
+          validateOpportunity(
+            snapshot.opportunities[index],
+            index,
+            schemaVersion,
+            knownFeedIds,
+            nowMs,
+            errors,
+          ),
         );
       }
     }

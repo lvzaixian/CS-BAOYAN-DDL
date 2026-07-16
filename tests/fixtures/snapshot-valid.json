@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "snapshotId": "2026-07-15T15:00:00.000Z-fixture",
   "scanAt": "2026-07-15T23:00:00+08:00",
   "approvedAt": "2026-07-15T23:05:00+08:00",
@@ -44,6 +44,11 @@
           "url": "https://cs.example.edu.cn/notice/1"
         }
       ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": { "status": "confirmed", "summary": "2026年8月" },
+        "formatLocation": { "status": "confirmed", "summary": "线下，北京" }
+      },
       "logistics": { "status": "not-published", "summary": "未公布" },
       "recommendation": { "status": "confirmed", "summary": "未要求推荐信" },
       "materials": { "status": "confirmed", "summary": "成绩单与科研证明" }

@@ -162,6 +162,7 @@ function collectKeys(value: unknown, keys = new Set<string>()): Set<string> {
 test('maps confirmed and sparse expired rows while excluding pending and private fields', () => {
   const candidate = importScoutingData(validInput(), identities());
 
+  assert.equal(candidate.schemaVersion, 2);
   assert.deepEqual(candidate.counts, {
     confirmedOpen: 1,
     confirmedUnknownDeadline: 1,
@@ -178,6 +179,11 @@ test('maps confirmed and sparse expired rows while excluding pending and private
   assert.equal(active.description, '2026年优秀大学生夏令营');
   assert.equal(active.website, 'https://cs.example.edu.cn/admissions/summer-camp/');
   assert.deepEqual(active.tags, []);
+  assert.deepEqual(active.eventArrangement, {
+    mode: 'unknown',
+    time: { status: 'confirmed', summary: '2026年8月' },
+    formatLocation: { status: 'confirmed', summary: '线下，北京' },
+  });
   assert.deepEqual(active.discoverySources, [
     {
       kind: 'official',
@@ -200,6 +206,11 @@ test('maps confirmed and sparse expired rows while excluding pending and private
   assert.equal(expired.deadlineEpochMs, null);
   assert.equal(expired.deadlineOriginal, '未公布');
   assert.equal(expired.verifiedAt, candidate.scanAt);
+  assert.deepEqual(expired.eventArrangement, {
+    mode: 'unknown',
+    time: { status: 'not-published', summary: '未公布' },
+    formatLocation: { status: 'not-published', summary: '未公布' },
+  });
 
   const serialized = JSON.stringify(candidate);
   for (const privateValue of [
@@ -213,6 +224,50 @@ test('maps confirmed and sparse expired rows while excluding pending and private
   ]) {
     assert.ok(!serialized.includes(privateValue), `leaked private value: ${privateValue}`);
   }
+});
+
+test('copies only the validated input eventMode without inferring from public text', async (t) => {
+  for (const mode of ['online', 'offline', 'hybrid', 'unknown'] as const) {
+    await t.test(mode, () => {
+      const input = validInput();
+      input.mainRows[0].eventMode = mode;
+      input.mainRows[0].formatLocation = '线下，到校现场举办';
+      input.mainRows[0].accommodation = '提供校内住宿';
+
+      const active = opportunity(
+        importScoutingData(input, identities()),
+        '2026年优秀大学生夏令营',
+      );
+
+      assert.equal(active.eventArrangement.mode, mode);
+      assert.equal(active.eventArrangement.formatLocation.summary, '线下，到校现场举办');
+      assert.match(active.logistics.summary, /住宿/);
+    });
+  }
+});
+
+test('rejects active rows with a missing or invalid eventMode', async (t) => {
+  await t.test('missing', () => {
+    const input = validInput();
+    delete input.mainRows[0].eventMode;
+
+    assert.throws(
+      () => importScoutingData(input, identities()),
+      /mainRows\[0\]\.eventMode.*(?:required|non-empty|allowed)/i,
+    );
+  });
+
+  await t.test('invalid', () => {
+    for (const eventMode of ['onsite', ' online ']) {
+      const input = validInput();
+      input.mainRows[0].eventMode = eventMode;
+
+      assert.throws(
+        () => importScoutingData(input, identities()),
+        /mainRows\[0\]\.eventMode.*allowed/i,
+      );
+    }
+  });
 });
 
 test('always uses the public project title instead of an input description', () => {
@@ -769,6 +824,7 @@ test('emits the exact public shape and recursively omits private input fields', 
     'deadlineOriginal',
     'description',
     'discoverySources',
+    'eventArrangement',
     'eventType',
     'feedId',
     'institute',
@@ -787,6 +843,7 @@ test('emits the exact public shape and recursively omits private input fields', 
   const outputKeys = collectKeys(candidate);
   for (const forbidden of [
     'fit',
+    'eventMode',
     'welfareScore',
     'recommendationTier',
     'cityPlatformValue',
@@ -826,6 +883,11 @@ test('imports a minimal current-style sparse expired row safely', () => {
   assert.equal(expired.description, expired.project);
   assert.equal(expired.deadline, null);
   assert.equal(expired.verifiedAt, candidate.scanAt);
+  assert.deepEqual(expired.eventArrangement, {
+    mode: 'unknown',
+    time: { status: 'not-published', summary: '未公布' },
+    formatLocation: { status: 'not-published', summary: '未公布' },
+  });
   assert.deepEqual(expired.logistics, { status: 'not-published', summary: '未公布' });
 });
 
@@ -1230,7 +1292,10 @@ test('rejects a non-null previous identity unless it is a valid approved snapsho
 });
 
 test('rejects aggregator detail URLs used as the official website', () => {
-  const input = JSON.parse(readFileSync(invalidOfficialFixturePath, 'utf8')) as unknown;
+  const input = JSON.parse(
+    readFileSync(invalidOfficialFixturePath, 'utf8'),
+  ) as Record<string, any>;
+  for (const row of input.mainRows) row.eventMode = 'unknown';
 
   assert.throws(
     () => importScoutingData(input, identities()),

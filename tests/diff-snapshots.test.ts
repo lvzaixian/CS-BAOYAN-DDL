@@ -42,7 +42,7 @@ function opportunity(projectId: string): PublicOpportunity {
 
 function candidate(opportunities: PublicOpportunity[]): SnapshotCandidate {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     scanAt: fixture.scanAt,
     defaultFeedId: fixture.defaultFeedId,
     feeds: structuredClone(fixture.feeds),
@@ -155,6 +155,12 @@ test('treats every public publication field except verifiedAt as meaningful', as
     ['tags', (row) => row.tags.push('双一流')],
     ['province', (row) => (row.province = '上海')],
     ['discoverySources', (row) => (row.discoverySources[0].label = '研究生院官网')],
+    ['eventArrangement mode', (row) => (row.eventArrangement.mode = 'hybrid')],
+    ['eventArrangement time', (row) => (row.eventArrangement.time.summary = '2026年9月')],
+    [
+      'eventArrangement formatLocation',
+      (row) => (row.eventArrangement.formatLocation.summary = '线上举行'),
+    ],
     ['logistics', (row) => (row.logistics.summary = '提供住宿')],
     ['recommendation', (row) => (row.recommendation.summary = '需要两封推荐信')],
     ['materials', (row) => (row.materials.summary = '成绩单')],

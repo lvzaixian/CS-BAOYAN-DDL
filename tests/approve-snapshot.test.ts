@@ -25,8 +25,10 @@ import {
 } from '../scripts/snapshot/approve-snapshot.js';
 import { validateSnapshot } from '../src/lib/snapshot-validation.js';
 import type {
+  LegacyPublicSnapshotV1,
   PublicOpportunity,
   PublicSnapshot,
+  ReadablePublicSnapshot,
   SnapshotCandidate,
 } from '../src/lib/snapshot-types.js';
 
@@ -56,6 +58,23 @@ function longLivedCandidate(): SnapshotCandidate {
   return value;
 }
 
+function legacySnapshotV1(): LegacyPublicSnapshotV1 {
+  const next = candidate();
+  const legacyCandidate = {
+    ...structuredClone(next),
+    schemaVersion: 1 as const,
+    opportunities: next.opportunities.map(({ eventArrangement: _eventArrangement, ...row }) => row),
+  };
+  const dataHash = canonicalDataHash(legacyCandidate);
+  return {
+    ...legacyCandidate,
+    snapshotId: `${new Date(approvedAt).toISOString()}-${dataHash.slice(0, 12)}`,
+    approvedAt,
+    previousSnapshotId: null,
+    dataHash,
+  };
+}
+
 function writeJson(path: string, value: unknown): void {
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
@@ -81,7 +100,7 @@ function reverseObjectKeys(value: unknown): unknown {
 
 test('canonical SHA-256 matches a hard-coded known answer', () => {
   const input: SnapshotCandidate = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     scanAt: '2026-01-02T03:04:05Z',
     defaultFeedId: 'feed',
     feeds: [{ id: 'feed', label: 'Feed', admissionCycle: '2027', eventYear: 2026 }],
@@ -96,7 +115,7 @@ test('canonical SHA-256 matches a hard-coded known answer', () => {
 
   assert.equal(
     canonicalDataHash(input),
-    'f02259b9468f6d88e8840246da30c92c335a56368b779eb0ec3efc022a197899',
+    '2d1ac6c1deeea7e7fb4a5864af63dbeda7b876780a03872ea75c1a51fdbc36d0',
   );
 });
 
@@ -141,6 +160,12 @@ test('canonical hash covers only candidate fields and every publication field', 
     ['province', (row) => (row.province = '上海')],
     ['verifiedAt', (row) => (row.verifiedAt = '2026-07-15T22:45:00+08:00')],
     ['discoverySources', (row) => (row.discoverySources[0].label = '研究生院官网')],
+    ['eventArrangement mode', (row) => (row.eventArrangement.mode = 'hybrid')],
+    ['eventArrangement time', (row) => (row.eventArrangement.time.summary = '2026年9月')],
+    [
+      'eventArrangement formatLocation',
+      (row) => (row.eventArrangement.formatLocation.summary = '线上举行'),
+    ],
     ['logistics', (row) => (row.logistics.summary = '提供住宿')],
     ['recommendation', (row) => (row.recommendation.summary = '需要推荐信')],
     ['materials', (row) => (row.materials.summary = '成绩单')],
@@ -153,6 +178,17 @@ test('canonical hash covers only candidate fields and every publication field', 
       assert.notEqual(canonicalDataHash(changed), canonicalDataHash(input));
     });
   }
+});
+
+test('seals v2 candidates against valid v1 current snapshots', () => {
+  const current = legacySnapshotV1();
+  const nextApprovedAt = '2026-07-16T09:40:00+08:00';
+  const approved = approveCandidate(candidate(), current, nextApprovedAt);
+
+  assert.equal(approved.schemaVersion, 2);
+  assert.equal(approved.previousSnapshotId, current.snapshotId);
+  assert.deepEqual(validateApprovedSnapshot(current, Date.parse(current.approvedAt)), []);
+  assert.deepEqual(validateApprovedSnapshot(approved, Date.parse(nextApprovedAt)), []);
 });
 
 test('seals a candidate against the actual current snapshot', () => {
@@ -279,11 +315,11 @@ test('approve CLI creates the first current snapshot and preserves staging files
   }
 });
 
-test('approve CLI derives previousSnapshotId from an existing valid current file', () => {
+test('approve CLI derives previousSnapshotId from an existing valid v1 current file', () => {
   const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-approve-existing-'));
   const candidatePath = join(tempRoot, 'candidate.json');
   const approvedPath = join(tempRoot, 'current.json');
-  const current = approveCandidate(candidate(), null, approvedAt);
+  const current: ReadablePublicSnapshot = legacySnapshotV1();
   writeJson(candidatePath, candidate());
   writeJson(approvedPath, current);
 

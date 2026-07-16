@@ -22,6 +22,15 @@ function validCandidate(): Record<string, any> {
   return candidate;
 }
 
+function validLegacySnapshotV1(): Record<string, any> {
+  const snapshot = validSnapshot();
+  snapshot.schemaVersion = 1;
+  for (const opportunity of snapshot.opportunities) {
+    delete opportunity.eventArrangement;
+  }
+  return snapshot;
+}
+
 function setOnlyOpportunityStatus(
   snapshot: Record<string, any>,
   status: 'confirmed-open' | 'confirmed-unknown-deadline' | 'expired',
@@ -134,8 +143,33 @@ const privateValueCases: Array<{
   },
 ];
 
-test('accepts a valid approved snapshot', () => {
+test('accepts valid v2 approved snapshots and candidates', () => {
   assert.deepEqual(validateSnapshot(validSnapshot(), nowMs), []);
+  assert.deepEqual(validateCandidate(validCandidate(), nowMs), []);
+});
+
+test('strictly reads historical v1 approved snapshots but never v1 candidates', () => {
+  const legacy = validLegacySnapshotV1();
+
+  assert.deepEqual(validateSnapshot(legacy, nowMs), []);
+  const candidate = structuredClone(legacy);
+  delete candidate.snapshotId;
+  delete candidate.approvedAt;
+  delete candidate.previousSnapshotId;
+  delete candidate.dataHash;
+  assert.match(validateCandidate(candidate, nowMs).join('\n'), /schemaVersion.*exactly 2/i);
+});
+
+test('rejects eventArrangement on v1 opportunities', () => {
+  const legacy = validLegacySnapshotV1();
+  legacy.opportunities[0].eventArrangement = structuredClone(
+    validSnapshot().opportunities[0].eventArrangement,
+  );
+
+  assert.match(
+    validateSnapshot(legacy, nowMs).join('\n'),
+    /eventArrangement.*unknown propert/i,
+  );
 });
 
 test('rejects duplicate projectId values', () => {
@@ -159,10 +193,6 @@ test('rejects an expired deadline epoch on a confirmed-open row', () => {
   snapshot.opportunities[0].deadlineEpochMs = Date.parse(snapshot.opportunities[0].deadline);
 
   assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /confirmed-open.*future/i);
-});
-
-test('accepts a valid candidate without approval metadata', () => {
-  assert.deepEqual(validateCandidate(validCandidate(), nowMs), []);
 });
 
 test('candidate rejects private values with their public field paths', async (t) => {
@@ -308,11 +338,53 @@ test('previousSnapshotId must be a string or null', () => {
   assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /previousSnapshotId.*string.*null/i);
 });
 
-test('schemaVersion must be exactly 1', () => {
+test('snapshot schemaVersion must be exactly 1 or 2', () => {
   const snapshot = validSnapshot();
-  snapshot.schemaVersion = 2;
+  snapshot.schemaVersion = 3;
 
-  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /schemaVersion.*exactly 1/i);
+  assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /schemaVersion.*1 or 2/i);
+});
+
+test('requires an exact eventArrangement shape on v2 opportunities', async (t) => {
+  const cases: Array<[string, (arrangement: Record<string, any>) => void, RegExp]> = [
+    ['missing mode', (value) => delete value.mode, /eventArrangement\.mode.*missing propert/i],
+    ['missing time', (value) => delete value.time, /eventArrangement\.time.*missing propert/i],
+    [
+      'missing formatLocation',
+      (value) => delete value.formatLocation,
+      /eventArrangement\.formatLocation.*missing propert/i,
+    ],
+    ['invalid mode', (value) => (value.mode = 'onsite'), /eventArrangement\.mode.*allowed/i],
+    ['extra key', (value) => (value.source = 'private'), /eventArrangement\.source.*unknown propert/i],
+    [
+      'invalid time fact',
+      (value) => (value.time.extra = true),
+      /eventArrangement\.time\.extra.*unknown propert/i,
+    ],
+    [
+      'invalid location fact',
+      (value) => (value.formatLocation.status = 'guessed'),
+      /eventArrangement\.formatLocation\.status.*allowed/i,
+    ],
+  ];
+
+  for (const [name, mutate, pattern] of cases) {
+    await t.test(name, () => {
+      const snapshot = validSnapshot();
+      mutate(snapshot.opportunities[0].eventArrangement);
+      assert.match(validateSnapshot(snapshot, nowMs).join('\n'), pattern);
+    });
+  }
+});
+
+test('requires eventArrangement on v2 opportunities', () => {
+  const snapshot = validSnapshot();
+  delete snapshot.opportunities[0].eventArrangement;
+
+  assert.match(
+    validateSnapshot(snapshot, nowMs).join('\n'),
+    /eventArrangement.*missing propert/i,
+  );
 });
 
 const unknownPropertyCases: Array<{
@@ -337,6 +409,11 @@ const unknownPropertyCases: Array<{
     name: 'fact group',
     path: 'logistics',
     mutate: (value) => (value.opportunities[0].logistics.extra = true),
+  },
+  {
+    name: 'event arrangement',
+    path: 'eventArrangement',
+    mutate: (value) => (value.opportunities[0].eventArrangement.extra = true),
   },
 ];
 

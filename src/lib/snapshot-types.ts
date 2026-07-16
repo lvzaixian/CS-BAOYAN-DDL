@@ -5,11 +5,19 @@ export type VerificationStatus =
 
 export type FactStatus = 'confirmed' | 'not-published' | 'unverified' | 'not-applicable';
 
+export type EventMode = 'online' | 'offline' | 'hybrid' | 'unknown';
+
 export type DiscoveryKind = 'official' | 'baoyan-notice' | 'cs-baoyan' | 'other-discovery';
 
 export interface FieldFactGroup {
   status: FactStatus;
   summary: string;
+}
+
+export interface EventArrangement {
+  mode: EventMode;
+  time: FieldFactGroup;
+  formatLocation: FieldFactGroup;
 }
 
 export interface PublicSourceLink {
@@ -25,7 +33,7 @@ export interface FeedDescriptor {
   eventYear: number;
 }
 
-export interface PublicOpportunity {
+interface PublicOpportunityBase {
   projectId: string;
   feedId: string;
   name: string;
@@ -47,8 +55,14 @@ export interface PublicOpportunity {
   materials: FieldFactGroup;
 }
 
-export interface SnapshotCandidate {
-  schemaVersion: 1;
+export interface LegacyPublicOpportunityV1 extends PublicOpportunityBase {}
+
+export interface PublicOpportunity extends PublicOpportunityBase {
+  eventArrangement: EventArrangement;
+}
+
+interface SnapshotPayload<TSchemaVersion extends 1 | 2, TOpportunity> {
+  schemaVersion: TSchemaVersion;
   scanAt: string;
   defaultFeedId: string;
   feeds: FeedDescriptor[];
@@ -58,12 +72,24 @@ export interface SnapshotCandidate {
     pendingExcluded: number;
     expired: number;
   };
-  opportunities: PublicOpportunity[];
+  opportunities: TOpportunity[];
 }
 
-export interface PublicSnapshot extends SnapshotCandidate {
+interface ApprovalMetadata {
   snapshotId: string;
   approvedAt: string;
   previousSnapshotId: string | null;
   dataHash: string;
 }
+
+export interface LegacySnapshotCandidateV1
+  extends SnapshotPayload<1, LegacyPublicOpportunityV1> {}
+
+export interface SnapshotCandidate extends SnapshotPayload<2, PublicOpportunity> {}
+
+export interface LegacyPublicSnapshotV1
+  extends LegacySnapshotCandidateV1, ApprovalMetadata {}
+
+export interface PublicSnapshot extends SnapshotCandidate, ApprovalMetadata {}
+
+export type ReadablePublicSnapshot = LegacyPublicSnapshotV1 | PublicSnapshot;

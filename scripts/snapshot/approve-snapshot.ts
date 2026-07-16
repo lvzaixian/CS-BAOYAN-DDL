@@ -11,7 +11,12 @@ import type { FileHandle } from 'node:fs/promises';
 import { basename, dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import type { PublicSnapshot, SnapshotCandidate } from '../../src/lib/snapshot-types.js';
+import type {
+  LegacySnapshotCandidateV1,
+  PublicSnapshot,
+  ReadablePublicSnapshot,
+  SnapshotCandidate,
+} from '../../src/lib/snapshot-types.js';
 import { validateCandidate, validateSnapshot } from '../../src/lib/snapshot-validation.js';
 
 type JsonObject = Record<string, unknown>;
@@ -32,7 +37,7 @@ interface FileFingerprint {
 }
 
 interface ApprovedFileState {
-  value: PublicSnapshot | null;
+  value: ReadablePublicSnapshot | null;
   fingerprint: FileFingerprint;
 }
 
@@ -99,7 +104,12 @@ function canonicalize(value: unknown): unknown {
   return sorted;
 }
 
-function canonicalPayload(input: SnapshotCandidate | PublicSnapshot): SnapshotCandidate {
+type CanonicalSnapshotInput =
+  | LegacySnapshotCandidateV1
+  | ReadablePublicSnapshot
+  | SnapshotCandidate;
+
+function canonicalPayload(input: CanonicalSnapshotInput) {
   return {
     schemaVersion: input.schemaVersion,
     scanAt: input.scanAt,
@@ -110,9 +120,24 @@ function canonicalPayload(input: SnapshotCandidate | PublicSnapshot): SnapshotCa
   };
 }
 
-export function canonicalDataHash(input: SnapshotCandidate | PublicSnapshot): string {
-  const canonicalJson = JSON.stringify(canonicalize(canonicalPayload(input)));
+function hashCanonicalPayload(payload: unknown): string {
+  const canonicalJson = JSON.stringify(canonicalize(payload));
   return createHash('sha256').update(canonicalJson).digest('hex');
+}
+
+export function canonicalDataHash(input: CanonicalSnapshotInput): string {
+  return hashCanonicalPayload(canonicalPayload(input));
+}
+
+function canonicalDataHashFromObject(input: JsonObject): string {
+  return hashCanonicalPayload({
+    schemaVersion: input.schemaVersion,
+    scanAt: input.scanAt,
+    defaultFeedId: input.defaultFeedId,
+    feeds: input.feeds,
+    counts: input.counts,
+    opportunities: input.opportunities,
+  });
 }
 
 function isValidIsoTimestamp(value: string): boolean {
@@ -156,7 +181,7 @@ export function validateApprovedSnapshot(input: unknown, nowMs = Date.now()): st
 
   let recomputedHash: string;
   try {
-    recomputedHash = canonicalDataHash(input as unknown as PublicSnapshot);
+    recomputedHash = canonicalDataHashFromObject(input);
   } catch {
     errors.push('snapshot.dataHash: canonical hash could not be recomputed');
     return errors;
@@ -183,7 +208,7 @@ export function validateApprovedSnapshot(input: unknown, nowMs = Date.now()): st
 
 export function approveCandidate(
   candidate: SnapshotCandidate,
-  current: PublicSnapshot | null,
+  current: ReadablePublicSnapshot | null,
   approvedAt: string,
 ): PublicSnapshot {
   if (!isValidIsoTimestamp(approvedAt)) {
@@ -331,7 +356,7 @@ async function readApprovedFileState(path: string): Promise<ApprovedFileState> {
   if (!info.isFile()) throw new Error('--approved must be absent or an existing regular file');
   const file = await readRegularJsonFile(path, 'current snapshot');
   return {
-    value: file.value as PublicSnapshot,
+    value: file.value as ReadablePublicSnapshot,
     fingerprint: {
       exists: true,
       dev: file.dev,
