@@ -77,6 +77,9 @@ pnpm run snapshot:approve -- \
 
 pnpm run test:unit
 pnpm run snapshot:validate
+pnpm run snapshot:check-freshness -- \
+  --snapshot data/approved/current.json \
+  --max-age-hours 6
 pnpm run check:public
 pnpm run check
 pnpm run build
@@ -94,6 +97,20 @@ git commit -m "data: publish first verified snapshot"
 ```
 
 CI 通过后仍需由 reviewer 决定是否合并。合并到 `main` 是发布批准，部署 workflow 的 production approval 是另一个独立信任边界。
+
+## 六小时发布契约
+
+启动发布或批准 production 部署时，批准快照的 `scanAt` 和 `approvedAt` 都必须处于当前 UTC 时间之前且不超过六小时。恰好六小时仍可接受；超过六小时哪怕一毫秒也必须失败关闭。时间字段缺失、格式错误、位于未来，或 `approvedAt` 早于 `scanAt` 时，同样不得发布。
+
+本地合并前和启动发布前都运行：
+
+```bash
+pnpm run snapshot:check-freshness -- \
+  --snapshot data/approved/current.json \
+  --max-age-hours 6
+```
+
+构建阶段只把 `snapshotScanAt` 和 `snapshotApprovedAt` 写入私有的 `release-build/release-metadata.json`；公开的 `dist/release.json` 仍只包含 `releaseSha`、`snapshotId` 和 `dataHash`。production 环境批准后，部署 job 先完成 artifact 文件集、哈希、release SHA 和元数据精确 schema 校验，再按当前 UTC 时间复核两个时间字段；该门禁通过前不得读取部署 secrets、写入 SSH key、配置 host key 或联系生产主机。若六小时窗口已过，重新扫描、审阅差异并批准新快照，不得放宽阈值或复用旧批准时间。
 
 ## 失败处理
 

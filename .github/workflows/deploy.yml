@@ -103,11 +103,18 @@ jobs:
           const snapshot = JSON.parse(fs.readFileSync('data/approved/current.json', 'utf8'));
           const snapshotId = snapshot.snapshotId;
           const dataHash = snapshot.dataHash;
+          const snapshotScanAt = snapshot.scanAt;
+          const snapshotApprovedAt = snapshot.approvedAt;
           if (typeof snapshotId !== 'string' || !snapshotId || /[\t\r\n]/.test(snapshotId)) {
             throw new Error('approved snapshotId is missing or unsafe');
           }
           if (!/^[0-9a-f]{64}$/.test(dataHash ?? '')) {
             throw new Error('approved dataHash must be a lowercase SHA-256 value');
+          }
+          for (const [name, value] of Object.entries({ snapshotScanAt, snapshotApprovedAt })) {
+            if (typeof value !== 'string' || !value || /[\t\r\n]/.test(value)) {
+              throw new Error(`${name} is missing or unsafe`);
+            }
           }
 
           fs.writeFileSync(
@@ -116,7 +123,8 @@ jobs:
           );
           fs.appendFileSync(
             process.env.GITHUB_ENV,
-            `EXPECTED_SNAPSHOT_ID=${snapshotId}\nEXPECTED_DATA_HASH=${dataHash}\n`,
+            `EXPECTED_SNAPSHOT_ID=${snapshotId}\nEXPECTED_DATA_HASH=${dataHash}\n`
+              + `SNAPSHOT_SCAN_AT=${snapshotScanAt}\nSNAPSHOT_APPROVED_AT=${snapshotApprovedAt}\n`,
           );
           NODE
 
@@ -141,6 +149,8 @@ jobs:
             snapshotId: process.env.EXPECTED_SNAPSHOT_ID,
             dataHash: process.env.EXPECTED_DATA_HASH,
             archiveSha: process.env.ARCHIVE_SHA,
+            snapshotScanAt: process.env.SNAPSHOT_SCAN_AT,
+            snapshotApprovedAt: process.env.SNAPSHOT_APPROVED_AT,
           };
           fs.writeFileSync('release-build/release-metadata.json', `${JSON.stringify(metadata)}\n`);
           NODE
@@ -279,8 +289,8 @@ jobs:
           metadata_path, environment_path = sys.argv[1:]
           with open(metadata_path, encoding="utf-8") as handle:
               metadata = json.load(handle)
-          expected_keys = {"releaseSha", "snapshotId", "dataHash", "archiveSha"}
-          if set(metadata) != expected_keys:
+          expected_keys = {"releaseSha", "snapshotId", "dataHash", "archiveSha", "snapshotScanAt", "snapshotApprovedAt"}
+          if not isinstance(metadata, dict) or set(metadata) != expected_keys:
               raise SystemExit("release metadata has an unexpected schema")
           if metadata["releaseSha"] != __import__("os").environ["RELEASE_SHA"]:
               raise SystemExit("release metadata SHA does not match the workflow release")
@@ -335,6 +345,57 @@ jobs:
           with open(environment_path, "a", encoding="utf-8") as handle:
               handle.write(f"PUBLIC_BASE_URL={normalized}\n")
               handle.write(f"SMOKE_HOST_HEADER={parsed.netloc}\n")
+          PY
+
+      - name: Validate snapshot freshness before SSH setup
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - "$BUILD_BUNDLE_DIR/release-metadata.json" <<'PY'
+          import json
+          import re
+          import sys
+          from datetime import datetime, timedelta, timezone
+
+          MAX_AGE_SECONDS = 21600
+          ISO_TIMESTAMP = re.compile(
+              r"\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])"
+              r"T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,3})?"
+              r"(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)"
+          )
+
+          with open(sys.argv[1], encoding="utf-8") as handle:
+              metadata = json.load(handle)
+
+          expected_keys = {"releaseSha", "snapshotId", "dataHash", "archiveSha", "snapshotScanAt", "snapshotApprovedAt"}
+          if not isinstance(metadata, dict) or set(metadata) != expected_keys:
+              raise SystemExit("release metadata has an unexpected schema")
+
+          def parse_timestamp(key):
+              value = metadata[key]
+              if not isinstance(value, str) or ISO_TIMESTAMP.fullmatch(value) is None:
+                  raise SystemExit(f"release metadata {key} is not a valid ISO timestamp")
+              normalized = f"{value[:-1]}+00:00" if value.endswith("Z") else value
+              try:
+                  timestamp = datetime.fromisoformat(normalized)
+              except ValueError:
+                  raise SystemExit(f"release metadata {key} is not a valid ISO timestamp")
+              if timestamp.utcoffset() is None:
+                  raise SystemExit(f"release metadata {key} must include a UTC offset")
+              return timestamp.astimezone(timezone.utc)
+
+          scan_at = parse_timestamp("snapshotScanAt")
+          approved_at = parse_timestamp("snapshotApprovedAt")
+          now = datetime.now(timezone.utc)
+          max_age = timedelta(seconds=MAX_AGE_SECONDS)
+
+          if approved_at < scan_at:
+              raise SystemExit("release metadata snapshotApprovedAt is before snapshotScanAt")
+          for key, timestamp in (("snapshotScanAt", scan_at), ("snapshotApprovedAt", approved_at)):
+              if timestamp > now:
+                  raise SystemExit(f"release metadata {key} is in the future")
+              if now - timestamp > max_age:
+                  raise SystemExit(f"release metadata {key} is older than 21600 seconds")
           PY
 
       - name: Reject a stale release before SSH setup
