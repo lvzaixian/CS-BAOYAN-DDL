@@ -11,7 +11,8 @@ import type {
   SnapshotCandidate,
   VerificationStatus,
 } from '../../src/lib/snapshot-types.js';
-import { validateCandidate, validateSnapshot } from '../../src/lib/snapshot-validation.js';
+import { validateCandidate } from '../../src/lib/snapshot-validation.js';
+import { validateApprovedSnapshot } from './approve-snapshot.js';
 
 type JsonObject = Record<string, unknown>;
 
@@ -241,7 +242,7 @@ function candidateContainsPrivateFreeText(value: unknown): boolean {
 function identityMaps(identities: IdentityContext): IdentityIndex {
   if (identities.previous !== null) {
     const referenceTime = Date.parse(identities.previous.approvedAt);
-    const errors = validateSnapshot(identities.previous, referenceTime);
+    const errors = validateApprovedSnapshot(identities.previous, referenceTime);
     if (errors.length > 0) {
       throw new Error(`Approved snapshot validation failed:\n${errors.join('\n')}`);
     }

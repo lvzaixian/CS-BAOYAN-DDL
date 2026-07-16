@@ -24,8 +24,13 @@ import {
   writeCandidateAtomically,
   type IdentityContext,
 } from '../scripts/snapshot/import-scouting-data.js';
+import { canonicalDataHash } from '../scripts/snapshot/approve-snapshot.js';
 import { validateCandidate } from '../src/lib/snapshot-validation.js';
-import type { PublicSnapshot, SnapshotCandidate } from '../src/lib/snapshot-types.js';
+import type {
+  LegacyPublicSnapshotV1,
+  PublicSnapshot,
+  SnapshotCandidate,
+} from '../src/lib/snapshot-types.js';
 
 const validFixturePath = fileURLToPath(
   new URL('./fixtures/scouting-valid.json', import.meta.url),
@@ -56,16 +61,43 @@ function previousWith(website: string, projectId: string): PublicSnapshot {
   const previous = structuredClone(snapshotFixture);
   previous.opportunities[0].website = website;
   previous.opportunities[0].projectId = projectId;
+  previous.dataHash = canonicalDataHash(previous);
+  previous.snapshotId = snapshotIdFor(previous.approvedAt, previous.dataHash);
   return previous;
 }
 
+function snapshotIdFor(approvedAt: string, dataHash: string): string {
+  return `${new Date(Date.parse(approvedAt)).toISOString()}-${dataHash.slice(0, 12)}`;
+}
+
 function sealCandidate(candidate: SnapshotCandidate): PublicSnapshot {
+  const approvedAt = candidate.scanAt;
+  const dataHash = canonicalDataHash(candidate);
   return {
     ...structuredClone(candidate),
-    snapshotId: 'test-approved-snapshot',
-    approvedAt: candidate.scanAt,
+    snapshotId: snapshotIdFor(approvedAt, dataHash),
+    approvedAt,
     previousSnapshotId: null,
-    dataHash: '0'.repeat(64),
+    dataHash,
+  };
+}
+
+function legacySnapshotV1(candidate: SnapshotCandidate): LegacyPublicSnapshotV1 {
+  const legacyCandidate = {
+    ...structuredClone(candidate),
+    schemaVersion: 1 as const,
+    opportunities: candidate.opportunities.map(
+      ({ eventArrangement: _eventArrangement, ...opportunity }) => opportunity,
+    ),
+  };
+  const approvedAt = candidate.scanAt;
+  const dataHash = canonicalDataHash(legacyCandidate);
+  return {
+    ...legacyCandidate,
+    snapshotId: snapshotIdFor(approvedAt, dataHash),
+    approvedAt,
+    previousSnapshotId: null,
+    dataHash,
   };
 }
 
@@ -1291,6 +1323,16 @@ test('rejects a non-null previous identity unless it is a valid approved snapsho
   );
 });
 
+test('rejects a hash-tampered v1 previous snapshot before candidate generation', () => {
+  const previous = legacySnapshotV1(importScoutingData(validInput(), identities()));
+  previous.opportunities[0].description = 'structurally valid but hash-tampered';
+
+  assert.throws(
+    () => importScoutingData(validInput(), identities({ previous })),
+    /snapshot\.dataHash: must equal the lowercase canonical SHA-256 hash/i,
+  );
+});
+
 test('rejects aggregator detail URLs used as the official website', () => {
   const input = JSON.parse(
     readFileSync(invalidOfficialFixturePath, 'utf8'),
@@ -1401,6 +1443,52 @@ test('CLI rejects an explicitly supplied missing approved snapshot without outpu
     assert.notEqual(result.status, 0);
     assert.match(`${result.stdout}\n${result.stderr}`, /approved snapshot.*could not be read/i);
     assert.equal(existsSync(outputPath), false);
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
+test('CLI rejects a hash-tampered v1 previous snapshot before candidate write', () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'scouting-tampered-approved-'));
+  const input = freshCliInput();
+  const inputPath = join(tempRoot, 'input.json');
+  const aliasesPath = join(tempRoot, 'aliases.json');
+  const approvedPath = join(tempRoot, 'approved.json');
+  const outputPath = join(tempRoot, 'candidate.json');
+  const previous = legacySnapshotV1(importScoutingData(input, identities()));
+  previous.opportunities[0].description = 'structurally valid but hash-tampered';
+  writeJson(inputPath, input);
+  writeJson(aliasesPath, {});
+  writeJson(approvedPath, previous);
+  writeFileSync(outputPath, 'CURRENT_CANDIDATE_MUST_SURVIVE\n', 'utf8');
+  const inputBefore = readFileSync(inputPath);
+  const aliasesBefore = readFileSync(aliasesPath);
+  const approvedBefore = readFileSync(approvedPath);
+  const outputBefore = readFileSync(outputPath);
+
+  try {
+    const result = runImporterCli({
+      input: inputPath,
+      aliases: aliasesPath,
+      output: outputPath,
+      approved: approvedPath,
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.match(
+      `${result.stdout}\n${result.stderr}`,
+      /snapshot\.dataHash: must equal the lowercase canonical SHA-256 hash/i,
+    );
+    assert.deepEqual(readFileSync(inputPath), inputBefore);
+    assert.deepEqual(readFileSync(aliasesPath), aliasesBefore);
+    assert.deepEqual(readFileSync(approvedPath), approvedBefore);
+    assert.deepEqual(readFileSync(outputPath), outputBefore);
+    assert.deepEqual(readdirSync(tempRoot).sort(), [
+      'aliases.json',
+      'approved.json',
+      'candidate.json',
+      'input.json',
+    ]);
   } finally {
     rmSync(tempRoot, { recursive: true, force: true });
   }
