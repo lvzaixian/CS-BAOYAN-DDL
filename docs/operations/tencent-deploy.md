@@ -18,7 +18,7 @@
 
    bootstrap 明确要求部署用户的 primary group 名称与 `DEPLOY_USER` 完全相同；上面的 `--gid cs-baoyan-deploy` 满足该约束。不要复用一个 primary group 名称不同的既有账号。
 
-2. 安装并确认这些命令可用：`python3`、`curl`、`nginx`、`systemctl`、`flock`、`sha256sum`、`tar`。安装系统包属于管理员动作，不要授权部署用户代为执行。
+2. 安装并确认这些命令可用：`python3`、`curl`、`nginx`、`flock`、`sha256sum`、`tar`。安装系统包属于管理员动作，不要授权部署用户代为执行。
 
    执行 bootstrap 前还必须读取真实 Nginx 构建和 include 路径：
 
@@ -29,7 +29,11 @@
 
    默认 `NGINX_CONFIG=/etc/nginx/conf.d/cs-baoyan-ddl.conf` 只适用于该目录真实存在且被主配置 include 的标准安装。宝塔或自定义 `--prefix` 构建常使用另一套 vhost 目录；这种主机必须先停下，评审一个明确的 `NGINX_CONFIG` 路径和回滚方式，不能创建一个 Nginx 根本不会读取的文件。
 
-   标准模板声明了一个 HTTP `default_server` 用于拒绝未知 Host。若真实主机已经有同地址同端口的 `default_server`，直接安装会产生冲突，禁止绕过 `nginx -t` 或删除现有站点。宝塔模板不声明第二个 `default_server`，而是在本站 vhost 内校验精确 Host；只能在确认现有默认路由会接管其他 Host 后使用。
+   标准模板声明了一个 HTTP `default_server` 用于拒绝未知 Host。若真实主机已经有同地址同端口的 `default_server`，直接安装会产生冲突，禁止绕过 `nginx -t` 或删除现有站点。宝塔模板不声明第二个 `default_server`，而是在本站 vhost 内校验精确 Host；最终 TLS 模板同时检查 Host 和 `$ssl_server_name` SNI 域名，缺失或不匹配都返回 444。只能在确认现有默认路由会接管其他 Host 后使用。
+
+   bootstrap 对已有 `NGINX_CONFIG` 使用严格的受支持契约：该路径不能是符号链接，现有对象必须是单链接普通文件、`0644`，所有者 UID 与属组 GID 都必须匹配 bootstrap 的有效进程，并且在平台提供扩展属性查询时不得带任何扩展属性。任一条件不满足都会在备份和发布前停止；脚本不会静默修改权限、所有权、链接或扩展属性。管理员必须先独立审查并显式迁移不受支持的既有配置。
+
+   每次运行都使用持久的 `${NGINX_CONFIG}.lock` 路径；该路径不能是符号链接，脚本以非阻塞方式获取 `flock`，并把锁持有到验证、reload 和任何恢复流程全部结束。锁已被其他进程持有时，本次运行会在备份或修改目标配置前失败。
 
 3. 把部署公钥加入该用户的 `~/.ssh/authorized_keys`，至少禁止转发和 PTY。OpenSSH 支持 `restrict` 时建议使用：
 
@@ -59,9 +63,9 @@
      transactions/
    ```
 
-   `/srv/cs-baoyan-ddl` 由 `root:cs-baoyan-deploy` 以 `0775` 管理，使部署用户通过同名专用组更新 `current`；发布目录由部署用户拥有，Nginx 只需读取和遍历。脚本渲染明确的 `server_name`，通过在目标配置同一目录创建临时文件并原子重命名来发布新配置，然后运行选定的 `NGINX_BIN -t`，成功后才 reload。
+   `/srv/cs-baoyan-ddl` 由 `root:cs-baoyan-deploy` 以 `0775` 管理，使部署用户通过同名专用组更新 `current`；发布目录由部署用户拥有，Nginx 只需读取和遍历。脚本渲染明确的 `server_name`，通过在目标配置同一目录创建临时文件并原子重命名来发布新配置，然后依次运行选定的 `NGINX_BIN -t` 和 `NGINX_BIN -s reload`；不通过服务名切换到另一套 Nginx 实例。
 
-   首次 `nginx -t` 失败或 reload 失败时，如果存在旧配置，脚本会用同样的同目录原子重命名恢复旧配置，并使用同一个 `NGINX_BIN -t` 重新验证；reload 失败分支还会检查恢复后的 reload 是否成功，最终错误信息只陈述实际完成的恢复步骤。原先不存在配置时，脚本会删除本次新配置并重新验证剩余 Nginx 配置，不会把这种情况描述为“恢复了旧配置”。无论选择 HTTP 还是 TLS 模板，脚本只承诺没有修改 firewall、`sshd`、DNS 和 certificate files；安装 TLS 模板本身会改变站点的 TLS 配置，但不会创建、复制或修改证书文件。
+   首次 `nginx -t` 失败或 reload 失败时，如果存在旧配置，脚本会用同样的同目录原子重命名恢复旧配置，并使用同一个选定的 `NGINX_BIN -t` 重新验证；reload 失败分支还会使用该选定二进制的 `NGINX_BIN -s reload` 检查恢复后的 reload 是否成功，最终错误信息只陈述实际完成的恢复步骤。原先不存在配置时，脚本会删除本次新配置并重新验证剩余 Nginx 配置，不会把这种情况描述为“恢复了旧配置”。无论选择 HTTP 还是 TLS 模板，脚本只承诺没有修改 firewall、`sshd`、DNS 和 certificate files；安装 TLS 模板本身会改变站点的 TLS 配置，但不会创建、复制或修改证书文件。
 
 ### 宝塔 HTTP 受控验收
 
@@ -81,7 +85,7 @@ sudo env \
   bash deploy/bootstrap-server.sh
 ```
 
-bootstrap 成功只证明配置已写入、选定的 Nginx 二进制通过 `-t` 且 reload 成功。只有后续获批的发布步骤已经创建 `current/release.json`，才执行内容与 Host 路由检查：
+bootstrap 成功只证明配置已写入、选定的 Nginx 二进制通过 `-t` 且通过同一二进制的 `-s reload` 完成 reload。只有后续获批的发布步骤已经创建 `current/release.json`，才执行内容与 Host 路由检查：
 
 ```bash
 test -f /srv/cs-baoyan-ddl/current/release.json
@@ -120,13 +124,36 @@ sudo env \
   bash deploy/bootstrap-server.sh
 ```
 
-最终发布完成且 `current/release.json` 存在后，再做本机 HTTPS 内容检查：
+最终发布完成且 `current/release.json` 存在后，再做本机 HTTPS 内容、错误 Host、SNI 不匹配和无 SNI 检查。下面三个负向结果必须都是 000；这些是真实 Task 14 门禁，不能由模板结构测试替代：
 
 ```bash
 test -f /srv/cs-baoyan-ddl/current/release.json
 curl --fail --silent --show-error \
   --resolve "$SELECTED_DOMAIN:443:127.0.0.1" \
   "https://$SELECTED_DOMAIN/release.json"
+
+rejected_host_status=$(
+  curl --insecure --silent --output /dev/null --write-out '%{http_code}' \
+    --resolve "$SELECTED_DOMAIN:443:127.0.0.1" \
+    --header 'Host: rejected.invalid' \
+    "https://$SELECTED_DOMAIN/" || true
+)
+test "$rejected_host_status" = 000
+
+mismatched_sni_status=$(
+  curl --insecure --silent --output /dev/null --write-out '%{http_code}' \
+    --resolve "rejected.invalid:443:127.0.0.1" \
+    --header "Host: $SELECTED_DOMAIN" \
+    https://rejected.invalid/ || true
+)
+test "$mismatched_sni_status" = 000
+
+absent_sni_status=$(
+  curl --insecure --silent --output /dev/null --write-out '%{http_code}' \
+    --header "Host: $SELECTED_DOMAIN" \
+    https://127.0.0.1/ || true
+)
+test "$absent_sni_status" = 000
 ```
 
 最终 TLS bootstrap 和本机 HTTPS 验证成功仍不等于 public launch 已获批准。production reviewer 必须继续核对 DNS、证书域名与有效期、公开 smoke 身份三元组和回滚命令，再单独批准公网发布。

@@ -5,6 +5,7 @@ import {
   chmodSync,
   copyFileSync,
   existsSync,
+  lstatSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -302,6 +303,7 @@ function runScript(path: string, env: NodeJS.ProcessEnv): Promise<ScriptResult> 
 interface BootstrapHarness {
   configPath: string;
   customNginx: string;
+  flockLog: string;
   installLog: string;
   mvLog: string;
   nginxLog: string;
@@ -320,6 +322,7 @@ function makeBootstrapHarness(t: TestContext): BootstrapHarness {
   const fakeBin = join(sandbox, 'bin');
   const deployRoot = join(sandbox, 'deploy-root');
   const configPath = join(sandbox, 'nginx', 'site.conf');
+  const flockLog = join(sandbox, 'flock.log');
   const installLog = join(sandbox, 'install.log');
   const mvLog = join(sandbox, 'mv.log');
   const nginxLog = join(sandbox, 'nginx.log');
@@ -338,10 +341,12 @@ function makeBootstrapHarness(t: TestContext): BootstrapHarness {
     join(fakeBin, 'install'),
     '#!/bin/sh\n' +
       'directory=0\n' +
+      'mode=\n' +
       'while [ "$#" -gt 0 ]; do\n' +
       '  case "$1" in\n' +
       '    -d) directory=1; shift ;;\n' +
-      '    -m|-o|-g) shift 2 ;;\n' +
+      '    -m) mode=$2; shift 2 ;;\n' +
+      '    -o|-g) shift 2 ;;\n' +
       '    --) shift; break ;;\n' +
       '    -*) exit 2 ;;\n' +
       '    *) break ;;\n' +
@@ -351,7 +356,8 @@ function makeBootstrapHarness(t: TestContext): BootstrapHarness {
       '[ "$#" -eq 2 ] || exit 2\n' +
       'printf "%s\\n" "$2" >> "$BOOTSTRAP_INSTALL_LOG"\n' +
       'mkdir -p -- "${2%/*}"\n' +
-      'cp -- "$1" "$2"\n',
+      'cp -- "$1" "$2"\n' +
+      'if [ -n "$mode" ]; then chmod "$mode" "$2"; fi\n',
   );
   writeExecutable(
     join(fakeBin, 'mv'),
@@ -371,7 +377,13 @@ function makeBootstrapHarness(t: TestContext): BootstrapHarness {
       'fi\n' +
       'exit 0\n',
   );
-  for (const commandName of ['curl', 'flock', 'sha256sum', 'tar']) {
+  writeExecutable(
+    join(fakeBin, 'flock'),
+    '#!/bin/sh\n' +
+      'printf "%s\\n" "$*" >> "$BOOTSTRAP_FLOCK_LOG"\n' +
+      'exit "${BOOTSTRAP_FLOCK_STATUS:-0}"\n',
+  );
+  for (const commandName of ['curl', 'sha256sum', 'tar']) {
     writeExecutable(join(fakeBin, commandName), '#!/bin/sh\nexit 0\n');
   }
 
@@ -380,6 +392,10 @@ function makeBootstrapHarness(t: TestContext): BootstrapHarness {
       'printf "%s\\n" "$*" >> "$BOOTSTRAP_NGINX_LOG"\n' +
       'if [ -n "${BOOTSTRAP_NGINX_FAIL_ONCE:-}" ] && [ ! -e "$BOOTSTRAP_NGINX_FAIL_ONCE" ]; then\n' +
       '  : > "$BOOTSTRAP_NGINX_FAIL_ONCE"\n' +
+      '  exit 1\n' +
+      'fi\n' +
+      'if [ "$*" = "-s reload" ] && [ -n "${BOOTSTRAP_NGINX_RELOAD_FAIL_ONCE:-}" ] && [ ! -e "$BOOTSTRAP_NGINX_RELOAD_FAIL_ONCE" ]; then\n' +
+      '  : > "$BOOTSTRAP_NGINX_RELOAD_FAIL_ONCE"\n' +
       '  exit 1\n' +
       'fi\n' +
       'exit "${BOOTSTRAP_NGINX_STATUS:-0}"\n';
@@ -400,6 +416,7 @@ function makeBootstrapHarness(t: TestContext): BootstrapHarness {
   return {
     configPath,
     customNginx,
+    flockLog,
     installLog,
     mvLog,
     nginxLog,
@@ -412,6 +429,7 @@ function makeBootstrapHarness(t: TestContext): BootstrapHarness {
         env: {
           ...process.env,
           BOOTSTRAP_DEPLOY_USER: 'deploy-test',
+          BOOTSTRAP_FLOCK_LOG: flockLog,
           BOOTSTRAP_INSTALL_LOG: installLog,
           BOOTSTRAP_MV_LOG: mvLog,
           BOOTSTRAP_NGINX_LOG: nginxLog,
@@ -1439,7 +1457,7 @@ test('bootstrap validates both BaoTa templates with the selected Nginx binary', 
     assert.match(config, /server_name ddl\.example\.com;/);
     assert.match(config, new RegExp(`root ${resolve(harness.sandbox, 'deploy-root')}/current;`));
     assert.doesNotMatch(config, /__[A-Z_]+__/);
-    assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n');
+    assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n-s reload\n');
   });
 
   await t.test('bare binary renders literal TLS paths', () => {
@@ -1459,7 +1477,7 @@ test('bootstrap validates both BaoTa templates with the selected Nginx binary', 
     assert.match(config, new RegExp(`ssl_certificate ${certificate};`));
     assert.match(config, new RegExp(`ssl_certificate_key ${certificateKey};`));
     assert.doesNotMatch(config, /__[A-Z_]+__/);
-    assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n');
+    assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n-s reload\n');
   });
 });
 
@@ -1489,7 +1507,7 @@ test('bootstrap review: standard template succeeds with empty TLS inputs and def
   });
 
   assert.equal(result.status, 0, result.stderr || result.stdout);
-  assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n');
+  assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n-s reload\n');
   const config = readFileSync(harness.configPath, 'utf8');
   assert.match(config, /server_name ddl\.example\.com;/);
   assert.doesNotMatch(config, /__TLS_CERTIFICATE(?:_KEY)?__/);
@@ -1497,6 +1515,150 @@ test('bootstrap review: standard template succeeds with empty TLS inputs and def
     result.stdout,
     /No firewall, sshd, DNS, or certificate files were changed\./,
   );
+});
+
+test('bootstrap hardening: selected binary owns validation and reload identity', async (t) => {
+  await t.test('success validates and reloads through the same selected binary', () => {
+    const harness = makeBootstrapHarness(t);
+    const result = harness.run({ NGINX_TEMPLATE: nginxTemplatePath });
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n-s reload\n');
+    assert.equal(existsSync(harness.systemctlLog), false);
+  });
+
+  await t.test('reload recovery validates and reloads through the same selected binary', () => {
+    const harness = makeBootstrapHarness(t);
+    writeFileSync(harness.configPath, 'previous config\n', 'utf8');
+    const failOnce = join(harness.sandbox, 'selected-nginx-reload-failed-once');
+    const result = harness.run({
+      BOOTSTRAP_NGINX_RELOAD_FAIL_ONCE: failOnce,
+      NGINX_TEMPLATE: nginxTemplatePath,
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /previous config restored, revalidated, and reloaded/);
+    assert.equal(readFileSync(harness.configPath, 'utf8'), 'previous config\n');
+    assert.equal(
+      readFileSync(harness.nginxLog, 'utf8'),
+      '-t\n-s reload\n-t\n-s reload\n',
+    );
+    assert.equal(existsSync(harness.systemctlLog), false);
+  });
+});
+
+test('bootstrap hardening: TLS template rejects absent or mismatched SNI', () => {
+  const template = readFileSync(baotaTlsTemplatePath, 'utf8');
+  const httpsServerOffset = template.indexOf('listen 443 ssl;');
+  const sniGuard = 'if ($ssl_server_name != "__SERVER_NAME__")';
+
+  assert.ok(httpsServerOffset >= 0, 'TLS server block must exist');
+  assert.equal(template.split(sniGuard).length - 1, 1);
+  assert.ok(template.indexOf(sniGuard) > httpsServerOffset);
+  assert.match(
+    template.slice(template.indexOf(sniGuard)),
+    /if \(\$ssl_server_name != "__SERVER_NAME__"\) \{\s*return 444;\s*\}/,
+  );
+});
+
+test('bootstrap hardening: existing config identity and metadata are strict', async (t) => {
+  await t.test('symlinked NGINX_CONFIG is rejected without modifying its target', () => {
+    const harness = makeBootstrapHarness(t);
+    const target = join(harness.sandbox, 'symlink-target.conf');
+    writeFileSync(target, 'symlink target config\n', 'utf8');
+    symlinkSync(target, harness.configPath);
+
+    const result = harness.run({ NGINX_TEMPLATE: nginxTemplatePath });
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /NGINX_CONFIG.*symbolic link/i);
+    assert.equal(readFileSync(target, 'utf8'), 'symlink target config\n');
+    assert.equal(lstatSync(harness.configPath).isSymbolicLink(), true);
+    assert.equal(existsSync(harness.installLog), false);
+    assert.equal(existsSync(harness.mvLog), false);
+  });
+
+  await t.test('non-0644 NGINX_CONFIG is rejected without modifying the file', () => {
+    const harness = makeBootstrapHarness(t);
+    writeFileSync(harness.configPath, 'mode-sensitive config\n', 'utf8');
+    chmodSync(harness.configPath, 0o600);
+
+    const result = harness.run({ NGINX_TEMPLATE: nginxTemplatePath });
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /NGINX_CONFIG.*mode 0644/i);
+    assert.equal(readFileSync(harness.configPath, 'utf8'), 'mode-sensitive config\n');
+    assert.equal(statSync(harness.configPath).mode & 0o777, 0o600);
+    assert.equal(existsSync(harness.installLog), false);
+    assert.equal(existsSync(harness.mvLog), false);
+  });
+
+  await t.test('validator requires regular single-link process ownership without xattrs', () => {
+    const source = readFileSync(bootstrapScript, 'utf8');
+    assert.match(source, /stat\.S_ISREG/);
+    assert.match(source, /st_nlink/);
+    assert.match(source, /st_uid[^\n]*os\.geteuid\(\)/);
+    assert.match(source, /st_gid[^\n]*os\.getegid\(\)/);
+    assert.match(source, /os\.listxattr/);
+  });
+});
+
+test('bootstrap hardening: per-config lock serializes publication', async (t) => {
+  await t.test('non-blocking lock failure stops before target modification', () => {
+    const harness = makeBootstrapHarness(t);
+    writeFileSync(harness.configPath, 'locked config\n', 'utf8');
+
+    const result = harness.run({
+      BOOTSTRAP_FLOCK_STATUS: '1',
+      NGINX_TEMPLATE: nginxTemplatePath,
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /could not acquire bootstrap lock/i);
+    assert.equal(readFileSync(harness.configPath, 'utf8'), 'locked config\n');
+    assert.equal(existsSync(harness.installLog), false);
+    assert.equal(existsSync(harness.mvLog), false);
+    assert.equal(existsSync(harness.nginxLog), false);
+  });
+
+  await t.test('symlinked lock path is rejected without modifying the config', () => {
+    const harness = makeBootstrapHarness(t);
+    writeFileSync(harness.configPath, 'config before symlinked lock\n', 'utf8');
+    const lockTarget = join(harness.sandbox, 'lock-target');
+    writeFileSync(lockTarget, 'lock target\n', 'utf8');
+    symlinkSync(lockTarget, `${harness.configPath}.lock`);
+
+    const result = harness.run({ NGINX_TEMPLATE: nginxTemplatePath });
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /bootstrap lock path must not be a symbolic link/i);
+    assert.equal(readFileSync(harness.configPath, 'utf8'), 'config before symlinked lock\n');
+    assert.equal(readFileSync(lockTarget, 'utf8'), 'lock target\n');
+    assert.equal(existsSync(harness.installLog), false);
+    assert.equal(existsSync(harness.mvLog), false);
+  });
+
+  await t.test('selected per-config lock is acquired and held across reload', () => {
+    const harness = makeBootstrapHarness(t);
+    const lockPath = `${harness.configPath}.lock`;
+    const result = harness.run({ NGINX_TEMPLATE: nginxTemplatePath });
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.ok(existsSync(lockPath), 'selected per-config lock file must exist');
+    assert.match(readFileSync(harness.flockLog, 'utf8'), /^-n [0-9]+\n$/);
+    assert.match(result.stdout, new RegExp(`bootstrap lock acquired: ${lockPath}`));
+
+    const source = readFileSync(bootstrapScript, 'utf8');
+    assertTextOrder(source, [
+      'config_lock_path="${NGINX_CONFIG}.lock"',
+      'config_lock_fd=9',
+      'exec 9<>"$config_lock_path"',
+      'flock -n "$config_lock_fd"',
+      'cp -p -- "$NGINX_CONFIG" "$backup_config"',
+      '"$NGINX_BIN" -t',
+      '"$NGINX_BIN" -s reload',
+    ]);
+  });
 });
 
 test('bootstrap review: successful config publication uses a same-directory atomic rename', (t) => {
@@ -1653,9 +1815,9 @@ test('bootstrap review: BaoTa bootstrap reports validation and reload recovery e
     const harness = makeBootstrapHarness(t);
     mkdirSync(dirname(harness.configPath), { recursive: true });
     writeFileSync(harness.configPath, 'previous TLS config\n', 'utf8');
-    const failOnce = join(harness.sandbox, 'systemctl-failed-once');
+    const failOnce = join(harness.sandbox, 'selected-nginx-reload-failed-once');
     const result = harness.run({
-      BOOTSTRAP_SYSTEMCTL_FAIL_ONCE: failOnce,
+      BOOTSTRAP_NGINX_RELOAD_FAIL_ONCE: failOnce,
       NGINX_TEMPLATE: baotaTlsTemplatePath,
       TLS_CERTIFICATE: '/cert/live/fullchain.pem',
       TLS_CERTIFICATE_KEY: '/cert/live/privkey.pem',
@@ -1664,8 +1826,11 @@ test('bootstrap review: BaoTa bootstrap reports validation and reload recovery e
     assert.notEqual(result.status, 0);
     assert.match(result.stderr, /previous config restored, revalidated, and reloaded/);
     assert.equal(readFileSync(harness.configPath, 'utf8'), 'previous TLS config\n');
-    assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n-t\n');
-    assert.equal(readFileSync(harness.systemctlLog, 'utf8'), 'reload nginx\nreload nginx\n');
+    assert.equal(
+      readFileSync(harness.nginxLog, 'utf8'),
+      '-t\n-s reload\n-t\n-s reload\n',
+    );
+    assert.equal(existsSync(harness.systemctlLog), false);
   });
 });
 
@@ -1697,6 +1862,33 @@ test('bootstrap review: operations describe atomic Nginx recovery without TLS ov
   );
   assert.match(deployment, /certificate files/);
   assert.doesNotMatch(deployment, /不会触碰[^。\n]*TLS 资产/);
+});
+
+test('bootstrap hardening: operations document identity, SNI, metadata, and locking', () => {
+  const deployment = readFileSync(deployDocumentationPath, 'utf8');
+
+  assert.match(deployment, /`NGINX_BIN -t`[^。\n]*`NGINX_BIN -s reload`/);
+  assert.doesNotMatch(deployment, /systemctl reload nginx/);
+  assert.match(deployment, /Host[^。\n]*`\$ssl_server_name`[^。\n]*(?:SNI|域名)/i);
+  assert.match(deployment, /`NGINX_CONFIG`[^。\n]*符号链接/);
+  assert.match(
+    deployment,
+    /单链接[^。\n]*普通文件[^。\n]*`0644`[^。\n]*(?:UID|所有者)[^。\n]*(?:GID|属组)/,
+  );
+  assert.match(deployment, /扩展属性/);
+  assert.match(
+    deployment,
+    /`\$\{NGINX_CONFIG\}\.lock`[^。\n]*符号链接[^。\n]*非阻塞[^。\n]*`flock`/,
+  );
+  assert.match(deployment, /--resolve "rejected\.invalid:443:127\.0\.0\.1"/);
+  assert.match(
+    deployment,
+    /--header "Host: \$SELECTED_DOMAIN"[\s\S]{0,200}https:\/\/rejected\.invalid\//,
+  );
+  assert.match(
+    deployment,
+    /--header "Host: \$SELECTED_DOMAIN"[\s\S]{0,200}https:\/\/127\.0\.0\.1\//,
+  );
 });
 
 test('activation and rollback durably sync release, transaction, link, and state mutations', () => {
