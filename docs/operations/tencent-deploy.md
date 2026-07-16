@@ -20,6 +20,17 @@
 
 2. 安装并确认这些命令可用：`python3`、`curl`、`nginx`、`systemctl`、`flock`、`sha256sum`、`tar`。安装系统包属于管理员动作，不要授权部署用户代为执行。
 
+   执行 bootstrap 前还必须读取真实 Nginx 构建和 include 路径：
+
+   ```bash
+   nginx -V 2>&1
+   nginx -T 2>/dev/null | awk '/^[[:space:]]*include[[:space:]]/{print}'
+   ```
+
+   默认 `NGINX_CONFIG=/etc/nginx/conf.d/cs-baoyan-ddl.conf` 只适用于该目录真实存在且被主配置 include 的标准安装。宝塔或自定义 `--prefix` 构建常使用另一套 vhost 目录；这种主机必须先停下，评审一个明确的 `NGINX_CONFIG` 路径和回滚方式，不能创建一个 Nginx 根本不会读取的文件。
+
+   模板还声明了一个 HTTP `default_server` 用于拒绝未知 Host。若真实主机已经有同地址同端口的 `default_server`，直接安装会产生冲突，禁止绕过 `nginx -t` 或删除现有站点。应先单独评审现有默认路由和本站的 Host 隔离方案，再决定是否使用主机专属模板；这属于生产配置变更停止门，不由本仓库手册自动处理。
+
 3. 把部署公钥加入该用户的 `~/.ssh/authorized_keys`，至少禁止转发和 PTY。OpenSSH 支持 `restrict` 时建议使用：
 
    ```text
