@@ -7,6 +7,9 @@ SERVER_NAME=${SERVER_NAME:-}
 DEPLOY_ROOT=${DEPLOY_ROOT:-/srv/cs-baoyan-ddl}
 NGINX_TEMPLATE=${NGINX_TEMPLATE:-$SCRIPT_DIR/nginx/cs-baoyan-ddl.conf}
 NGINX_CONFIG=${NGINX_CONFIG:-/etc/nginx/conf.d/cs-baoyan-ddl.conf}
+NGINX_BIN=${NGINX_BIN:-nginx}
+TLS_CERTIFICATE=${TLS_CERTIFICATE:-}
+TLS_CERTIFICATE_KEY=${TLS_CERTIFICATE_KEY:-}
 
 fail() {
   printf 'bootstrap failed: %s\n' "$*" >&2
@@ -30,7 +33,30 @@ case "$DEPLOY_ROOT" in
 esac
 test "$DEPLOY_ROOT" != / || fail 'DEPLOY_ROOT must not be /'
 
-for command_name in python3 curl nginx systemctl flock sha256sum tar install id mktemp; do
+case "$NGINX_BIN" in
+  /*)
+    test -x "$NGINX_BIN" || fail "NGINX_BIN is not executable: $NGINX_BIN"
+    ;;
+  */*)
+    fail 'NGINX_BIN must be an executable absolute path or a bare command name'
+    ;;
+  '')
+    fail 'NGINX_BIN is required'
+    ;;
+  *)
+    resolved_nginx_bin=$(command -v "$NGINX_BIN" 2>/dev/null) \
+      || fail "required command is missing: $NGINX_BIN"
+    case "$resolved_nginx_bin" in
+      /*) ;;
+      *) fail "NGINX_BIN did not resolve to an absolute executable: $NGINX_BIN" ;;
+    esac
+    test -x "$resolved_nginx_bin" \
+      || fail "NGINX_BIN is not executable: $resolved_nginx_bin"
+    NGINX_BIN=$resolved_nginx_bin
+    ;;
+esac
+
+for command_name in python3 curl systemctl flock sha256sum tar install id mktemp; do
   command -v "$command_name" >/dev/null 2>&1 \
     || fail "required command is missing: $command_name"
 done
@@ -57,17 +83,57 @@ cleanup() {
 }
 trap cleanup EXIT
 
-python3 - "$NGINX_TEMPLATE" "$rendered_config" "$SERVER_NAME" "$DEPLOY_ROOT" <<'PY'
+python3 - "$NGINX_TEMPLATE" "$rendered_config" "$SERVER_NAME" "$DEPLOY_ROOT" \
+  "$TLS_CERTIFICATE" "$TLS_CERTIFICATE_KEY" <<'PY'
 import pathlib
+import re
 import sys
 
-source, destination, server_name, deploy_root = sys.argv[1:]
+source, destination, server_name, deploy_root, tls_certificate, tls_certificate_key = sys.argv[1:]
 template = pathlib.Path(source).read_text(encoding="utf-8")
 for placeholder in ("__SERVER_NAME__", "__DEPLOY_ROOT__"):
     if placeholder not in template:
         raise SystemExit(f"missing required template placeholder: {placeholder}")
-rendered = template.replace("__SERVER_NAME__", server_name).replace("__DEPLOY_ROOT__", deploy_root)
-if "__SERVER_NAME__" in rendered or "__DEPLOY_ROOT__" in rendered:
+
+tls_placeholders = ("__TLS_CERTIFICATE__", "__TLS_CERTIFICATE_KEY__")
+tls_required = any(placeholder in template for placeholder in tls_placeholders)
+if tls_required:
+    for placeholder in tls_placeholders:
+        if placeholder not in template:
+            raise SystemExit(f"missing required template placeholder: {placeholder}")
+
+    def safe_absolute_path(name: str, value: str) -> str:
+        if not value:
+            raise SystemExit(f"{name} is required by the selected Nginx template")
+        if not value.startswith("/"):
+            raise SystemExit(f"{name} must be an absolute path")
+        if value == "/" or not re.fullmatch(r"/[A-Za-z0-9._/-]*", value):
+            raise SystemExit(f"{name} contains unsafe path syntax")
+        if "//" in value or value.endswith("/") or any(
+            part in (".", "..") for part in value.split("/")
+        ):
+            raise SystemExit(f"{name} contains unsafe path syntax")
+        return value
+
+    tls_certificate = safe_absolute_path("TLS_CERTIFICATE", tls_certificate)
+    tls_certificate_key = safe_absolute_path("TLS_CERTIFICATE_KEY", tls_certificate_key)
+
+replacements = {
+    "__SERVER_NAME__": server_name,
+    "__DEPLOY_ROOT__": deploy_root,
+}
+if tls_required:
+    replacements.update(
+        {
+            "__TLS_CERTIFICATE__": tls_certificate,
+            "__TLS_CERTIFICATE_KEY__": tls_certificate_key,
+        }
+    )
+
+rendered = template
+for placeholder, value in replacements.items():
+    rendered = rendered.replace(placeholder, value)
+if any(placeholder in rendered for placeholder in replacements):
     raise SystemExit("unrendered Nginx placeholder remains")
 pathlib.Path(destination).write_text(rendered, encoding="utf-8")
 PY
@@ -86,13 +152,13 @@ restore_config() {
   fi
 }
 
-if ! nginx -t; then
+if ! "$NGINX_BIN" -t; then
   restore_config
   fail 'nginx -t rejected the rendered configuration; previous config restored'
 fi
 if ! systemctl reload nginx; then
   restore_config
-  nginx -t >/dev/null 2>&1 || true
+  "$NGINX_BIN" -t >/dev/null 2>&1 || true
   systemctl reload nginx >/dev/null 2>&1 || true
   fail 'nginx reload failed; previous config restored'
 fi

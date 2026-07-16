@@ -4,7 +4,7 @@
 
 本仓库只提供部署工具，不代表腾讯云已配置完成。本次实现没有连接腾讯云、写入 GitHub Secrets、执行 bootstrap，也没有修改防火墙、`sshd`、DNS 或 TLS。
 
-当前 Nginx 模板只监听 HTTP 80，用于 bootstrap 和受控验收，不是完整生产 TLS 配置。正式域名、备案、证书路径和 TLS 终止方式必须在真实主机与域名确认后另行评审，不能在未知条件下套用示例证书配置。TLS 是生产发布的 stop gate（停止门）：完成域名与证书方案验收前，production required reviewer 不应批准真实上线。
+仓库保留标准 HTTP 模板，并提供两份版本化的宝塔模板：`cs-baoyan-ddl-bt-http.conf` 只用于受控 HTTP 验收，`cs-baoyan-ddl-bt-tls.conf` 用于域名与证书路径获批后的最终 HTTPS 配置。TLS 与 public launch 仍是生产 stop gate（停止门）：完成域名、备案、证书路径和 TLS 终止方案验收前，production required reviewer 不应批准真实上线；模板存在不代表已经授权修改真实主机、DNS 或证书资产。
 
 ## 一次性服务器准备
 
@@ -29,7 +29,7 @@
 
    默认 `NGINX_CONFIG=/etc/nginx/conf.d/cs-baoyan-ddl.conf` 只适用于该目录真实存在且被主配置 include 的标准安装。宝塔或自定义 `--prefix` 构建常使用另一套 vhost 目录；这种主机必须先停下，评审一个明确的 `NGINX_CONFIG` 路径和回滚方式，不能创建一个 Nginx 根本不会读取的文件。
 
-   模板还声明了一个 HTTP `default_server` 用于拒绝未知 Host。若真实主机已经有同地址同端口的 `default_server`，直接安装会产生冲突，禁止绕过 `nginx -t` 或删除现有站点。应先单独评审现有默认路由和本站的 Host 隔离方案，再决定是否使用主机专属模板；这属于生产配置变更停止门，不由本仓库手册自动处理。
+   标准模板声明了一个 HTTP `default_server` 用于拒绝未知 Host。若真实主机已经有同地址同端口的 `default_server`，直接安装会产生冲突，禁止绕过 `nginx -t` 或删除现有站点。宝塔模板不声明第二个 `default_server`，而是在本站 vhost 内校验精确 Host；只能在确认现有默认路由会接管其他 Host 后使用。
 
 3. 把部署公钥加入该用户的 `~/.ssh/authorized_keys`，至少禁止转发和 PTY。OpenSSH 支持 `restrict` 时建议使用：
 
@@ -39,7 +39,7 @@
 
    工作流需要在限定目录内执行 `mkdir`、部署脚本和清理 staging，因此这里不配置一个会阻断这些命令的任意 forced command。该专用账号仍有通用命令能力；`restrict`、禁止转发/PTY 和无 sudo 只能缩小影响面，不能把账号视为只能运行单一部署命令。安全边界还依赖受保护 main、production approval、最小目录权限、脚本路径校验和服务器侧 `flock`。
 
-4. 以管理员身份审阅仓库中的 bootstrap 和 Nginx 模板，然后只执行一次；重复执行是幂等的：
+4. 以管理员身份审阅仓库中的 bootstrap 和 Nginx 模板。标准 Nginx 安装可继续使用默认模板；重复执行是幂等的：
 
    ```bash
    sudo env \
@@ -59,7 +59,75 @@
      transactions/
    ```
 
-   `/srv/cs-baoyan-ddl` 由 `root:cs-baoyan-deploy` 以 `0775` 管理，使部署用户通过同名专用组更新 `current`；发布目录由部署用户拥有，Nginx 只需读取和遍历。脚本渲染明确的 `server_name`，并用 default server 和 `$host` 检查拒绝不匹配的 Host；运行 `nginx -t` 后才重载，失败时恢复旧配置。它不会触碰防火墙、`sshd`、DNS 或 TLS。若系统已有其他 `default_server`，管理员必须先处理冲突并以 `nginx -t` 为准。
+   `/srv/cs-baoyan-ddl` 由 `root:cs-baoyan-deploy` 以 `0775` 管理，使部署用户通过同名专用组更新 `current`；发布目录由部署用户拥有，Nginx 只需读取和遍历。脚本渲染明确的 `server_name`，运行选定的 `NGINX_BIN -t` 后才重载；配置验证或 reload 失败时原子恢复旧配置，并用同一个 Nginx 二进制重新验证。它不会触碰防火墙、`sshd`、DNS 或 TLS 资产。
+
+### 宝塔 HTTP 受控验收
+
+以下命令必须从仓库根目录运行。`SELECTED_DOMAIN` 只能填写用户在生产变更评审中明确批准的小写域名；验证失败立即停止：
+
+```bash
+test -n "${SELECTED_DOMAIN:?user-approved domain is required}"
+case "$SELECTED_DOMAIN" in *[!a-z0-9.-]*|.*|*..*|*.) exit 1 ;; esac
+
+sudo env \
+  DEPLOY_USER=cs-baoyan-deploy \
+  SERVER_NAME="$SELECTED_DOMAIN" \
+  DEPLOY_ROOT=/srv/cs-baoyan-ddl \
+  NGINX_BIN=/www/server/nginx/sbin/nginx \
+  NGINX_TEMPLATE="$PWD/deploy/nginx/cs-baoyan-ddl-bt-http.conf" \
+  NGINX_CONFIG="/www/server/panel/vhost/nginx/$SELECTED_DOMAIN.conf" \
+  bash deploy/bootstrap-server.sh
+```
+
+bootstrap 成功只证明配置已写入、选定的 Nginx 二进制通过 `-t` 且 reload 成功。只有后续获批的发布步骤已经创建 `current/release.json`，才执行内容与 Host 路由检查：
+
+```bash
+test -f /srv/cs-baoyan-ddl/current/release.json
+curl --fail --silent --show-error \
+  --resolve "$SELECTED_DOMAIN:80:127.0.0.1" \
+  "http://$SELECTED_DOMAIN/release.json"
+
+rejected_status=$(
+  curl --silent --output /dev/null --write-out '%{http_code}' \
+    --header 'Host: rejected.invalid' http://127.0.0.1/ || true
+)
+test "$rejected_status" = 000
+```
+
+这一步只验证本机宝塔 include、精确 Host 拒绝、静态文件路由和 HTTP vhost，不授权创建 DNS 记录、开放公网发布或把 HTTP 写入 `PUBLIC_BASE_URL`。如果 `nginx -t`、reload、选定域名请求或错误 Host 拒绝中的任一项失败，应保留 stop gate，检查已恢复的原配置，不得绕过验证继续上线。
+
+### 宝塔最终 TLS 配置
+
+只有 Task 14 已批准 `SELECTED_DOMAIN`、证书与私钥的精确绝对路径，并且证书资产已由获批流程放置到主机后，才可运行最终命令。不要使用示例路径，不要让 bootstrap 创建、复制或修改证书：
+
+```bash
+test -n "${SELECTED_DOMAIN:?user-approved domain is required}"
+case "$SELECTED_DOMAIN" in *[!a-z0-9.-]*|.*|*..*|*.) exit 1 ;; esac
+test -n "${TLS_CERTIFICATE:?Task 14 approved certificate path is required}"
+test -n "${TLS_CERTIFICATE_KEY:?Task 14 approved certificate key path is required}"
+
+sudo env \
+  DEPLOY_USER=cs-baoyan-deploy \
+  SERVER_NAME="$SELECTED_DOMAIN" \
+  DEPLOY_ROOT=/srv/cs-baoyan-ddl \
+  NGINX_BIN=/www/server/nginx/sbin/nginx \
+  NGINX_TEMPLATE="$PWD/deploy/nginx/cs-baoyan-ddl-bt-tls.conf" \
+  NGINX_CONFIG="/www/server/panel/vhost/nginx/$SELECTED_DOMAIN.conf" \
+  TLS_CERTIFICATE="$TLS_CERTIFICATE" \
+  TLS_CERTIFICATE_KEY="$TLS_CERTIFICATE_KEY" \
+  bash deploy/bootstrap-server.sh
+```
+
+最终发布完成且 `current/release.json` 存在后，再做本机 HTTPS 内容检查：
+
+```bash
+test -f /srv/cs-baoyan-ddl/current/release.json
+curl --fail --silent --show-error \
+  --resolve "$SELECTED_DOMAIN:443:127.0.0.1" \
+  "https://$SELECTED_DOMAIN/release.json"
+```
+
+最终 TLS bootstrap 和本机 HTTPS 验证成功仍不等于 public launch 已获批准。production reviewer 必须继续核对 DNS、证书域名与有效期、公开 smoke 身份三元组和回滚命令，再单独批准公网发布。
 
 ## SSH 主机密钥外部核验
 
@@ -148,7 +216,8 @@ production environment 应设置 required reviewer，并把 deployment branches 
 - `TENCENT_KNOWN_HOSTS` 已通过带外渠道核验；没有使用 `ssh-keyscan`。
 - 专用部署用户没有 sudo，authorized_keys 已禁止转发和 PTY。
 - 专用部署用户的 primary group 名称与用户名相同。
-- 已确认 `SERVER_NAME`、Host 拒绝、HTTP 受控验收和 Nginx 配置；域名、备案与 TLS stop gate 已通过 production reviewer 确认。
+- 已确认用户批准的 `SELECTED_DOMAIN`、Host 拒绝、HTTP 受控验收、宝塔 Nginx 二进制和 vhost 目标路径。
+- 域名、备案、精确证书路径、TLS 与 public launch stop gate 已分别通过 production reviewer 确认。
 - 首次真实发布须由用户批准；本手册本身不授权连接或修改腾讯云。
 
 真实发布成功后，可以从当前 release 读取三元身份并再次执行外部 smoke：

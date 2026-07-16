@@ -22,12 +22,21 @@ import { fileURLToPath } from 'node:url';
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const activateScript = resolve(repositoryRoot, 'deploy/activate-release.sh');
+const bootstrapScript = resolve(repositoryRoot, 'deploy/bootstrap-server.sh');
 const rollbackScript = resolve(repositoryRoot, 'deploy/rollback-release.sh');
 const smokeScript = resolve(repositoryRoot, 'deploy/smoke.sh');
 const workflowPath = resolve(repositoryRoot, '.github/workflows/deploy.yml');
 const packagePath = resolve(repositoryRoot, 'package.json');
 const lockfilePath = resolve(repositoryRoot, 'pnpm-lock.yaml');
 const nginxTemplatePath = resolve(repositoryRoot, 'deploy/nginx/cs-baoyan-ddl.conf');
+const baotaHttpTemplatePath = resolve(
+  repositoryRoot,
+  'deploy/nginx/cs-baoyan-ddl-bt-http.conf',
+);
+const baotaTlsTemplatePath = resolve(
+  repositoryRoot,
+  'deploy/nginx/cs-baoyan-ddl-bt-tls.conf',
+);
 const deployDocumentationPath = resolve(repositoryRoot, 'docs/operations/tencent-deploy.md');
 const rollbackDocumentationPath = resolve(repositoryRoot, 'docs/operations/rollback.md');
 const expectedTitle = 'CS 保研 DDL · 倒计时';
@@ -288,6 +297,122 @@ function runScript(path: string, env: NodeJS.ProcessEnv): Promise<ScriptResult> 
     child.on('error', reject);
     child.on('close', (status) => resolveResult({ status, stdout, stderr }));
   });
+}
+
+interface BootstrapHarness {
+  configPath: string;
+  customNginx: string;
+  nginxLog: string;
+  sandbox: string;
+  systemctlLog: string;
+  run: (env?: NodeJS.ProcessEnv) => ScriptResult;
+}
+
+function makeBootstrapHarness(t: TestContext): BootstrapHarness {
+  const sandbox = mkdtempSync(join(tmpdir(), 'bootstrap-server-'));
+  t.after(() => {
+    spawnSync('chmod', ['-R', 'u+w', sandbox]);
+    rmSync(sandbox, { recursive: true, force: true });
+  });
+
+  const fakeBin = join(sandbox, 'bin');
+  const deployRoot = join(sandbox, 'deploy-root');
+  const configPath = join(sandbox, 'nginx', 'site.conf');
+  const nginxLog = join(sandbox, 'nginx.log');
+  const systemctlLog = join(sandbox, 'systemctl.log');
+  mkdirSync(fakeBin, { recursive: true });
+
+  writeExecutable(
+    join(fakeBin, 'id'),
+    '#!/bin/sh\n' +
+      'if [ "$#" -eq 1 ] && [ "$1" = "$BOOTSTRAP_DEPLOY_USER" ]; then exit 0; fi\n' +
+      'if [ "$#" -eq 2 ] && [ "$1" = "-gn" ] && [ "$2" = "$BOOTSTRAP_DEPLOY_USER" ]; then printf "%s\\n" "$BOOTSTRAP_DEPLOY_USER"; exit 0; fi\n' +
+      'exec /usr/bin/id "$@"\n',
+  );
+  writeExecutable(
+    join(fakeBin, 'install'),
+    '#!/bin/sh\n' +
+      'directory=0\n' +
+      'while [ "$#" -gt 0 ]; do\n' +
+      '  case "$1" in\n' +
+      '    -d) directory=1; shift ;;\n' +
+      '    -m|-o|-g) shift 2 ;;\n' +
+      '    --) shift; break ;;\n' +
+      '    -*) exit 2 ;;\n' +
+      '    *) break ;;\n' +
+      '  esac\n' +
+      'done\n' +
+      'if [ "$directory" -eq 1 ]; then mkdir -p -- "$@"; exit 0; fi\n' +
+      '[ "$#" -eq 2 ] || exit 2\n' +
+      'mkdir -p -- "${2%/*}"\n' +
+      'cp -- "$1" "$2"\n',
+  );
+  writeExecutable(
+    join(fakeBin, 'systemctl'),
+    '#!/bin/sh\n' +
+      'printf "%s\\n" "$*" >> "$BOOTSTRAP_SYSTEMCTL_LOG"\n' +
+      'if [ -n "${BOOTSTRAP_SYSTEMCTL_FAIL_ONCE:-}" ] && [ ! -e "$BOOTSTRAP_SYSTEMCTL_FAIL_ONCE" ]; then\n' +
+      '  : > "$BOOTSTRAP_SYSTEMCTL_FAIL_ONCE"\n' +
+      '  exit 1\n' +
+      'fi\n' +
+      'exit 0\n',
+  );
+  for (const commandName of ['curl', 'flock', 'sha256sum', 'tar']) {
+    writeExecutable(join(fakeBin, commandName), '#!/bin/sh\nexit 0\n');
+  }
+
+  const customNginx = join(fakeBin, 'selected-nginx');
+  writeExecutable(
+    customNginx,
+    '#!/bin/sh\n' +
+      'printf "%s\\n" "$*" >> "$BOOTSTRAP_NGINX_LOG"\n' +
+      'exit "${BOOTSTRAP_NGINX_STATUS:-0}"\n',
+  );
+
+  const source = readFileSync(bootstrapScript, 'utf8');
+  const rootExpression = '${EUID:-$(id -u)}';
+  assert.equal(source.split(rootExpression).length - 1, 1, 'root gate changed unexpectedly');
+  const testableSource = source.replace(
+    rootExpression,
+    '${BOOTSTRAP_TEST_EUID:-${EUID:-$(id -u)}}',
+  );
+  const testableScript = join(sandbox, 'bootstrap-server.sh');
+  writeExecutable(testableScript, testableSource);
+
+  return {
+    configPath,
+    customNginx,
+    nginxLog,
+    sandbox,
+    systemctlLog,
+    run: (env = {}) => {
+      const result = spawnSync('bash', [testableScript], {
+        cwd: sandbox,
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          BOOTSTRAP_DEPLOY_USER: 'deploy-test',
+          BOOTSTRAP_NGINX_LOG: nginxLog,
+          BOOTSTRAP_SYSTEMCTL_LOG: systemctlLog,
+          BOOTSTRAP_TEST_EUID: '0',
+          DEPLOY_ROOT: deployRoot,
+          DEPLOY_USER: 'deploy-test',
+          NGINX_BIN: customNginx,
+          NGINX_CONFIG: configPath,
+          SERVER_NAME: 'ddl.example.com',
+          TLS_CERTIFICATE: '',
+          TLS_CERTIFICATE_KEY: '',
+          PATH: `${fakeBin}:${process.env.PATH ?? ''}`,
+          ...env,
+        },
+      });
+      return {
+        status: result.status,
+        stdout: result.stdout,
+        stderr: result.stderr,
+      };
+    },
+  };
 }
 
 function currentTarget(deployRoot: string): string | null {
@@ -1224,6 +1349,224 @@ test('Nginx rejects unknown Host values before serving the release', () => {
   assert.match(template, /server_name _;/);
   assert.match(template, /return 444;/);
   assert.match(template, /if \(\$host != "__SERVER_NAME__"\)/);
+});
+
+test('BaoTa HTTP template avoids a competing default server and preserves the static-site contract', () => {
+  assert.ok(existsSync(baotaHttpTemplatePath), 'BaoTa HTTP template must exist');
+  const standardTemplate = readFileSync(nginxTemplatePath, 'utf8');
+  const template = readFileSync(baotaHttpTemplatePath, 'utf8');
+
+  assert.doesNotMatch(template, /default_server/);
+  assert.match(template, /listen 80;/);
+  assert.match(template, /listen \[::\]:80;/);
+  assert.match(template, /server_name __SERVER_NAME__;/);
+  assert.match(template, /if \(\$host != "__SERVER_NAME__"\)/);
+  assert.match(template, /root __DEPLOY_ROOT__\/current;/);
+  assert.match(template, /location = \/release\.json[\s\S]*?Cache-Control "no-store, no-cache, must-revalidate"/);
+  assert.match(template, /location ~ \(\^\|\/\)\\\.[\s\S]*?return 404;/);
+  assert.match(template, /location \/assets\/[\s\S]*?Cache-Control "public, max-age=31536000, immutable"/);
+  assert.match(template, /try_files \$uri \$uri\/ \/index\.html;/);
+
+  const securityHeaderNames = (source: string): string[] =>
+    [...new Set(
+      [...source.matchAll(/add_header\s+([A-Za-z-]+)\s+/g)]
+        .map((match) => match[1])
+        .filter((name) => name !== 'Cache-Control'),
+    )].sort();
+  assert.deepEqual(securityHeaderNames(template), securityHeaderNames(standardTemplate));
+});
+
+test('BaoTa TLS template defines exact-domain redirect and final HTTPS routing', () => {
+  assert.ok(existsSync(baotaTlsTemplatePath), 'BaoTa TLS template must exist');
+  const standardTemplate = readFileSync(nginxTemplatePath, 'utf8');
+  const template = readFileSync(baotaTlsTemplatePath, 'utf8');
+
+  assert.doesNotMatch(template, /default_server/);
+  assert.match(template, /listen 80;/);
+  assert.match(template, /listen \[::\]:80;/);
+  assert.match(template, /listen 443 ssl;/);
+  assert.match(template, /listen \[::\]:443 ssl;/);
+  assert.match(template, /http2 on;/);
+  assert.match(template, /ssl_certificate __TLS_CERTIFICATE__;/);
+  assert.match(template, /ssl_certificate_key __TLS_CERTIFICATE_KEY__;/);
+  assert.match(template, /return 308 https:\/\/__SERVER_NAME__\$request_uri;/);
+  assert.equal(template.match(/if \(\$host != "__SERVER_NAME__"\)/g)?.length, 2);
+  assert.match(template, /root __DEPLOY_ROOT__\/current;/);
+  assert.match(template, /location = \/release\.json[\s\S]*?Cache-Control "no-store, no-cache, must-revalidate"/);
+  assert.match(template, /location ~ \(\^\|\/\)\\\.[\s\S]*?return 404;/);
+  assert.match(template, /location \/assets\/[\s\S]*?Cache-Control "public, max-age=31536000, immutable"/);
+  assert.match(template, /try_files \$uri \$uri\/ \/index\.html;/);
+
+  const securityHeaderNames = (source: string): string[] =>
+    [...new Set(
+      [...source.matchAll(/add_header\s+([A-Za-z-]+)\s+/g)]
+        .map((match) => match[1])
+        .filter((name) => name !== 'Cache-Control'),
+    )].sort();
+  assert.deepEqual(securityHeaderNames(template), securityHeaderNames(standardTemplate));
+});
+
+test('bootstrap validates both BaoTa templates with the selected Nginx binary', async (t) => {
+  await t.test('absolute binary renders the HTTP template', () => {
+    assert.ok(existsSync(baotaHttpTemplatePath), 'BaoTa HTTP template must exist');
+    const harness = makeBootstrapHarness(t);
+    const result = harness.run({ NGINX_TEMPLATE: baotaHttpTemplatePath });
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    const config = readFileSync(harness.configPath, 'utf8');
+    assert.match(config, /server_name ddl\.example\.com;/);
+    assert.match(config, new RegExp(`root ${resolve(harness.sandbox, 'deploy-root')}/current;`));
+    assert.doesNotMatch(config, /__[A-Z_]+__/);
+    assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n');
+  });
+
+  await t.test('bare binary renders literal TLS paths', () => {
+    assert.ok(existsSync(baotaTlsTemplatePath), 'BaoTa TLS template must exist');
+    const harness = makeBootstrapHarness(t);
+    const certificate = '/www/server/panel/vhost/cert/ddl.example.com/fullchain.pem';
+    const certificateKey = '/www/server/panel/vhost/cert/ddl.example.com/privkey.pem';
+    const result = harness.run({
+      NGINX_BIN: 'selected-nginx',
+      NGINX_TEMPLATE: baotaTlsTemplatePath,
+      TLS_CERTIFICATE: certificate,
+      TLS_CERTIFICATE_KEY: certificateKey,
+    });
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    const config = readFileSync(harness.configPath, 'utf8');
+    assert.match(config, new RegExp(`ssl_certificate ${certificate};`));
+    assert.match(config, new RegExp(`ssl_certificate_key ${certificateKey};`));
+    assert.doesNotMatch(config, /__[A-Z_]+__/);
+    assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n');
+  });
+});
+
+test('selected Nginx binary rejects missing, non-executable, and shell-command values', async (t) => {
+  await t.test('absolute binary must be executable', () => {
+    const harness = makeBootstrapHarness(t);
+    const nonExecutable = join(harness.sandbox, 'not-executable-nginx');
+    writeFileSync(nonExecutable, '#!/bin/sh\nexit 0\n', 'utf8');
+    const result = harness.run({
+      NGINX_BIN: nonExecutable,
+      NGINX_TEMPLATE: nginxTemplatePath,
+    });
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /NGINX_BIN is not executable/);
+  });
+
+  await t.test('bare binary must resolve through PATH', () => {
+    const harness = makeBootstrapHarness(t);
+    const result = harness.run({
+      NGINX_BIN: 'missing-nginx',
+      NGINX_TEMPLATE: nginxTemplatePath,
+    });
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /required command is missing: missing-nginx/);
+  });
+
+  await t.test('path-shaped binary must be absolute', () => {
+    const harness = makeBootstrapHarness(t);
+    const relativeDirectory = join(harness.sandbox, 'relative');
+    mkdirSync(relativeDirectory);
+    writeExecutable(join(relativeDirectory, 'nginx'), '#!/bin/sh\nexit 0\n');
+    const result = harness.run({
+      NGINX_BIN: 'relative/nginx',
+      NGINX_TEMPLATE: nginxTemplatePath,
+    });
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /NGINX_BIN.*absolute path or a bare command name/);
+  });
+
+  await t.test('shell command text is never evaluated', () => {
+    const harness = makeBootstrapHarness(t);
+    const marker = join(harness.sandbox, 'pwned');
+    const result = harness.run({
+      NGINX_BIN: 'selected-nginx;touch pwned;#',
+      NGINX_TEMPLATE: nginxTemplatePath,
+    });
+    assert.notEqual(result.status, 0);
+    assert.equal(existsSync(marker), false);
+    assert.doesNotMatch(readFileSync(bootstrapScript, 'utf8'), /\beval\b/);
+  });
+});
+
+test('BaoTa TLS bootstrap requires safe absolute certificate paths', async (t) => {
+  assert.ok(existsSync(baotaTlsTemplatePath), 'BaoTa TLS template must exist');
+  const validCertificate = '/www/server/panel/vhost/cert/ddl.example.com/fullchain.pem';
+  const validKey = '/www/server/panel/vhost/cert/ddl.example.com/privkey.pem';
+  const cases: Array<[string, NodeJS.ProcessEnv]> = [
+    ['missing paths', {}],
+    ['missing key', { TLS_CERTIFICATE: validCertificate }],
+    ['relative path', { TLS_CERTIFICATE: 'cert/fullchain.pem', TLS_CERTIFICATE_KEY: validKey }],
+    ['traversal', { TLS_CERTIFICATE: '/cert/live/../fullchain.pem', TLS_CERTIFICATE_KEY: validKey }],
+    ['whitespace', { TLS_CERTIFICATE: '/cert/live/full chain.pem', TLS_CERTIFICATE_KEY: validKey }],
+    ['control character', { TLS_CERTIFICATE: validCertificate, TLS_CERTIFICATE_KEY: '/cert/live/private\tkey.pem' }],
+    ['unsafe syntax', { TLS_CERTIFICATE: '/cert/live/fullchain.pem;touch-pwned', TLS_CERTIFICATE_KEY: validKey }],
+  ];
+
+  for (const [name, env] of cases) {
+    await t.test(name, () => {
+      const harness = makeBootstrapHarness(t);
+      const result = harness.run({ NGINX_TEMPLATE: baotaTlsTemplatePath, ...env });
+      assert.notEqual(result.status, 0);
+      assert.match(result.stderr, /TLS_CERTIFICATE(?:_KEY)?.*(?:required|absolute|unsafe)/i);
+      assert.equal(existsSync(harness.configPath), false);
+      assert.equal(existsSync(join(harness.sandbox, 'pwned')), false);
+    });
+  }
+});
+
+test('BaoTa bootstrap restores the prior config for validation and reload failures', async (t) => {
+  await t.test('HTTP validation failure restores the prior config', () => {
+    assert.ok(existsSync(baotaHttpTemplatePath), 'BaoTa HTTP template must exist');
+    const harness = makeBootstrapHarness(t);
+    mkdirSync(dirname(harness.configPath), { recursive: true });
+    writeFileSync(harness.configPath, 'previous HTTP config\n', 'utf8');
+    const result = harness.run({
+      BOOTSTRAP_NGINX_STATUS: '1',
+      NGINX_TEMPLATE: baotaHttpTemplatePath,
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /previous config restored/);
+    assert.equal(readFileSync(harness.configPath, 'utf8'), 'previous HTTP config\n');
+    assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n');
+  });
+
+  await t.test('TLS reload failure restores and revalidates the prior config', () => {
+    assert.ok(existsSync(baotaTlsTemplatePath), 'BaoTa TLS template must exist');
+    const harness = makeBootstrapHarness(t);
+    mkdirSync(dirname(harness.configPath), { recursive: true });
+    writeFileSync(harness.configPath, 'previous TLS config\n', 'utf8');
+    const failOnce = join(harness.sandbox, 'systemctl-failed-once');
+    const result = harness.run({
+      BOOTSTRAP_SYSTEMCTL_FAIL_ONCE: failOnce,
+      NGINX_TEMPLATE: baotaTlsTemplatePath,
+      TLS_CERTIFICATE: '/cert/live/fullchain.pem',
+      TLS_CERTIFICATE_KEY: '/cert/live/privkey.pem',
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /previous config restored/);
+    assert.equal(readFileSync(harness.configPath, 'utf8'), 'previous TLS config\n');
+    assert.equal(readFileSync(harness.nginxLog, 'utf8'), '-t\n-t\n');
+    assert.equal(readFileSync(harness.systemctlLog, 'utf8'), 'reload nginx\nreload nginx\n');
+  });
+});
+
+test('BaoTa operations require a selected domain and keep final TLS launch gated', () => {
+  const deployment = readFileSync(deployDocumentationPath, 'utf8');
+  assert.match(deployment, /SELECTED_DOMAIN:\?user-approved domain is required/);
+  assert.match(deployment, /case "\$SELECTED_DOMAIN" in \*\[!a-z0-9\.\-\]\*\|\.\*\|\*\.\.\*\|\*\.\) exit 1 ;; esac/);
+  assert.match(deployment, /SERVER_NAME="\$SELECTED_DOMAIN"/);
+  assert.match(deployment, /NGINX_BIN=\/www\/server\/nginx\/sbin\/nginx/);
+  assert.match(deployment, /NGINX_TEMPLATE="\$PWD\/deploy\/nginx\/cs-baoyan-ddl-bt-http\.conf"/);
+  assert.match(deployment, /NGINX_CONFIG="\/www\/server\/panel\/vhost\/nginx\/\$SELECTED_DOMAIN\.conf"/);
+  assert.match(deployment, /--resolve "\$SELECTED_DOMAIN:80:127\.0\.0\.1"/);
+  assert.match(deployment, /NGINX_TEMPLATE="\$PWD\/deploy\/nginx\/cs-baoyan-ddl-bt-tls\.conf"/);
+  assert.match(deployment, /TLS_CERTIFICATE="\$TLS_CERTIFICATE"/);
+  assert.match(deployment, /TLS_CERTIFICATE_KEY="\$TLS_CERTIFICATE_KEY"/);
+  assert.match(deployment, /TLS[^。\n]*public launch[^。\n]*(?:stop gate|停止门)/i);
 });
 
 test('activation and rollback durably sync release, transaction, link, and state mutations', () => {
