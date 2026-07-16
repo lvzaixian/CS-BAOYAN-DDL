@@ -58,13 +58,17 @@ function writeToUrl(s: FilterState, method: 'push' | 'replace') {
   else window.history.replaceState(null, '', url);
 }
 
+function discreteStateKey(s: FilterState): string {
+  return JSON.stringify([s.source, s.view, s.tags, s.status, s.modes, s.provinces]);
+}
+
 export const filters: FilterState = $state(readFromUrl());
 
 let initialised = false;
 export function initFilterSync() {
   if (initialised) return;
   initialised = true;
-  let initialSync = true;
+  let previousDiscreteState: string | null = null;
 
   $effect.root(() => {
     $effect(() => {
@@ -77,8 +81,12 @@ export function initFilterSync() {
         modes: filters.modes,
         provinces: filters.provinces,
       };
-      writeToUrl(next, initialSync ? 'replace' : 'push');
-      initialSync = false;
+      const discreteState = discreteStateKey(next);
+      const method = previousDiscreteState === null || discreteState === previousDiscreteState
+        ? 'replace'
+        : 'push';
+      writeToUrl(next, method);
+      previousDiscreteState = discreteState;
     });
   });
 

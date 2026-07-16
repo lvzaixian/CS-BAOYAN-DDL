@@ -368,6 +368,62 @@ test('browser back and forward restore mode and status filter history', async ({
   await expectRowKeys(page, [KEYS.redwood, KEYS.cloud]);
 });
 
+test('search typing replaces history while every discrete filter pushes', async ({ page }, testInfo) => {
+  const search = page.getByRole('searchbox', { name: '搜索学校、学院、项目和活动类型' });
+  let expectedHistoryLength = await page.evaluate(() => window.history.length);
+  const expectHistoryLength = async () => {
+    await expect.poll(() => page.evaluate(() => window.history.length)).toBe(expectedHistoryLength);
+  };
+
+  await search.pressSequentially('大学', { delay: 50 });
+  await expect.poll(() => new URL(page.url()).searchParams.get('q')).toBe('大学');
+  await expectHistoryLength();
+
+  let panel = await filterPanel(page, testInfo.project.name);
+  await panel.getByRole('button', { name: '筛选档次：C9' }).click();
+  await closeMobileFilterPanel(page, testInfo.project.name);
+  expectedHistoryLength += 1;
+  await expect.poll(() => new URL(page.url()).searchParams.get('tags')).toBe('C9');
+  await expectHistoryLength();
+
+  panel = await filterPanel(page, testInfo.project.name);
+  await panel.getByRole('button', { name: '筛选形式：线上' }).click();
+  await closeMobileFilterPanel(page, testInfo.project.name);
+  expectedHistoryLength += 1;
+  await expect.poll(() => new URL(page.url()).searchParams.get('modes')).toBe('online');
+  await expectHistoryLength();
+
+  panel = await filterPanel(page, testInfo.project.name);
+  await panel.getByRole('button', { name: '筛选状态：开放' }).click();
+  await closeMobileFilterPanel(page, testInfo.project.name);
+  expectedHistoryLength += 1;
+  await expect.poll(() => new URL(page.url()).searchParams.get('status')).toBe('开放');
+  await expectHistoryLength();
+
+  panel = await filterPanel(page, testInfo.project.name);
+  await panel.getByRole('button', { name: '筛选院校所在地：北京' }).click();
+  await closeMobileFilterPanel(page, testInfo.project.name);
+  expectedHistoryLength += 1;
+  await expect.poll(() => new URL(page.url()).searchParams.get('prov')).toBe('北京');
+  await expectHistoryLength();
+
+  await search.focus();
+  await search.press('End');
+  await search.pressSequentially('院', { delay: 50 });
+  await expect.poll(() => new URL(page.url()).searchParams.get('q')).toBe('大学院');
+  await expectHistoryLength();
+
+  await page.getByLabel('数据源').selectOption('e2e-no-tier');
+  expectedHistoryLength += 1;
+  await expect.poll(() => new URL(page.url()).searchParams.get('src')).toBe('e2e-no-tier');
+  await expectHistoryLength();
+
+  await page.getByRole('tab', { name: '截止日历视图' }).click();
+  expectedHistoryLength += 1;
+  await expect.poll(() => new URL(page.url()).searchParams.get('view')).toBe('calendar');
+  await expectHistoryLength();
+});
+
 test('restores URL filters, migrates legacy status values and clears them', async ({ page }, testInfo) => {
   const historyLengthBeforeNavigation = await page.evaluate(() => window.history.length);
   await page.goto(
