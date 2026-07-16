@@ -191,6 +191,7 @@ import os, sys
 print(os.path.realpath(sys.argv[1]))
 PY
 }
+process_title() { python3 -c 'import pathlib,sys; value=pathlib.Path(sys.argv[1]).read_bytes().rstrip(b"\0"); b"\0" not in value or sys.exit("unexpected NUL inside process title"); sys.stdout.write(value.decode("utf-8"))' "$1"; }
 collect_valid_workers() {
   local status_path pid parent_pid worker_cmdline worker_exe
   for status_path in "$PROC_ROOT"/[0-9]*/status; do
@@ -200,7 +201,7 @@ collect_valid_workers() {
     parent_pid=$(awk '$1 == "PPid:" { print $2; exit }' "$status_path")
     test "$parent_pid" = "$MASTER_PID" || continue
     test -r "$PROC_ROOT/$pid/cmdline" || continue
-    worker_cmdline=$(tr '\0' ' ' < "$PROC_ROOT/$pid/cmdline" | sed 's/[[:space:]]*$//')
+    worker_cmdline=$(process_title "$PROC_ROOT/$pid/cmdline") || continue
     test "$worker_cmdline" = 'nginx: worker process' || continue
     worker_exe=$(canonical_path "$PROC_ROOT/$pid/exe") || continue
     test "$worker_exe" = "$NGINX_REAL" || continue

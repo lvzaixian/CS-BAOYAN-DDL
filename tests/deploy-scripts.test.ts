@@ -2428,6 +2428,8 @@ test('BaoTa worker gate rejects PID-set false positives and times out without a 
   addProcess(202, 910, 'nginx: cache manager process', nginx);
   addProcess(203, 910, 'nginx: worker process', otherBinary);
   addProcess(204, 910, 'nginx: worker process', nginx);
+  addProcess(205, 910, 'nginx: worker process ', nginx);
+  addProcess(206, 910, 'nginx: worker process\t', nginx);
 
   const workerEnv = {
     ...process.env,
