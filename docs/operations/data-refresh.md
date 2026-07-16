@@ -110,7 +110,7 @@ pnpm run snapshot:check-freshness -- \
   --max-age-hours 6
 ```
 
-构建阶段只把 `snapshotScanAt` 和 `snapshotApprovedAt` 写入私有的 `release-build/release-metadata.json`；公开的 `dist/release.json` 仍只包含 `releaseSha`、`snapshotId` 和 `dataHash`，私有 metadata 的六字段 schema 保持不变。无密钥的 `production_gate` job 绑定 `production-approval`，在 reviewer 批准后下载构建 artifact，校验 release SHA、metadata 精确 schema 和字段格式，再按当前 UTC 时间复核两个时间字段。只有 gate 成功后，control-plane 打包和真正的 `deploy` job 才会继续；`deploy` 仍绑定持有腾讯云 secrets 的 `production`。gate 不引用任何 secrets、不写入 SSH key、不配置 host key，也不联系生产主机。若六小时窗口已过，重新扫描、审阅差异并批准新快照，不得放宽阈值或复用旧批准时间。
+构建阶段只把 `snapshotScanAt` 和 `snapshotApprovedAt` 写入私有的 `release-build/release-metadata.json`；公开的 `dist/release.json` 仍只包含 `releaseSha`、`snapshotId` 和 `dataHash`，私有 metadata 的六字段 schema 保持不变。发布采用双重检查：无密钥的 `production_gate` job 绑定 `production-approval`，在 reviewer 批准后下载构建 artifact，首次校验 release SHA、metadata 精确 schema、字段格式和六小时 freshness；gate 成功后，control-plane 打包和真正的 `deploy` job 才会继续。`deploy` 仍绑定持有腾讯云 secrets 的 `production`，并在已下载 artifact、完成第二次人工批准和排队后，紧邻首个 secret/SSH 步骤再次执行同样的 schema、release SHA 和六小时检查。这样可防止 `production` 第二次人工批准或 runner 排队跨过六小时形成 TOCTOU；二次检查失败时必须失败关闭，SSH step 保持 skipped，cleanup 不得注入 host secrets。gate 本身不引用任何 secrets、不写入 SSH key、不配置 host key，也不联系生产主机。若任一检查发现六小时窗口已过，重新扫描、审阅差异并批准新快照，不得放宽阈值或复用旧批准时间。
 
 ## 失败处理
 
