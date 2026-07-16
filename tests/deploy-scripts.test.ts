@@ -2615,6 +2615,13 @@ test('Task 14 routing gates do not depend on Task 16 activation content', () => 
 
   assert.match(task14, /预期 404/);
   assert.match(task14, /Host[^。\n]*SNI[^。\n]*(?:vhost|虚拟主机)/i);
+  assert.match(task14, /test ! -e \/srv\/cs-baoyan-ddl\/current/);
+  assert.match(task14, /test ! -L \/srv\/cs-baoyan-ddl\/current/);
+  assertTextOrder(task14, [
+    'test ! -e /srv/cs-baoyan-ddl/current',
+    'test ! -L /srv/cs-baoyan-ddl/current',
+    'install -d -m 0700 -o root -g root "$BACKUP_ROOT"',
+  ]);
   assert.doesNotMatch(task14, /test -f \/srv\/cs-baoyan-ddl\/current\/release\.json/);
   assert.doesNotMatch(plannedTask14, /DDL content|SPA deep link|release\.json|asset/i);
 

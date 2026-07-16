@@ -75,7 +75,7 @@
 
 #### HTTP/TLS 单块主门禁
 
-从仓库根目录执行。先显式设置 TASK14_TEMPLATE_MODE=http；最终 TLS 窗口改为 tls，并额外导出已批准的 TLS_CERTIFICATE 与 TLS_CERTIFICATE_KEY 绝对路径。块内依次完成 preflight、持久备份、bootstrap、master/worker/error-log/SELinux 复验及本机 Host/SNI 虚拟主机路由探针。选定路由在尚无发布内容时预期 404；错误 Host、错误 SNI 和无 SNI 必须被拒绝。reload signal command accepted/sent 只代表命令被接受，不表示配置已应用；只有后续 worker、日志与路由门禁全部通过才接受本次主机变更。
+从仓库根目录执行。先显式设置 TASK14_TEMPLATE_MODE=http；最终 TLS 窗口改为 tls，并额外导出已批准的 TLS_CERTIFICATE 与 TLS_CERTIFICATE_KEY 绝对路径。块内依次完成 preflight、持久备份、bootstrap、master/worker/error-log/SELinux 复验及本机 Host/SNI 虚拟主机路由探针。Task 14 必须在尚未激活任何 release 时执行；`current` 已存在或是悬空符号链接都会在修改 vhost 前失败。选定路由在尚无发布内容时预期 404；错误 Host、错误 SNI 和无 SNI 必须被拒绝。reload signal command accepted/sent 只代表命令被接受，不表示配置已应用；只有后续 worker、日志与路由门禁全部通过才接受本次主机变更。
 
 ```bash
 set -Eeuo pipefail
@@ -293,6 +293,8 @@ master_has_log_inode
 printf 'error log dev:inode=%s offset=%s\n' "$ERROR_LOG_DEV_INODE" "$ERROR_LOG_OFFSET"
 getenforce
 test ! -e "$NGINX_CONFIG" || ls -lZ "$NGINX_CONFIG"
+test ! -e /srv/cs-baoyan-ddl/current
+test ! -L /srv/cs-baoyan-ddl/current
 
 install -d -m 0700 -o root -g root "$BACKUP_ROOT"
 BACKUP_DIR=$(mktemp -d "$BACKUP_ROOT/$SELECTED_DOMAIN.XXXXXX")
