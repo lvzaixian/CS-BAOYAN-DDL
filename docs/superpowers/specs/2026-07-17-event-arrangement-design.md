@@ -17,7 +17,17 @@ The list view shows a compact event-mode badge on every row. The detail panel ad
 
 The filter panel adds a `形式` group with counts and OR semantics. Selected modes persist in the URL and appear as removable active-filter chips. `清空全部` clears them.
 
+The row and detail header also show the project title and activity type so two opportunities from the same institute remain distinguishable. Search includes project title and activity type.
+
+The existing province value is labeled `院校所在地`; it is never presented as the event location. Actual event location remains the separately sourced `formatLocation` fact.
+
+The calendar is explicitly labeled `截止日历`. A day containing more rows than the compact preview can show exposes an interactive control that opens the complete day list; no opportunity may remain behind a non-interactive `+N` marker.
+
 When all approved rows have no maintained school-tier classification, the existing all-zero `档次` group is hidden. The release must not fabricate institutional tiers from accommodation, school names, or inconsistent legacy tags.
+
+Status language is neutral across event types: active actionable records are `开放`, archived records are `已结束`. Date-only deadlines remain sortable using the conservative normalized end-of-day value, but the UI identifies the missing official time and does not present that inferred time as an exact official timestamp.
+
+An optional direct-application CTA may be shown only when a separately verified application URL exists in an approved source field. The official notice remains available and is labeled `查看官方通知`; its URL is never relabeled as `立即报名` by inference.
 
 ## Public Data Contract
 
@@ -92,10 +102,12 @@ Because release freshness is six hours, an older source workbook may be used for
 1. Every approved opportunity has a valid event arrangement.
 2. The current source corpus produces deterministic online/offline/hybrid/unknown counts.
 3. List, detail, filter, URL restore, browser navigation, and clear-all behavior work on desktop, iPhone-size, and Redmi-size viewports.
-4. The all-zero school-tier group is not shown.
-5. Unit, type, production build, E2E, accessibility, public-boundary, and real-data checks pass.
-6. Project identity sets, public record counts, official-source requirements, and privacy guarantees remain intact.
-7. Independent spec, frontend, data-contract, security/reliability, and final verification reviews have no unresolved blocking findings.
+4. Project title/type are visible and searchable; school location and event location are not conflated.
+5. Dense calendar days expose every item through an interactive complete list.
+6. The all-zero school-tier group is not shown.
+7. Unit, type, production build, E2E, accessibility, public-boundary, and real-data checks pass.
+8. Project identity sets, public record counts, official-source requirements, and privacy guarantees remain intact.
+9. Independent spec, frontend, data-contract, security/reliability, and final verification reviews have no unresolved blocking findings.
 
 ## Stop Points
 

@@ -63,6 +63,9 @@
 
 - [ ] Add accessible icon-and-text mode badges to list rows.
 - [ ] Add the `活动安排` detail section after deadline information.
+- [ ] Show project title and activity type in rows/details and include both in search.
+- [ ] Relabel province as `院校所在地`; keep event location in the sourced arrangement.
+- [ ] Rename active/archive labels to `开放` and `已结束` across status filters and badges.
 - [ ] Add mode filters, counts, chips, and clear behavior.
 - [ ] Hide the school-tier group when the current feed has no maintained tags.
 - [ ] Preserve compact, stable row and drawer layouts on narrow screens.
@@ -76,6 +79,8 @@
 
 - [ ] Add representative online, offline, hybrid, and unknown fixture rows.
 - [ ] Test list badges, detail content, OR filtering, URL restore, back/forward navigation, chips, clear-all, and no-results behavior.
+- [ ] Make dense deadline-calendar overflow interactive and test that every day item can be opened.
+- [ ] Label the surface `截止日历` and retain raw deadline precision wording in details.
 - [ ] Run axe checks and viewport checks for desktop, iPhone 15 Pro size, and Redmi K50 Ultra size.
 - [ ] Verify no text overlap, horizontal scroll, blank content, or inaccessible icon-only state.
 
