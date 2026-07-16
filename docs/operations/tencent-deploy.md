@@ -200,8 +200,7 @@ collect_valid_workers() {
     parent_pid=$(awk '$1 == "PPid:" { print $2; exit }' "$status_path")
     test "$parent_pid" = "$MASTER_PID" || continue
     test -r "$PROC_ROOT/$pid/cmdline" || continue
-    worker_cmdline=$(tr '\0' ' ' < "$PROC_ROOT/$pid/cmdline")
-    worker_cmdline=${worker_cmdline% }
+    worker_cmdline=$(tr '\0' ' ' < "$PROC_ROOT/$pid/cmdline" | sed 's/[[:space:]]*$//')
     test "$worker_cmdline" = 'nginx: worker process' || continue
     worker_exe=$(canonical_path "$PROC_ROOT/$pid/exe") || continue
     test "$worker_exe" = "$NGINX_REAL" || continue

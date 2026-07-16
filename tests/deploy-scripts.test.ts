@@ -2419,7 +2419,7 @@ test('BaoTa worker gate rejects PID-set false positives and times out without a 
     const processRoot = join(procRoot, String(pid));
     mkdirSync(processRoot, { recursive: true });
     writeFileSync(join(processRoot, 'status'), `Name:\tnginx\nPPid:\t${parentPid}\n`, 'utf8');
-    writeFileSync(join(processRoot, 'cmdline'), Buffer.from(`${command}\0`, 'utf8'));
+    writeFileSync(join(processRoot, 'cmdline'), Buffer.from(`${command}\0\0\0\0`, 'utf8'));
     symlinkSync(executable, join(processRoot, 'exe'));
   };
 
