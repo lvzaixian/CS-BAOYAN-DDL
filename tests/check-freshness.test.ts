@@ -299,7 +299,7 @@ test('CLI rejects malformed JSON and stale timestamps', async (t) => {
   }
 });
 
-test('workflow checks freshness at approval and again before production secrets and SSH', () => {
+test('workflow checks freshness at approval, before SSH, and immediately before activation', () => {
   const packageJson = JSON.parse(readFileSync(packagePath, 'utf8')) as {
     scripts?: Record<string, string>;
   };
@@ -365,6 +365,11 @@ test('workflow checks freshness at approval and again before production secrets 
     '- name: Revalidate release metadata and snapshot freshness before SSH setup',
   );
   const sshSetup = deploy.indexOf('- name: Configure pinned SSH identity and host key');
+  const upload = deploy.indexOf('- name: Upload release archive and deployment scripts');
+  const activationFreshness = deploy.indexOf(
+    '- name: Revalidate release metadata and snapshot freshness immediately before activation',
+  );
+  const activation = deploy.indexOf('- name: Verify archive and activate release');
   const firstSecret = deploy.indexOf('${{ secrets.');
   assert.ok(
     artifactDownload >= 0
@@ -373,6 +378,12 @@ test('workflow checks freshness at approval and again before production secrets 
       && deployFreshness < sshSetup
       && sshSetup < firstSecret,
     'deploy must revalidate downloaded metadata before its first secret-backed SSH step',
+  );
+  assert.ok(
+    upload > sshSetup
+      && activationFreshness > upload
+      && activation > activationFreshness,
+    'deploy must revalidate snapshot freshness after upload and immediately before activation',
   );
 
   const deployFreshnessStep = deploy.slice(deployFreshness, sshSetup);
@@ -393,11 +404,28 @@ test('workflow checks freshness at approval and again before production secrets 
   assert.match(deployFreshnessStep, /set -euo pipefail/);
   assert.doesNotMatch(deployFreshnessStep, /continue-on-error/);
 
+  const activationFreshnessStep = deploy.slice(activationFreshness, activation);
+  assert.match(
+    activationFreshnessStep,
+    /expected_keys = \{"releaseSha", "snapshotId", "dataHash", "archiveSha", "snapshotScanAt", "snapshotApprovedAt"\}/,
+  );
+  assert.match(
+    activationFreshnessStep,
+    /metadata\["releaseSha"\] != os\.environ\["RELEASE_SHA"\]/,
+  );
+  assert.match(activationFreshnessStep, /MAX_AGE_SECONDS = 21600/);
+  assert.match(activationFreshnessStep, /datetime\.now\(timezone\.utc\)/);
+  assert.match(activationFreshnessStep, /approved_at < scan_at/);
+  assert.match(activationFreshnessStep, /timestamp > now/);
+  assert.match(activationFreshnessStep, /now - timestamp > max_age/);
+  assert.match(activationFreshnessStep, /set -euo pipefail/);
+  assert.doesNotMatch(activationFreshnessStep, /continue-on-error/);
+
   const beforeSsh = deploy.slice(0, sshSetup);
   assert.doesNotMatch(beforeSsh, /\$\{\{\s*secrets\./);
   assert.doesNotMatch(beforeSsh, /HOME\/\.ssh|deploy_key|known_hosts|ssh-keygen/);
   assert.doesNotMatch(beforeSsh, /(?:^|\n)\s*(?:ssh|scp)\s/m);
-  assert.equal([...workflow.matchAll(/MAX_AGE_SECONDS = 21600/g)].length, 2);
+  assert.equal([...workflow.matchAll(/MAX_AGE_SECONDS = 21600/g)].length, 3);
 
   const cleanupStart = deploy.indexOf('- name: Remove remote staging and local SSH material');
   assert.ok(cleanupStart >= 0);
@@ -405,7 +433,7 @@ test('workflow checks freshness at approval and again before production secrets 
   assert.match(cleanup, /if:\s*\$\{\{ always\(\) && steps\.ssh\.outcome != 'skipped' \}\}/);
 
   const operations = readFileSync(operationsPath, 'utf8');
-  assert.match(operations, /双重检查/);
+  assert.match(operations, /三重检查/);
   assert.match(operations, /production.*第二次人工批准[\s\S]*TOCTOU/);
-  assert.match(operations, /再次.*六小时[\s\S]*(?:失败关闭|fail closed)/);
+  assert.match(operations, /激活前[\s\S]*再次.*六小时[\s\S]*(?:失败关闭|fail closed)/);
 });
