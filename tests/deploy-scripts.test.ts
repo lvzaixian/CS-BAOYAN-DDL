@@ -2413,13 +2413,17 @@ test('BaoTa worker gate rejects PID-set false positives and times out without a 
   const addProcess = (
     pid: number,
     parentPid: number,
-    command: string,
+    command: string | Buffer,
     executable: string,
   ): void => {
     const processRoot = join(procRoot, String(pid));
     mkdirSync(processRoot, { recursive: true });
     writeFileSync(join(processRoot, 'status'), `Name:\tnginx\nPPid:\t${parentPid}\n`, 'utf8');
-    writeFileSync(join(processRoot, 'cmdline'), Buffer.from(`${command}\0\0\0\0`, 'utf8'));
+    const commandBytes = typeof command === 'string' ? Buffer.from(command, 'utf8') : command;
+    writeFileSync(
+      join(processRoot, 'cmdline'),
+      Buffer.concat([commandBytes, Buffer.from([0, 0, 0, 0])]),
+    );
     symlinkSync(executable, join(processRoot, 'exe'));
   };
 
@@ -2430,6 +2434,9 @@ test('BaoTa worker gate rejects PID-set false positives and times out without a 
   addProcess(204, 910, 'nginx: worker process', nginx);
   addProcess(205, 910, 'nginx: worker process ', nginx);
   addProcess(206, 910, 'nginx: worker process\t', nginx);
+  addProcess(207, 910, 'nginx: worker process\n', nginx);
+  addProcess(208, 910, 'nginx: worker\0process', nginx);
+  addProcess(209, 910, Buffer.from('nginx: worker process\xff', 'latin1'), nginx);
 
   const workerEnv = {
     ...process.env,
