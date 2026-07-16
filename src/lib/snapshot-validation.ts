@@ -107,6 +107,15 @@ const opportunityKeys = [
 ] as const;
 const sourceKeys = ['kind', 'label', 'url'] as const;
 const factKeys = ['status', 'summary'] as const;
+const maxPrivacyScanNodes = 50_000;
+const maxPrivacyScanDepth = 256;
+
+interface PrivacyScanState {
+  seen: WeakSet<object>;
+  nodes: number;
+  nodeBudgetExceeded: boolean;
+  depthBudgetExceeded: boolean;
+}
 
 interface OpportunityOrderValue {
   path: string;
@@ -163,20 +172,43 @@ function validateNoPrivateValues(
   value: unknown,
   path: string,
   errors: string[],
-  seen = new WeakSet<object>(),
+  state: PrivacyScanState = {
+    seen: new WeakSet<object>(),
+    nodes: 0,
+    nodeBudgetExceeded: false,
+    depthBudgetExceeded: false,
+  },
+  depth = 0,
 ): void {
+  state.nodes += 1;
+  if (state.nodes > maxPrivacyScanNodes) {
+    if (!state.nodeBudgetExceeded) {
+      errors.push(`${path}: privacy scan exceeded node budget`);
+      state.nodeBudgetExceeded = true;
+    }
+    return;
+  }
+  if (depth > maxPrivacyScanDepth) {
+    if (!state.depthBudgetExceeded) {
+      errors.push(`${path}: privacy scan exceeded depth budget`);
+      state.depthBudgetExceeded = true;
+    }
+    return;
+  }
   if (typeof value === 'string' || typeof value === 'number') {
     validatePrivateText(String(value), path, errors);
     return;
   }
-  if (typeof value !== 'object' || value === null || seen.has(value)) return;
-  seen.add(value);
+  if (typeof value !== 'object' || value === null || state.seen.has(value)) return;
+  state.seen.add(value);
 
   if (Array.isArray(value)) {
-    for (let index = 0; index < value.length; index += 1) {
-      if (Object.hasOwn(value, index)) {
-        validateNoPrivateValues(value[index], `${path}[${index}]`, errors, seen);
-      }
+    for (const [key, child] of Object.entries(value)) {
+      const pathToChild = /^(?:0|[1-9][0-9]*)$/.test(key)
+        ? `${path}[${key}]`
+        : childPath(path, key);
+      validatePrivateKey(key, pathToChild, errors);
+      validateNoPrivateValues(child, pathToChild, errors, state, depth + 1);
     }
     return;
   }
@@ -184,7 +216,7 @@ function validateNoPrivateValues(
   for (const [key, child] of Object.entries(value)) {
     const pathToChild = childPath(path, key);
     validatePrivateKey(key, pathToChild, errors);
-    validateNoPrivateValues(child, pathToChild, errors, seen);
+    validateNoPrivateValues(child, pathToChild, errors, state, depth + 1);
   }
 }
 

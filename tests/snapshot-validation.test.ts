@@ -223,6 +223,47 @@ test('malformed percent encoding does not throw or create a privacy error', () =
   assert.deepEqual(validateCandidate(candidate, nowMs), []);
 });
 
+test('privacy validation scans only present sparse-array entries', () => {
+  const candidate = validCandidate();
+  const sparse: unknown[] = [];
+  sparse[1_000_000_000] = 'private@example.com';
+  candidate.untrustedExtension = sparse;
+
+  const startedAt = performance.now();
+  const errors = validateCandidate(candidate, nowMs).join('\n');
+
+  assert.ok(performance.now() - startedAt < 1_000, 'sparse-array validation took too long');
+  assert.match(errors, /snapshot\.untrustedExtension\[1000000000\].*email address/i);
+});
+
+test('privacy validation fails closed at its nesting-depth limit', () => {
+  const candidate = validCandidate();
+  let cursor: Record<string, unknown> = candidate;
+
+  for (let depth = 0; depth < 300; depth += 1) {
+    const child: Record<string, unknown> = {};
+    cursor.untrustedExtension = child;
+    cursor = child;
+  }
+
+  assert.match(
+    validateCandidate(candidate, nowMs).join('\n'),
+    /privacy scan exceeded depth budget/i,
+  );
+});
+
+test('privacy validation fails closed at its node limit', () => {
+  const candidate = validCandidate();
+  candidate.untrustedExtension = Object.fromEntries(
+    Array.from({ length: 50_001 }, (_, index) => [`public${index}`, index]),
+  );
+
+  assert.match(
+    validateCandidate(candidate, nowMs).join('\n'),
+    /privacy scan exceeded node budget/i,
+  );
+});
+
 test('candidate rejects every approval-only metadata field', async (t) => {
   for (const key of ['snapshotId', 'approvedAt', 'previousSnapshotId', 'dataHash']) {
     await t.test(key, () => {
