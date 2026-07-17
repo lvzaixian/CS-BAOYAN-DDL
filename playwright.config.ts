@@ -1,5 +1,11 @@
 import { defineConfig } from '@playwright/test';
 
+const e2ePortText = process.env.E2E_PORT ?? '4173';
+if (!/^\d{4,5}$/.test(e2ePortText)) throw new Error('E2E_PORT must be a decimal TCP port');
+const e2ePort = Number(e2ePortText);
+if (e2ePort < 1024 || e2ePort > 65_535) throw new Error('E2E_PORT is outside the allowed range');
+const e2eBaseUrl = `http://127.0.0.1:${e2ePort}`;
+
 export default defineConfig({
   testDir: './e2e',
   outputDir: 'test-results',
@@ -12,7 +18,7 @@ export default defineConfig({
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
   ],
   use: {
-    baseURL: 'http://127.0.0.1:4173',
+    baseURL: e2eBaseUrl,
     browserName: 'chromium',
     timezoneId: 'Asia/Shanghai',
     locale: 'zh-CN',
@@ -23,8 +29,8 @@ export default defineConfig({
   },
   webServer: {
     command:
-      'pnpm exec vite preview --outDir dist-e2e --host 127.0.0.1 --port 4173 --strictPort',
-    url: 'http://127.0.0.1:4173',
+      `pnpm exec vite preview --outDir dist-e2e --host 127.0.0.1 --port ${e2ePort} --strictPort`,
+    url: e2eBaseUrl,
     reuseExistingServer: false,
     timeout: 30_000,
   },

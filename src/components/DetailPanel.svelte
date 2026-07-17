@@ -6,19 +6,14 @@
     ExternalLink,
     Files,
     LetterText,
-    Link,
     MapPin,
     X,
   } from 'lucide-svelte';
   import { onMount, tick } from 'svelte';
   import type { DerivedSchool } from '$lib/types';
   import type { FactStatus } from '$lib/snapshot-types';
-  import {
-    deadlineOriginalSupportsNormalizedTime,
-    formatDate,
-    formatDateTime,
-  } from '$lib/time';
-  import { eventModeLabel, expiredDeadlineText, sourceLinkLabel } from '$lib/filter';
+  import { formatDate } from '$lib/time';
+  import { eventModeLabel } from '$lib/filter';
   import { getInitials, getLogoUrl } from '$lib/logos';
   import { resolveProvince } from '$data/provinces';
 
@@ -32,28 +27,13 @@
 
   const logo = $derived(getLogoUrl(school.name));
   const province = $derived(resolveProvince(school.name, school.province));
-  const deadlineStatus = $derived(expiredDeadlineText(school));
-  const deadlineHasExplicitTime = $derived(
-    deadlineOriginalSupportsNormalizedTime(school.deadlineOriginal, school.deadlineMs),
-  );
-  const normalizedDeadline = $derived(
-    school.deadlineMs === null
-      ? '未公布'
-      : deadlineHasExplicitTime
-        ? formatDateTime(school.deadlineMs)
-        : `${formatDate(school.deadlineMs)} · 按当日末排序（官方未公布具体时刻）`,
+  const officialDeadline = $derived(
+    school.deadlineOriginal.trim()
+      || (school.deadlineMs === null ? '未公布' : formatDate(school.deadlineMs)),
   );
   const modeLabel = $derived(eventModeLabel(school.eventArrangement.mode));
-  const sourceLabel = $derived(sourceLinkLabel(school));
-  const verifiedAtMs = $derived.by(() => {
-    const parsed = Date.parse(school.verifiedAt);
-    return Number.isFinite(parsed) ? parsed : null;
-  });
   const officialSources = $derived(
     school.discoverySources.filter((source) => source.kind === 'official'),
-  );
-  const discoverySources = $derived(
-    school.discoverySources.filter((source) => source.kind !== 'official'),
   );
   const primaryOfficialSource = $derived(officialSources[0] ?? null);
 
@@ -99,7 +79,7 @@
   <button
     class="absolute inset-0 bg-black/50 backdrop-blur-[3px]"
     onclick={onClose}
-    aria-label="关闭项目详情"
+    aria-hidden="true"
     tabindex="-1"
   ></button>
 
@@ -148,27 +128,30 @@
     </div>
 
     <!-- body -->
-    <div class="detail-panel__body flex-1 min-w-0 overflow-y-auto overflow-x-hidden">
+    <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+    <div
+      class="detail-panel__body flex-1 min-w-0 overflow-y-auto overflow-x-hidden"
+      role="region"
+      tabindex="0"
+      aria-label="项目详情内容"
+    >
       <section class="detail-section px-5 py-4 border-b border-line" aria-labelledby="deadline-heading">
         <h2 id="deadline-heading" class="detail-section__title text-fg-2 text-xs font-medium mb-3">
           <CalendarClock class="w-4 h-4" aria-hidden="true" />
-          <span>截止信息</span>
+          <span>截止与日期</span>
         </h2>
         <dl class="detail-deadline-grid">
           <div class="detail-field detail-field--wide">
-            <dt>原始文本</dt>
-            <dd class="detail-wrap">{school.deadlineOriginal || '未提供'}</dd>
+            <dt>报名截止</dt>
+            <dd class="detail-wrap tabular">{officialDeadline}</dd>
           </div>
-          <div class="detail-field">
-            <dt>标准化时间</dt>
-            <dd class="detail-wrap tabular">
-              {normalizedDeadline}{deadlineStatus ? ` · ${deadlineStatus}` : ''}
-            </dd>
-          </div>
-          <div class="detail-field">
-            <dt>核验时间</dt>
-            <dd class="detail-wrap tabular">
-              {verifiedAtMs === null ? '未记录' : formatDateTime(verifiedAtMs)}
+          <div class="detail-field detail-field--wide">
+            <dt>活动日期</dt>
+            <dd class="detail-wrap">
+              {school.eventArrangement.time.summary || '未公布'}
+              <span class="ml-1 text-[10.5px] text-fg-3">
+                · {factStatusLabels[school.eventArrangement.time.status]}
+              </span>
             </dd>
           </div>
         </dl>
@@ -180,21 +163,12 @@
           <span>活动安排</span>
         </h2>
         <dl class="detail-deadline-grid">
-          <div class="detail-field detail-field--wide">
+          <div class="detail-field">
             <dt>活动形式</dt>
             <dd>{modeLabel}</dd>
           </div>
           <div class="detail-field">
-            <dt>活动时间</dt>
-            <dd class="detail-wrap">
-              {school.eventArrangement.time.summary || '未提供'}
-              <span class="ml-1 text-[10.5px] text-fg-3">
-                · {factStatusLabels[school.eventArrangement.time.status]}
-              </span>
-            </dd>
-          </div>
-          <div class="detail-field">
-            <dt>形式与地点</dt>
+            <dt>活动地点</dt>
             <dd class="detail-wrap">
               {school.eventArrangement.formatLocation.summary || '未提供'}
               <span class="ml-1 text-[10.5px] text-fg-3">
@@ -240,69 +214,28 @@
         </p>
       </section>
 
-      <section class="detail-section px-5 py-4" aria-labelledby="sources-heading">
-        <h2 id="sources-heading" class="detail-section__title text-fg-2 text-xs font-medium mb-3">
-          <Link class="w-4 h-4" aria-hidden="true" />
-          <span>信息来源</span>
-        </h2>
-
-        {#if officialSources.length > 0}
-          <div class="detail-source-list" aria-label="官方来源">
-            {#each officialSources as source}
-              <a
-                href={source.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="detail-source-link detail-source-link--official text-fg-1"
-                aria-label="打开{sourceLabel}：{source.label}"
-              >
-                <span>{sourceLabel} · {source.label}</span>
-                <ExternalLink class="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-              </a>
-            {/each}
-          </div>
-        {/if}
-
-        {#if discoverySources.length > 0}
-          <div class="detail-source-list mt-2" aria-label="发现来源">
-            {#each discoverySources as source}
-              <a
-                href={source.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="detail-source-link detail-source-link--secondary text-fg-3 hover:text-fg-1"
-                aria-label="打开发现来源：{source.label}"
-              >
-                <span>{source.label}</span>
-                <ExternalLink class="w-3 h-3 shrink-0" aria-hidden="true" />
-              </a>
-            {/each}
-          </div>
-        {/if}
-
-        {#if officialSources.length === 0 && discoverySources.length === 0}
-          <p class="text-fg-3 text-sm">暂无可用来源</p>
-        {/if}
-      </section>
     </div>
 
     <!-- footer cta -->
     <div class="detail-panel__footer px-5 py-4 border-t border-line">
+      <p class="mb-3 text-center text-[11px] leading-relaxed text-fg-3">
+        本站信息仅供参考，报名要求与时间请以院校官网最新通知为准。
+      </p>
       {#if primaryOfficialSource}
         <a
           href={primaryOfficialSource.url}
           target="_blank"
           rel="noopener noreferrer"
           class="w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg surface-3 hover:bg-emerald-500/15 hover:text-emerald-200 text-fg-0 text-sm font-medium border border-line-strong transition detail-wrap"
-          aria-label="打开{sourceLabel}：{primaryOfficialSource.label}"
+          aria-label="打开{school.name}官网"
         >
-          <span>查看官方通知</span>
+          <span>打开官网</span>
           <ExternalLink class="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
         </a>
       {:else}
         <div class="w-full inline-flex items-center justify-center gap-2 py-2 text-fg-3 text-sm" role="status">
           <CircleAlert class="w-4 h-4 shrink-0" aria-hidden="true" />
-          <span class="detail-wrap">暂无已核验官方来源</span>
+          <span class="detail-wrap">官网链接暂不可用</span>
         </div>
       {/if}
     </div>

@@ -304,17 +304,17 @@ test('overrides a null relative deadline only for expired rows', () => {
   assert.equal(expiredDeadlineText(activeUnknown), null);
 });
 
-test('wires status counts and deadline/source labels through authoritative helpers', () => {
+test('keeps status authority in filters while compact rows avoid redundant status/source labels', () => {
   assert.match(filterPanelSource, /countStatuses\(rows\)/);
-  assert.match(schoolRowSource, /opportunityStatusLabel\(school\)/);
+  assert.doesNotMatch(schoolRowSource, /opportunityStatusLabel\(school\)/);
   assert.doesNotMatch(
     schoolRowSource,
     /school\.verificationStatus === 'expired'\s*\?\s*'已过期'\s*:\s*'已核验'/,
   );
   assert.match(schoolRowSource, /expiredDeadlineText\(school\)/);
-  assert.match(schoolRowSource, /sourceLinkLabel\(school\)/);
-  assert.match(detailPanelSource, /expiredDeadlineText\(school\)/);
-  assert.match(detailPanelSource, /sourceLinkLabel\(school\)/);
+  assert.doesNotMatch(schoolRowSource, /sourceLinkLabel\(school\)/);
+  assert.doesNotMatch(detailPanelSource, /expiredDeadlineText\(school\)/);
+  assert.doesNotMatch(detailPanelSource, /sourceLinkLabel\(school\)/);
 });
 
 test('keeps the feed selector readable on narrow mobile headers and auto-sized on desktop', () => {

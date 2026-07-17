@@ -230,18 +230,19 @@ test('uses the fixture and renders exact ordered groups and active deadlines', a
   }
 });
 
-test('opens deterministic details with ordered facts and exact source links', async ({ page }) => {
+test('opens deterministic details with ordered facts and the official website CTA', async ({ page }) => {
   await page.getByRole('button', { name: '查看项目详情：红杉大学 人工智能学院' }).click();
   const dialog = page.getByRole('dialog', { name: '项目详情' });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole('heading', { level: 2 })).toHaveText([
-    '截止信息',
+    '截止与日期',
     '活动安排',
     '食宿与交通',
     '推荐信',
     '材料',
-    '信息来源',
   ]);
+  await expect(dialog.getByText('报名截止', { exact: true })).toBeVisible();
+  await expect(dialog.getByText('活动日期', { exact: true })).toBeVisible();
   await expect(dialog.getByText('线上', { exact: true })).toBeVisible();
   await expect(dialog.getByText('2026年8月3日至8月5日')).toBeVisible();
   await expect(dialog.getByText('腾讯会议，链接另行通知')).toBeVisible();
@@ -249,33 +250,15 @@ test('opens deterministic details with ordered facts and exact source links', as
   await expect(dialog.getByText(/腾讯会议，链接另行通知\s*· 已核验/)).toBeVisible();
   const officialCta = dialog
     .locator('.detail-panel__footer')
-    .getByRole('link', { name: '打开官方来源：红杉大学官方通知' });
-  await expect(officialCta).toContainText('查看官方通知');
+    .getByRole('link', { name: '打开红杉大学官网' });
+  await expect(officialCta).toContainText('打开官网');
   await expect(officialCta).toHaveAttribute(
     'href',
     'https://admissions.redwood.example.test/2026/summer-camp',
   );
 
-  const sourceSection = dialog.locator('section').last();
-  const sourceLinks = sourceSection.getByRole('link');
-  await expect(sourceLinks).toHaveCount(2);
-  const official = sourceLinks.nth(0);
-  const discovery = sourceLinks.nth(1);
-  await expect(official).toHaveAttribute(
-    'href',
-    'https://admissions.redwood.example.test/2026/summer-camp',
-  );
-  await expect(official).toHaveAttribute('target', '_blank');
-  await expect(official).toHaveAttribute('rel', 'noopener noreferrer');
-  await expect(discovery).toHaveAttribute(
-    'href',
-    'https://discovery.example.test/redwood-summer-camp',
-  );
-  expect(
-    await official.evaluate((node, other) =>
-      Boolean(node.compareDocumentPosition(other as Node) & Node.DOCUMENT_POSITION_FOLLOWING),
-    await discovery.elementHandle()),
-  ).toBe(true);
+  await expect(dialog.getByText('本站信息仅供参考', { exact: false })).toBeVisible();
+  await expect(dialog.getByText('信息来源', { exact: true })).toHaveCount(0);
 });
 
 test('shows date-only source precision without presenting the normalized cutoff as official', async ({ page }) => {
@@ -288,7 +271,7 @@ test('shows date-only source precision without presenting the normalized cutoff 
   ).toBeVisible();
   await expect(
     dialog.getByText('2026 年 7月 18 日 · 按当日末排序（官方未公布具体时刻）', { exact: true }),
-  ).toBeVisible();
+  ).toHaveCount(0);
 });
 
 test('keeps desktop sidebar and mobile panels within their viewport', async ({ page }, testInfo) => {

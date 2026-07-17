@@ -21,6 +21,10 @@ The row and detail header also show the project title and activity type so two o
 
 The existing province value is labeled `院校所在地`; it is never presented as the event location. Actual event location remains the separately sourced `formatLocation` fact.
 
+The compact list remains visually aligned with the upstream CS-BAOYAN DDL two-line row. School, institute, and project share the identity line; mode, maintained tags, school province, and activity type share the metadata line. The group heading already communicates open/expired state, so the row does not repeat a status badge. Mode remains the first visible metadata badge.
+
+The detail drawer exposes one official deadline wording only. The official activity date follows it immediately, then the normalized mode and official location wording. Discovery-source inventories and verification timestamps stay in the approved data contract but are not rendered. The only outbound control is `打开官网`, followed by a concise reminder that the official notice is authoritative.
+
 The calendar is explicitly labeled `截止日历`. A day containing more rows than the compact preview can show exposes an interactive control that opens the complete day list; no opportunity may remain behind a non-interactive `+N` marker.
 
 When all approved rows have no maintained school-tier classification, the existing all-zero `档次` group is hidden. The release must not fabricate institutional tiers from accommodation, school names, or inconsistent legacy tags.

@@ -28,15 +28,12 @@ test('keeps the public list groups in actionable, unknown and expired order', ()
   assert.doesNotMatch(listViewSource, /head\('(日期未公布|已结束)'/);
 });
 
-test('renders compact project identity and icon-plus-text mode badges for public rows', () => {
+test('renders compact two-line project identity and icon-plus-text mode badges', () => {
   const markup = schoolRowSource.slice(schoolRowSource.indexOf('</script>'));
 
-  assert.match(
-    schoolRowSource,
-    /const statusLabel = \$derived\(opportunityStatusLabel\(school\)\)/,
-  );
-  assert.match(markup, /\{statusLabel\}/);
-  assert.doesNotMatch(schoolRowSource, /verificationLabel/);
+  assert.match(markup, /data-layout="compact-two-line"/);
+  assert.doesNotMatch(schoolRowSource, /opportunityStatusLabel|statusLabel/);
+  assert.doesNotMatch(schoolRowSource, /Archive|BadgeCheck/);
   assert.match(markup, /\{#each displayTags as t\}/);
   assert.doesNotMatch(schoolRowSource, /t === '(已开营|已结营)'/);
   assert.doesNotMatch(markup, />\s*(已开营|已结营)\s*</);
@@ -49,11 +46,11 @@ test('renders compact project identity and icon-plus-text mode badges for public
   assert.match(schoolRowSource, /CircleHelp/);
 });
 
-test('uses six unframed detail sections in the required order', () => {
+test('uses five unframed detail sections in the required order', () => {
   const bodyStart = detailPanelSource.indexOf('<!-- body -->');
   const footerStart = detailPanelSource.indexOf('<!-- footer cta -->');
   const body = detailPanelSource.slice(bodyStart, footerStart);
-  const headings = ['截止信息', '活动安排', '食宿与交通', '推荐信', '材料', '信息来源'];
+  const headings = ['截止与日期', '活动安排', '食宿与交通', '推荐信', '材料'];
   let previous = -1;
 
   for (const heading of headings) {
@@ -62,18 +59,23 @@ test('uses six unframed detail sections in the required order', () => {
     previous = position;
   }
 
-  assert.equal(body.match(/<section\b/g)?.length, 6);
+  assert.equal(body.match(/<section\b/g)?.length, 5);
+  assert.doesNotMatch(body, /信息来源|discoverySources|detail-source-list/);
   assert.doesNotMatch(body, /surface-[23]|rounded-(?:lg|xl)/);
 });
 
-test('shows deadline and application facts with legacy-safe fallbacks', () => {
+test('shows one official deadline followed immediately by the activity date', () => {
   assert.match(detailPanelSource, /school\.deadlineOriginal/);
-  assert.match(detailPanelSource, /school\.deadlineMs === null\s*\?\s*'未公布'/);
-  assert.match(
-    detailPanelSource,
-    /const deadlineStatus = \$derived\(expiredDeadlineText\(school\)\)/,
-  );
-  assert.match(detailPanelSource, /verifiedAtMs === null\s*\?\s*'未记录'/);
+  assert.match(detailPanelSource, /const officialDeadline = \$derived/);
+  assert.doesNotMatch(detailPanelSource, /原始文本|标准化时间|核验时间/);
+
+  const deadlineLabel = detailPanelSource.indexOf('<dt>报名截止</dt>');
+  const activityDateLabel = detailPanelSource.indexOf('<dt>活动日期</dt>');
+  const arrangementSection = detailPanelSource.indexOf('id="arrangement-heading"');
+  assert.ok(deadlineLabel !== -1, 'missing official deadline');
+  assert.ok(activityDateLabel > deadlineLabel, 'activity date must immediately follow deadline');
+  assert.ok(arrangementSection > activityDateLabel, 'activity date must precede arrangement section');
+
   assert.match(detailPanelSource, /eventModeLabel\(school\.eventArrangement\.mode\)/);
   assert.match(detailPanelSource, /school\.eventArrangement\.time\.summary/);
   assert.match(detailPanelSource, /factStatusLabels\[school\.eventArrangement\.time\.status\]/);
@@ -125,30 +127,19 @@ test('matches only explicit times that support the normalized deadline', () => {
   assert.equal(deadlineOriginalSupportsNormalizedTime('2026年7月28日15:00关闭', null), false);
 });
 
-test('uses normalized-time support to choose the precise detail deadline', () => {
-  assert.match(
-    detailPanelSource,
-    /deadlineOriginalSupportsNormalizedTime\(\s*school\.deadlineOriginal,\s*school\.deadlineMs,?\s*\)/,
-  );
-
-  assert.match(
-    detailPanelSource,
-    /deadlineHasExplicitTime\s*\?\s*formatDateTime\(school\.deadlineMs\)/,
-  );
-  assert.match(detailPanelSource, /按当日末排序（官方未公布具体时刻）/);
-});
-
-test('shows project and event type in the detail header and keeps the official CTA honest', () => {
+test('shows project and event type in the detail header and uses the requested official CTA', () => {
   const footer = detailPanelSource.slice(detailPanelSource.indexOf('<!-- footer cta -->'));
 
   assert.match(detailPanelSource, /\{school\.project\}/);
   assert.match(detailPanelSource, /\{school\.eventType\}/);
-  assert.match(footer, />\s*查看官方通知\s*</);
-  assert.doesNotMatch(footer, /立即报名/);
+  assert.match(footer, />\s*打开官网\s*</);
+  assert.match(footer, /本站信息仅供参考/);
+  assert.doesNotMatch(footer, /查看官方(?:通知|来源)|立即报名/);
 });
 
 test('labels province as the school location in list and detail views', () => {
-  assert.match(schoolRowSource, />· 院校所在地：\{province\}</);
+  assert.match(schoolRowSource, /aria-label="院校所在地：\{province\}"/);
+  assert.match(schoolRowSource, />\s*· \{province\}\s*</);
   assert.match(detailPanelSource, />院校所在地：\{province\}</);
 });
 
@@ -157,21 +148,19 @@ test('opens details as a dialog trigger instead of a toggle button', () => {
   assert.match(schoolRowSource, /aria-haspopup="dialog"/);
 });
 
-test('orders official and discovery sources without promoting legacy links', () => {
+test('keeps a verified official CTA without exposing source inventories', () => {
   assert.match(detailPanelSource, /source\.kind === 'official'/);
-  assert.match(detailPanelSource, /source\.kind !== 'official'/);
-  assert.match(
-    detailPanelSource,
-    /\{#each discoverySources as source\}[\s\S]*?<a[\s\S]*?rel="noopener noreferrer"/,
-  );
   assert.match(detailPanelSource, /officialSources\[0\]/);
-  assert.match(detailPanelSource, /暂无已核验官方来源/);
+  assert.doesNotMatch(detailPanelSource, /source\.kind !== 'official'|const discoverySources/);
+  assert.doesNotMatch(detailPanelSource, /暂无已核验官方来源|信息来源/);
 });
 
 test('preserves drawer accessibility and constrains long responsive content', () => {
   assert.match(detailPanelSource, /role="dialog"/);
   assert.match(detailPanelSource, /aria-modal="true"/);
   assert.match(detailPanelSource, /w-full sm:w-\[460px\]/);
+  assert.match(detailPanelSource, /class="detail-panel__body[^\n]*"[\s\S]*?tabindex="0"/);
+  assert.match(detailPanelSource, /aria-label="项目详情内容"/);
   assert.match(detailPanelSource, /from 'lucide-svelte'/);
   assert.match(appCssSource, /overflow-wrap:\s*anywhere/);
   assert.match(appCssSource, /letter-spacing:\s*normal/);
