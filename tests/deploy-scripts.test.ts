@@ -1355,6 +1355,47 @@ test('smoke rejects a self-consistent canonical hash when the full snapshot sche
   assert.notEqual(result.status, 0, result.stderr || result.stdout);
 });
 
+test('smoke rejects self-consistent snapshots containing full-width private contacts', async (t) => {
+  for (const [name, privateValue] of [
+    ['email', '联系 student＠example.com'],
+    ['mobile', '咨询 １３８００１３８０００'],
+  ] as const) {
+    await t.test(name, async (subtest) => {
+      const { deployRoot, fakeBin } = makeDeployRoot(subtest);
+      const releaseSha = '9'.repeat(40);
+      const release = join(deployRoot, 'releases', releaseSha);
+      const snapshot = validSmokeSnapshot() as Record<string, any>;
+      snapshot.opportunities[0].description = privateValue;
+      delete snapshot.snapshotId;
+      delete snapshot.approvedAt;
+      delete snapshot.previousSnapshotId;
+      delete snapshot.dataHash;
+      const approvedAt = '2026-07-15T15:05:00Z';
+      const dataHash = canonicalDataHash(snapshot);
+      const approvedSnapshot = {
+        ...snapshot,
+        snapshotId: deriveSnapshotId(approvedAt, dataHash),
+        approvedAt,
+        previousSnapshotId: null,
+        dataHash,
+      } as PublicSnapshot;
+      const identity = writeValidatedReleaseTree(release, releaseSha, approvedSnapshot);
+      symlinkSync(release, join(deployRoot, 'current'));
+      const smokeUrl = await startCurrentFixture(subtest, deployRoot);
+      const result = await runScript(smokeScript, {
+        SMOKE_URL: smokeUrl,
+        EXPECTED_RELEASE_SHA: identity.releaseSha,
+        EXPECTED_SNAPSHOT_ID: identity.snapshotId,
+        EXPECTED_DATA_HASH: identity.dataHash,
+        SMOKE_ATTEMPTS: '1',
+        SMOKE_RETRY_DELAY: '0',
+        PATH: `${fakeBin}:${process.env.PATH}`,
+      });
+      assert.notEqual(result.status, 0, result.stderr || result.stdout);
+    });
+  }
+});
+
 test('smoke fails closed on declared and chunked endpoint byte overflows', async (t) => {
   for (const [name, oversizedPath, oversizedBytes, oversizedChunked] of [
     ['declared release identity', '/release.json', 16 * 1024 + 1, false],

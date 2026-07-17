@@ -78,9 +78,19 @@ const privateValueCases: Array<{
     mutate: (value) => (value.opportunities[0].description = '联系 student@example.com'),
   },
   {
+    name: 'full-width email address',
+    path: 'snapshot.opportunities[0].description',
+    mutate: (value) => (value.opportunities[0].description = '联系 student＠example.com'),
+  },
+  {
     name: 'Chinese mainland mobile number',
     path: 'snapshot.opportunities[0].logistics.summary',
     mutate: (value) => (value.opportunities[0].logistics.summary = '咨询 138-0013-8000'),
+  },
+  {
+    name: 'full-width Chinese mainland mobile number',
+    path: 'snapshot.opportunities[0].logistics.summary',
+    mutate: (value) => (value.opportunities[0].logistics.summary = '咨询 １３８００１３８０００'),
   },
   {
     name: 'compact international Chinese mainland mobile number',

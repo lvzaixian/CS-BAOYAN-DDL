@@ -183,8 +183,10 @@ test('rejects every private token and contact category', async (t) => {
     ['Windows backslash user path', String.raw`{"path":"C:\Users\Alice\private.json"}`],
     ['Windows slash user path', '{"path":"C:/Users/Alice/private.json"}'],
     ['email address', '{"contact":"student@example.com"}'],
+    ['full-width email address', '{"contact":"student＠example.com"}'],
     ['URL encoded email address', '{"contact":"student%40example.com"}'],
     ['Chinese mobile number', '{"phone":"13800138000"}'],
+    ['full-width Chinese mobile number', '{"phone":"１３８００１３８０００"}'],
     ['hyphenated Chinese mobile number', '{"phone":"138-0013-8000"}'],
     ['spaced Chinese mobile number', '{"phone":"138 0013 8000"}'],
     ['international Chinese mobile number', '{"phone":"+8613800138000"}'],
@@ -323,7 +325,9 @@ test('rejects private markers in built dist output', (t) => {
 test('rejects unreviewed contacts in built dist output', async (t) => {
   for (const [name, content] of [
     ['email', 'const contact = "private@example.com";\n'],
+    ['full-width email', 'const contact = "private＠example.com";\n'],
     ['phone', 'const phone = "138-0013-8000";\n'],
+    ['full-width phone', 'const phone = "１３８００１３８０００";\n'],
   ] as const) {
     await t.test(name, (subtest) => {
       const repo = createRepository(subtest);

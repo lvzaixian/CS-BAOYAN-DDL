@@ -35,10 +35,21 @@ sanitize_reviewed_contacts() {
   '
 }
 
+normalize_nfkc() {
+  python3 -c '
+import sys
+import unicodedata
+
+data = sys.stdin.buffer.read().decode("utf-8", "replace")
+sys.stdout.write(unicodedata.normalize("NFKC", data))
+'
+}
+
 scan_git_context() {
   local context="$1"
   local pattern="$2"
   local kind="$3"
+  local raw_output
   local output
   local status
   local -a grep_command=(git grep)
@@ -48,7 +59,7 @@ scan_git_context() {
   fi
 
   set +e
-  output="$("${grep_command[@]}" -a -n -i -E "$pattern" -- data docs src public index.html 2>&1)"
+  raw_output="$("${grep_command[@]}" -a -n -i '' -- data docs src public index.html 2>&1)"
   status=$?
   set -e
 
@@ -57,8 +68,13 @@ scan_git_context() {
   fi
   if test "$status" -ne 0; then
     printf 'public leak scan failed for %s (git grep exit %s)\n' "$context" "$status" >&2
-    printf '%s\n' "$output" >&2
+    printf '%s\n' "$raw_output" >&2
     exit 1
+  fi
+
+  output="$(printf '%s\n' "$raw_output" | normalize_nfkc | grep -a -i -E "$pattern" || true)"
+  if test -z "$output"; then
+    return 0
   fi
 
   if test "$kind" = contact; then
@@ -82,11 +98,12 @@ done
 scan_dist_pattern() {
   local pattern="$1"
   local kind="$2"
+  local raw_output
   local output
   local status
 
   set +e
-  output="$(grep -R -a -n -i -E "$pattern" dist 2>&1)"
+  raw_output="$(grep -R -a -n -i '' dist 2>&1)"
   status=$?
   set -e
 
@@ -95,8 +112,13 @@ scan_dist_pattern() {
   fi
   if test "$status" -ne 0; then
     printf 'public leak scan failed for dist (grep exit %s)\n' "$status" >&2
-    printf '%s\n' "$output" >&2
+    printf '%s\n' "$raw_output" >&2
     exit 1
+  fi
+
+  output="$(printf '%s\n' "$raw_output" | normalize_nfkc | grep -a -i -E "$pattern" || true)"
+  if test -z "$output"; then
+    return 0
   fi
 
   if test "$kind" = contact; then

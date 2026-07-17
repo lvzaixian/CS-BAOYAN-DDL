@@ -263,6 +263,7 @@ import math
 import re
 import sys
 import time
+import unicodedata
 from datetime import datetime, timezone
 from urllib.parse import unquote, urlsplit
 
@@ -418,17 +419,18 @@ def validate_privacy(root):
         if nodes > 50000 or depth > 256:
             invalid("snapshot privacy scan exceeded its safety budget")
         if isinstance(value, str) or (isinstance(value, (int, float)) and not isinstance(value, bool)):
-            current = str(value)
+            variants = {str(value)}
             for _round in range(3):
-                if any(pattern.search(current) for pattern in PRIVATE_PATTERNS):
+                variants.update(unicodedata.normalize("NFKC", item) for item in tuple(variants))
+                if any(pattern.search(item) for item in variants for pattern in PRIVATE_PATTERNS):
                     invalid("snapshot contains a private publication value")
-                decoded = unquote(current)
-                if decoded == current:
+                decoded = {unquote(item) for item in variants}
+                if decoded.issubset(variants):
                     break
-                current = decoded
+                variants.update(decoded)
         elif isinstance(value, dict):
             for key, child in value.items():
-                if key.lower() in PRIVATE_KEYS:
+                if unicodedata.normalize("NFKC", key).lower() in PRIVATE_KEYS:
                     invalid("snapshot contains a private publication key")
                 stack.append((child, depth + 1))
         elif isinstance(value, list):

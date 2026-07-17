@@ -138,20 +138,29 @@ function childPath(path: string, key: string): string {
 }
 
 function decodedTextVariants(value: string): string[] {
-  const variants = [value];
-  let current = value;
+  const variants = new Set<string>();
+  let frontier = [value];
 
-  for (let round = 0; round < 2; round += 1) {
-    try {
-      const decoded = decodeURIComponent(current);
-      if (decoded === current) break;
-      variants.push(decoded);
-      current = decoded;
-    } catch {
-      break;
+  for (let round = 0; round <= 2; round += 1) {
+    const next: string[] = [];
+    for (const candidate of frontier) {
+      const normalized = candidate.normalize('NFKC');
+      variants.add(candidate);
+      variants.add(normalized);
+
+      if (round === 2) continue;
+      for (const decodable of new Set([candidate, normalized])) {
+        try {
+          const decoded = decodeURIComponent(decodable);
+          if (decoded !== decodable && !variants.has(decoded)) next.push(decoded);
+        } catch {
+          // Malformed percent escapes are still scanned in their original form.
+        }
+      }
     }
+    frontier = next;
   }
-  return variants;
+  return [...variants];
 }
 
 function validatePrivateText(value: string, path: string, errors: string[]): void {
@@ -166,7 +175,7 @@ function validatePrivateText(value: string, path: string, errors: string[]): voi
 }
 
 function validatePrivateKey(key: string, path: string, errors: string[]): void {
-  if (privateFieldNameSet.has(key.toLowerCase())) {
+  if (privateFieldNameSet.has(key.normalize('NFKC').toLowerCase())) {
     errors.push(`${path}: contains a private publication marker`);
   }
 }
