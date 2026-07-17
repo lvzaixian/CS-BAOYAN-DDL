@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-07-18T00:04:00+08:00",
+  "scanAt": "2026-07-18T07:19:00+08:00",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -11,10 +11,10 @@
     }
   ],
   "counts": {
-    "confirmedOpen": 80,
+    "confirmedOpen": 81,
     "confirmedUnknownDeadline": 21,
     "pendingExcluded": 36,
-    "expired": 58
+    "expired": 60
   },
   "opportunities": [
     {
@@ -249,14 +249,14 @@
         }
       ],
       "eventArrangement": {
-        "mode": "offline",
+        "mode": "unknown",
         "time": {
           "status": "confirmed",
           "summary": "2026-07-26至2026-07-29；7月26日报到"
         },
         "formatLocation": {
           "status": "confirmed",
-          "summary": "线下；安徽省合肥市；包含综合面试、思想政治考核、心理测试和医院体检。"
+          "summary": "2026年7月26日至29日；安徽省合肥市；报到、面试、心理测试和体检安排见官方附件。"
         }
       },
       "logistics": {
@@ -3356,6 +3356,57 @@
       }
     },
     {
+      "projectId": "2027|南开大学|软件学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "南开大学",
+      "institute": "软件学院",
+      "project": "软件学院2027年推荐免试研究生预报名",
+      "eventType": "推免预报名",
+      "description": "软件学院2027年推荐免试研究生预报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-01T23:59:00+08:00",
+      "deadlineOriginal": "报名时间截止2026年9月1日，官方未公布具体时刻；上传材料截止时间到2026年9月3日23时59分。",
+      "deadlineEpochMs": 1788278340000,
+      "website": "https://cs.nankai.edu.cn/info/1076/3673.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-18T07:17:32+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://cs.nankai.edu.cn/info/1076/3673.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/210790"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "学院将通过邮件通知后续考核时间"
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": "待官方公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：必须提交2封《专家推荐函》扫描版，均须专家亲笔签字。；推荐信模板：必须使用学院官方《专家推荐函》；附件入口存在验证码。"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：高：系统报名、网审、签字申请表、盖章成绩排名、2封官方推荐函和单PDF提交。；材料清单：系统生成并本人签字的报名申请表、身份证、盖章成绩单和专业排名证明、英语水平证明、可选科研、竞赛和获奖证明、2封专家亲笔签字的官方推荐函、按官方顺序合并为单个PDF并通过指定收集入口提交"
+      }
+    },
+    {
       "projectId": "2027|大连理工大学|计算机科学与技术学院|推免预报名",
       "feedId": "camp2027",
       "name": "大连理工大学",
@@ -5446,6 +5497,57 @@
       }
     },
     {
+      "projectId": "2027|中国科学院空天信息创新研究院|空天信息技术暑期学校|2026夏令营",
+      "feedId": "camp2027",
+      "name": "中国科学院空天信息创新研究院",
+      "institute": "空天信息技术暑期学校",
+      "project": "2026年空天信息技术暑期学校",
+      "eventType": "暑期学校",
+      "description": "2026年空天信息技术暑期学校",
+      "verificationStatus": "expired",
+      "deadline": "2026-07-17T23:59:00+08:00",
+      "deadlineOriginal": "即日起至7月17日（视具体情况可酌情延长）；官方未写时分；官方未公布具体时刻",
+      "deadlineEpochMs": 1784303940000,
+      "website": "https://aircas.ac.cn/tzgg/202606/t20260624_8232672.html",
+      "tags": [],
+      "verifiedAt": "2026-07-18T00:04:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://aircas.ac.cn/tzgg/202606/t20260624_8232672.html"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/133254"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "本届空天信息技术暑期学校采用线上形式开展"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "住宿：不适用（全程线上）；餐食：不适用（全程线上）；交通：不适用（全程线上）"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文未要求；推荐信模板：无"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：低；材料清单：国科大系统或问卷星填写申请；官方正文未列额外上传材料清单"
+      }
+    },
+    {
       "projectId": "2027|中国科学院计算技术研究所|计算未来暑期研修班|2026",
       "feedId": "camp2027",
       "name": "中国科学院计算技术研究所",
@@ -5627,6 +5729,57 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：低；材料清单：扫描二维码报名并发送简历；推免面试邮件主题有指定格式。"
+      }
+    },
+    {
+      "projectId": "2027|中山大学|微电子科学与技术学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "中山大学",
+      "institute": "微电子科学与技术学院",
+      "project": "微电子科学与技术学院2027年接收推荐免试研究生预报名",
+      "eventType": "推免预报名",
+      "description": "微电子科学与技术学院2027年接收推荐免试研究生预报名",
+      "verificationStatus": "expired",
+      "deadline": "2026-07-17T23:59:00+08:00",
+      "deadlineOriginal": "2026年7月6日起至2026年7月17日23:59前填写问卷提交报名",
+      "deadlineEpochMs": 1784303940000,
+      "website": "https://mst.sysu.edu.cn/node/1355",
+      "tags": [],
+      "verifiedAt": "2026-07-18T07:16:38+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://mst.sysu.edu.cn/node/1355"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/185017"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "现场综合考核；具体日期和地点未在通知正文公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：直博申请2封，须由与申请学科有关的副教授或相当职称以上专家出具；推荐信模板：官网提供专家推荐信DOC模板；另提供申请表和诚信复试承诺书模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：高：截止紧、手写签名与两项盖章材料、问卷和单PDF命名限制；直博另需2封推荐信；材料清单：手写签名申请表、教务处盖章成绩单、教务处盖章专业排名、学生证、身份证同页、英语证明及可选科研获奖材料；直博另需2封专家推荐信；按序合并单PDF、50MB以内并在问卷提交"
       }
     },
     {
@@ -7112,6 +7265,52 @@
       }
     },
     {
+      "projectId": "2027|海南医科大学|智能医学与技术学院（大数据研究中心）|2026优秀大学生夏令营",
+      "feedId": "camp2027",
+      "name": "海南医科大学",
+      "institute": "智能医学与技术学院（大数据研究中心）",
+      "project": "智能医学与技术学院（大数据研究中心）2026年优秀大学生夏令营",
+      "eventType": "优秀大学生夏令营",
+      "description": "智能医学与技术学院（大数据研究中心）2026年优秀大学生夏令营",
+      "verificationStatus": "expired",
+      "deadline": "2026-07-05T23:59:00+08:00",
+      "deadlineOriginal": "报名截止时间：2026年7月5日，逾期不予受理。；官方未公布具体时刻",
+      "deadlineEpochMs": 1783267140000,
+      "website": "https://www.muhn.edu.cn/zy/info/9683/7943.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-18T07:16:38+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://www.muhn.edu.cn/zy/info/9683/7943.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "2026年7月18日至19日"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线下方式开展活动。"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "交通：往返交通费用原则上每人不超过2000元；报销：官方公布往返交通费用原则上每人不超过2000元"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文未要求专家推荐信；推荐信模板：无推荐信模板；有官方报名申请表"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：按官方通知提交报名申请表及相关证明材料"
+      }
+    },
+    {
       "projectId": "2027|澳门大学|协同创新研究院|2026优秀大学生暑期研习营",
       "feedId": "camp2027",
       "name": "澳门大学",
@@ -7524,61 +7723,10 @@
         "status": "confirmed",
         "summary": "材料复杂度：中：基础身份证明、成绩单和简历为必需，研究计划与成果材料可选；材料清单：身份证明、最新成绩单、简历、学位证或在读证明；研究计划、奖项和论文可选"
       }
-    },
-    {
-      "projectId": "2027|中国科学院空天信息创新研究院|空天信息技术暑期学校|2026夏令营",
-      "feedId": "camp2027",
-      "name": "中国科学院空天信息创新研究院",
-      "institute": "空天信息技术暑期学校",
-      "project": "2026年空天信息技术暑期学校",
-      "eventType": "暑期学校",
-      "description": "2026年空天信息技术暑期学校",
-      "verificationStatus": "expired",
-      "deadline": "2026-07-17T23:59:00+08:00",
-      "deadlineOriginal": "即日起至7月17日（视具体情况可酌情延长）；官方未写时分；官方未公布具体时刻",
-      "deadlineEpochMs": 1784303940000,
-      "website": "https://aircas.ac.cn/tzgg/202606/t20260624_8232672.html",
-      "tags": [],
-      "verifiedAt": "2026-07-18T00:04:00+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://aircas.ac.cn/tzgg/202606/t20260624_8232672.html"
-        },
-        {
-          "kind": "baoyan-notice",
-          "label": "保研通知网",
-          "url": "https://www.baoyantongzhi.com/notice/detail/133254"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "online",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "本届空天信息技术暑期学校采用线上形式开展"
-        }
-      },
-      "logistics": {
-        "status": "confirmed",
-        "summary": "住宿：不适用（全程线上）；餐食：不适用（全程线上）；交通：不适用（全程线上）"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：官方正文未要求；推荐信模板：无"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：低；材料清单：国科大系统或问卷星填写申请；官方正文未列额外上传材料清单"
-      }
     }
   ],
-  "snapshotId": "2026-07-17T16:07:32.019Z-454744c76c23",
-  "approvedAt": "2026-07-17T16:07:32.019Z",
-  "previousSnapshotId": "2026-07-17T04:47:25.308Z-db8a00689864",
-  "dataHash": "454744c76c230714ca57021f390d23a365c58764c5dc675760a2e6dc0aac55f1"
+  "snapshotId": "2026-07-17T23:28:46.372Z-e7ff2621e55e",
+  "approvedAt": "2026-07-17T23:28:46.372Z",
+  "previousSnapshotId": "2026-07-17T16:07:32.019Z-454744c76c23",
+  "dataHash": "e7ff2621e55e6608185e1cf7f569feb99c2937168a6def80ecb5c2c07720225e"
 }
