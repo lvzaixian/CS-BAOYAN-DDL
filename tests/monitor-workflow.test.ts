@@ -94,12 +94,18 @@ test('monitor workflow is scheduled, manually runnable, read-only, and isolated 
   );
   assert.match(workflow, /MAX_SNAPSHOT_AGE_HOURS:\s*['"]24['"]/);
   assert.doesNotMatch(workflow, /vars\.MAX_SNAPSHOT_AGE_HOURS/);
+  const jobEnv = workflow.match(/\n    env:\n([\s\S]*?)\n    steps:/)?.[1] ?? '';
+  assert.notEqual(jobEnv, '', 'monitor job must define its non-secret environment');
+  assert.doesNotMatch(
+    jobEnv,
+    /\$\{\{\s*runner\./,
+    'runner context is unavailable in jobs.<job_id>.env',
+  );
+  assert.match(workflow, /MONITOR_DIAGNOSTICS_DIR=.*\$RUNNER_TEMP\/public-monitor-diagnostics/);
+  assert.match(workflow, /MONITOR_DIAGNOSTICS_DIR=.*>>\s*"\$GITHUB_ENV"/);
+  assert.match(workflow, /MONITOR_DIAGNOSTICS_PATH=.*>>\s*"\$GITHUB_ENV"/);
   assert.match(workflow, /if:\s*\$\{\{\s*failure\(\)\s*\}\}[\s\S]*upload-artifact/);
   assert.match(workflow, /if:\s*\$\{\{\s*always\(\)\s*\}\}[\s\S]*GITHUB_STEP_SUMMARY/);
-  assert.match(
-    workflow,
-    /MONITOR_DIAGNOSTICS_PATH:\s*\$\{\{\s*runner\.temp\s*\}\}\/public-monitor-diagnostics\/public-monitor\.json/,
-  );
   assert.match(
     workflow,
     /path:\s*\$\{\{\s*runner\.temp\s*\}\}\/public-monitor-diagnostics\//,
