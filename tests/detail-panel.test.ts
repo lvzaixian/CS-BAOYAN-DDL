@@ -129,11 +129,14 @@ test('matches only explicit times that support the normalized deadline', () => {
 
 test('shows project and event type in the detail header and uses the requested official CTA', () => {
   const footer = detailPanelSource.slice(detailPanelSource.indexOf('<!-- footer cta -->'));
+  const cta = footer.indexOf('<span>打开官网</span>');
+  const disclaimer = footer.indexOf('本站信息仅供参考');
 
   assert.match(detailPanelSource, /\{school\.project\}/);
   assert.match(detailPanelSource, /\{school\.eventType\}/);
   assert.match(footer, />\s*打开官网\s*</);
   assert.match(footer, /本站信息仅供参考/);
+  assert.ok(cta !== -1 && disclaimer > cta, 'the disclaimer must be the final footer message');
   assert.doesNotMatch(footer, /查看官方(?:通知|来源)|立即报名/);
 });
 

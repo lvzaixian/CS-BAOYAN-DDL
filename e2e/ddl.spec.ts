@@ -257,7 +257,12 @@ test('opens deterministic details with ordered facts and the official website CT
     'https://admissions.redwood.example.test/2026/summer-camp',
   );
 
-  await expect(dialog.getByText('本站信息仅供参考', { exact: false })).toBeVisible();
+  const disclaimer = dialog.getByText('本站信息仅供参考', { exact: false });
+  await expect(disclaimer).toBeVisible();
+  const footerChildren = dialog.locator('.detail-panel__footer > *');
+  await expect(footerChildren).toHaveCount(2);
+  await expect(footerChildren.nth(0)).toContainText('打开官网');
+  await expect(footerChildren.nth(1)).toContainText('本站信息仅供参考');
   await expect(dialog.getByText('信息来源', { exact: true })).toHaveCount(0);
 });
 
@@ -314,6 +319,44 @@ test('keeps desktop sidebar and mobile panels within their viewport', async ({ p
   expect(detailBox).not.toBeNull();
   expect(Math.round(detailBox!.width)).toBe(testInfo.project.name === 'desktop' ? 460 : viewport!.width);
   expect(Math.round(detailBox!.height)).toBe(viewport!.height);
+
+  const backdrop = page.locator('.fixed.inset-0 > button[aria-hidden="true"]');
+  const backdropBox = await backdrop.boundingBox();
+  expect(backdropBox).not.toBeNull();
+  expect(Math.round(backdropBox!.x)).toBe(0);
+  expect(Math.round(backdropBox!.y)).toBe(0);
+  expect(Math.round(backdropBox!.width)).toBe(viewport!.width);
+  expect(Math.round(backdropBox!.height)).toBe(viewport!.height);
+
+  if (testInfo.project.name === 'narrow-mobile') {
+    const body = detail.locator('.detail-panel__body');
+    const header = detail.locator(':scope > div').first();
+    const footer = detail.locator('.detail-panel__footer');
+    const before = await page.evaluate(() => ({
+      documentTop: document.documentElement.scrollTop,
+    }));
+    const headerBefore = await header.boundingBox();
+    const footerBefore = await footer.boundingBox();
+    const bodyScroll = await body.evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+      return { top: element.scrollTop, max: element.scrollHeight - element.clientHeight };
+    });
+    expect(bodyScroll.max).toBeGreaterThan(0);
+    expect(bodyScroll.top).toBe(bodyScroll.max);
+    const after = await page.evaluate(() => ({
+      documentTop: document.documentElement.scrollTop,
+    }));
+    const headerAfter = await header.boundingBox();
+    const footerAfter = await footer.boundingBox();
+    expect(after.documentTop).toBe(before.documentTop);
+    expect(Math.round(headerAfter!.y)).toBe(Math.round(headerBefore!.y));
+    expect(Math.round(footerAfter!.y)).toBe(Math.round(footerBefore!.y));
+  }
+
+  if (testInfo.project.name === 'desktop') {
+    await backdrop.click({ position: { x: 4, y: 4 } });
+    await expect(detail).toHaveCount(0);
+  }
 });
 
 test('search matches project names and activity types', async ({ page }) => {

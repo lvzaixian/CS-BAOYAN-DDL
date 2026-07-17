@@ -844,6 +844,17 @@ function aliasesFrom(input: unknown): Record<string, string> {
   return aliases;
 }
 
+export function validateProjectIdAliases(
+  input: unknown,
+  previous: ReadablePublicSnapshot,
+): void {
+  const aliases = aliasesFrom(input);
+  if (Object.keys(aliases).length > 10_000) {
+    throw new Error('aliases exceed the entry limit');
+  }
+  identityMaps({ previous, aliases });
+}
+
 function hasErrorCode(error: unknown, code: string): boolean {
   return isObject(error) && error.code === code;
 }

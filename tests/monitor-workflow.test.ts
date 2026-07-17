@@ -72,7 +72,7 @@ const releaseIdentity = {
   dataHash: approvedSnapshot.dataHash,
 };
 const approvedAtMs = Date.parse(String(approvedSnapshot.approvedAt));
-const nowMs = Math.ceil(approvedAtMs / 1000) * 1000 + 60 * 60 * 1000;
+const nowMs = Math.ceil(approvedAtMs / 1_000) * 1_000 + 1_000;
 const dayMs = 24 * 60 * 60 * 1000;
 
 test('monitor workflow is scheduled, manually runnable, read-only, and isolated from production credentials', () => {
@@ -600,7 +600,7 @@ test('remote current integrity, freshness, schema, and release identity fail clo
   });
   await t.test('stale remote current', async () => {
     await assert.rejects(
-      runMonitor({ maxAgeHours: '0.5' }),
+      runMonitor({ maxAgeHours: '0.0001' }),
       /freshness.*older/i,
     );
   });

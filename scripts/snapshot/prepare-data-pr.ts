@@ -1,4 +1,5 @@
 import { execFile } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
@@ -7,8 +8,10 @@ import {
   readRegularJsonFile,
   validateApprovedSnapshot,
 } from '../../src/lib/snapshot-integrity.js';
+import type { RegularJsonFile } from '../../src/lib/snapshot-integrity.js';
 import type { PublicSnapshot } from '../../src/lib/snapshot-types.js';
 import { validatePublicPrivacyBoundary } from '../../src/lib/snapshot-validation.js';
+import { validateProjectIdAliases } from './import-scouting-data.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -50,7 +53,16 @@ interface CliOptions {
   baseRef: string;
 }
 
-const usage = 'Usage: data-pr:prepare -- --base-ref GIT_REF';
+export interface GitChangeSet {
+  baseRef: string;
+  baseOid: string;
+  headOid: string;
+  changedFiles: string[];
+  stagedFiles: string[];
+}
+
+const REQUIRED_BASE_REF = 'origin/main';
+const usage = `Usage: data-pr:prepare -- --base-ref ${REQUIRED_BASE_REF}`;
 
 function quoted(value: string): string {
   return JSON.stringify(value);
@@ -66,42 +78,12 @@ function assertDataOnlyFiles(changedFiles: string[]): string[] {
   return unique;
 }
 
-function assertProjectId(value: string, path: string): void {
-  const parts = value.split('|').map((part) => part.trim());
-  if (parts.length !== 4 || parts.some((part) => part === '') || !/^\d{4}$/.test(parts[0])) {
-    throw new Error(`${path} must be a four-part project ID`);
-  }
-}
-
-function validateAliases(input: unknown): void {
+function validateAliases(input: unknown, base: PublicSnapshot): void {
   const privacyErrors = validatePublicPrivacyBoundary(input, 'aliases');
   if (privacyErrors.length > 0) {
     throw new Error(`alias privacy validation failed:\n${privacyErrors.join('\n')}`);
   }
-  if (input === null || typeof input !== 'object' || Array.isArray(input)) {
-    throw new Error('aliases must be an object');
-  }
-  const entries = Object.entries(input);
-  if (entries.length > 10_000) throw new Error('aliases exceed the entry limit');
-  for (const [key, targetProjectId] of entries) {
-    if (typeof targetProjectId !== 'string') {
-      throw new Error(`alias ${quoted(key)} must map to a project ID`);
-    }
-    const separator = key.indexOf('::');
-    const urlText = separator === -1 ? key : key.slice(0, separator);
-    const inputProjectId = separator === -1 ? null : key.slice(separator + 2);
-    let url: URL;
-    try {
-      url = new URL(urlText);
-    } catch {
-      throw new Error(`alias ${quoted(key)} must start with a valid URL`);
-    }
-    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.hash) {
-      throw new Error(`alias ${quoted(key)} must use a public HTTP(S) URL without credentials or fragment`);
-    }
-    if (inputProjectId !== null) assertProjectId(inputProjectId, `alias ${quoted(key)} input`);
-    assertProjectId(targetProjectId, `alias ${quoted(key)} target`);
-  }
+  validateProjectIdAliases(input, base);
 }
 
 function validateSnapshot(input: unknown, label: string, nowMs: number): PublicSnapshot {
@@ -132,7 +114,7 @@ export function prepareDataPrPlan(input: PrepareDataPrInput): DataPrPlan {
 
   if (changedFiles.includes('data/project-id-aliases.json')) {
     if (input.aliases === undefined) throw new Error('changed alias file requires alias contents');
-    validateAliases(input.aliases);
+    validateAliases(input.aliases, base);
   } else if (input.aliases !== undefined) {
     throw new Error('alias contents were provided without a changed alias file');
   }
@@ -173,8 +155,8 @@ export function prepareDataPrPlan(input: PrepareDataPrInput): DataPrPlan {
 function parseCliOptions(argv: string[]): CliOptions {
   if (argv.length !== 2 || argv[0] !== '--base-ref') throw new Error(usage);
   const baseRef = argv[1];
-  if (!/^(?!-)(?!.*\.\.)[a-z0-9._/-]+$/i.test(baseRef)) {
-    throw new Error('base ref contains unsupported characters');
+  if (baseRef !== REQUIRED_BASE_REF) {
+    throw new Error(`base ref must be ${REQUIRED_BASE_REF}`);
   }
   return { baseRef };
 }
@@ -193,27 +175,104 @@ async function runGit(repositoryRoot: string, args: string[]): Promise<string> {
   }
 }
 
+export type GitCommandRunner = (repositoryRoot: string, args: string[]) => Promise<string>;
+
 function nulList(output: string): string[] {
   return output.split('\0').filter((value) => value !== '');
+}
+
+function contentSha256(text: string): string {
+  return createHash('sha256').update(text, 'utf8').digest('hex');
+}
+
+export async function assertRegularJsonFileStable(
+  path: string,
+  label: string,
+  expected: RegularJsonFile,
+): Promise<void> {
+  const actual = await readRegularJsonFile(path, label);
+  if (actual.text !== expected.text) {
+    throw new Error(`${label} content changed during data PR preparation`);
+  }
+}
+
+export async function collectGitChangeSet(
+  repositoryRoot: string,
+  baseRef: string,
+  runGitCommand: GitCommandRunner = runGit,
+): Promise<GitChangeSet> {
+  const baseOid = (await runGitCommand(
+    repositoryRoot,
+    ['rev-parse', '--verify', `${baseRef}^{commit}`],
+  )).trim();
+  const headOid = (await runGitCommand(
+    repositoryRoot,
+    ['rev-parse', '--verify', 'HEAD^{commit}'],
+  )).trim();
+  try {
+    await runGitCommand(repositoryRoot, ['merge-base', '--is-ancestor', baseOid, headOid]);
+  } catch {
+    throw new Error(`${baseRef} must be an ancestor of HEAD; fetch origin/main and rebase first`);
+  }
+  const [tracked, untracked, staged] = await Promise.all([
+    runGitCommand(repositoryRoot, [
+      'diff',
+      '--name-only',
+      '-z',
+      '--diff-filter=ACDMRTUXB',
+      baseOid,
+      '--',
+    ]),
+    runGitCommand(repositoryRoot, ['ls-files', '--others', '--exclude-standard', '-z']),
+    runGitCommand(repositoryRoot, [
+      'diff',
+      '--cached',
+      '--name-only',
+      '-z',
+      '--diff-filter=ACDMRTUXB',
+      '--',
+    ]),
+  ]);
+  return {
+    baseRef,
+    baseOid,
+    headOid,
+    changedFiles: [...new Set([...nulList(tracked), ...nulList(untracked)])].sort(),
+    stagedFiles: [...new Set(nulList(staged))].sort(),
+  };
 }
 
 export async function collectGitChangedFiles(
   repositoryRoot: string,
   baseRef: string,
 ): Promise<string[]> {
-  await runGit(repositoryRoot, ['rev-parse', '--verify', `${baseRef}^{commit}`]);
-  const [tracked, untracked] = await Promise.all([
-    runGit(repositoryRoot, [
-      'diff',
-      '--name-only',
-      '-z',
-      '--diff-filter=ACDMRTUXB',
-      baseRef,
-      '--',
-    ]),
-    runGit(repositoryRoot, ['ls-files', '--others', '--exclude-standard', '-z']),
-  ]);
-  return [...new Set([...nulList(tracked), ...nulList(untracked)])].sort();
+  return (await collectGitChangeSet(repositoryRoot, baseRef)).changedFiles;
+}
+
+export async function assertGitChangeSetStable(
+  repositoryRoot: string,
+  expected: GitChangeSet,
+  runGitCommand: GitCommandRunner = runGit,
+): Promise<void> {
+  const actual = await collectGitChangeSet(repositoryRoot, expected.baseRef, runGitCommand);
+  if (actual.baseOid !== expected.baseOid) {
+    throw new Error('base ref moved during data PR preparation');
+  }
+  if (actual.headOid !== expected.headOid) {
+    throw new Error('HEAD moved during data PR preparation');
+  }
+  if (
+    actual.changedFiles.length !== expected.changedFiles.length
+    || actual.changedFiles.some((file, index) => file !== expected.changedFiles[index])
+  ) {
+    throw new Error('changed files moved during data PR preparation');
+  }
+  if (
+    actual.stagedFiles.length !== expected.stagedFiles.length
+    || actual.stagedFiles.some((file, index) => file !== expected.stagedFiles[index])
+  ) {
+    throw new Error('staged files moved during data PR preparation');
+  }
 }
 
 async function runCli(): Promise<void> {
@@ -221,9 +280,13 @@ async function runCli(): Promise<void> {
   if (argv[0] === '--') argv.shift();
   const options = parseCliOptions(argv);
   const repositoryRoot = (await runGit(resolve('.'), ['rev-parse', '--show-toplevel'])).trim();
-  const changedFiles = await collectGitChangedFiles(repositoryRoot, options.baseRef);
+  const gitState = await collectGitChangeSet(repositoryRoot, options.baseRef);
+  if (gitState.stagedFiles.length > 0) {
+    throw new Error('Git index must be clean before data PR preparation');
+  }
+  const { changedFiles } = gitState;
   const [baseText, next, aliases] = await Promise.all([
-    runGit(repositoryRoot, ['show', `${options.baseRef}:data/approved/current.json`]),
+    runGit(repositoryRoot, ['show', `${gitState.baseOid}:data/approved/current.json`]),
     readRegularJsonFile(resolve(repositoryRoot, 'data/approved/current.json'), 'next approved snapshot'),
     changedFiles.includes('data/project-id-aliases.json')
       ? readRegularJsonFile(resolve(repositoryRoot, 'data/project-id-aliases.json'), 'project ID aliases')
@@ -241,7 +304,35 @@ async function runCli(): Promise<void> {
     changedFiles,
     ...(aliases === null ? {} : { aliases: aliases.value }),
   });
-  console.log(JSON.stringify(plan, null, 2));
+  await assertGitChangeSetStable(repositoryRoot, gitState);
+  await Promise.all([
+    assertRegularJsonFileStable(
+      resolve(repositoryRoot, 'data/approved/current.json'),
+      'next approved snapshot',
+      next,
+    ),
+    ...(aliases === null
+      ? []
+      : [assertRegularJsonFileStable(
+          resolve(repositoryRoot, 'data/project-id-aliases.json'),
+          'project ID aliases',
+          aliases,
+        )]),
+  ]);
+  console.log(JSON.stringify({
+    ...plan,
+    audit: {
+      baseRef: gitState.baseRef,
+      baseOid: gitState.baseOid,
+      headOid: gitState.headOid,
+      contentSha256: {
+        'data/approved/current.json': contentSha256(next.text),
+        ...(aliases === null
+          ? {}
+          : { 'data/project-id-aliases.json': contentSha256(aliases.text) }),
+      },
+    },
+  }, null, 2));
 }
 
 const entrypoint = process.argv[1];

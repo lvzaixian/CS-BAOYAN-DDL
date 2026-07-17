@@ -218,9 +218,6 @@
 
     <!-- footer cta -->
     <div class="detail-panel__footer px-5 py-4 border-t border-line">
-      <p class="mb-3 text-center text-[11px] leading-relaxed text-fg-3">
-        本站信息仅供参考，报名要求与时间请以院校官网最新通知为准。
-      </p>
       {#if primaryOfficialSource}
         <a
           href={primaryOfficialSource.url}
@@ -238,6 +235,9 @@
           <span class="detail-wrap">官网链接暂不可用</span>
         </div>
       {/if}
+      <p class="mt-3 text-center text-[11px] leading-relaxed text-fg-3">
+        本站信息仅供参考，报名要求与时间请以院校官网最新通知为准。
+      </p>
     </div>
   </div>
 </div>

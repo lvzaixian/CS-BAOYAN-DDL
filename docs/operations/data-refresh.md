@@ -82,11 +82,16 @@ pnpm run snapshot:diff -- \
 人工批准候选并生成新的 `data/approved/current.json` 后，使用只读规划器检查提交边界。规划器直接读取相对基线的真实 Git diff（包括未跟踪文件），不接受调用者自报清单：
 
 ```bash
+git fetch --prune origin main
+git merge-base --is-ancestor origin/main HEAD
+git diff --cached --quiet
 pnpm run data-pr:prepare -- \
   --base-ref origin/main
 ```
 
-只有真实 Git diff 中确实包含稳定项目身份映射时，规划器才读取并验证 `data/project-id-aliases.json`。规划器只输出 `no-change` 或受限的 branch/commit/PR 元数据，不执行 Git 写操作。它仅允许 `data/approved/current.json` 和可选的 `data/project-id-aliases.json`，会拒绝 staging、脚本、工作簿、绝对路径、个人投递状态、联系方式和其他私有内容。`no-change` 结果不得创建空 PR；`ready` 结果仍须经过人工检查、CI、精确 head SHA 核验、合并确认和 production approval。
+先显式获取最新 `origin/main`；祖先关系命令必须退出 0，否则先 rebase，不能继续规划。暂存区检查也必须退出 0；规划器要求在 `git add` 之前运行，避免暂存区与工作树代表两份不同内容。首次上线前如果 `origin/main` 尚未包含 `data/approved/current.json`，规划器按预期拒绝运行；首个功能 PR 合并后才能使用这条数据专用路径。
+
+规划器固定要求 `origin/main`，不接受 `HEAD` 或调用者自选的弱基线。它只解析一次远端跟踪引用，后续差异和上版快照都绑定到不可变 base OID；输出前还会重新核对 base OID、HEAD OID、暂存区、变更文件集合，以及已验证 JSON 的精确字节内容，任一状态在准备过程中发生移动都会拒绝生成计划。输出同时记录解析后的 base/head OID 和每个待提交 JSON 的 SHA-256，供 `git add` 后与实际暂存对象复核。只有真实 Git diff 中确实包含稳定项目身份映射时，规划器才读取并验证 `data/project-id-aliases.json`。别名校验复用导入器的身份规则：目标必须存在于已验证的上版快照，复合别名输入与目标必须属于同一招生周期，URL 归一化后不得冲突。规划器只输出 `no-change` 或受限的 branch/commit/PR 元数据，不执行 Git 写操作。它仅允许 `data/approved/current.json` 和可选的 `data/project-id-aliases.json`，会拒绝 staging、脚本、工作簿、绝对路径、个人投递状态、联系方式和其他私有内容。`no-change` 结果不得创建空 PR；`ready` 结果仍须经过人工检查、CI、精确 head SHA 核验、合并确认和 production approval。
 
 ## 批准与验证
 
