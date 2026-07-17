@@ -6,6 +6,41 @@ export function parseDeadline(raw: string | undefined | null): number | null {
   return Number.isFinite(t) ? t : null;
 }
 
+export function deadlineOriginalSupportsNormalizedTime(
+  original: string,
+  normalizedDeadline: number | null,
+): boolean {
+  if (normalizedDeadline === null || original.includes('官方未公布具体时刻')) return false;
+
+  const normalized = new Date(normalizedDeadline);
+  if (!Number.isFinite(normalized.getTime())) return false;
+  const normalizedMinutes = normalized.getHours() * 60 + normalized.getMinutes();
+
+  const colonTimePattern = /(?:^|[^\d])([01]?\d|2[0-3]|24)\s*[:：]\s*([0-5]\d)(?!\d)/g;
+  for (const match of original.matchAll(colonTimePattern)) {
+    const hour = Number(match[1]);
+    const minute = Number(match[2]);
+    if (hour === 24 && minute !== 0) continue;
+    if ((hour % 24) * 60 + minute === normalizedMinutes) return true;
+  }
+
+  const chineseTimePattern = /(?:^|[^\d])(?:(凌晨|早上|上午|中午|下午|晚上|晚间)\s*)?([01]?\d|2[0-3]|24)\s*[点时](?:\s*([0-5]?\d)\s*分)?(?!\d)/g;
+  for (const match of original.matchAll(chineseTimePattern)) {
+    const period = match[1];
+    let hour = Number(match[2]);
+    const minute = match[3] === undefined ? 0 : Number(match[3]);
+    if (hour === 24 && minute !== 0) continue;
+    if (period === '下午' || period === '晚上' || period === '晚间' || period === '中午') {
+      if (hour < 12) hour += 12;
+    } else if ((period === '凌晨' || period === '早上' || period === '上午') && hour === 12) {
+      hour = 0;
+    }
+    if ((hour % 24) * 60 + minute === normalizedMinutes) return true;
+  }
+
+  return false;
+}
+
 export function urgency(remainingMs: number | null): Urgency {
   if (remainingMs === null) return 'unknown';
   if (remainingMs < 0) return 'expired';

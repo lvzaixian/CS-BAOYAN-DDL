@@ -1,0 +1,288 @@
+import { randomUUID } from 'node:crypto';
+import { lstat, mkdir, open, rename, unlink } from 'node:fs/promises';
+import { basename, dirname, join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+
+import type {
+  PublicOpportunity,
+  PublicSnapshot,
+  SnapshotCandidate,
+} from '../../src/lib/snapshot-types.js';
+import { validateCandidate } from '../../src/lib/snapshot-validation.js';
+import {
+  readRegularJsonFile,
+  validateApprovedSnapshot,
+} from '../../src/lib/snapshot-integrity.js';
+import type { RegularJsonFile } from '../../src/lib/snapshot-integrity.js';
+
+export interface SnapshotDiff {
+  added: string[];
+  changed: string[];
+  expired: string[];
+  removed: string[];
+}
+
+interface CliOptions {
+  previous?: string;
+  next: string;
+  output: string;
+}
+
+type JsonObject = Record<string, unknown>;
+
+const usage =
+  'Usage: snapshot:diff -- [--previous PATH] --next PATH --output PATH';
+
+function isObject(value: unknown): value is JsonObject {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function hasErrorCode(error: unknown, code: string): boolean {
+  return isObject(error) && error.code === code;
+}
+
+function quoted(value: string): string {
+  return JSON.stringify(value);
+}
+
+function safeError(error: unknown): string {
+  return JSON.stringify(error instanceof Error ? error.message : String(error));
+}
+
+function codePointCompare(left: string, right: string): number {
+  const leftPoints = [...left];
+  const rightPoints = [...right];
+  const length = Math.min(leftPoints.length, rightPoints.length);
+  for (let index = 0; index < length; index += 1) {
+    const difference = leftPoints[index].codePointAt(0)! - rightPoints[index].codePointAt(0)!;
+    if (difference !== 0) return difference;
+  }
+  return leftPoints.length - rightPoints.length;
+}
+
+function canonicalize(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (value === null || typeof value !== 'object') return value;
+  const object = value as JsonObject;
+  const sorted: JsonObject = {};
+  for (const key of Object.keys(object).sort(codePointCompare)) {
+    sorted[key] = canonicalize(object[key]);
+  }
+  return sorted;
+}
+
+function publicationFingerprint(opportunity: PublicOpportunity): string {
+  const publication = { ...opportunity } as JsonObject;
+  delete publication.verifiedAt;
+  if (typeof publication.description === 'string') {
+    publication.description = publication.description.replace(/\s+/gu, ' ').trim();
+  }
+  return JSON.stringify(canonicalize(publication));
+}
+
+export function diffSnapshots(
+  previous: PublicSnapshot | null,
+  next: SnapshotCandidate,
+): SnapshotDiff {
+  const added: string[] = [];
+  const changed: string[] = [];
+  const expired: string[] = [];
+  const removed: string[] = [];
+  const previousById = new Map(
+    (previous?.opportunities ?? []).map((opportunity) => [opportunity.projectId, opportunity]),
+  );
+  const nextById = new Map(
+    next.opportunities.map((opportunity) => [opportunity.projectId, opportunity]),
+  );
+
+  for (const [projectId, nextOpportunity] of nextById) {
+    const previousOpportunity = previousById.get(projectId);
+    if (previousOpportunity === undefined) {
+      added.push(projectId);
+    } else if (
+      previousOpportunity.verificationStatus !== 'expired'
+      && nextOpportunity.verificationStatus === 'expired'
+    ) {
+      expired.push(projectId);
+    } else if (
+      publicationFingerprint(previousOpportunity) !== publicationFingerprint(nextOpportunity)
+    ) {
+      changed.push(projectId);
+    }
+  }
+
+  for (const projectId of previousById.keys()) {
+    if (!nextById.has(projectId)) removed.push(projectId);
+  }
+
+  return {
+    added: added.sort(codePointCompare),
+    changed: changed.sort(codePointCompare),
+    expired: expired.sort(codePointCompare),
+    removed: removed.sort(codePointCompare),
+  };
+}
+
+function parseCliOptions(argv: string[]): CliOptions {
+  const values = new Map<string, string>();
+  const allowed = new Set(['--previous', '--next', '--output']);
+  for (let index = 0; index < argv.length; index += 1) {
+    const flag = argv[index];
+    if (!allowed.has(flag)) throw new Error(`unknown argument: ${quoted(flag)}\n${usage}`);
+    if (values.has(flag)) throw new Error(`duplicate argument: ${quoted(flag)}`);
+    const value = argv[index + 1];
+    if (value === undefined || value.startsWith('--')) {
+      throw new Error(`missing value for ${quoted(flag)}\n${usage}`);
+    }
+    values.set(flag, value);
+    index += 1;
+  }
+  const next = values.get('--next');
+  const output = values.get('--output');
+  if (next === undefined || output === undefined) {
+    throw new Error(`missing required argument\n${usage}`);
+  }
+  return { previous: values.get('--previous'), next, output };
+}
+
+async function assertSafeOutput(
+  outputPath: string,
+  inputs: Array<{ flag: '--next' | '--previous'; path: string; file: RegularJsonFile }>,
+): Promise<void> {
+  for (const input of inputs) {
+    if (resolve(outputPath) === resolve(input.path)) {
+      throw new Error(`--output collides with ${input.flag}`);
+    }
+  }
+
+  let outputInfo: Awaited<ReturnType<typeof lstat>>;
+  try {
+    outputInfo = await lstat(outputPath);
+  } catch (error) {
+    if (hasErrorCode(error, 'ENOENT')) return;
+    throw new Error(`--output could not be inspected at ${quoted(outputPath)}: ${safeError(error)}`);
+  }
+  if (outputInfo.isSymbolicLink()) {
+    throw new Error(`--output must not be an existing symlink at ${quoted(outputPath)}`);
+  }
+  if (!outputInfo.isFile()) {
+    throw new Error(`--output must be absent or a regular file at ${quoted(outputPath)}`);
+  }
+  for (const input of inputs) {
+    if (outputInfo.dev === input.file.dev && outputInfo.ino === input.file.ino) {
+      throw new Error(`--output collides with ${input.flag} by inode or hardlink`);
+    }
+  }
+}
+
+async function removeTempFile(path: string): Promise<void> {
+  try {
+    await unlink(path);
+  } catch (error) {
+    if (!hasErrorCode(error, 'ENOENT')) return;
+  }
+}
+
+export async function writeDiffAtomically(
+  path: string,
+  diff: SnapshotDiff,
+  signal?: AbortSignal,
+): Promise<void> {
+  const parent = dirname(path);
+  await mkdir(parent, { recursive: true });
+  const tempPath = join(parent, `.${basename(path)}.${process.pid}.${randomUUID()}.tmp`);
+  let handle: Awaited<ReturnType<typeof open>> | undefined;
+  let directoryHandle: Awaited<ReturnType<typeof open>> | undefined;
+  try {
+    handle = await open(tempPath, 'wx', 0o600);
+    await handle.writeFile(`${JSON.stringify(diff, null, 2)}\n`, 'utf8');
+    await handle.sync();
+    await handle.close();
+    handle = undefined;
+    if (signal?.aborted) {
+      throw signal.reason instanceof Error
+        ? signal.reason
+        : new Error('Atomic diff write cancelled before rename');
+    }
+    directoryHandle = await open(parent, 'r');
+    if (signal?.aborted) {
+      throw signal.reason instanceof Error
+        ? signal.reason
+        : new Error('Atomic diff write cancelled before rename');
+    }
+    await rename(tempPath, path);
+    await directoryHandle.sync().catch(() => undefined);
+  } finally {
+    if (handle !== undefined) await handle.close().catch(() => undefined);
+    if (directoryHandle !== undefined) await directoryHandle.close().catch(() => undefined);
+    await removeTempFile(tempPath);
+  }
+}
+
+function referenceTime(value: unknown, key: 'scanAt' | 'approvedAt'): number {
+  if (value !== null && typeof value === 'object') {
+    const timestamp = (value as JsonObject)[key];
+    if (typeof timestamp === 'string') return Date.parse(timestamp);
+  }
+  return 0;
+}
+
+async function runCli(): Promise<void> {
+  const argv = process.argv.slice(2);
+  if (argv[0] === '--') argv.shift();
+  const options = parseCliOptions(argv);
+  const [nextFile, previousFile] = await Promise.all([
+    readRegularJsonFile(options.next, 'next candidate'),
+    options.previous === undefined
+      ? Promise.resolve(null)
+      : readRegularJsonFile(options.previous, 'previous snapshot'),
+  ]);
+  const inputs: Array<{
+    flag: '--next' | '--previous';
+    path: string;
+    file: RegularJsonFile;
+  }> = [{ flag: '--next', path: options.next, file: nextFile }];
+  if (options.previous !== undefined && previousFile !== null) {
+    inputs.push({ flag: '--previous', path: options.previous, file: previousFile });
+  }
+  await assertSafeOutput(options.output, inputs);
+  const nextInput = nextFile.value;
+  const previousInput = previousFile?.value ?? null;
+  const candidateErrors = validateCandidate(nextInput, referenceTime(nextInput, 'scanAt'));
+  if (candidateErrors.length > 0) {
+    throw new Error(`Next candidate validation failed:\n${candidateErrors.join('\n')}`);
+  }
+  if (previousInput !== null) {
+    const previousErrors = validateApprovedSnapshot(
+      previousInput,
+      referenceTime(previousInput, 'approvedAt'),
+    );
+    if (previousErrors.length > 0) {
+      throw new Error(`Previous snapshot validation failed:\n${previousErrors.join('\n')}`);
+    }
+  }
+
+  const diff = diffSnapshots(
+    previousInput as PublicSnapshot | null,
+    nextInput as SnapshotCandidate,
+  );
+  try {
+    await writeDiffAtomically(options.output, diff);
+  } catch (error) {
+    throw new Error(
+      `snapshot diff could not be written to ${quoted(options.output)}: ${safeError(error)}`,
+    );
+  }
+  console.log(`Wrote snapshot diff to ${quoted(options.output)}`);
+}
+
+const entrypoint = process.argv[1];
+if (
+  entrypoint !== undefined
+  && import.meta.url === pathToFileURL(resolve(entrypoint)).href
+) {
+  runCli().catch((error: unknown) => {
+    console.error(`snapshot diff failed: ${error instanceof Error ? error.message : String(error)}`);
+    process.exitCode = 1;
+  });
+}

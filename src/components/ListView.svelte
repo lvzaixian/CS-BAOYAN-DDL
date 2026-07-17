@@ -1,6 +1,7 @@
 <script lang="ts">
   import SchoolRow from './SchoolRow.svelte';
   import type { DerivedSchool } from '$lib/types';
+  import { rowGroup, rowKey } from '$lib/filter';
   import { Inbox } from 'lucide-svelte';
 
   let { rows, selectedKey, onSelect }: {
@@ -14,8 +15,9 @@
     const dead: DerivedSchool[] = [];
     const unknown: DerivedSchool[] = [];
     for (const r of rows) {
-      if (r.remainingMs === null) unknown.push(r);
-      else if (r.remainingMs < 0) dead.push(r);
+      const group = rowGroup(r);
+      if (group === 'expired') dead.push(r);
+      else if (group === 'active-unknown') unknown.push(r);
       else live.push(r);
     }
     return { live, dead, unknown };
@@ -46,27 +48,27 @@
       {#if hasMultiple}
         {@render head('进行中', groups.live.length, false)}
       {/if}
-      <div class="divide-line">
-        {#each groups.live as r, i (r.name + '|' + r.institute + '|' + (r.deadlineMs ?? i))}
-          <SchoolRow school={r} selected={selectedKey === `${r.name}::${r.institute}`} {onSelect} />
+      <div class="divide-line" data-row-group="active-timed">
+        {#each groups.live as r (rowKey(r))}
+          <SchoolRow school={r} selected={selectedKey === rowKey(r)} {onSelect} />
         {/each}
       </div>
     {/if}
 
     {#if groups.unknown.length > 0}
-      {@render head('日期未公布', groups.unknown.length, false)}
-      <div class="divide-line">
-        {#each groups.unknown as r, i (r.name + '|' + r.institute + '|U' + i)}
-          <SchoolRow school={r} selected={selectedKey === `${r.name}::${r.institute}`} {onSelect} />
+      {@render head('未知截止', groups.unknown.length, false)}
+      <div class="divide-line" data-row-group="active-unknown">
+        {#each groups.unknown as r (rowKey(r))}
+          <SchoolRow school={r} selected={selectedKey === rowKey(r)} {onSelect} />
         {/each}
       </div>
     {/if}
 
     {#if groups.dead.length > 0}
-      {@render head('已结束', groups.dead.length, true)}
-      <div class="divide-line">
-        {#each groups.dead as r, i (r.name + '|' + r.institute + '|' + (r.deadlineMs ?? i) + '|D' + i)}
-          <SchoolRow school={r} selected={selectedKey === `${r.name}::${r.institute}`} {onSelect} />
+      {@render head('已过期', groups.dead.length, true)}
+      <div class="divide-line" data-row-group="expired">
+        {#each groups.dead as r (rowKey(r))}
+          <SchoolRow school={r} selected={selectedKey === rowKey(r)} {onSelect} />
         {/each}
       </div>
     {/if}

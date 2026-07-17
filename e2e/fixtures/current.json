@@ -1,0 +1,343 @@
+{
+  "schemaVersion": 2,
+  "snapshotId": "2026-07-16T03:45:00.000Z-d781535ec98c",
+  "scanAt": "2026-07-16T11:30:00+08:00",
+  "approvedAt": "2026-07-16T11:45:00+08:00",
+  "previousSnapshotId": null,
+  "dataHash": "d781535ec98c55cbb3c8a615777516bc0a1e4420c9ef9852bcab40c5590223e8",
+  "defaultFeedId": "e2e2028",
+  "feeds": [
+    {
+      "id": "e2e2028",
+      "label": "E2E 推免活动 2028",
+      "admissionCycle": "2028",
+      "eventYear": 2026
+    },
+    {
+      "id": "e2e-no-tier",
+      "label": "E2E 无层级数据",
+      "admissionCycle": "2028",
+      "eventYear": 2026
+    }
+  ],
+  "counts": {
+    "confirmedOpen": 7,
+    "confirmedUnknownDeadline": 1,
+    "pendingExcluded": 0,
+    "expired": 1
+  },
+  "opportunities": [
+    {
+      "projectId": "2028|红杉大学|人工智能学院|夏令营",
+      "feedId": "e2e2028",
+      "name": "红杉大学",
+      "institute": "人工智能学院",
+      "project": "2026年优秀大学生夏令营",
+      "eventType": "夏令营",
+      "description": "E2E_ACTIVE_SOONER",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-18T18:00:00+08:00",
+      "deadlineOriginal": "2026年7月18日18:00截止",
+      "deadlineEpochMs": 1784368800000,
+      "website": "https://admissions.redwood.example.test/2026/summer-camp",
+      "tags": ["985", "C9"],
+      "province": "北京",
+      "verifiedAt": "2026-07-16T10:30:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "红杉大学官方通知",
+          "url": "https://admissions.redwood.example.test/2026/summer-camp"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知发现页",
+          "url": "https://discovery.example.test/redwood-summer-camp"
+        }
+      ],
+      "logistics": {
+        "status": "confirmed",
+        "summary": "提供校内住宿和工作餐，往返交通自行承担。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "需要两封专家推荐信。"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "LONG_UNBROKEN_FACT_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+      },
+      "eventArrangement": {
+        "mode": "online",
+        "time": { "status": "confirmed", "summary": "2026年8月3日至8月5日" },
+        "formatLocation": { "status": "confirmed", "summary": "腾讯会议，链接另行通知" }
+      }
+    },
+    {
+      "projectId": "2028|橙川大学|计算机科学学院|科研训练营",
+      "feedId": "e2e2028",
+      "name": "橙川大学",
+      "institute": "计算机科学学院",
+      "project": "2026年量子智算训练计划",
+      "eventType": "科研训练营",
+      "description": "E2E_CROWDED_OFFLINE",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-18T19:00:00+08:00",
+      "deadlineOriginal": "2026年7月18日19:00截止",
+      "deadlineEpochMs": 1784372400000,
+      "website": "https://admissions.orange.example.test/quantum-camp",
+      "tags": ["211"],
+      "province": "江苏",
+      "verifiedAt": "2026-07-16T10:32:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "橙川大学官方通知",
+          "url": "https://admissions.orange.example.test/quantum-camp"
+        }
+      ],
+      "logistics": { "status": "confirmed", "summary": "提供工作餐。" },
+      "recommendation": { "status": "not-published", "summary": "未公布" },
+      "materials": { "status": "confirmed", "summary": "成绩单和个人陈述。" },
+      "eventArrangement": {
+        "mode": "offline",
+        "time": { "status": "confirmed", "summary": "2026年8月6日至8月8日" },
+        "formatLocation": { "status": "confirmed", "summary": "橙川大学计算机楼" }
+      }
+    },
+    {
+      "projectId": "2028|银湖大学|数据科学学院|夏令营",
+      "feedId": "e2e2028",
+      "name": "银湖大学",
+      "institute": "数据科学学院",
+      "project": "2026年数据智能夏令营",
+      "eventType": "夏令营",
+      "description": "E2E_CROWDED_HYBRID",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-18T20:00:00+08:00",
+      "deadlineOriginal": "2026年7月18日20:00截止",
+      "deadlineEpochMs": 1784376000000,
+      "website": "https://admissions.silverlake.example.test/data-camp",
+      "tags": ["985"],
+      "province": "上海",
+      "verifiedAt": "2026-07-16T10:34:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "银湖大学官方通知",
+          "url": "https://admissions.silverlake.example.test/data-camp"
+        }
+      ],
+      "logistics": { "status": "confirmed", "summary": "线下参加者提供住宿。" },
+      "recommendation": { "status": "confirmed", "summary": "需要一封推荐信。" },
+      "materials": { "status": "confirmed", "summary": "成绩单、简历和研究陈述。" },
+      "eventArrangement": {
+        "mode": "hybrid",
+        "time": { "status": "confirmed", "summary": "2026年8月9日至8月11日" },
+        "formatLocation": { "status": "confirmed", "summary": "银湖大学与同步直播" }
+      }
+    },
+    {
+      "projectId": "2028|松岭大学|电子信息学院|开放日",
+      "feedId": "e2e2028",
+      "name": "松岭大学",
+      "institute": "电子信息学院",
+      "project": "2026年电子信息开放日",
+      "eventType": "开放日",
+      "description": "E2E_CROWDED_UNKNOWN",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-18T21:00:00+08:00",
+      "deadlineOriginal": "2026年7月18日21:00截止",
+      "deadlineEpochMs": 1784379600000,
+      "website": "https://admissions.pineridge.example.test/open-day",
+      "tags": ["双非"],
+      "province": "湖北",
+      "verifiedAt": "2026-07-16T10:36:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "松岭大学官方通知",
+          "url": "https://admissions.pineridge.example.test/open-day"
+        }
+      ],
+      "logistics": { "status": "not-published", "summary": "未公布" },
+      "recommendation": { "status": "not-published", "summary": "未公布" },
+      "materials": { "status": "confirmed", "summary": "在线报名表。" },
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": { "status": "not-published", "summary": "未公布" },
+        "formatLocation": { "status": "not-published", "summary": "未公布" }
+      }
+    },
+    {
+      "projectId": "2028|云海大学|智能系统研究院|暑期学校",
+      "feedId": "e2e2028",
+      "name": "云海大学",
+      "institute": "智能系统研究院",
+      "project": "2026年智能系统暑期学校",
+      "eventType": "暑期学校",
+      "description": "E2E_CROWDED_ONLINE",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-18T23:59:59+08:00",
+      "deadlineOriginal": "2026年7月18日截止；官方未公布具体时刻",
+      "deadlineEpochMs": 1784390399000,
+      "website": "https://admissions.cloudsea.example.test/summer-school",
+      "tags": ["研究院"],
+      "province": "广东",
+      "verifiedAt": "2026-07-16T10:38:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "云海大学官方通知",
+          "url": "https://admissions.cloudsea.example.test/summer-school"
+        }
+      ],
+      "logistics": { "status": "not-applicable", "summary": "线上活动。" },
+      "recommendation": { "status": "confirmed", "summary": "无需推荐信。" },
+      "materials": { "status": "confirmed", "summary": "简历和成绩单。" },
+      "eventArrangement": {
+        "mode": "online",
+        "time": { "status": "confirmed", "summary": "2026年8月12日至8月14日" },
+        "formatLocation": { "status": "confirmed", "summary": "在线会议平台" }
+      }
+    },
+    {
+      "projectId": "2028|白石研究院|研究生部|招生宣讲",
+      "feedId": "e2e-no-tier",
+      "name": "白石研究院",
+      "institute": "研究生部",
+      "project": "2026年研究生招生宣讲",
+      "eventType": "招生宣讲",
+      "description": "E2E_NO_TIER",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-20T18:00:00+08:00",
+      "deadlineOriginal": "2026年7月20日18:00截止",
+      "deadlineEpochMs": 1784541600000,
+      "website": "https://admissions.whitestone.example.test/briefing",
+      "tags": [],
+      "province": "四川",
+      "verifiedAt": "2026-07-16T11:10:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "白石研究院官方通知",
+          "url": "https://admissions.whitestone.example.test/briefing"
+        }
+      ],
+      "logistics": { "status": "not-published", "summary": "未公布" },
+      "recommendation": { "status": "not-published", "summary": "未公布" },
+      "materials": { "status": "confirmed", "summary": "在线登记。" },
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": { "status": "not-published", "summary": "未公布" },
+        "formatLocation": { "status": "not-published", "summary": "未公布" }
+      }
+    },
+    {
+      "projectId": "2028|蓝湾大学|计算机学院|预推免",
+      "feedId": "e2e2028",
+      "name": "蓝湾大学",
+      "institute": "计算机学院",
+      "project": "2026年预推免招生",
+      "eventType": "预推免",
+      "description": "E2E_ACTIVE_LATER",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-31T23:59:00+08:00",
+      "deadlineOriginal": "2026年7月31日23:59截止",
+      "deadlineEpochMs": 1785513540000,
+      "website": "https://admissions.bluebay.example.test/recommendation",
+      "tags": ["211", "研究院"],
+      "province": "上海",
+      "verifiedAt": "2026-07-16T10:40:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "蓝湾大学官方通知",
+          "url": "https://admissions.bluebay.example.test/recommendation"
+        },
+        {
+          "kind": "cs-baoyan",
+          "label": "CS-BAOYAN 发现页",
+          "url": "https://discovery.example.test/bluebay-recommendation"
+        }
+      ],
+      "logistics": { "status": "not-published", "summary": "未公布" },
+      "recommendation": { "status": "confirmed", "summary": "无需推荐信" },
+      "materials": { "status": "confirmed", "summary": "成绩单、排名证明和个人陈述。" },
+      "eventArrangement": {
+        "mode": "offline",
+        "time": { "status": "confirmed", "summary": "2026年9月上旬" },
+        "formatLocation": { "status": "confirmed", "summary": "蓝湾大学计算机学院" }
+      }
+    },
+    {
+      "projectId": "2028|青禾大学|软件学院|开放日",
+      "feedId": "e2e2028",
+      "name": "青禾大学",
+      "institute": "软件学院",
+      "project": "2026年研究生招生开放日",
+      "eventType": "开放日",
+      "description": "E2E_ACTIVE_UNKNOWN",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "官方尚未公布截止时间",
+      "deadlineEpochMs": null,
+      "website": "https://admissions.greenfield.example.test/open-day",
+      "tags": ["985", "联培"],
+      "province": "广东",
+      "verifiedAt": "2026-07-16T10:50:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "青禾大学官方通知",
+          "url": "https://admissions.greenfield.example.test/open-day"
+        }
+      ],
+      "logistics": { "status": "confirmed", "summary": "提供午餐，不提供住宿。" },
+      "recommendation": { "status": "not-published", "summary": "未公布" },
+      "materials": { "status": "confirmed", "summary": "在线填写报名表。" },
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": { "status": "not-published", "summary": "未公布" },
+        "formatLocation": { "status": "not-published", "summary": "未公布" }
+      }
+    },
+    {
+      "projectId": "2028|远山大学|网络空间安全学院|夏令营",
+      "feedId": "e2e2028",
+      "name": "远山大学",
+      "institute": "网络空间安全学院",
+      "project": "2026年优秀大学生夏令营",
+      "eventType": "夏令营",
+      "description": "E2E_EXPIRED",
+      "verificationStatus": "expired",
+      "deadline": "2026-07-10T12:00:00+08:00",
+      "deadlineOriginal": "2026年7月10日12:00截止",
+      "deadlineEpochMs": 1783656000000,
+      "website": "https://admissions.farmountain.example.test/summer-camp",
+      "tags": ["双非"],
+      "province": "浙江",
+      "verifiedAt": "2026-07-16T11:00:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "远山大学官方通知",
+          "url": "https://admissions.farmountain.example.test/summer-camp"
+        },
+        {
+          "kind": "other-discovery",
+          "label": "历史发现页",
+          "url": "https://discovery.example.test/farmountain-archive"
+        }
+      ],
+      "logistics": { "status": "not-applicable", "summary": "活动已结束。" },
+      "recommendation": { "status": "not-published", "summary": "未公布" },
+      "materials": { "status": "not-published", "summary": "未公布" },
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": { "status": "not-published", "summary": "未公布" },
+        "formatLocation": { "status": "not-published", "summary": "未公布" }
+      }
+    }
+  ]
+}

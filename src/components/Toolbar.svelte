@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Search, X, Zap, CalendarDays, Layers } from 'lucide-svelte';
   import { filters, clearAllFilters, toggle } from '$lib/urlState.svelte';
+  import { eventModeLabel } from '$lib/filter';
   import type { DerivedSchool } from '$lib/types';
 
   let { totalCount, visibleCount, rows }: {
@@ -23,7 +24,7 @@
   });
 
   const activeFilterCount = $derived(
-    filters.tags.length + filters.status.length + filters.provinces.length + (filters.query ? 1 : 0),
+    filters.tags.length + filters.status.length + filters.modes.length + filters.provinces.length + (filters.query ? 1 : 0),
   );
 
   function clearQuery() {
@@ -36,32 +37,32 @@
   <div class="flex flex-wrap items-center gap-2">
     <div class="text-fg-2 text-xs uppercase tracking-[0.14em] font-medium pr-1">未截止</div>
 
-    <button
-      class="group surface-1 hover:surface-2 border border-line rounded-md px-3 py-2 flex items-center gap-2.5 transition"
+    <div
+      class="surface-1 border border-line rounded-md px-3 py-2 flex items-center gap-2.5"
       title="本周内截止"
     >
       <Zap class="w-3.5 h-3.5 urge-soon" />
       <span class="text-fg-2 text-xs">本周</span>
       <span class="text-fg-0 font-semibold text-sm tabular">{stats.week}</span>
-    </button>
+    </div>
 
-    <button
-      class="group surface-1 hover:surface-2 border border-line rounded-md px-3 py-2 flex items-center gap-2.5 transition"
+    <div
+      class="surface-1 border border-line rounded-md px-3 py-2 flex items-center gap-2.5"
       title="30 天内截止"
     >
       <CalendarDays class="w-3.5 h-3.5 urge-near" />
       <span class="text-fg-2 text-xs">本月</span>
       <span class="text-fg-0 font-semibold text-sm tabular">{stats.month}</span>
-    </button>
+    </div>
 
-    <button
-      class="group surface-1 hover:surface-2 border border-line rounded-md px-3 py-2 flex items-center gap-2.5 transition"
+    <div
+      class="surface-1 border border-line rounded-md px-3 py-2 flex items-center gap-2.5"
       title="尚未截止的全部"
     >
       <Layers class="w-3.5 h-3.5 urge-far" />
       <span class="text-fg-2 text-xs">全部</span>
       <span class="text-fg-0 font-semibold text-sm tabular">{stats.all}</span>
-    </button>
+    </div>
 
     <div class="flex-1"></div>
 
@@ -80,7 +81,8 @@
       id="search-input"
       type="search"
       bind:value={filters.query}
-      placeholder='搜索学校、学院 …  按 "/" 聚焦'
+      aria-label="搜索学校、学院、项目和活动类型"
+      placeholder='搜索学校、学院、项目、活动类型 …  按 "/" 聚焦'
       class="w-full surface-1 hover:surface-2 focus:surface-2 transition rounded-lg border border-line focus:border-line-strong text-fg-0 placeholder:text-fg-4 text-sm pl-9 pr-9 py-2.5 outline-none"
     />
     {#if filters.query}
@@ -96,21 +98,21 @@
 
   <!-- active filter chips -->
   {#if activeFilterCount > 0}
-    <div class="flex flex-wrap items-center gap-1.5">
+    <div class="filter-chips flex flex-wrap items-center gap-1.5">
       {#if filters.query}
         <button
           onclick={clearQuery}
-          class="group inline-flex items-center gap-1 surface-3 border border-line-strong text-fg-1 text-xs rounded-full pl-2.5 pr-1.5 py-1 hover:text-fg-0"
+          class="filter-chip group inline-flex items-center gap-1 surface-3 border border-line-strong text-fg-1 text-xs rounded-full pl-2.5 pr-1.5 py-1 hover:text-fg-0"
         >
           <span class="text-fg-3">搜索:</span>
-          <span class="tabular">{filters.query}</span>
+          <span class="filter-chip__value tabular">{filters.query}</span>
           <X class="w-3 h-3" />
         </button>
       {/if}
       {#each filters.tags as t}
         <button
           onclick={() => (filters.tags = toggle(filters.tags, t))}
-          class="inline-flex items-center gap-1 surface-3 border border-line-strong text-fg-1 text-xs rounded-full pl-2.5 pr-1.5 py-1 hover:text-fg-0"
+          class="filter-chip inline-flex items-center gap-1 surface-3 border border-line-strong text-fg-1 text-xs rounded-full pl-2.5 pr-1.5 py-1 hover:text-fg-0"
         >
           {t}
           <X class="w-3 h-3" />
@@ -119,16 +121,25 @@
       {#each filters.status as t}
         <button
           onclick={() => (filters.status = toggle(filters.status, t))}
-          class="inline-flex items-center gap-1 surface-3 border border-line-strong text-fg-1 text-xs rounded-full pl-2.5 pr-1.5 py-1 hover:text-fg-0"
+          class="filter-chip inline-flex items-center gap-1 surface-3 border border-line-strong text-fg-1 text-xs rounded-full pl-2.5 pr-1.5 py-1 hover:text-fg-0"
         >
           {t}
+          <X class="w-3 h-3" />
+        </button>
+      {/each}
+      {#each filters.modes as mode}
+        <button
+          onclick={() => (filters.modes = toggle(filters.modes, mode))}
+          class="filter-chip inline-flex items-center gap-1 surface-3 border border-line-strong text-fg-1 text-xs rounded-full pl-2.5 pr-1.5 py-1 hover:text-fg-0"
+        >
+          {eventModeLabel(mode)}
           <X class="w-3 h-3" />
         </button>
       {/each}
       {#each filters.provinces as p}
         <button
           onclick={() => (filters.provinces = toggle(filters.provinces, p))}
-          class="inline-flex items-center gap-1 surface-3 border border-line-strong text-fg-1 text-xs rounded-full pl-2.5 pr-1.5 py-1 hover:text-fg-0"
+          class="filter-chip inline-flex items-center gap-1 surface-3 border border-line-strong text-fg-1 text-xs rounded-full pl-2.5 pr-1.5 py-1 hover:text-fg-0"
         >
           {p}
           <X class="w-3 h-3" />

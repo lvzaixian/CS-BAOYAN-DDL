@@ -1,0 +1,96 @@
+name: Public Monitor
+
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-monitor
+  cancel-in-progress: true
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PUBLIC_BASE_URL: ${{ vars.PUBLIC_BASE_URL }}
+      MAX_SNAPSHOT_AGE_HOURS: '24'
+      CERT_MIN_VALID_DAYS: '21'
+
+    steps:
+      - name: Initialize compact diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          MONITOR_DIAGNOSTICS_DIR="$RUNNER_TEMP/public-monitor-diagnostics"
+          MONITOR_DIAGNOSTICS_PATH="$MONITOR_DIAGNOSTICS_DIR/public-monitor.json"
+          printf 'MONITOR_DIAGNOSTICS_DIR=%s\n' "$MONITOR_DIAGNOSTICS_DIR" >> "$GITHUB_ENV"
+          printf 'MONITOR_DIAGNOSTICS_PATH=%s\n' "$MONITOR_DIAGNOSTICS_PATH" >> "$GITHUB_ENV"
+          mkdir -p "$MONITOR_DIAGNOSTICS_DIR"
+          printf 'event=%s\nref=%s\nsha=%s\n' \
+            "$GITHUB_EVENT_NAME" "$GITHUB_REF" "$GITHUB_SHA" \
+            > "$MONITOR_DIAGNOSTICS_DIR/context.txt"
+
+      - name: Require the current main SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main' || {
+            echo 'Public monitoring must be dispatched from main.' >&2
+            exit 1
+          }
+
+      - name: Checkout exact monitored SHA
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
+        with:
+          version: 10.28.2
+
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Monitor public release
+        run: corepack pnpm@10.28.2 exec tsx scripts/monitor-public.mjs
+
+      - name: Upload monitor failure diagnostics
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: public-monitor-failure-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/public-monitor-diagnostics/
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Record monitor summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          if [ "${{ job.status }}" = 'success' ]; then
+            status='passed'
+          else
+            status='failed'
+          fi
+          {
+            echo "## Public monitor: $status"
+            echo
+            echo "- Monitored SHA: \`$GITHUB_SHA\`"
+            echo "- Event: \`$GITHUB_EVENT_NAME\`"
+            echo "- Snapshot maximum age: \`$MAX_SNAPSHOT_AGE_HOURS hours\`"
+            echo "- Certificate minimum lifetime: \`$CERT_MIN_VALID_DAYS full days\`"
+          } >> "$GITHUB_STEP_SUMMARY"

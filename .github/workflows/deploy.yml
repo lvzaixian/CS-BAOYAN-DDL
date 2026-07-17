@@ -1,57 +1,807 @@
-name: Deploy to GitHub Pages
+name: Deploy Tencent
 
 on:
-  schedule:
-    - cron: '0 16 * * *'  # 北京时间 00:00 更新
-  push:
-    branches: [ main, master ]
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v4
-      with:
-        version: 10
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'pnpm'
-
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
-
-    - name: Build
-      run: pnpm run build
-
-    - name: Setup Pages
-      uses: actions/configure-pages@v4
-
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: './dist'
-
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
-
-# Grant GITHUB_TOKEN the permissions required to make a Pages deployment
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
-  group: "pages"
+  group: production-deploy
   cancel-in-progress: false
+
+jobs:
+  production_gate:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production-approval
+    env:
+      RELEASE_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+      BUILD_BUNDLE_DIR: ${{ github.workspace }}/release-build
+
+    steps:
+      - name: Download build artifact for approval gate
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: production-build-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.BUILD_BUNDLE_DIR }}
+
+      - name: Validate release metadata and snapshot freshness
+        shell: bash
+        run: |
+          set -euo pipefail
+          metadata_path="$BUILD_BUNDLE_DIR/release-metadata.json"
+          test -d "$BUILD_BUNDLE_DIR" && test ! -L "$BUILD_BUNDLE_DIR" \
+            || { echo 'missing or unsafe build artifact directory' >&2; exit 1; }
+          test -f "$metadata_path" && test ! -L "$metadata_path" \
+            || { echo 'missing or unsafe release metadata' >&2; exit 1; }
+
+          python3 - "$metadata_path" <<'PY'
+          import json
+          import os
+          import re
+          import sys
+          from datetime import datetime, timedelta, timezone
+
+          MAX_AGE_SECONDS = 21600
+          ISO_TIMESTAMP = re.compile(
+              r"\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])"
+              r"T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,3})?"
+              r"(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)"
+          )
+
+          with open(sys.argv[1], encoding="utf-8") as handle:
+              metadata = json.load(handle)
+
+          expected_keys = {"releaseSha", "snapshotId", "dataHash", "archiveSha", "snapshotScanAt", "snapshotApprovedAt"}
+          if not isinstance(metadata, dict) or set(metadata) != expected_keys:
+              raise SystemExit("release metadata has an unexpected schema")
+          if metadata["releaseSha"] != os.environ["RELEASE_SHA"]:
+              raise SystemExit("release metadata SHA does not match the workflow release")
+          if not re.fullmatch(r"[0-9a-f]{40}", metadata["releaseSha"]):
+              raise SystemExit("release metadata SHA is invalid")
+          if not isinstance(metadata["snapshotId"], str) or not metadata["snapshotId"] \
+                  or any(char in metadata["snapshotId"] for char in "\t\r\n"):
+              raise SystemExit("release metadata snapshotId is invalid")
+          for key in ("dataHash", "archiveSha"):
+              if not isinstance(metadata[key], str) or not re.fullmatch(r"[0-9a-f]{64}", metadata[key]):
+                  raise SystemExit(f"release metadata {key} is invalid")
+
+          def parse_timestamp(key):
+              value = metadata[key]
+              if not isinstance(value, str) or ISO_TIMESTAMP.fullmatch(value) is None:
+                  raise SystemExit(f"release metadata {key} is not a valid ISO timestamp")
+              normalized = f"{value[:-1]}+00:00" if value.endswith("Z") else value
+              try:
+                  timestamp = datetime.fromisoformat(normalized)
+              except ValueError:
+                  raise SystemExit(f"release metadata {key} is not a valid ISO timestamp")
+              if timestamp.utcoffset() is None:
+                  raise SystemExit(f"release metadata {key} must include a UTC offset")
+              return timestamp.astimezone(timezone.utc)
+
+          scan_at = parse_timestamp("snapshotScanAt")
+          approved_at = parse_timestamp("snapshotApprovedAt")
+          now = datetime.now(timezone.utc)
+          max_age = timedelta(seconds=MAX_AGE_SECONDS)
+
+          if approved_at < scan_at:
+              raise SystemExit("release metadata snapshotApprovedAt is before snapshotScanAt")
+          for key, timestamp in (("snapshotScanAt", scan_at), ("snapshotApprovedAt", approved_at)):
+              if timestamp > now:
+                  raise SystemExit(f"release metadata {key} is in the future")
+              if now - timestamp > max_age:
+                  raise SystemExit(f"release metadata {key} is older than 21600 seconds")
+          PY
+
+  prepare:
+    if: >-
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.repository.full_name == github.repository &&
+       github.event.workflow_run.head_repository.full_name == github.repository) ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      RELEASE_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+
+    steps:
+      - name: Checkout release commit
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
+        with:
+          version: 10.28.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run unit tests
+        run: pnpm run test:unit
+
+      - name: Validate approved snapshot
+        run: pnpm run snapshot:validate
+
+      - name: Run Svelte checks
+        run: pnpm run check
+
+      - name: Build production site
+        run: pnpm run build
+
+      - name: Install Chromium for browser verification
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Initialize browser diagnostics
+        run: |
+          mkdir -p browser-diagnostics
+          printf 'commit=%s\nrun=%s\nattempt=%s\n' \
+            "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" \
+            > browser-diagnostics/context.txt
+
+      - name: Run deterministic browser verification
+        run: pnpm run test:e2e
+
+      - name: Upload browser failure artifacts
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: deploy-playwright-failure-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            test-results/
+            playwright-report/
+            browser-diagnostics/
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Create release identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('node:fs');
+
+          const releaseSha = process.env.RELEASE_SHA;
+          if (!/^[0-9a-f]{40}$/.test(releaseSha ?? '')) {
+            throw new Error('RELEASE_SHA must be a full lowercase Git commit SHA');
+          }
+
+          const approvedSnapshotText = fs.readFileSync('data/approved/current.json', 'utf8');
+          const snapshot = JSON.parse(approvedSnapshotText);
+          const snapshotId = snapshot.snapshotId;
+          const dataHash = snapshot.dataHash;
+          const snapshotScanAt = snapshot.scanAt;
+          const snapshotApprovedAt = snapshot.approvedAt;
+          if (typeof snapshotId !== 'string' || !snapshotId || /[\t\r\n]/.test(snapshotId)) {
+            throw new Error('approved snapshotId is missing or unsafe');
+          }
+          if (!/^[0-9a-f]{64}$/.test(dataHash ?? '')) {
+            throw new Error('approved dataHash must be a lowercase SHA-256 value');
+          }
+          for (const [name, value] of Object.entries({ snapshotScanAt, snapshotApprovedAt })) {
+            if (typeof value !== 'string' || !value || /[\t\r\n]/.test(value)) {
+              throw new Error(`${name} is missing or unsafe`);
+            }
+          }
+
+          fs.mkdirSync('dist/data', { recursive: true });
+          fs.copyFileSync('data/approved/current.json', 'dist/data/current.json');
+          const publishedSnapshotText = fs.readFileSync('dist/data/current.json', 'utf8');
+          if (publishedSnapshotText !== approvedSnapshotText) {
+            throw new Error('published current snapshot is not an exact copy of the approved source');
+          }
+          const publishedSnapshot = JSON.parse(publishedSnapshotText);
+          if (
+            publishedSnapshot.snapshotId !== snapshotId
+            || publishedSnapshot.dataHash !== dataHash
+          ) {
+            throw new Error('published current snapshot identity does not match the approved source');
+          }
+
+          fs.writeFileSync(
+            'dist/release.json',
+            `${JSON.stringify({ releaseSha, snapshotId, dataHash })}\n`,
+          );
+          fs.copyFileSync('dist/release.json', 'dist/data/release.json');
+          fs.appendFileSync(
+            process.env.GITHUB_ENV,
+            `EXPECTED_SNAPSHOT_ID=${snapshotId}\nEXPECTED_DATA_HASH=${dataHash}\n`
+              + `SNAPSHOT_SCAN_AT=${snapshotScanAt}\nSNAPSHOT_APPROVED_AT=${snapshotApprovedAt}\n`,
+          );
+          NODE
+
+      - name: Check final public artifact boundary
+        run: pnpm run check:public
+
+      - name: Create deterministic build artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          install -d -m 0755 release-build
+          source_date_epoch=$(git show -s --format=%ct "$RELEASE_SHA")
+          tar --format=ustar --sort=name --mtime="@$source_date_epoch" --owner=0 --group=0 --numeric-owner \
+            -C dist -cf - . | gzip -n -9 > release-build/release.tar.gz
+          archive_sha=$(sha256sum release-build/release.tar.gz | awk '{print $1}')
+          printf '%s  release.tar.gz\n' "$archive_sha" \
+            > release-build/release.tar.gz.sha256
+          ARCHIVE_SHA="$archive_sha" node <<'NODE'
+          const fs = require('node:fs');
+          const metadata = {
+            releaseSha: process.env.RELEASE_SHA,
+            snapshotId: process.env.EXPECTED_SNAPSHOT_ID,
+            dataHash: process.env.EXPECTED_DATA_HASH,
+            archiveSha: process.env.ARCHIVE_SHA,
+            snapshotScanAt: process.env.SNAPSHOT_SCAN_AT,
+            snapshotApprovedAt: process.env.SNAPSHOT_APPROVED_AT,
+          };
+          fs.writeFileSync('release-build/release-metadata.json', `${JSON.stringify(metadata)}\n`);
+          NODE
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: production-build-${{ github.run_id }}-${{ github.run_attempt }}
+          path: release-build/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
+
+  package-control-plane:
+    needs: production_gate
+    if: >-
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.repository.full_name == github.repository &&
+       github.event.workflow_run.head_repository.full_name == github.repository) ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      RELEASE_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+
+    steps:
+      - name: Checkout deployment control plane
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Package deployment control plane without executing repository code
+        shell: bash
+        run: |
+          set -euo pipefail
+          scripts=(activate-release.sh rollback-release.sh smoke.sh)
+          mkdir -m 0755 control-plane-bundle
+          for script in "${scripts[@]}"; do
+            source_path="deploy/$script"
+            test -f "$source_path" && test ! -L "$source_path" \
+              || { printf 'missing or unsafe deployment script: %s\n' "$script" >&2; exit 1; }
+            cp -- "$source_path" "control-plane-bundle/$script"
+            chmod 0555 "control-plane-bundle/$script"
+          done
+          (
+            cd control-plane-bundle
+            sha256sum "${scripts[@]}" > scripts.sha256
+          )
+          chmod 0444 control-plane-bundle/scripts.sha256
+
+      - name: Upload deployment control-plane artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: production-control-plane-${{ github.run_id }}-${{ github.run_attempt }}
+          path: control-plane-bundle/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
+
+  deploy:
+    needs: [prepare, package-control-plane]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      DEPLOY_ROOT: /srv/cs-baoyan-ddl
+      PUBLIC_BASE_URL: ${{ vars.PUBLIC_BASE_URL }}
+      RELEASE_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+      RUN_TOKEN: ${{ github.run_id }}-${{ github.run_attempt }}
+      BUILD_BUNDLE_DIR: ${{ github.workspace }}/release-build
+      CONTROL_BUNDLE_DIR: ${{ github.workspace }}/control-plane-bundle
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: production-build-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.BUILD_BUNDLE_DIR }}
+
+      - name: Download control-plane artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: production-control-plane-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.CONTROL_BUNDLE_DIR }}
+
+      - name: Validate build and control-plane artifacts and public origin
+        shell: bash
+        run: |
+          set -euo pipefail
+          validate_exact_files() {
+            local directory=$1
+            shift
+            local expected_files=("$@")
+            local actual_count
+            test -d "$directory" && test ! -L "$directory" \
+              || { printf 'missing or unsafe artifact directory: %s\n' "$directory" >&2; exit 1; }
+            actual_count=$(find "$directory" -mindepth 1 -maxdepth 1 -print | wc -l)
+            test "$actual_count" -eq "${#expected_files[@]}" \
+              || { printf 'artifact has an unexpected file set: %s\n' "$directory" >&2; exit 1; }
+            for file in "${expected_files[@]}"; do
+              test -f "$directory/$file" && test ! -L "$directory/$file" \
+                || { printf 'missing or unsafe artifact file: %s\n' "$file" >&2; exit 1; }
+            done
+          }
+          validate_exact_files "$BUILD_BUNDLE_DIR" \
+            release-metadata.json \
+            release.tar.gz \
+            release.tar.gz.sha256
+          validate_exact_files "$CONTROL_BUNDLE_DIR" \
+            activate-release.sh \
+            rollback-release.sh \
+            smoke.sh \
+            scripts.sha256
+
+          expected_script_manifest=$(
+            cd "$CONTROL_BUNDLE_DIR"
+            sha256sum activate-release.sh rollback-release.sh smoke.sh
+          )
+          actual_script_manifest=$(cat "$CONTROL_BUNDLE_DIR/scripts.sha256")
+          test "$actual_script_manifest" = "$expected_script_manifest" \
+            || { echo 'control-plane script manifest is invalid' >&2; exit 1; }
+          (
+            cd "$CONTROL_BUNDLE_DIR"
+            sha256sum -c scripts.sha256
+          )
+
+          python3 - "$BUILD_BUNDLE_DIR/release-metadata.json" "$GITHUB_ENV" <<'PY'
+          import json
+          import re
+          import sys
+
+          metadata_path, environment_path = sys.argv[1:]
+          with open(metadata_path, encoding="utf-8") as handle:
+              metadata = json.load(handle)
+          expected_keys = {"releaseSha", "snapshotId", "dataHash", "archiveSha", "snapshotScanAt", "snapshotApprovedAt"}
+          if not isinstance(metadata, dict) or set(metadata) != expected_keys:
+              raise SystemExit("release metadata has an unexpected schema")
+          if metadata["releaseSha"] != __import__("os").environ["RELEASE_SHA"]:
+              raise SystemExit("release metadata SHA does not match the workflow release")
+          if not re.fullmatch(r"[0-9a-f]{40}", metadata["releaseSha"]):
+              raise SystemExit("release metadata SHA is invalid")
+          if not isinstance(metadata["snapshotId"], str) or not metadata["snapshotId"] \
+                  or any(char in metadata["snapshotId"] for char in "\t\r\n"):
+              raise SystemExit("release metadata snapshotId is invalid")
+          for key in ("dataHash", "archiveSha"):
+              if not isinstance(metadata[key], str) or not re.fullmatch(r"[0-9a-f]{64}", metadata[key]):
+                  raise SystemExit(f"release metadata {key} is invalid")
+          with open(environment_path, "a", encoding="utf-8") as handle:
+              handle.write(f"EXPECTED_SNAPSHOT_ID={metadata['snapshotId']}\n")
+              handle.write(f"EXPECTED_DATA_HASH={metadata['dataHash']}\n")
+              handle.write(f"ARCHIVE_SHA={metadata['archiveSha']}\n")
+          PY
+
+          uploaded_line=$(cat "$BUILD_BUNDLE_DIR/release.tar.gz.sha256")
+          metadata_archive_sha=$(python3 -c \
+            'import json,sys; print(json.load(open(sys.argv[1]))["archiveSha"])' \
+            "$BUILD_BUNDLE_DIR/release-metadata.json")
+          test "$uploaded_line" = "$metadata_archive_sha  release.tar.gz" \
+            || { echo 'bundle checksum file does not match metadata' >&2; exit 1; }
+          (
+            cd "$BUILD_BUNDLE_DIR"
+            sha256sum -c release.tar.gz.sha256
+          )
+
+          python3 - "$PUBLIC_BASE_URL" "$GITHUB_ENV" <<'PY'
+          import sys
+          from urllib.parse import urlsplit, urlunsplit
+
+          raw, environment_path = sys.argv[1:]
+          try:
+              parsed = urlsplit(raw)
+              parsed.port
+          except ValueError:
+              raise SystemExit("PUBLIC_BASE_URL is invalid")
+          if (
+              parsed.scheme.lower() not in {"http", "https"}
+              or not parsed.netloc
+              or parsed.hostname is None
+              or parsed.username is not None
+              or parsed.password is not None
+              or parsed.path not in {"", "/"}
+              or parsed.query
+              or parsed.fragment
+              or any(character.isspace() or character == "\\" for character in raw)
+          ):
+              raise SystemExit("PUBLIC_BASE_URL must be a credential-free HTTP(S) root origin")
+          normalized = urlunsplit((parsed.scheme.lower(), parsed.netloc, "", "", ""))
+          with open(environment_path, "a", encoding="utf-8") as handle:
+              handle.write(f"PUBLIC_BASE_URL={normalized}\n")
+              handle.write(f"SMOKE_HOST_HEADER={parsed.netloc}\n")
+          PY
+
+      - name: Reject a stale release before SSH setup
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest_main=$(git ls-remote \
+            "https://github.com/${GITHUB_REPOSITORY}.git" refs/heads/main | awk '{print $1}')
+          test "$latest_main" = "$RELEASE_SHA" || {
+            printf 'Refusing stale release: candidate=%s latest-main=%s\n' \
+              "$RELEASE_SHA" "$latest_main" >&2
+            exit 1
+          }
+
+      - name: Revalidate release metadata and snapshot freshness before SSH setup
+        shell: bash
+        run: |
+          set -euo pipefail
+          metadata_path="$BUILD_BUNDLE_DIR/release-metadata.json"
+          test -d "$BUILD_BUNDLE_DIR" && test ! -L "$BUILD_BUNDLE_DIR" \
+            || { echo 'missing or unsafe build artifact directory' >&2; exit 1; }
+          test -f "$metadata_path" && test ! -L "$metadata_path" \
+            || { echo 'missing or unsafe release metadata' >&2; exit 1; }
+
+          python3 - "$metadata_path" <<'PY'
+          import json
+          import os
+          import re
+          import sys
+          from datetime import datetime, timedelta, timezone
+
+          MAX_AGE_SECONDS = 21600
+          ISO_TIMESTAMP = re.compile(
+              r"\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])"
+              r"T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,3})?"
+              r"(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)"
+          )
+
+          with open(sys.argv[1], encoding="utf-8") as handle:
+              metadata = json.load(handle)
+
+          expected_keys = {"releaseSha", "snapshotId", "dataHash", "archiveSha", "snapshotScanAt", "snapshotApprovedAt"}
+          if not isinstance(metadata, dict) or set(metadata) != expected_keys:
+              raise SystemExit("release metadata has an unexpected schema")
+          if metadata["releaseSha"] != os.environ["RELEASE_SHA"]:
+              raise SystemExit("release metadata SHA does not match the workflow release")
+          if not re.fullmatch(r"[0-9a-f]{40}", metadata["releaseSha"]):
+              raise SystemExit("release metadata SHA is invalid")
+          if not isinstance(metadata["snapshotId"], str) or not metadata["snapshotId"] \
+                  or any(char in metadata["snapshotId"] for char in "\t\r\n"):
+              raise SystemExit("release metadata snapshotId is invalid")
+          for key in ("dataHash", "archiveSha"):
+              if not isinstance(metadata[key], str) or not re.fullmatch(r"[0-9a-f]{64}", metadata[key]):
+                  raise SystemExit(f"release metadata {key} is invalid")
+
+          def parse_timestamp(key):
+              value = metadata[key]
+              if not isinstance(value, str) or ISO_TIMESTAMP.fullmatch(value) is None:
+                  raise SystemExit(f"release metadata {key} is not a valid ISO timestamp")
+              normalized = f"{value[:-1]}+00:00" if value.endswith("Z") else value
+              try:
+                  timestamp = datetime.fromisoformat(normalized)
+              except ValueError:
+                  raise SystemExit(f"release metadata {key} is not a valid ISO timestamp")
+              if timestamp.utcoffset() is None:
+                  raise SystemExit(f"release metadata {key} must include a UTC offset")
+              return timestamp.astimezone(timezone.utc)
+
+          scan_at = parse_timestamp("snapshotScanAt")
+          approved_at = parse_timestamp("snapshotApprovedAt")
+          now = datetime.now(timezone.utc)
+          max_age = timedelta(seconds=MAX_AGE_SECONDS)
+
+          if approved_at < scan_at:
+              raise SystemExit("release metadata snapshotApprovedAt is before snapshotScanAt")
+          for key, timestamp in (("snapshotScanAt", scan_at), ("snapshotApprovedAt", approved_at)):
+              if timestamp > now:
+                  raise SystemExit(f"release metadata {key} is in the future")
+              if now - timestamp > max_age:
+                  raise SystemExit(f"release metadata {key} is older than 21600 seconds")
+          PY
+
+      - name: Configure pinned SSH identity and host key
+        id: ssh
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.TENCENT_HOST }}
+          SSH_PORT: ${{ secrets.TENCENT_PORT }}
+          SSH_USER: ${{ secrets.TENCENT_USER }}
+          SSH_KEY: ${{ secrets.TENCENT_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.TENCENT_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          for value in SSH_HOST SSH_PORT SSH_USER SSH_KEY KNOWN_HOSTS; do
+            test -n "${!value:-}" || { printf '%s is required\n' "$value" >&2; exit 1; }
+          done
+          case "$SSH_USER" in ''|-*|*[!A-Za-z0-9._-]*) echo 'SSH_USER contains disallowed characters' >&2; exit 1 ;; esac
+          case "$SSH_HOST" in ''|-*|*[!A-Za-z0-9.-]*) echo 'SSH_HOST must be a DNS name or IPv4 address' >&2; exit 1 ;; esac
+          case "$SSH_PORT" in ''|*[!0-9]*) echo 'SSH_PORT must be numeric' >&2; exit 1 ;; esac
+          port_number=$((10#$SSH_PORT))
+          test "$port_number" -ge 1 && test "$port_number" -le 65535 \
+            || { echo 'SSH_PORT is out of range' >&2; exit 1; }
+          [[ "$SSH_HOST" != *$'\n'* && "$SSH_HOST" != *$'\r'* ]]
+          [[ "$SSH_USER" != *$'\n'* && "$SSH_USER" != *$'\r'* ]]
+
+          umask 077
+          install -d -m 0700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_KEY" > "$HOME/.ssh/deploy_key"
+          printf '%s\n' "$KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 0600 "$HOME/.ssh/deploy_key" "$HOME/.ssh/known_hosts"
+          ssh-keygen -y -f "$HOME/.ssh/deploy_key" >/dev/null
+          if test "$SSH_PORT" = 22; then
+            known_host_lookup=$SSH_HOST
+          else
+            known_host_lookup="[$SSH_HOST]:$SSH_PORT"
+          fi
+          ssh-keygen -F "$known_host_lookup" -f "$HOME/.ssh/known_hosts" >/dev/null \
+            || { printf 'known_hosts has no entry for %s\n' "$known_host_lookup" >&2; exit 1; }
+          echo 'configured=true' >> "$GITHUB_OUTPUT"
+
+      - name: Create unique remote staging directory
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.TENCENT_HOST }}
+          SSH_PORT: ${{ secrets.TENCENT_PORT }}
+          SSH_USER: ${{ secrets.TENCENT_USER }}
+        run: |
+          set -euo pipefail
+          ssh_options=(
+            -i "$HOME/.ssh/deploy_key"
+            -p "$SSH_PORT"
+            -o BatchMode=yes
+            -o IdentitiesOnly=yes
+            -o StrictHostKeyChecking=yes
+            -o "UserKnownHostsFile=$HOME/.ssh/known_hosts"
+            -o ConnectTimeout=10
+          )
+          printf -v remote_env 'DEPLOY_ROOT=%q RUN_TOKEN=%q' "$DEPLOY_ROOT" "$RUN_TOKEN"
+          ssh "${ssh_options[@]}" "$SSH_USER@$SSH_HOST" "$remote_env bash -se" <<'REMOTE'
+          set -euo pipefail
+          case "$RUN_TOKEN" in *[!A-Za-z0-9._-]*|'') exit 2 ;; esac
+          test -d "$DEPLOY_ROOT/shared/staging"
+          test ! -L "$DEPLOY_ROOT/shared/staging"
+          staging="$DEPLOY_ROOT/shared/staging/$RUN_TOKEN"
+          test ! -e "$staging" && test ! -L "$staging"
+          mkdir -m 0700 -- "$staging"
+          REMOTE
+
+      - name: Upload release archive and deployment scripts
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.TENCENT_HOST }}
+          SSH_PORT: ${{ secrets.TENCENT_PORT }}
+          SSH_USER: ${{ secrets.TENCENT_USER }}
+        run: |
+          set -euo pipefail
+          scp_options=(
+            -i "$HOME/.ssh/deploy_key"
+            -P "$SSH_PORT"
+            -o BatchMode=yes
+            -o IdentitiesOnly=yes
+            -o StrictHostKeyChecking=yes
+            -o "UserKnownHostsFile=$HOME/.ssh/known_hosts"
+            -o ConnectTimeout=10
+          )
+          remote_staging="$DEPLOY_ROOT/shared/staging/$RUN_TOKEN"
+          scp "${scp_options[@]}" \
+            "$BUILD_BUNDLE_DIR/release.tar.gz" \
+            "$BUILD_BUNDLE_DIR/release.tar.gz.sha256" \
+            "$CONTROL_BUNDLE_DIR/smoke.sh" \
+            "$CONTROL_BUNDLE_DIR/activate-release.sh" \
+            "$CONTROL_BUNDLE_DIR/rollback-release.sh" \
+            "$SSH_USER@$SSH_HOST:$remote_staging/"
+
+      - name: Recheck latest main immediately before activation
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest_main=$(git ls-remote \
+            "https://github.com/${GITHUB_REPOSITORY}.git" refs/heads/main | awk '{print $1}')
+          test "$latest_main" = "$RELEASE_SHA" || {
+            printf 'Refusing stale release immediately before activation: candidate=%s latest-main=%s\n' \
+              "$RELEASE_SHA" "$latest_main" >&2
+            exit 1
+          }
+
+      - name: Revalidate release metadata and snapshot freshness immediately before activation
+        shell: bash
+        run: |
+          set -euo pipefail
+          metadata_path="$BUILD_BUNDLE_DIR/release-metadata.json"
+          test -d "$BUILD_BUNDLE_DIR" && test ! -L "$BUILD_BUNDLE_DIR" \
+            || { echo 'missing or unsafe build artifact directory' >&2; exit 1; }
+          test -f "$metadata_path" && test ! -L "$metadata_path" \
+            || { echo 'missing or unsafe release metadata' >&2; exit 1; }
+
+          python3 - "$metadata_path" <<'PY'
+          import json
+          import os
+          import re
+          import sys
+          from datetime import datetime, timedelta, timezone
+
+          MAX_AGE_SECONDS = 21600
+          ISO_TIMESTAMP = re.compile(
+              r"\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])"
+              r"T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,3})?"
+              r"(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)"
+          )
+
+          with open(sys.argv[1], encoding="utf-8") as handle:
+              metadata = json.load(handle)
+
+          expected_keys = {"releaseSha", "snapshotId", "dataHash", "archiveSha", "snapshotScanAt", "snapshotApprovedAt"}
+          if not isinstance(metadata, dict) or set(metadata) != expected_keys:
+              raise SystemExit("release metadata has an unexpected schema")
+          if metadata["releaseSha"] != os.environ["RELEASE_SHA"]:
+              raise SystemExit("release metadata SHA does not match the workflow release")
+          if not re.fullmatch(r"[0-9a-f]{40}", metadata["releaseSha"]):
+              raise SystemExit("release metadata SHA is invalid")
+          if not isinstance(metadata["snapshotId"], str) or not metadata["snapshotId"] \
+                  or any(char in metadata["snapshotId"] for char in "\t\r\n"):
+              raise SystemExit("release metadata snapshotId is invalid")
+          for key in ("dataHash", "archiveSha"):
+              if not isinstance(metadata[key], str) or not re.fullmatch(r"[0-9a-f]{64}", metadata[key]):
+                  raise SystemExit(f"release metadata {key} is invalid")
+
+          def parse_timestamp(key):
+              value = metadata[key]
+              if not isinstance(value, str) or ISO_TIMESTAMP.fullmatch(value) is None:
+                  raise SystemExit(f"release metadata {key} is not a valid ISO timestamp")
+              normalized = f"{value[:-1]}+00:00" if value.endswith("Z") else value
+              try:
+                  timestamp = datetime.fromisoformat(normalized)
+              except ValueError:
+                  raise SystemExit(f"release metadata {key} is not a valid ISO timestamp")
+              if timestamp.utcoffset() is None:
+                  raise SystemExit(f"release metadata {key} must include a UTC offset")
+              return timestamp.astimezone(timezone.utc)
+
+          scan_at = parse_timestamp("snapshotScanAt")
+          approved_at = parse_timestamp("snapshotApprovedAt")
+          now = datetime.now(timezone.utc)
+          max_age = timedelta(seconds=MAX_AGE_SECONDS)
+
+          if approved_at < scan_at:
+              raise SystemExit("release metadata snapshotApprovedAt is before snapshotScanAt")
+          for key, timestamp in (("snapshotScanAt", scan_at), ("snapshotApprovedAt", approved_at)):
+              if timestamp > now:
+                  raise SystemExit(f"release metadata {key} is in the future")
+              if now - timestamp > max_age:
+                  raise SystemExit(f"release metadata {key} is older than 21600 seconds")
+          PY
+
+      - name: Verify archive and activate release
+        id: activate
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.TENCENT_HOST }}
+          SSH_PORT: ${{ secrets.TENCENT_PORT }}
+          SSH_USER: ${{ secrets.TENCENT_USER }}
+        run: |
+          set -euo pipefail
+          ssh_options=(
+            -i "$HOME/.ssh/deploy_key"
+            -p "$SSH_PORT"
+            -o BatchMode=yes
+            -o IdentitiesOnly=yes
+            -o StrictHostKeyChecking=yes
+            -o "UserKnownHostsFile=$HOME/.ssh/known_hosts"
+            -o ConnectTimeout=10
+          )
+          printf -v remote_env \
+            'DEPLOY_ROOT=%q RUN_TOKEN=%q RELEASE_SHA=%q ARCHIVE_SHA=%q EXPECTED_SNAPSHOT_ID=%q EXPECTED_DATA_HASH=%q SMOKE_URL=%q SMOKE_HOST_HEADER=%q' \
+            "$DEPLOY_ROOT" "$RUN_TOKEN" "$RELEASE_SHA" "$ARCHIVE_SHA" \
+            "$EXPECTED_SNAPSHOT_ID" "$EXPECTED_DATA_HASH" \
+            'http://127.0.0.1' "$SMOKE_HOST_HEADER"
+          remote_script="$DEPLOY_ROOT/shared/staging/$RUN_TOKEN/activate-release.sh"
+          ssh "${ssh_options[@]}" "$SSH_USER@$SSH_HOST" \
+            "$remote_env bash $(printf '%q' "$remote_script")"
+
+      - name: Recheck latest main after activation
+        id: post_activation_main
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest_main=$(git ls-remote \
+            "https://github.com/${GITHUB_REPOSITORY}.git" refs/heads/main | awk '{print $1}')
+          test "$latest_main" = "$RELEASE_SHA" || {
+            printf 'Compensating release after post-activation main drift: candidate=%s latest-main=%s\n' \
+              "$RELEASE_SHA" "$latest_main" >&2
+            exit 1
+          }
+
+      - name: Run public release smoke
+        id: public_smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          SMOKE_URL="$PUBLIC_BASE_URL" \
+          EXPECTED_RELEASE_SHA="$RELEASE_SHA" \
+          EXPECTED_SNAPSHOT_ID="$EXPECTED_SNAPSHOT_ID" \
+          EXPECTED_DATA_HASH="$EXPECTED_DATA_HASH" \
+            bash "$CONTROL_BUNDLE_DIR/smoke.sh"
+
+      - name: Compensate a failed activation attempt while the runner is available
+        if: ${{ always() && steps.activate.outcome != 'skipped' && (steps.activate.outcome != 'success' || steps.post_activation_main.outcome != 'success' || steps.public_smoke.outcome != 'success') }}
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.TENCENT_HOST }}
+          SSH_PORT: ${{ secrets.TENCENT_PORT }}
+          SSH_USER: ${{ secrets.TENCENT_USER }}
+        run: |
+          set -euo pipefail
+          ssh_options=(
+            -i "$HOME/.ssh/deploy_key"
+            -p "$SSH_PORT"
+            -o BatchMode=yes
+            -o IdentitiesOnly=yes
+            -o StrictHostKeyChecking=yes
+            -o "UserKnownHostsFile=$HOME/.ssh/known_hosts"
+            -o ConnectTimeout=10
+          )
+          printf -v remote_env \
+            'DEPLOY_ROOT=%q RUN_TOKEN=%q FAILED_RELEASE_SHA=%q SMOKE_URL=%q SMOKE_HOST_HEADER=%q' \
+            "$DEPLOY_ROOT" "$RUN_TOKEN" "$RELEASE_SHA" \
+            'http://127.0.0.1' "$SMOKE_HOST_HEADER"
+          remote_script="$DEPLOY_ROOT/shared/staging/$RUN_TOKEN/rollback-release.sh"
+          ssh "${ssh_options[@]}" "$SSH_USER@$SSH_HOST" \
+            "$remote_env bash $(printf '%q' "$remote_script")"
+
+      - name: Remove remote staging and local SSH material
+        if: ${{ always() && steps.ssh.outcome != 'skipped' }}
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.TENCENT_HOST }}
+          SSH_PORT: ${{ secrets.TENCENT_PORT }}
+          SSH_USER: ${{ secrets.TENCENT_USER }}
+        run: |
+          set -u
+          if test -f "$HOME/.ssh/deploy_key" && test -f "$HOME/.ssh/known_hosts"; then
+            ssh_options=(
+              -i "$HOME/.ssh/deploy_key"
+              -p "$SSH_PORT"
+              -o BatchMode=yes
+              -o IdentitiesOnly=yes
+              -o StrictHostKeyChecking=yes
+              -o "UserKnownHostsFile=$HOME/.ssh/known_hosts"
+              -o ConnectTimeout=10
+            )
+            printf -v remote_env 'DEPLOY_ROOT=%q RUN_TOKEN=%q' "$DEPLOY_ROOT" "$RUN_TOKEN"
+            ssh "${ssh_options[@]}" "$SSH_USER@$SSH_HOST" "$remote_env bash -se" <<'REMOTE' || true
+            set -euo pipefail
+            case "$RUN_TOKEN" in *[!A-Za-z0-9._-]*|'') exit 2 ;; esac
+            staging="$DEPLOY_ROOT/shared/staging/$RUN_TOKEN"
+            case "$staging" in "$DEPLOY_ROOT/shared/staging/"*) rm -rf -- "$staging" ;; *) exit 2 ;; esac
+            REMOTE
+          fi
+          rm -f -- "$HOME/.ssh/deploy_key" "$HOME/.ssh/known_hosts"

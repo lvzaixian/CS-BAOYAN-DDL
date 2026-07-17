@@ -1,7 +1,14 @@
 .DS_Store
 node_modules
+/work
 /dist
+/dist-e2e
+/playwright-report
+/test-results
+/browser-diagnostics
 src/data/logos.json
+data/staging/*.json
+!data/staging/.gitkeep
 
 
 # local env files

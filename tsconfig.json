@@ -18,6 +18,7 @@
     "paths": {
       "$lib/*": ["src/lib/*"],
       "$data/*": ["src/data/*"],
+      "$approved/*": ["data/approved/*"],
       "$components/*": ["src/components/*"]
     }
   },
