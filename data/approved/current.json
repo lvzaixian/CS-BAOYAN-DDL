@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-07-17T11:24:00+08:00",
+  "scanAt": "2026-07-18T00:04:00+08:00",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -14,111 +14,9 @@
     "confirmedOpen": 80,
     "confirmedUnknownDeadline": 21,
     "pendingExcluded": 36,
-    "expired": 56
+    "expired": 58
   },
   "opportunities": [
-    {
-      "projectId": "2027|山东大学|智能通信技术研究院|2026夏令营",
-      "feedId": "camp2027",
-      "name": "山东大学",
-      "institute": "智能通信技术研究院",
-      "project": "智能通信技术研究院2026年优秀大学生夏令营",
-      "eventType": "暑期夏令营",
-      "description": "智能通信技术研究院2026年优秀大学生夏令营",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-07-17T23:00:00+08:00",
-      "deadlineOriginal": "报名截止日期为7月17日23:00点。",
-      "deadlineEpochMs": 1784300400000,
-      "website": "https://iict.sdu.edu.cn/info/1027/1317.htm",
-      "tags": [],
-      "verifiedAt": "2026-07-17T11:01:09+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://iict.sdu.edu.cn/info/1027/1317.htm"
-        },
-        {
-          "kind": "baoyan-notice",
-          "label": "保研通知网",
-          "url": "https://www.baoyantongzhi.com/notice/detail/187377"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "confirmed",
-          "summary": "暂定2026年8月上旬，具体时间另行通知"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "活动方式：暂定网络视频会议；日程安排：暂定8月上旬，具体时间另行通知。"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：未要求；推荐信模板：无"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：中：系统报名，排名证明有专业总人数和盖章要求，科研证明需整理。；材料清单：身份证和学生证复印件；本科成绩单；前五学期专业排名及专业总人数证明；英语水平证明；个人简历、获奖、论文、专利等补充材料。成绩单和排名证明需按官方要求盖章。"
-      }
-    },
-    {
-      "projectId": "2027|中国科学院空天信息创新研究院|空天信息技术暑期学校|2026夏令营",
-      "feedId": "camp2027",
-      "name": "中国科学院空天信息创新研究院",
-      "institute": "空天信息技术暑期学校",
-      "project": "2026年空天信息技术暑期学校",
-      "eventType": "暑期学校",
-      "description": "2026年空天信息技术暑期学校",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-07-17T23:59:00+08:00",
-      "deadlineOriginal": "即日起至7月17日（视具体情况可酌情延长）；官方未写时分；官方未公布具体时刻",
-      "deadlineEpochMs": 1784303940000,
-      "website": "https://aircas.ac.cn/tzgg/202606/t20260624_8232672.html",
-      "tags": [],
-      "verifiedAt": "2026-07-17T10:55:00+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://aircas.ac.cn/tzgg/202606/t20260624_8232672.html"
-        },
-        {
-          "kind": "baoyan-notice",
-          "label": "保研通知网",
-          "url": "https://www.baoyantongzhi.com/notice/detail/133254"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "online",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "本届空天信息技术暑期学校采用线上形式开展"
-        }
-      },
-      "logistics": {
-        "status": "confirmed",
-        "summary": "住宿：不适用（全程线上）；餐食：不适用（全程线上）；交通：不适用（全程线上）"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：官方正文未要求；推荐信模板：无"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：低；材料清单：国科大系统或问卷星填写申请；官方正文未列额外上传材料清单"
-      }
-    },
     {
       "projectId": "2027|南京邮电大学|通信与信息工程学院|2026暑期创新训练班",
       "feedId": "camp2027",
@@ -684,7 +582,7 @@
       "deadlineEpochMs": 1784563140000,
       "website": "https://www.ia.cas.cn/yjsjy/zs/sszs/202606/t20260624_8232737.html",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:00+08:00",
+      "verifiedAt": "2026-07-17T23:02:00+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -719,6 +617,57 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：中；材料清单：国科大系统申请、推免面试报名表、成绩单；两项合并PDF上传，不交纸质材料"
+      }
+    },
+    {
+      "projectId": "2027|长安大学|数据科学与人工智能研究院|2026全国优秀大学生暑期夏令营",
+      "feedId": "camp2027",
+      "name": "长安大学",
+      "institute": "数据科学与人工智能研究院",
+      "project": "数据科学与人工智能研究院2026年全国优秀大学生暑期夏令营",
+      "eventType": "暑期夏令营",
+      "description": "数据科学与人工智能研究院2026年全国优秀大学生暑期夏令营",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-21T18:00:00+08:00",
+      "deadlineOriginal": "于2026年7月21日18:00前将所有材料发送至电子邮箱。",
+      "deadlineEpochMs": 1784628000000,
+      "website": "https://dsai.chd.edu.cn/info/1040/1321.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-17T23:02:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://dsai.chd.edu.cn/info/1040/1321.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/228493"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "online",
+        "time": {
+          "status": "confirmed",
+          "summary": "暂定2026年7月24日（星期五），具体安排以QQ群通知为准"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "本次夏令营拟采用线上腾讯会议形式举行，具体时间、会议方式及日程以QQ群通知为准。"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "住宿：不适用（线上活动）；餐食：不适用（线上活动）；交通：不适用（线上活动）"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文未要求；推荐信模板：无推荐信模板；须使用官方夏令营申请表并本人签字"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中：官方申请表需签字，成绩单和排名需盖章，材料需合并且不超过20页。；材料清单：官方申请表（本人签字）；前五学期或前三年成绩单及专业排名证明（盖章）；其他学术与综合能力证明。三类材料按顺序合并为1个不超过20页的PDF；另填在线汇总表、发送邮件并加入QQ群。"
       }
     },
     {
@@ -3307,6 +3256,57 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：中高；材料清单：身份证、学生证、盖章完整成绩单、盖章排名、个人简历、1000字以内个人陈述、英语证明、科研与获奖材料；直博另需2封专家推荐信。按附件顺序合并PDF并上传问卷"
+      }
+    },
+    {
+      "projectId": "2027|西南财经大学|计算机与人工智能学院|2027级推免生接收",
+      "feedId": "camp2027",
+      "name": "西南财经大学",
+      "institute": "计算机与人工智能学院",
+      "project": "计算机与人工智能学院2027级推免生接收",
+      "eventType": "推免预报名",
+      "description": "计算机与人工智能学院2027级推免生接收",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-31T23:59:00+08:00",
+      "deadlineOriginal": "7月17日—8月31日在学校推免生报名系统完成报考手续；官方未写8月31日具体时分。；官方未公布具体时刻",
+      "deadlineEpochMs": 1788191940000,
+      "website": "https://it.swufe.edu.cn/info/1166/22608.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-17T23:02:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://it.swufe.edu.cn/info/1166/22608.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/229051"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "online",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试暂定2026年9月15日，如有更改另行通知"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "考核方式：推免生考核方式采用远程网络面试，具体安排另行通知。"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "住宿：不适用（远程网络面试）；餐食：不适用（远程网络面试）；交通：不适用（远程网络面试）"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：当前报名阶段未要求；取得复试资格后的审核材料另行通知"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料清单：当前先完成学校推免生报名系统；取得复试资格后的审核材料以学校研招网通知为准。"
       }
     },
     {
@@ -6831,6 +6831,57 @@
       }
     },
     {
+      "projectId": "2027|山东大学|智能通信技术研究院|2026夏令营",
+      "feedId": "camp2027",
+      "name": "山东大学",
+      "institute": "智能通信技术研究院",
+      "project": "智能通信技术研究院2026年优秀大学生夏令营",
+      "eventType": "暑期夏令营",
+      "description": "智能通信技术研究院2026年优秀大学生夏令营",
+      "verificationStatus": "expired",
+      "deadline": "2026-07-17T23:00:00+08:00",
+      "deadlineOriginal": "报名截止日期为7月17日23:00点。",
+      "deadlineEpochMs": 1784300400000,
+      "website": "https://iict.sdu.edu.cn/info/1027/1317.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-17T23:02:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://iict.sdu.edu.cn/info/1027/1317.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/187377"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "暂定2026年8月上旬，具体时间另行通知"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "活动方式：暂定网络视频会议；日程安排：暂定8月上旬，具体时间另行通知。"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：未要求；推荐信模板：无"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中：系统报名，排名证明有专业总人数和盖章要求，科研证明需整理。；材料清单：身份证和学生证复印件；本科成绩单；前五学期专业排名及专业总人数证明；英语水平证明；个人简历、获奖、论文、专利等补充材料。成绩单和排名证明需按官方要求盖章。"
+      }
+    },
+    {
       "projectId": "2027|山东大学|网络空间安全学院|2026全国优秀大学生暑期夏令营",
       "feedId": "camp2027",
       "name": "山东大学",
@@ -7473,10 +7524,61 @@
         "status": "confirmed",
         "summary": "材料复杂度：中：基础身份证明、成绩单和简历为必需，研究计划与成果材料可选；材料清单：身份证明、最新成绩单、简历、学位证或在读证明；研究计划、奖项和论文可选"
       }
+    },
+    {
+      "projectId": "2027|中国科学院空天信息创新研究院|空天信息技术暑期学校|2026夏令营",
+      "feedId": "camp2027",
+      "name": "中国科学院空天信息创新研究院",
+      "institute": "空天信息技术暑期学校",
+      "project": "2026年空天信息技术暑期学校",
+      "eventType": "暑期学校",
+      "description": "2026年空天信息技术暑期学校",
+      "verificationStatus": "expired",
+      "deadline": "2026-07-17T23:59:00+08:00",
+      "deadlineOriginal": "即日起至7月17日（视具体情况可酌情延长）；官方未写时分；官方未公布具体时刻",
+      "deadlineEpochMs": 1784303940000,
+      "website": "https://aircas.ac.cn/tzgg/202606/t20260624_8232672.html",
+      "tags": [],
+      "verifiedAt": "2026-07-18T00:04:00+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://aircas.ac.cn/tzgg/202606/t20260624_8232672.html"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/133254"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "online",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "本届空天信息技术暑期学校采用线上形式开展"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "住宿：不适用（全程线上）；餐食：不适用（全程线上）；交通：不适用（全程线上）"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文未要求；推荐信模板：无"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：低；材料清单：国科大系统或问卷星填写申请；官方正文未列额外上传材料清单"
+      }
     }
   ],
-  "snapshotId": "2026-07-17T04:47:25.308Z-db8a00689864",
-  "approvedAt": "2026-07-17T04:47:25.308Z",
-  "previousSnapshotId": "2026-07-16T15:03:58.000Z-09f201c04834",
-  "dataHash": "db8a00689864e75a28431295f5b8dc957a1896fc934a5ce482177f50f747c1ed"
+  "snapshotId": "2026-07-17T16:07:32.019Z-454744c76c23",
+  "approvedAt": "2026-07-17T16:07:32.019Z",
+  "previousSnapshotId": "2026-07-17T04:47:25.308Z-db8a00689864",
+  "dataHash": "454744c76c230714ca57021f390d23a365c58764c5dc675760a2e6dc0aac55f1"
 }
