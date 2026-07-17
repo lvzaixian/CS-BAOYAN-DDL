@@ -496,7 +496,7 @@ flock -u 9
 
 ### Task 16 activation 后内容与身份验收
 
-只有 Task 16 已运行 `activate-release.sh` 并成功切换 `current` 后，才验证根 `/release.json`、监控事实源 `/data/release.json` 与 `/data/current.json`、SPA 和 JavaScript asset。Task 14 不读取这些文件，因此不会等待尚未 activation 的内容。下面的 `smoke.sh` 同时验证两个 release identity 都是完全相同的精确三字段对象，current 的 `snapshotId`/`dataHash` 与之匹配，以及首页、同源 asset、SPA 深链、缺失 asset 和缺失 `/data/*` 路径的 404；失败信息不会输出完整快照正文：
+只有 Task 16 已运行 `activate-release.sh` 并成功切换 `current` 后，才验证根 `/release.json`、监控事实源 `/data/release.json` 与 `/data/current.json`、SPA 和 JavaScript asset。Task 14 不读取这些文件，因此不会等待尚未 activation 的内容。下面的 `smoke.sh` 同时严格解析两个 release identity，拒绝普通或 Unicode escaped 重复键，对 current 执行完整 approved snapshot schema 校验并重算 canonical `dataHash`，不信任自报 hash；它还核验首页、同源 asset、SPA 深链、缺失 asset 和缺失 `/data/*` 路径的 404。所有 GET 都有不可由环境变量放宽的字节上限：首页与深链各 1 MiB、identity 各 16 KiB、current 16 MiB、asset 8 MiB、404 body 64 KiB；`Content-Length` 与 chunked 传输都 fail closed。远端仍只需要 Bash、curl 和 Python 3，不需要 Node；失败信息不会输出完整快照正文：
 
 ```bash
 set -Eeuo pipefail
@@ -573,7 +573,9 @@ production environment 应设置 required reviewer，并把 deployment branches 
 - `package-control-plane` 没有 environment 或 secrets；它只做固定 SHA 的 pinned checkout，用系统命令复制固定的三个部署脚本、生成 SHA-256 manifest 并上传 control-plane artifact。该 job 不安装 package、不运行 test/build，也不执行任何仓库脚本。
 - `deploy` 同时依赖前两个 job，只有二者成功后才进入 `production` environment；required reviewer 批准后，它在新 runner 分别下载两个明确 artifact 并严格核对文件清单。三个脚本必须全部来自 control-plane artifact，且其 SHA-256 必须与 manifest 逐项一致；该 job 不 checkout 仓库、不安装依赖、不执行 package script 或构建。两个 artifact 下载并校验完成、目标仍确认为最新 main 后才写入 SSH 私钥。
 
-部署前会查询远端 `refs/heads/main`，并在 archive 上传完成、activation 紧邻之前再次查询；若 `RELEASE_SHA` 已不是最新 main，旧 CI 即使晚完成也会被拒绝。两个 artifact 都来自受保护 main，但这不取代 production approval；受保护 main 与 production approval 共同定义部署代码和 release artifact 的信任边界。
+部署前会查询远端 `refs/heads/main`，并在 archive 上传完成、activation 紧邻之前再次查询；若 `RELEASE_SHA` 已不是最新 main，旧 CI 即使晚完成也会被拒绝。activation 后立即再次核验 main 是否漂移；发现漂移时该步骤失败并触发现有补偿回滚。两个 artifact 都来自受保护 main，但这不取代 production approval；受保护 main 与 production approval 共同定义部署代码和 release artifact 的信任边界。
+
+仍存在短暂服务窗口：从远端 `current` 原子切换到 activation 后 main 复核完成之前，旧 SHA 可能已经对外可见；漂移发生在复核刚完成之后，也只能由后续部署或监控收敛。workflow 无法原子绑定 GitHub main 与远端 `current` 符号链接，因此 post-activation 复核和补偿回滚只能缩小窗口，不能把残余窗口表述为零；runner 丢失或主机不可达时仍需按持久 transaction 手工 reconcile。
 
 构建后生成三个公开文件：批准的 `data/approved/current.json` 原样复制为 `dist/data/current.json`；同一个精确三字段 identity 同时写入监控使用的 `dist/data/release.json` 和 rollback/既有 smoke 兼容使用的 `dist/release.json`：
 
@@ -591,7 +593,7 @@ production environment 应设置 required reviewer，并把 deployment branches 
 
 脚本仍在执行时，首次发布的失败处理会删除失败的 `current`；后续发布会尝试恢复该 run token 绑定的 previous，并再次执行本地 smoke。仅当 GitHub runner 仍可执行且能够重新连接主机时，workflow 才会自动补偿 public smoke 或 activation step 的失败。
 
-如果 runner 丢失或不可用，必须使用持久 transaction 执行显式 `rollback-release.sh` 对账；如果主机断电，也必须在主机恢复后根据同一 run token 执行 rollback/reconcile 对账。cleanup 的 `if: always()` 会在 runner 仍可执行时删除本地密钥并尝试清理 staging，但不能覆盖 runner 被强制终止的情形。public smoke 不跟随重定向，只接受精确 200、同源根相对 JavaScript asset；它要求根 `/release.json` 与 `/data/release.json` 都是相同的精确三字段 identity，`/data/current.json` 的 snapshot ID 和 data hash 与之匹配，并核对首页标题、SPA 深链、缺失 asset 和缺失 `/data/*` 路径的 404。三套 Nginx 模板对 `/data/` 只执行静态文件查找，设置 `no-store` 与 `nosniff`，不存在时绝不回退到 SPA。
+如果 runner 丢失或不可用，必须使用持久 transaction 执行显式 `rollback-release.sh` 对账；如果主机断电，也必须在主机恢复后根据同一 run token 执行 rollback/reconcile 对账。cleanup 的 `if: always()` 会在 runner 仍可执行时删除本地密钥并尝试清理 staging，但不能覆盖 runner 被强制终止的情形。public smoke 不跟随重定向，只接受精确状态码和同源根相对 JavaScript asset；它要求根 `/release.json` 与 `/data/release.json` 都是相同的精确三字段 identity，`/data/current.json` 通过完整 schema、derived snapshot ID 和 canonical data hash 校验，并核对首页标题、SPA 深链、缺失 asset 和缺失 `/data/*` 路径的 404。三套 Nginx 模板对 `/data/` 只执行静态文件查找，设置 `no-store` 与 `nosniff`，不存在时绝不回退到 SPA。
 
 常规脚本测试使用 fake `flock` 只验证脚本行为，不证明真实互斥。Linux/CI 必须运行使用 util-linux 真实 `flock` 的并发门禁；macOS 因系统没有兼容的 `flock` 而明确跳过该单项测试。
 

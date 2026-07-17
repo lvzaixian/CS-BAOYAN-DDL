@@ -542,6 +542,8 @@ jobs:
           for value in SSH_HOST SSH_PORT SSH_USER SSH_KEY KNOWN_HOSTS; do
             test -n "${!value:-}" || { printf '%s is required\n' "$value" >&2; exit 1; }
           done
+          case "$SSH_USER" in ''|-*|*[!A-Za-z0-9._-]*) echo 'SSH_USER contains disallowed characters' >&2; exit 1 ;; esac
+          case "$SSH_HOST" in ''|-*|*[!A-Za-z0-9.:-]*) echo 'SSH_HOST contains disallowed characters' >&2; exit 1 ;; esac
           case "$SSH_PORT" in ''|*[!0-9]*) echo 'SSH_PORT must be numeric' >&2; exit 1 ;; esac
           port_number=$((10#$SSH_PORT))
           test "$port_number" -ge 1 && test "$port_number" -le 65535 \
@@ -725,6 +727,19 @@ jobs:
           ssh "${ssh_options[@]}" "$SSH_USER@$SSH_HOST" \
             "$remote_env bash $(printf '%q' "$remote_script")"
 
+      - name: Recheck latest main after activation
+        id: post_activation_main
+        shell: bash
+        run: |
+          set -euo pipefail
+          latest_main=$(git ls-remote \
+            "https://github.com/${GITHUB_REPOSITORY}.git" refs/heads/main | awk '{print $1}')
+          test "$latest_main" = "$RELEASE_SHA" || {
+            printf 'Compensating release after post-activation main drift: candidate=%s latest-main=%s\n' \
+              "$RELEASE_SHA" "$latest_main" >&2
+            exit 1
+          }
+
       - name: Run public release smoke
         id: public_smoke
         shell: bash
@@ -737,7 +752,7 @@ jobs:
             bash "$CONTROL_BUNDLE_DIR/smoke.sh"
 
       - name: Compensate a failed activation attempt while the runner is available
-        if: ${{ always() && steps.activate.outcome != 'skipped' && (steps.activate.outcome != 'success' || steps.public_smoke.outcome != 'success') }}
+        if: ${{ always() && steps.activate.outcome != 'skipped' && (steps.activate.outcome != 'success' || steps.post_activation_main.outcome != 'success' || steps.public_smoke.outcome != 'success') }}
         shell: bash
         env:
           SSH_HOST: ${{ secrets.TENCENT_HOST }}

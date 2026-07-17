@@ -21,6 +21,12 @@ import { dirname, join, resolve } from 'node:path';
 import test, { type TestContext } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
+import {
+  canonicalDataHash,
+  deriveSnapshotId,
+} from '../src/lib/snapshot-integrity.js';
+import type { PublicSnapshot } from '../src/lib/snapshot-types.js';
+
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const activateScript = resolve(repositoryRoot, 'deploy/activate-release.sh');
 const bootstrapScript = resolve(repositoryRoot, 'deploy/bootstrap-server.sh');
@@ -45,6 +51,9 @@ const productionLaunchPlanPath = resolve(
 );
 const rollbackDocumentationPath = resolve(repositoryRoot, 'docs/operations/rollback.md');
 const expectedTitle = 'CS 保研 DDL · 倒计时';
+const snapshotFixture = JSON.parse(
+  readFileSync(resolve(repositoryRoot, 'tests/fixtures/snapshot-valid.json'), 'utf8'),
+) as PublicSnapshot;
 
 interface ReleaseIdentity {
   releaseSha: string;
@@ -154,7 +163,10 @@ function writeReleaseTree(
   identity: ReleaseIdentity,
   marker = '',
   assetSource = '/assets/app.js',
+  snapshot = validSmokeSnapshot(marker),
 ): void {
+  identity.snapshotId = snapshot.snapshotId;
+  identity.dataHash = snapshot.dataHash;
   mkdirSync(join(directory, 'assets'), { recursive: true });
   mkdirSync(join(directory, 'data'), { recursive: true });
   writeFileSync(
@@ -167,13 +179,47 @@ function writeReleaseTree(
   writeFileSync(join(directory, 'data', 'release.json'), `${JSON.stringify(identity)}\n`, 'utf8');
   writeFileSync(
     join(directory, 'data', 'current.json'),
-    `${JSON.stringify({
-      snapshotId: identity.snapshotId,
-      dataHash: identity.dataHash,
-      fixtureBody: marker,
-    })}\n`,
+    `${JSON.stringify(snapshot)}\n`,
     'utf8',
   );
+}
+
+function validSmokeSnapshot(marker = ''): PublicSnapshot {
+  const snapshot = structuredClone(snapshotFixture) as Record<string, any>;
+  delete snapshot.snapshotId;
+  delete snapshot.approvedAt;
+  delete snapshot.previousSnapshotId;
+  delete snapshot.dataHash;
+  snapshot.opportunities[0].verificationStatus = 'confirmed-unknown-deadline';
+  snapshot.opportunities[0].deadline = null;
+  snapshot.opportunities[0].deadlineEpochMs = null;
+  if (marker !== '') snapshot.opportunities[0].description = marker;
+  snapshot.counts.confirmedOpen = 0;
+  snapshot.counts.confirmedUnknownDeadline = 1;
+  const approvedAt = '2026-07-15T15:05:00Z';
+  const dataHash = canonicalDataHash(snapshot);
+  return {
+    ...snapshot,
+    snapshotId: deriveSnapshotId(approvedAt, dataHash),
+    approvedAt,
+    previousSnapshotId: null,
+    dataHash,
+  } as PublicSnapshot;
+}
+
+function writeValidatedReleaseTree(
+  directory: string,
+  releaseSha: string,
+  snapshot = validSmokeSnapshot(),
+  marker = 'validated-smoke',
+): ReleaseIdentity {
+  const identity = {
+    releaseSha,
+    snapshotId: snapshot.snapshotId,
+    dataHash: snapshot.dataHash,
+  };
+  writeReleaseTree(directory, identity, marker, '/assets/app.js', snapshot);
+  return identity;
 }
 
 function stageMaliciousArchive(
@@ -564,6 +610,9 @@ async function startCurrentFixture(
     expectedHost?: string;
     extraIdentityFieldPath?: '/release.json' | '/data/release.json';
     missingAssetStatus?: number;
+    oversizedBytes?: number;
+    oversizedChunked?: boolean;
+    oversizedPath?: '/' | '/release.json' | '/data/release.json' | '/data/current.json';
     redirectHomeTo?: string;
   } = {},
 ): Promise<string> {
@@ -620,9 +669,23 @@ async function startCurrentFixture(
       value.unexpected = true;
       body = Buffer.from(`${JSON.stringify(value)}\n`);
     }
-    response.writeHead(200, {
+    const headers: Record<string, string | number> = {
       'Content-Type': relativePath.endsWith('.json') ? 'application/json' : 'text/html',
-    });
+    };
+    if (options.oversizedPath === pathname && options.oversizedBytes !== undefined) {
+      body = Buffer.concat([
+        body,
+        Buffer.alloc(Math.max(0, options.oversizedBytes - body.byteLength), 0x20),
+      ]);
+      if (!options.oversizedChunked) headers['Content-Length'] = body.byteLength;
+    }
+    response.writeHead(200, headers);
+    if (options.oversizedPath === pathname && options.oversizedChunked) {
+      const midpoint = Math.ceil(body.byteLength / 2);
+      response.write(body.subarray(0, midpoint));
+      response.end(body.subarray(midpoint));
+      return;
+    }
     response.end(request.method === 'HEAD' ? undefined : body);
   });
   const port = await listen(server);
@@ -1210,6 +1273,118 @@ test('smoke verifies all public data endpoints, title, asset, SPA fallback, and 
   assert.match(wrongIdentity.stderr, /smoke failed/i);
 });
 
+test('smoke rejects ordinary and Unicode-escaped duplicate JSON keys', async (t) => {
+  for (const duplicateKind of ['ordinary release key', 'Unicode current key'] as const) {
+    await t.test(duplicateKind, async (subtest) => {
+      const { deployRoot, fakeBin } = makeDeployRoot(subtest);
+      const releaseSha = '1'.repeat(40);
+      const release = join(deployRoot, 'releases', releaseSha);
+      const identity = writeValidatedReleaseTree(release, releaseSha);
+      if (duplicateKind === 'ordinary release key') {
+        writeFileSync(
+          join(release, 'release.json'),
+          `{"releaseSha":"${'f'.repeat(40)}","releaseSha":"${identity.releaseSha}",`
+            + `"snapshotId":"${identity.snapshotId}","dataHash":"${identity.dataHash}"}\n`,
+          'utf8',
+        );
+      } else {
+        const current = readFileSync(join(release, 'data', 'current.json'), 'utf8');
+        writeFileSync(
+          join(release, 'data', 'current.json'),
+          current.replace(/^\{/, '{"\\u0073chemaVersion":999,'),
+          'utf8',
+        );
+      }
+      symlinkSync(release, join(deployRoot, 'current'));
+      const smokeUrl = await startCurrentFixture(subtest, deployRoot);
+      const result = await runScript(smokeScript, {
+        SMOKE_URL: smokeUrl,
+        EXPECTED_RELEASE_SHA: identity.releaseSha,
+        EXPECTED_SNAPSHOT_ID: identity.snapshotId,
+        EXPECTED_DATA_HASH: identity.dataHash,
+        SMOKE_ATTEMPTS: '1',
+        SMOKE_RETRY_DELAY: '0',
+        PATH: `${fakeBin}:${process.env.PATH}`,
+      });
+      assert.notEqual(result.status, 0, result.stderr || result.stdout);
+    });
+  }
+});
+
+test('smoke recomputes canonical dataHash instead of trusting current metadata', async (t) => {
+  const { deployRoot, fakeBin } = makeDeployRoot(t);
+  const releaseSha = '2'.repeat(40);
+  const release = join(deployRoot, 'releases', releaseSha);
+  const snapshot = validSmokeSnapshot();
+  snapshot.counts.pendingExcluded += 1;
+  const identity = writeValidatedReleaseTree(release, releaseSha, snapshot);
+  symlinkSync(release, join(deployRoot, 'current'));
+  const smokeUrl = await startCurrentFixture(t, deployRoot);
+  const result = await runScript(smokeScript, {
+    SMOKE_URL: smokeUrl,
+    EXPECTED_RELEASE_SHA: identity.releaseSha,
+    EXPECTED_SNAPSHOT_ID: identity.snapshotId,
+    EXPECTED_DATA_HASH: identity.dataHash,
+    SMOKE_ATTEMPTS: '1',
+    SMOKE_RETRY_DELAY: '0',
+    PATH: `${fakeBin}:${process.env.PATH}`,
+  });
+  assert.notEqual(result.status, 0, result.stderr || result.stdout);
+});
+
+test('smoke rejects a self-consistent canonical hash when the full snapshot schema is invalid', async (t) => {
+  const { deployRoot, fakeBin } = makeDeployRoot(t);
+  const releaseSha = '3'.repeat(40);
+  const release = join(deployRoot, 'releases', releaseSha);
+  const snapshot = validSmokeSnapshot() as Record<string, any>;
+  snapshot.feeds[0].eventYear = '2026';
+  snapshot.dataHash = canonicalDataHash(snapshot);
+  snapshot.snapshotId = deriveSnapshotId(snapshot.approvedAt, snapshot.dataHash);
+  const identity = writeValidatedReleaseTree(release, releaseSha, snapshot as PublicSnapshot);
+  symlinkSync(release, join(deployRoot, 'current'));
+  const smokeUrl = await startCurrentFixture(t, deployRoot);
+  const result = await runScript(smokeScript, {
+    SMOKE_URL: smokeUrl,
+    EXPECTED_RELEASE_SHA: identity.releaseSha,
+    EXPECTED_SNAPSHOT_ID: identity.snapshotId,
+    EXPECTED_DATA_HASH: identity.dataHash,
+    SMOKE_ATTEMPTS: '1',
+    SMOKE_RETRY_DELAY: '0',
+    PATH: `${fakeBin}:${process.env.PATH}`,
+  });
+  assert.notEqual(result.status, 0, result.stderr || result.stdout);
+});
+
+test('smoke fails closed on declared and chunked endpoint byte overflows', async (t) => {
+  for (const [name, oversizedPath, oversizedBytes, oversizedChunked] of [
+    ['declared release identity', '/release.json', 16 * 1024 + 1, false],
+    ['chunked homepage', '/', 1024 * 1024 + 1, true],
+  ] as const) {
+    await t.test(name, async (subtest) => {
+      const { deployRoot, fakeBin } = makeDeployRoot(subtest);
+      const releaseSha = '4'.repeat(40);
+      const release = join(deployRoot, 'releases', releaseSha);
+      const identity = writeValidatedReleaseTree(release, releaseSha);
+      symlinkSync(release, join(deployRoot, 'current'));
+      const smokeUrl = await startCurrentFixture(subtest, deployRoot, {
+        oversizedPath,
+        oversizedBytes,
+        oversizedChunked,
+      });
+      const result = await runScript(smokeScript, {
+        SMOKE_URL: smokeUrl,
+        EXPECTED_RELEASE_SHA: identity.releaseSha,
+        EXPECTED_SNAPSHOT_ID: identity.snapshotId,
+        EXPECTED_DATA_HASH: identity.dataHash,
+        SMOKE_ATTEMPTS: '1',
+        SMOKE_RETRY_DELAY: '0',
+        PATH: `${fakeBin}:${process.env.PATH}`,
+      });
+      assert.notEqual(result.status, 0, result.stderr || result.stdout);
+    });
+  }
+});
+
 test('smoke fails closed when any public data endpoint is missing', async (t) => {
   for (const relativePath of ['release.json', 'data/release.json', 'data/current.json']) {
     await t.test(relativePath, async (subtest) => {
@@ -1555,6 +1730,32 @@ test('workflow bridges smoke identity, compensates attempted activation, and rec
   const activate = workflow.indexOf('- name: Verify archive and activate release');
   const adjacentMainCheck = workflow.lastIndexOf('latest_main=', activate);
   assert.ok(upload >= 0 && adjacentMainCheck > upload && adjacentMainCheck < activate);
+  const postActivationCheck = workflow.indexOf('- name: Recheck latest main after activation');
+  assert.ok(postActivationCheck > activate && postActivationCheck < publicSmokeStart);
+  assert.match(workflow.slice(postActivationCheck, publicSmokeStart), /latest_main=/);
+  assert.match(workflow.slice(postActivationCheck, publicSmokeStart), /id:\s*post_activation_main/);
+  assert.match(compensation, /steps\.post_activation_main\.outcome != 'success'/);
+});
+
+test('workflow allowlists SSH user, host, and port before constructing OpenSSH arguments', () => {
+  const workflow = readFileSync(workflowPath, 'utf8');
+  const configureStart = workflow.indexOf('- name: Configure pinned SSH identity and host key');
+  const configureEnd = workflow.indexOf('- name: Create unique remote staging directory');
+  assert.ok(configureStart >= 0 && configureEnd > configureStart);
+  const configure = workflow.slice(configureStart, configureEnd);
+  assert.match(configure, /case "\$SSH_USER" in[^\n]*\[!A-Za-z0-9\._-\]/);
+  assert.match(configure, /case "\$SSH_USER" in[^\n]*-\*/);
+  assert.match(configure, /case "\$SSH_HOST" in[^\n]*\[!A-Za-z0-9\.:-\]/);
+  assert.match(configure, /case "\$SSH_HOST" in[^\n]*-\*/);
+  assert.match(configure, /case "\$SSH_PORT" in[^\n]*\[!0-9\]/);
+});
+
+test('operations document post-activation main drift compensation and its residual window', () => {
+  const deployment = readFileSync(deployDocumentationPath, 'utf8');
+  assert.match(deployment, /activation 后[^\n]*main[^\n]*(?:漂移|变化)/i);
+  assert.match(deployment, /(?:漂移|变化)[^\n]*(?:补偿|rollback|回滚)/i);
+  assert.match(deployment, /(?:短暂|残余|剩余)[^\n]*(?:窗口|时间)/i);
+  assert.match(deployment, /无法[^\n]*(?:原子|atomic)[^\n]*(?:main|current|符号链接)/i);
 });
 
 test('workflow creates the public snapshot tree and exact matching release identities', () => {

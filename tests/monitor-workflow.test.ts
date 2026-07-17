@@ -126,6 +126,9 @@ test('operations guide documents repository variables and the no-secrets boundar
   assert.match(operations, /production environment[^\n]*(?:不会|不被|does not|is not)[^\n]*(?:读取|read)/i);
   assert.match(operations, /no secrets|不(?:使用|读取|引用)[^\n]*secret/i);
   assert.match(operations, /不(?:声明|使用)[^\n]*environment|no environment/i);
+  assert.match(operations, /IPv4-compatible|NAT64|6to4|Teredo/i);
+  assert.match(operations, /30\s*秒[^\n]*(?:总|整体)[^\n]*(?:deadline|时限)/i);
+  assert.match(operations, /(?:提前|早退|失败)[^\n]*(?:销毁|destroy)[^\n]*响应/i);
 });
 
 test('accepts only a credential-free HTTPS origin with no path, query, or fragment', async (t) => {
@@ -192,6 +195,37 @@ test('rejects private or loopback DNS answers before HTTP requests', async () =>
     { address: '127.0.0.1', family: 4 },
   ]);
   assert.equal(requestCalls, 0);
+});
+
+test('accepts native global-unicast IPv6 and rejects special-purpose IPv6 ranges', async (t) => {
+  const assertPublicAddresses = exported('assertPublicAddresses');
+  assert.doesNotThrow(() => assertPublicAddresses([
+    { address: '2606:4700:4700::1111', family: 6 },
+  ]));
+
+  for (const address of [
+    '::192.0.2.1',
+    '::ffff:8.8.8.8',
+    '64:ff9b::808:808',
+    '64:ff9b:1::808:808',
+    '100::1',
+    '2001::1',
+    '2001:2::1',
+    '2001:db8::1',
+    '2002:808:808::1',
+    '3fff::1',
+    '5f00::1',
+    'fc00::1',
+    'fe80::1',
+    'ff00::1',
+  ]) {
+    await t.test(address, () => {
+      assert.throws(
+        () => assertPublicAddresses([{ address, family: 6 }]),
+        /non-public|global-unicast|public address/i,
+      );
+    });
+  }
 });
 
 test('release metadata has exactly the three strict identity fields', async (t) => {
@@ -634,6 +668,51 @@ test('homepage and data response streams fail closed without recording response 
         return true;
       },
     );
+    assert.equal(homepage.state.destroyed, true);
+  });
+
+  await t.test('total response deadline destroys a hanging response', async () => {
+    let releaseWait: (() => void) | undefined;
+    const state = { destroyed: false };
+    const hangingRelease = {
+      ok: true,
+      status: 200,
+      headers: {
+        get(name: string) {
+          if (name.toLowerCase() === 'content-type') return 'application/json';
+          return null;
+        },
+      },
+      body: {
+        async *[Symbol.asyncIterator]() {
+          yield Buffer.from('{');
+          await new Promise<void>((resolveWait) => {
+            releaseWait = resolveWait;
+          });
+        },
+      },
+      destroy() {
+        state.destroyed = true;
+        releaseWait?.();
+      },
+    };
+    await assert.rejects(
+      Promise.race([
+        monitorPublicRelease(
+          { ...config, responseDeadlineMs: 25 },
+          {
+            ...baseDependencies,
+            requestHttps: async (url: string) => responseFor(url, { release: hangingRelease as any }),
+          },
+        ),
+        new Promise((_, reject) => setTimeout(
+          () => reject(new Error('test guard expired')),
+          500,
+        )),
+      ]),
+      /deadline/i,
+    );
+    assert.equal(state.destroyed, true);
   });
 
   await t.test('chunked oversized release stops at the first over-limit chunk', async () => {

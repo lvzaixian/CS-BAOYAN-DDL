@@ -18,6 +18,7 @@ const dayMs = 24 * hourMs;
 const homepageByteLimit = 1024 * 1024;
 const releaseByteLimit = 16 * 1024;
 const requestTimeoutMs = 15_000;
+const defaultResponseDeadlineMs = 30_000;
 const releaseKeys = ['dataHash', 'releaseSha', 'snapshotId'];
 const maxJsonDepth = 512;
 
@@ -185,18 +186,49 @@ function isNonPublicIpv4(address) {
   );
 }
 
-function isNonPublicIpv6(address) {
-  const normalized = address.toLowerCase().split('%', 1)[0];
-  if (normalized === '::' || normalized === '::1') return true;
-  if (normalized.startsWith('::ffff:')) {
-    return isNonPublicIpv4(normalized.slice('::ffff:'.length));
+function ipv6Value(address) {
+  let normalized = address.toLowerCase().split('%', 1)[0];
+  const ipv4Tail = /(?:^|:)(\d+\.\d+\.\d+\.\d+)$/.exec(normalized);
+  if (ipv4Tail !== null) {
+    const octets = parseIpv4(ipv4Tail[1]);
+    if (octets === null) return null;
+    const replacement = `${((octets[0] << 8) | octets[1]).toString(16)}`
+      + `:${((octets[2] << 8) | octets[3]).toString(16)}`;
+    normalized = normalized.slice(0, -ipv4Tail[1].length) + replacement;
   }
-  const first = Number.parseInt(normalized.split(':', 1)[0] || '0', 16);
+  const halves = normalized.split('::');
+  if (halves.length > 2) return null;
+  const left = halves[0] === '' ? [] : halves[0].split(':');
+  const right = halves.length === 1 || halves[1] === '' ? [] : halves[1].split(':');
+  const missing = 8 - left.length - right.length;
+  if ((halves.length === 1 && missing !== 0) || missing < 0) return null;
+  const groups = [...left, ...Array(missing).fill('0'), ...right];
+  if (groups.length !== 8 || groups.some((group) => !/^[0-9a-f]{1,4}$/.test(group))) {
+    return null;
+  }
+  return groups.reduce((value, group) => (value << 16n) | BigInt(`0x${group}`), 0n);
+}
+
+function isInIpv6Subnet(value, prefix, prefixLength) {
+  const shift = 128n - BigInt(prefixLength);
+  return (value >> shift) === (prefix >> shift);
+}
+
+function isNonPublicIpv6(address) {
+  const value = ipv6Value(address);
+  if (value === null) return true;
+  const subnet = (prefix, prefixLength) => isInIpv6Subnet(
+    value,
+    ipv6Value(prefix),
+    prefixLength,
+  );
+  if (!subnet('2000::', 3)) return true;
   return (
-    (first & 0xfe00) === 0xfc00
-    || (first & 0xffc0) === 0xfe80
-    || (first & 0xff00) === 0xff00
-    || normalized.startsWith('2001:db8:')
+    subnet('2001::', 23)
+    || subnet('2001:db8::', 32)
+    || subnet('2002::', 16)
+    || subnet('3ffe::', 16)
+    || subnet('3fff::', 20)
   );
 }
 
@@ -345,6 +377,11 @@ async function resolveHost(hostname) {
 }
 
 export function readBoundCertificate(hostname, port, address, connectImpl = connectTls) {
+  let signal;
+  if (typeof connectImpl !== 'function') {
+    signal = connectImpl;
+    connectImpl = connectTls;
+  }
   return new Promise((resolveCertificate, rejectCertificate) => {
     let settled = false;
     const options = {
@@ -361,6 +398,14 @@ export function readBoundCertificate(hostname, port, address, connectImpl = conn
       socket.end();
       resolveCertificate(certificate);
     });
+    const abort = () => {
+      const reason = signal?.reason instanceof Error
+        ? signal.reason
+        : new Error('monitor response deadline exceeded');
+      socket.destroy(reason);
+    };
+    if (signal?.aborted) abort();
+    signal?.addEventListener?.('abort', abort, { once: true });
     socket.setTimeout(requestTimeoutMs, () => {
       socket.destroy(new Error('TLS certificate check timed out'));
     });
@@ -372,9 +417,10 @@ export function readBoundCertificate(hostname, port, address, connectImpl = conn
 
 export function requestBoundHttps(urlValue, options, requestImpl = httpsRequest) {
   const url = new URL(urlValue);
-  const { address, headers, hostname } = options;
+  const { address, headers, hostname, signal } = options;
   return new Promise((resolveResponse, rejectResponse) => {
     let settled = false;
+    let activeResponse;
     const request = requestImpl({
       protocol: 'https:',
       hostname: address.address,
@@ -392,6 +438,7 @@ export function requestBoundHttps(urlValue, options, requestImpl = httpsRequest)
       },
     }, (response) => {
       settled = true;
+      activeResponse = response;
       resolveResponse({
         ok: response.statusCode !== undefined
           && response.statusCode >= 200
@@ -409,6 +456,15 @@ export function requestBoundHttps(urlValue, options, requestImpl = httpsRequest)
         },
       });
     });
+    const abort = () => {
+      const reason = signal?.reason instanceof Error
+        ? signal.reason
+        : new Error('monitor response deadline exceeded');
+      activeResponse?.destroy?.(reason);
+      request.destroy(reason);
+    };
+    if (signal?.aborted) abort();
+    signal?.addEventListener?.('abort', abort, { once: true });
     request.setTimeout(requestTimeoutMs, () => {
       request.destroy(new Error('HTTPS request timed out'));
     });
@@ -419,40 +475,48 @@ export function requestBoundHttps(urlValue, options, requestImpl = httpsRequest)
   });
 }
 
-async function readBoundedText(response, label, expectedContentType, byteLimit) {
-  if (!isObject(response) || response.ok !== true) {
-    const status = isObject(response) && Number.isInteger(response.status)
-      ? response.status
-      : 'unknown';
-    throw new Error(`${label} returned unsuccessful HTTP status ${status}`);
-  }
-  const contentType = response.headers?.get?.('content-type');
-  if (typeof contentType !== 'string' || !expectedContentType.test(contentType)) {
-    throw new Error(`${label} did not return the expected HTML or JSON content type`);
-  }
-  const contentLength = response.headers?.get?.('content-length');
-  if (contentLength !== null && contentLength !== undefined) {
-    if (!/^\d+$/.test(contentLength) || Number(contentLength) > byteLimit) {
-      response.destroy?.();
-      throw new Error(`${label} response is too large`);
+async function readBoundedText(response, label, expectedContentType, byteLimit, signal) {
+  const abort = () => response?.destroy?.();
+  if (signal?.aborted) abort();
+  signal?.addEventListener?.('abort', abort, { once: true });
+  try {
+    if (!isObject(response) || response.ok !== true) {
+      const status = isObject(response) && Number.isInteger(response.status)
+        ? response.status
+        : 'unknown';
+      throw new Error(`${label} returned unsuccessful HTTP status ${status}`);
     }
-  }
-  const body = response.body;
-  if (body === null || body === undefined || typeof body[Symbol.asyncIterator] !== 'function') {
-    throw new Error(`${label} response body is not a readable stream`);
-  }
-  const chunks = [];
-  let bytesRead = 0;
-  for await (const chunk of body) {
-    const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
-    bytesRead += buffer.byteLength;
-    if (bytesRead > byteLimit) {
-      response.destroy?.();
-      throw new Error(`${label} response is too large`);
+    const contentType = response.headers?.get?.('content-type');
+    if (typeof contentType !== 'string' || !expectedContentType.test(contentType)) {
+      throw new Error(`${label} did not return the expected HTML or JSON content type`);
     }
-    chunks.push(buffer);
+    const contentLength = response.headers?.get?.('content-length');
+    if (contentLength !== null && contentLength !== undefined) {
+      if (!/^\d+$/.test(contentLength) || Number(contentLength) > byteLimit) {
+        throw new Error(`${label} response is too large`);
+      }
+    }
+    const body = response.body;
+    if (body === null || body === undefined || typeof body[Symbol.asyncIterator] !== 'function') {
+      throw new Error(`${label} response body is not a readable stream`);
+    }
+    const chunks = [];
+    let bytesRead = 0;
+    for await (const chunk of body) {
+      if (signal?.aborted) throw signal.reason;
+      const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+      bytesRead += buffer.byteLength;
+      if (bytesRead > byteLimit) throw new Error(`${label} response is too large`);
+      chunks.push(buffer);
+    }
+    if (signal?.aborted) throw signal.reason;
+    return Buffer.concat(chunks, bytesRead).toString('utf8');
+  } catch (error) {
+    response?.destroy?.();
+    throw error;
+  } finally {
+    signal?.removeEventListener?.('abort', abort);
   }
-  return Buffer.concat(chunks, bytesRead).toString('utf8');
 }
 
 async function atStage(stage, operation) {
@@ -464,7 +528,15 @@ async function atStage(stage, operation) {
   }
 }
 
-export async function monitorPublicRelease(config, dependencies = {}) {
+function parseResponseDeadlineMs(value) {
+  const deadline = value ?? defaultResponseDeadlineMs;
+  if (!Number.isSafeInteger(deadline) || deadline <= 0) {
+    throw new Error('response deadline must be a positive safe integer number of milliseconds');
+  }
+  return deadline;
+}
+
+async function monitorPublicReleaseWithinDeadline(config, dependencies, signal) {
   const nowMs = config.nowMs ?? Date.now();
   const originUrl = await atStage('configuration', async () => parsePublicOrigin(config.publicBaseUrl));
   const maxAgeMs = await atStage(
@@ -488,6 +560,7 @@ export async function monitorPublicRelease(config, dependencies = {}) {
       hostname,
       Number(originUrl.port || '443'),
       selectedAddress,
+      signal,
     ),
   );
   const certificateDaysRemaining = await atStage(
@@ -500,6 +573,7 @@ export async function monitorPublicRelease(config, dependencies = {}) {
   const requestOptions = {
     address: selectedAddress,
     hostname,
+    signal,
     headers: {
       accept: 'text/html,application/json;q=0.9',
       'user-agent': 'CS-BAOYAN-DDL-public-monitor/1',
@@ -511,7 +585,13 @@ export async function monitorPublicRelease(config, dependencies = {}) {
   );
   const homepage = await atStage(
     'homepage',
-    async () => readBoundedText(homepageResponse, 'homepage', /^text\/html(?:\s*;|$)/i, homepageByteLimit),
+    async () => readBoundedText(
+      homepageResponse,
+      'homepage',
+      /^text\/html(?:\s*;|$)/i,
+      homepageByteLimit,
+      signal,
+    ),
   );
   if (!/<(?:!doctype\s+html|html)\b/i.test(homepage)) {
     throw new MonitorError('homepage', 'homepage is not recognizable HTML');
@@ -534,6 +614,7 @@ export async function monitorPublicRelease(config, dependencies = {}) {
       'current snapshot response',
       /^application\/json(?:\s*;|$)/i,
       MAX_SNAPSHOT_JSON_BYTES,
+      signal,
     ),
   );
   const approvedSnapshot = await atStage(
@@ -563,6 +644,7 @@ export async function monitorPublicRelease(config, dependencies = {}) {
       'release response',
       /^application\/json(?:\s*;|$)/i,
       releaseByteLimit,
+      signal,
     ),
   );
   const release = await atStage('release', async () => parseRelease(releaseText));
@@ -577,6 +659,34 @@ export async function monitorPublicRelease(config, dependencies = {}) {
     certificateDaysRemaining,
     maxSnapshotAgeHours: maxAgeMs / hourMs,
   };
+}
+
+export async function monitorPublicRelease(config, dependencies = {}) {
+  let deadlineMs;
+  try {
+    deadlineMs = parseResponseDeadlineMs(config.responseDeadlineMs);
+  } catch (error) {
+    throw new MonitorError('configuration', messageOf(error));
+  }
+  const controller = new AbortController();
+  let rejectDeadline;
+  const deadline = new Promise((_, reject) => {
+    rejectDeadline = reject;
+  });
+  const timer = setTimeout(() => {
+    const error = new MonitorError('deadline', 'monitor response deadline exceeded');
+    controller.abort(error);
+    rejectDeadline(error);
+  }, deadlineMs);
+  try {
+    return await Promise.race([
+      monitorPublicReleaseWithinDeadline(config, dependencies, controller.signal),
+      deadline,
+    ]);
+  } finally {
+    clearTimeout(timer);
+    if (!controller.signal.aborted) controller.abort(new Error('monitor stopped'));
+  }
 }
 
 async function writeDiagnostics(path, diagnostic) {
