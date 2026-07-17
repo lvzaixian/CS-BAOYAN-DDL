@@ -18,6 +18,7 @@
     "snapshot:approve": "tsx scripts/snapshot/approve-snapshot.ts",
     "snapshot:validate": "tsx scripts/snapshot/validate-current.ts",
     "snapshot:check-freshness": "tsx scripts/snapshot/check-freshness.ts",
+    "data-pr:prepare": "tsx scripts/snapshot/prepare-data-pr.ts",
     "check:public": "bash scripts/check-public.sh",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "check:e2e-isolation": "tsx scripts/check-e2e-isolation.ts",

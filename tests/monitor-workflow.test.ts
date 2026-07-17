@@ -92,10 +92,8 @@ test('monitor workflow is scheduled, manually runnable, read-only, and isolated 
     workflow,
     /PUBLIC_BASE_URL:\s*\$\{\{\s*vars\.PUBLIC_BASE_URL\s*\}\}/,
   );
-  assert.match(
-    workflow,
-    /MAX_SNAPSHOT_AGE_HOURS:\s*\$\{\{\s*vars\.MAX_SNAPSHOT_AGE_HOURS\s*\|\|\s*['"]24['"]\s*\}\}/,
-  );
+  assert.match(workflow, /MAX_SNAPSHOT_AGE_HOURS:\s*['"]24['"]/);
+  assert.doesNotMatch(workflow, /vars\.MAX_SNAPSHOT_AGE_HOURS/);
   assert.match(workflow, /if:\s*\$\{\{\s*failure\(\)\s*\}\}[\s\S]*upload-artifact/);
   assert.match(workflow, /if:\s*\$\{\{\s*always\(\)\s*\}\}[\s\S]*GITHUB_STEP_SUMMARY/);
   assert.match(

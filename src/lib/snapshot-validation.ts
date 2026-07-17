@@ -232,6 +232,15 @@ function validateNoPrivateValues(
   }
 }
 
+export function validatePublicPrivacyBoundary(
+  value: unknown,
+  path = 'public data',
+): string[] {
+  const errors: string[] = [];
+  validateNoPrivateValues(value, path, errors);
+  return errors;
+}
+
 function validateShape(
   value: unknown,
   path: string,
@@ -656,7 +665,7 @@ function validateInput(input: unknown, approved: boolean, nowMs: number): string
   if (!Number.isFinite(nowMs)) {
     errors.push('nowMs: expected a finite number');
   }
-  validateNoPrivateValues(input, 'snapshot', errors);
+  errors.push(...validatePublicPrivacyBoundary(input, 'snapshot'));
   const requiredKeys = approved ? [...candidateKeys, ...approvalKeys] : candidateKeys;
   const snapshot = validateShape(input, 'snapshot', requiredKeys, [], errors);
   if (snapshot === undefined) return errors;

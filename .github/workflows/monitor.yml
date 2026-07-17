@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 10
     env:
       PUBLIC_BASE_URL: ${{ vars.PUBLIC_BASE_URL }}
-      MAX_SNAPSHOT_AGE_HOURS: ${{ vars.MAX_SNAPSHOT_AGE_HOURS || '24' }}
+      MAX_SNAPSHOT_AGE_HOURS: '24'
       CERT_MIN_VALID_DAYS: '21'
       MONITOR_DIAGNOSTICS_DIR: ${{ runner.temp }}/public-monitor-diagnostics
       MONITOR_DIAGNOSTICS_PATH: ${{ runner.temp }}/public-monitor-diagnostics/public-monitor.json

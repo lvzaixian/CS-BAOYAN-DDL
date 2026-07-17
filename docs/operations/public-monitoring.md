@@ -10,9 +10,9 @@
 https://admissions.example.edu.cn
 ```
 
-不得包含账号、密码、路径、query 或 fragment，也不能使用 localhost、回环地址或私网地址。仓库变量 `MAX_SNAPSHOT_AGE_HOURS` 可选；不设置时使用 `24`，只接受可转换为安全整数毫秒的正十进制小时数。
+不得包含账号、密码、路径、query 或 fragment，也不能使用 localhost、回环地址或私网地址。公开快照陈旧阈值固定为 24 小时，不读取可变仓库配置，避免静默放宽监控标准。
 
-当前 production environment 中即使存在同名 `PUBLIC_BASE_URL`，监控也不会读取它。workflow 不声明 environment，只读取 repository-level `vars.PUBLIC_BASE_URL` 和可选的 `vars.MAX_SNAPSHOT_AGE_HOURS`。
+当前 production environment 中即使存在同名 `PUBLIC_BASE_URL`，监控也不会读取它。workflow 不声明 environment，只读取 repository-level `vars.PUBLIC_BASE_URL`。
 
 截至 2026-07-17，仓库级 `PUBLIC_BASE_URL` 尚未配置；这是必须在 GitHub 仓库设置中完成的外部配置。代码不会内置域名或回退值来掩盖缺失，变量未配置时监控会在 configuration 阶段失败关闭。
 
