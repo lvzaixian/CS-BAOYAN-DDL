@@ -72,7 +72,7 @@ const releaseIdentity = {
   dataHash: approvedSnapshot.dataHash,
 };
 const approvedAtMs = Date.parse(String(approvedSnapshot.approvedAt));
-const nowMs = approvedAtMs + 60 * 60 * 1000;
+const nowMs = Math.ceil(approvedAtMs / 1000) * 1000 + 60 * 60 * 1000;
 const dayMs = 24 * 60 * 60 * 1000;
 
 test('monitor workflow is scheduled, manually runnable, read-only, and isolated from production credentials', () => {
