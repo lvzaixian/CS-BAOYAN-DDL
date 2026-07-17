@@ -534,7 +534,7 @@ printf '%s\n' '<verified known_hosts line>' | ssh-keygen -lf -
 
 - SSH 端口为 22 时，记录形如 `host ssh-ed25519 ...`。
 - 自定义端口必须使用 `[host]:port ssh-ed25519 ...`，例如 `[203.0.113.10]:2222 ssh-ed25519 ...`。
-- `TENCENT_HOST` 使用域名时，known_hosts 中必须有同一域名；使用 IP 时必须有同一 IP。
+- `TENCENT_HOST` 只接受 DNS 名称或 IPv4 地址；known_hosts 必须使用同一名称或地址。当前 workflow 不接受 IPv6 literal，因为 SSH 与 SCP 对 IPv6 目标的括号规则不同，不能由同一裸字符串安全复用。
 
 工作流固定启用 `BatchMode=yes`、`IdentitiesOnly=yes`、`StrictHostKeyChecking=yes`、专用 `UserKnownHostsFile` 和 `ConnectTimeout=10`，不会回退到交互式确认或其他本机密钥。
 

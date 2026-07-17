@@ -1745,7 +1745,8 @@ test('workflow allowlists SSH user, host, and port before constructing OpenSSH a
   const configure = workflow.slice(configureStart, configureEnd);
   assert.match(configure, /case "\$SSH_USER" in[^\n]*\[!A-Za-z0-9\._-\]/);
   assert.match(configure, /case "\$SSH_USER" in[^\n]*-\*/);
-  assert.match(configure, /case "\$SSH_HOST" in[^\n]*\[!A-Za-z0-9\.:-\]/);
+  assert.match(configure, /case "\$SSH_HOST" in[^\n]*\[!A-Za-z0-9\.-\]/);
+  assert.doesNotMatch(configure, /\[!A-Za-z0-9\.:-\]/);
   assert.match(configure, /case "\$SSH_HOST" in[^\n]*-\*/);
   assert.match(configure, /case "\$SSH_PORT" in[^\n]*\[!0-9\]/);
 });

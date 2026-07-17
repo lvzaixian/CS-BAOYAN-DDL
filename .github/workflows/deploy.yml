@@ -543,7 +543,7 @@ jobs:
             test -n "${!value:-}" || { printf '%s is required\n' "$value" >&2; exit 1; }
           done
           case "$SSH_USER" in ''|-*|*[!A-Za-z0-9._-]*) echo 'SSH_USER contains disallowed characters' >&2; exit 1 ;; esac
-          case "$SSH_HOST" in ''|-*|*[!A-Za-z0-9.:-]*) echo 'SSH_HOST contains disallowed characters' >&2; exit 1 ;; esac
+          case "$SSH_HOST" in ''|-*|*[!A-Za-z0-9.-]*) echo 'SSH_HOST must be a DNS name or IPv4 address' >&2; exit 1 ;; esac
           case "$SSH_PORT" in ''|*[!0-9]*) echo 'SSH_PORT must be numeric' >&2; exit 1 ;; esac
           port_number=$((10#$SSH_PORT))
           test "$port_number" -ge 1 && test "$port_number" -le 65535 \
