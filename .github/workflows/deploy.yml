@@ -719,10 +719,10 @@ jobs:
             -o ConnectTimeout=10
           )
           printf -v remote_env \
-            'DEPLOY_ROOT=%q RUN_TOKEN=%q RELEASE_SHA=%q ARCHIVE_SHA=%q EXPECTED_SNAPSHOT_ID=%q EXPECTED_DATA_HASH=%q SMOKE_URL=%q SMOKE_HOST_HEADER=%q' \
+            'DEPLOY_ROOT=%q RUN_TOKEN=%q RELEASE_SHA=%q ARCHIVE_SHA=%q EXPECTED_SNAPSHOT_ID=%q EXPECTED_DATA_HASH=%q SMOKE_URL=%q SMOKE_HOST_HEADER=%q SMOKE_LOOPBACK_RESOLVE=%q' \
             "$DEPLOY_ROOT" "$RUN_TOKEN" "$RELEASE_SHA" "$ARCHIVE_SHA" \
             "$EXPECTED_SNAPSHOT_ID" "$EXPECTED_DATA_HASH" \
-            'http://127.0.0.1' "$SMOKE_HOST_HEADER"
+            "$PUBLIC_BASE_URL" '' '1'
           remote_script="$DEPLOY_ROOT/shared/staging/$RUN_TOKEN/activate-release.sh"
           ssh "${ssh_options[@]}" "$SSH_USER@$SSH_HOST" \
             "$remote_env bash $(printf '%q' "$remote_script")"
@@ -770,9 +770,9 @@ jobs:
             -o ConnectTimeout=10
           )
           printf -v remote_env \
-            'DEPLOY_ROOT=%q RUN_TOKEN=%q FAILED_RELEASE_SHA=%q SMOKE_URL=%q SMOKE_HOST_HEADER=%q' \
+            'DEPLOY_ROOT=%q RUN_TOKEN=%q FAILED_RELEASE_SHA=%q SMOKE_URL=%q SMOKE_HOST_HEADER=%q SMOKE_LOOPBACK_RESOLVE=%q' \
             "$DEPLOY_ROOT" "$RUN_TOKEN" "$RELEASE_SHA" \
-            'http://127.0.0.1' "$SMOKE_HOST_HEADER"
+            "$PUBLIC_BASE_URL" '' '1'
           remote_script="$DEPLOY_ROOT/shared/staging/$RUN_TOKEN/rollback-release.sh"
           ssh "${ssh_options[@]}" "$SSH_USER@$SSH_HOST" \
             "$remote_env bash $(printf '%q' "$remote_script")"
@@ -800,8 +800,17 @@ jobs:
             ssh "${ssh_options[@]}" "$SSH_USER@$SSH_HOST" "$remote_env bash -se" <<'REMOTE' || true
             set -euo pipefail
             case "$RUN_TOKEN" in *[!A-Za-z0-9._-]*|'') exit 2 ;; esac
-            staging="$DEPLOY_ROOT/shared/staging/$RUN_TOKEN"
-            case "$staging" in "$DEPLOY_ROOT/shared/staging/"*) rm -rf -- "$staging" ;; *) exit 2 ;; esac
-            REMOTE
+            staging_root="$DEPLOY_ROOT/shared/staging"
+            test -d "$staging_root"
+            test ! -L "$staging_root"
+            test "$(python3 -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$staging_root")" = "$staging_root"
+            staging="$staging_root/$RUN_TOKEN"
+            if test -e "$staging" || test -L "$staging"; then
+              test -d "$staging"
+              test ! -L "$staging"
+              test "$(python3 -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$staging")" = "$staging"
+              rm -rf -- "$staging"
+            fi
+          REMOTE
           fi
           rm -f -- "$HOME/.ssh/deploy_key" "$HOME/.ssh/known_hosts"
