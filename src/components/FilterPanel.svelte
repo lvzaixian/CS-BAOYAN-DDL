@@ -69,7 +69,7 @@
                 : 'surface-2 hover:surface-3 border-line text-fg-1 disabled:text-fg-4 disabled:hover:surface-2 disabled:cursor-not-allowed'}"
           >
             <span>{t}</span>
-            <span class="tabular text-[10px] {on ? 'text-emerald-700/70 dark:text-emerald-300/80' : 'text-fg-3'}">{c}</span>
+            <span class="tabular text-[10px] {on ? 'text-emerald-700 dark:text-emerald-300' : 'text-fg-2'}">{c}</span>
           </button>
         {/each}
       </div>
@@ -102,7 +102,7 @@
               : 'surface-2 hover:surface-3 border-line text-fg-1 disabled:text-fg-4 disabled:hover:surface-2 disabled:cursor-not-allowed'}"
         >
           <span>{t}</span>
-          <span class="tabular text-[10px] {on ? 'text-amber-700/70 dark:text-amber-300/80' : 'text-fg-3'}">{c}</span>
+          <span class="tabular text-[10px] {on ? 'text-amber-700 dark:text-amber-300' : 'text-fg-2'}">{c}</span>
         </button>
       {/each}
     </div>
@@ -134,7 +134,7 @@
               : 'surface-2 hover:surface-3 border-line text-fg-1 disabled:text-fg-4 disabled:hover:surface-2 disabled:cursor-not-allowed'}"
         >
           <span>{eventModeLabel(eventMode)}</span>
-          <span class="tabular text-[10px] {on ? 'text-violet-700/70 dark:text-violet-300/80' : 'text-fg-3'}">{c}</span>
+          <span class="tabular text-[10px] {on ? 'text-violet-700 dark:text-violet-300' : 'text-fg-2'}">{c}</span>
         </button>
       {/each}
     </div>
@@ -166,7 +166,7 @@
               : 'surface-2 hover:surface-3 border-line text-fg-1 disabled:text-fg-4 disabled:hover:surface-2 disabled:cursor-not-allowed'}"
         >
           <span>{p}</span>
-          <span class="tabular text-[10px] {on ? 'text-sky-700/70 dark:text-sky-300/80' : 'text-fg-3'}">{c}</span>
+          <span class="tabular text-[10px] {on ? 'text-sky-700 dark:text-sky-300' : 'text-fg-2'}">{c}</span>
         </button>
       {/each}
     </div>

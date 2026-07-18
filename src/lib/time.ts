@@ -41,6 +41,39 @@ export function deadlineOriginalSupportsNormalizedTime(
   return false;
 }
 
+function formatChineseDate(date: Date): string {
+  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+}
+
+/** Render one actionable deadline while preserving whether the official notice stated a time. */
+export function formatOfficialDeadline(
+  original: string,
+  normalizedDeadline: number | null,
+): string {
+  if (normalizedDeadline === null) return '未公布';
+
+  const deadline = new Date(normalizedDeadline);
+  if (!Number.isFinite(deadline.getTime())) return '未公布';
+
+  const hasOfficialTime = deadlineOriginalSupportsNormalizedTime(original, normalizedDeadline);
+  if (!hasOfficialTime) {
+    return `${formatChineseDate(deadline)}（官网未公布具体时刻）`;
+  }
+
+  if (
+    deadline.getHours() === 0
+    && deadline.getMinutes() === 0
+    && /(?:^|[^\d])24\s*[:：]\s*00(?!\d)/.test(original)
+  ) {
+    const previousDay = new Date(deadline);
+    previousDay.setDate(previousDay.getDate() - 1);
+    return `${formatChineseDate(previousDay)} 24:00`;
+  }
+
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${formatChineseDate(deadline)} ${pad(deadline.getHours())}:${pad(deadline.getMinutes())}`;
+}
+
 export function urgency(remainingMs: number | null): Urgency {
   if (remainingMs === null) return 'unknown';
   if (remainingMs < 0) return 'expired';

@@ -232,7 +232,7 @@ test('uses the fixture and renders exact ordered groups and active deadlines', a
 
 test('opens deterministic details with ordered facts and the official website CTA', async ({ page }) => {
   await page.getByRole('button', { name: '查看项目详情：红杉大学 人工智能学院' }).click();
-  const dialog = page.getByRole('dialog', { name: '项目详情' });
+  const dialog = page.getByRole('dialog', { name: '红杉大学' });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole('heading', { level: 2 })).toHaveText([
     '截止与日期',
@@ -240,6 +240,7 @@ test('opens deterministic details with ordered facts and the official website CT
     '食宿与交通',
     '推荐信',
     '材料',
+    '说明',
   ]);
   await expect(dialog.getByText('报名截止', { exact: true })).toBeVisible();
   await expect(dialog.getByText('活动日期', { exact: true })).toBeVisible();
@@ -248,6 +249,7 @@ test('opens deterministic details with ordered facts and the official website CT
   await expect(dialog.getByText('腾讯会议，链接另行通知')).toBeVisible();
   await expect(dialog.getByText(/2026年8月3日至8月5日\s*· 已核验/)).toBeVisible();
   await expect(dialog.getByText(/腾讯会议，链接另行通知\s*· 已核验/)).toBeVisible();
+  await expect(dialog.getByText('E2E_ACTIVE_SOONER', { exact: true })).toBeVisible();
   const officialCta = dialog
     .locator('.detail-panel__footer')
     .getByRole('link', { name: '打开红杉大学官网' });
@@ -270,9 +272,9 @@ test('shows date-only source precision without presenting the normalized cutoff 
   await page
     .getByRole('button', { name: '查看项目详情：云海大学 智能系统研究院 2026年智能系统暑期学校' })
     .click();
-  const dialog = page.getByRole('dialog', { name: '项目详情' });
+  const dialog = page.getByRole('dialog', { name: '云海大学' });
   await expect(
-    dialog.getByText('2026年7月18日截止；官方未公布具体时刻', { exact: true }),
+    dialog.getByText('2026年7月18日（官网未公布具体时刻）', { exact: true }),
   ).toBeVisible();
   await expect(
     dialog.getByText('2026 年 7月 18 日 · 按当日末排序（官方未公布具体时刻）', { exact: true }),
@@ -489,7 +491,7 @@ test('search typing replaces history while every discrete filter pushes', async 
 test('restores URL filters, migrates legacy status values and clears them', async ({ page }, testInfo) => {
   const historyLengthBeforeNavigation = await page.evaluate(() => window.history.length);
   await page.goto(
-    '/?q=%E5%A4%A7%E5%AD%A6&tags=985&status=%E5%B7%B2%E5%BC%80%E8%90%A5,%E5%B7%B2%E7%BB%93%E8%90%A5&modes=online,hybrid&prov=%E5%8C%97%E4%BA%AC,%E4%B8%8A%E6%B5%B7',
+    '/?q=%E5%A4%A7%E5%AD%A6&tags=C9,985&status=%E5%B7%B2%E5%BC%80%E8%90%A5,%E5%B7%B2%E7%BB%93%E8%90%A5&modes=online,hybrid&prov=%E5%8C%97%E4%BA%AC,%E4%B8%8A%E6%B5%B7',
   );
   const search = page.getByRole('searchbox', { name: '搜索学校、学院、项目和活动类型' });
   await expect(search).toHaveValue('大学');
@@ -588,7 +590,7 @@ test('deadline calendar opens every crowded-day item and clears expansion on mon
   }
   await expectNoHorizontalOverflow(page, 'expanded deadline calendar');
 
-  const detail = page.getByRole('dialog', { name: '项目详情' });
+  const detail = page.locator('.detail-panel[role="dialog"]');
   for (const [index, item] of CROWDED_DAY_ITEMS.entries()) {
     await expandedItems.nth(index).click();
     await expect(detail).toContainText(item.name);
@@ -632,7 +634,7 @@ test('row and detail dialogs support keyboard entry, trap, escape and focus rest
   const row = page.getByRole('button', { name: '查看项目详情：红杉大学 人工智能学院' });
   await row.focus();
   await page.keyboard.press('Enter');
-  const dialog = page.getByRole('dialog', { name: '项目详情' });
+  const dialog = page.getByRole('dialog', { name: '红杉大学' });
   await expect(dialog).toBeVisible();
   const close = dialog.getByRole('button', { name: '关闭项目详情' });
   await expect(close).toBeFocused();
@@ -663,7 +665,7 @@ test('global shortcuts navigate rows and the help dialog isolates and restores f
 
   await page.keyboard.press('j');
   await page.keyboard.press('Enter');
-  const detail = page.getByRole('dialog', { name: '项目详情' });
+  const detail = page.getByRole('dialog', { name: '橙川大学' });
   await expect(detail).toBeVisible();
   await expect(detail).toContainText('橙川大学');
 
@@ -688,13 +690,13 @@ test('global shortcuts navigate rows and the help dialog isolates and restores f
 
   await page.keyboard.press('k');
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('dialog', { name: '项目详情' })).toContainText('红杉大学');
+  await expect(page.getByRole('dialog', { name: '红杉大学' })).toContainText('红杉大学');
   await page.keyboard.press('Escape');
 
   await page.keyboard.press('ArrowDown');
   await page.keyboard.press('ArrowUp');
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('dialog', { name: '项目详情' })).toContainText('红杉大学');
+  await expect(page.getByRole('dialog', { name: '红杉大学' })).toContainText('红杉大学');
 });
 
 test('mobile filter dialog traps focus, escapes and restores its trigger', async ({ page }, testInfo) => {
@@ -710,7 +712,7 @@ test('mobile filter dialog traps focus, escapes and restores its trigger', async
   await c9.press('Enter');
   await expect(c9).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByRole('dialog')).toHaveCount(1);
-  await expect(page.getByRole('dialog', { name: '项目详情' })).toHaveCount(0);
+  await expect(page.locator('.detail-panel[role="dialog"]')).toHaveCount(0);
 
   const focusable = drawer.locator(
     'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',

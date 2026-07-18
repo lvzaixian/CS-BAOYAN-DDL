@@ -1,10 +1,10 @@
 {
   "schemaVersion": 2,
-  "snapshotId": "2026-07-16T03:45:00.000Z-d781535ec98c",
+  "snapshotId": "2026-07-16T03:45:00.000Z-bd46030b97e3",
   "scanAt": "2026-07-16T11:30:00+08:00",
   "approvedAt": "2026-07-16T11:45:00+08:00",
   "previousSnapshotId": null,
-  "dataHash": "d781535ec98c55cbb3c8a615777516bc0a1e4420c9ef9852bcab40c5590223e8",
+  "dataHash": "bd46030b97e33423a48105bee163903587b9505b31a726c135348de6244f53b6",
   "defaultFeedId": "e2e2028",
   "feeds": [
     {
@@ -202,9 +202,9 @@
       }
     },
     {
-      "projectId": "2028|白石研究院|研究生部|招生宣讲",
+      "projectId": "2028|白石学院|研究生部|招生宣讲",
       "feedId": "e2e-no-tier",
-      "name": "白石研究院",
+      "name": "白石学院",
       "institute": "研究生部",
       "project": "2026年研究生招生宣讲",
       "eventType": "招生宣讲",
@@ -220,7 +220,7 @@
       "discoverySources": [
         {
           "kind": "official",
-          "label": "白石研究院官方通知",
+          "label": "白石学院官方通知",
           "url": "https://admissions.whitestone.example.test/briefing"
         }
       ],

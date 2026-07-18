@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import { deadlineOriginalSupportsNormalizedTime } from '../src/lib/time';
+import {
+  deadlineOriginalSupportsNormalizedTime,
+  formatOfficialDeadline,
+} from '../src/lib/time';
 
 const listViewSource = readFileSync(
   new URL('../src/components/ListView.svelte', import.meta.url),
@@ -28,29 +31,40 @@ test('keeps the public list groups in actionable, unknown and expired order', ()
   assert.doesNotMatch(listViewSource, /head\('(日期未公布|已结束)'/);
 });
 
-test('renders compact two-line project identity and icon-plus-text mode badges', () => {
+test('matches the reference list hierarchy while preserving event mode', () => {
   const markup = schoolRowSource.slice(schoolRowSource.indexOf('</script>'));
+  const main = markup.slice(
+    markup.indexOf('<!-- main: name + meta -->'),
+    markup.indexOf('<!-- progress + countdown -->'),
+  );
 
   assert.match(markup, /data-layout="compact-two-line"/);
+  assert.match(markup, /max-w-\[68%\] sm:max-w-\[38%\]/);
   assert.doesNotMatch(schoolRowSource, /opportunityStatusLabel|statusLabel/);
   assert.doesNotMatch(schoolRowSource, /Archive|BadgeCheck/);
   assert.match(markup, /\{#each displayTags as t\}/);
   assert.doesNotMatch(schoolRowSource, /t === '(已开营|已结营)'/);
   assert.doesNotMatch(markup, />\s*(已开营|已结营)\s*</);
-  assert.match(markup, /\{school\.project\}/);
+  assert.doesNotMatch(main, /\{school\.project\}/);
+  assert.match(main, /\{school\.name\}/);
+  assert.match(main, /\{school\.institute\}/);
   assert.match(markup, /\{school\.eventType\}/);
   assert.match(markup, /\{modeLabel\}/);
+  assert.ok(
+    main.indexOf('{#each displayTags as t}') < main.indexOf('{modeLabel}'),
+    'school tier must precede the event-mode metadata',
+  );
   assert.match(schoolRowSource, /Monitor/);
   assert.match(schoolRowSource, /MapPin/);
   assert.match(schoolRowSource, /GitMerge/);
   assert.match(schoolRowSource, /CircleHelp/);
 });
 
-test('uses five unframed detail sections in the required order', () => {
+test('uses six unframed detail sections in the required order', () => {
   const bodyStart = detailPanelSource.indexOf('<!-- body -->');
   const footerStart = detailPanelSource.indexOf('<!-- footer cta -->');
   const body = detailPanelSource.slice(bodyStart, footerStart);
-  const headings = ['截止与日期', '活动安排', '食宿与交通', '推荐信', '材料'];
+  const headings = ['截止与日期', '活动安排', '食宿与交通', '推荐信', '材料', '说明'];
   let previous = -1;
 
   for (const heading of headings) {
@@ -59,13 +73,15 @@ test('uses five unframed detail sections in the required order', () => {
     previous = position;
   }
 
-  assert.equal(body.match(/<section\b/g)?.length, 5);
+  assert.equal(body.match(/<section\b/g)?.length, 6);
   assert.doesNotMatch(body, /信息来源|discoverySources|detail-source-list/);
   assert.doesNotMatch(body, /surface-[23]|rounded-(?:lg|xl)/);
+  assert.match(detailPanelSource, /school\.description\.trim\(\) !== school\.project\.trim\(\)/);
+  assert.match(detailPanelSource, /暂无补充说明/);
 });
 
 test('shows one official deadline followed immediately by the activity date', () => {
-  assert.match(detailPanelSource, /school\.deadlineOriginal/);
+  assert.match(detailPanelSource, /formatOfficialDeadline/);
   assert.match(detailPanelSource, /const officialDeadline = \$derived/);
   assert.doesNotMatch(detailPanelSource, /原始文本|标准化时间|核验时间/);
 
@@ -85,6 +101,25 @@ test('shows one official deadline followed immediately by the activity date', ()
   assert.match(detailPanelSource, /factStatusLabels\[school\.logistics\.status\]/);
   assert.match(detailPanelSource, /school\.recommendation\.summary/);
   assert.match(detailPanelSource, /school\.materials\.summary/);
+});
+
+test('formats one concise deadline without presenting inferred times as official', () => {
+  const at = (day: number, hour: number, minute: number) =>
+    new Date(2026, 6, day, hour, minute).getTime();
+
+  assert.equal(
+    formatOfficialDeadline('2026年7月1日10:00-2026年7月28日15:00；邮件须同步发送', at(28, 15, 0)),
+    '2026年7月28日 15:00',
+  );
+  assert.equal(
+    formatOfficialDeadline('2026年7月10日—7月18日；官方未公布具体时刻', at(18, 23, 59)),
+    '2026年7月18日（官网未公布具体时刻）',
+  );
+  assert.equal(
+    formatOfficialDeadline('推免平台预报名至2026年7月18日24:00；电子材料至7月20日24:00', at(19, 0, 0)),
+    '2026年7月18日 24:00',
+  );
+  assert.equal(formatOfficialDeadline('', null), '未公布');
 });
 
 test('matches only explicit times that support the normalized deadline', () => {
@@ -161,6 +196,8 @@ test('keeps a verified official CTA without exposing source inventories', () => 
 test('preserves drawer accessibility and constrains long responsive content', () => {
   assert.match(detailPanelSource, /role="dialog"/);
   assert.match(detailPanelSource, /aria-modal="true"/);
+  assert.match(detailPanelSource, /aria-labelledby="detail-panel-title"/);
+  assert.match(detailPanelSource, /id="detail-panel-title"/);
   assert.match(detailPanelSource, /w-full sm:w-\[460px\]/);
   assert.match(detailPanelSource, /class="detail-panel__body[^\n]*"[\s\S]*?tabindex="0"/);
   assert.match(detailPanelSource, /aria-label="项目详情内容"/);
