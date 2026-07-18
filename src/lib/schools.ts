@@ -9,6 +9,7 @@ import type {
   ReadablePublicSnapshot,
 } from './snapshot-types';
 import type { FeedId, School } from './types';
+import { resolveSchoolTierTags } from './school-tier';
 
 interface LegacySchool {
   name: string;
@@ -25,6 +26,13 @@ type LegacySchoolsByFeed = Record<string, LegacySchool[]>;
 const snapshot = approved as ReadablePublicSnapshot;
 const legacySchools = legacy as LegacySchoolsByFeed;
 
+const historicalTagsBySchool = new Map<string, string[]>();
+for (const row of Object.values(legacySchools).flat()) {
+  const tags = historicalTagsBySchool.get(row.name) ?? [];
+  tags.push(...row.tags);
+  historicalTagsBySchool.set(row.name, tags);
+}
+
 function unrecordedV1Fact(): FieldFactGroup {
   return { status: 'unverified', summary: '旧版快照未记录' };
 }
@@ -40,9 +48,16 @@ function adaptV1Opportunity(row: LegacyPublicOpportunityV1): PublicOpportunity {
   };
 }
 
-const approvedOpportunities: PublicOpportunity[] = snapshot.schemaVersion === 1
+const approvedOpportunities: PublicOpportunity[] = (snapshot.schemaVersion === 1
   ? snapshot.opportunities.map(adaptV1Opportunity)
-  : snapshot.opportunities;
+  : snapshot.opportunities).map((row) => ({
+    ...row,
+    tags: resolveSchoolTierTags(
+      row.name,
+      row.tags,
+      historicalTagsBySchool.get(row.name) ?? [],
+    ),
+  }));
 
 function legacyFeedDescriptor(feedId: string): FeedDescriptor {
   const year = feedId.match(/\d{4}/)?.[0] ?? '0000';
@@ -91,7 +106,7 @@ function mapLegacySchool(feedId: FeedId, row: LegacySchool, index: number): Scho
     deadlineOriginal: deadlineOriginal || '历史数据未提供',
     deadlineEpochMs,
     website: row.website,
-    tags: legacyDisplayTags(row.tags),
+    tags: resolveSchoolTierTags(row.name, legacyDisplayTags(row.tags), []),
     ...(row.province ? { province: row.province } : {}),
     verifiedAt: '',
     discoverySources: row.website

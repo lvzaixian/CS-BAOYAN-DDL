@@ -29,7 +29,7 @@ export default defineConfig({
   },
   webServer: {
     command:
-      `pnpm exec vite preview --outDir dist-e2e --host 127.0.0.1 --port ${e2ePort} --strictPort`,
+      `./node_modules/.bin/vite preview --outDir dist-e2e --host 127.0.0.1 --port ${e2ePort} --strictPort`,
     url: e2eBaseUrl,
     reuseExistingServer: false,
     timeout: 30_000,

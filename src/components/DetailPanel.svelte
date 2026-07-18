@@ -5,6 +5,7 @@
     CircleAlert,
     ExternalLink,
     Files,
+    Info,
     LetterText,
     MapPin,
     X,
@@ -12,7 +13,7 @@
   import { onMount, tick } from 'svelte';
   import type { DerivedSchool } from '$lib/types';
   import type { FactStatus } from '$lib/snapshot-types';
-  import { formatDate } from '$lib/time';
+  import { formatOfficialDeadline } from '$lib/time';
   import { eventModeLabel } from '$lib/filter';
   import { getInitials, getLogoUrl } from '$lib/logos';
   import { resolveProvince } from '$data/provinces';
@@ -28,8 +29,12 @@
   const logo = $derived(getLogoUrl(school.name));
   const province = $derived(resolveProvince(school.name, school.province));
   const officialDeadline = $derived(
-    school.deadlineOriginal.trim()
-      || (school.deadlineMs === null ? '未公布' : formatDate(school.deadlineMs)),
+    formatOfficialDeadline(school.deadlineOriginal, school.deadlineMs),
+  );
+  const description = $derived(
+    school.description.trim() !== '' && school.description.trim() !== school.project.trim()
+      ? school.description.trim()
+      : '暂无补充说明',
   );
   const modeLabel = $derived(eventModeLabel(school.eventArrangement.mode));
   const officialSources = $derived(
@@ -87,7 +92,7 @@
     bind:this={panel}
     role="dialog"
     aria-modal="true"
-    aria-label="项目详情"
+    aria-labelledby="detail-panel-title"
     tabindex="-1"
     onkeydown={onDialogKeydown}
     class="detail-panel absolute right-0 top-0 bottom-0 w-full sm:w-[460px] min-w-0 max-w-full overflow-hidden surface-1 border-l border-line shadow-2xl slide-in-right flex flex-col"
@@ -108,7 +113,7 @@
         {/if}
       </div>
       <div class="min-w-0 flex-1 detail-wrap">
-        <div class="text-fg-0 font-semibold text-base leading-tight">{school.name}</div>
+        <h1 id="detail-panel-title" class="text-fg-0 font-semibold text-base leading-tight">{school.name}</h1>
         <div class="text-fg-2 text-sm mt-0.5">{school.institute}</div>
         <div class="text-fg-1 text-sm mt-1">{school.project}</div>
         <div class="text-fg-3 text-xs mt-0.5">{school.eventType}</div>
@@ -211,6 +216,16 @@
         </h2>
         <p class="detail-wrap text-fg-1 text-sm leading-relaxed">
           {school.materials.summary || '未提供'}
+        </p>
+      </section>
+
+      <section class="detail-section px-5 py-4" aria-labelledby="description-heading">
+        <h2 id="description-heading" class="detail-section__title text-fg-2 text-xs font-medium mb-3">
+          <Info class="w-4 h-4" aria-hidden="true" />
+          <span>说明</span>
+        </h2>
+        <p class="detail-wrap text-fg-1 text-sm leading-relaxed">
+          {description}
         </p>
       </section>
 

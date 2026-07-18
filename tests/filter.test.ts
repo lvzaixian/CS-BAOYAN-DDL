@@ -22,7 +22,8 @@ import {
   legacyProjectId,
   sourceCounts,
 } from '../src/lib/schools';
-import type { School } from '../src/lib/types';
+import { SCHOOL_TAGS, type School } from '../src/lib/types';
+import { resolveSchoolTierTags } from '../src/lib/school-tier';
 import approved from '../data/approved/current.json';
 import legacy from '../src/data/legacy-schools.json';
 
@@ -95,6 +96,28 @@ const emptyFilters = {
   modes: [],
   provinces: [],
 };
+
+test('resolves one stable display tier from explicit, historical and research-institute evidence', () => {
+  assert.deepEqual(resolveSchoolTierTags('北京大学', ['985', 'TOP2'], []), ['TOP2']);
+  assert.deepEqual(resolveSchoolTierTags('浙江大学', [], ['985', 'C9', '华五']), ['华五']);
+  assert.deepEqual(resolveSchoolTierTags('中国科学院软件研究所', [], []), ['研究院']);
+  assert.deepEqual(resolveSchoolTierTags('未分类大学', [], []), []);
+});
+
+test('enriches the current approved feed with reference-compatible tier tags', () => {
+  const current = getSchools(defaultFeedId);
+  const tagged = current.filter((row) => row.tags.some((tag) => SCHOOL_TAGS.includes(tag as never)));
+
+  assert.ok(tagged.length >= 50, `expected broad tier coverage, got ${tagged.length}`);
+  assert.deepEqual(
+    current.find((row) => row.name === '清华大学')?.tags,
+    ['TOP2'],
+  );
+  assert.deepEqual(
+    current.find((row) => row.name === '中国科学院软件研究所')?.tags,
+    ['研究院'],
+  );
+});
 
 test('uses projectId as the stable row key', () => {
   assert.equal(rowKey({ projectId: 'cycle|school|college|round' }), 'cycle|school|college|round');
@@ -318,9 +341,14 @@ test('keeps status authority in filters while compact rows avoid redundant statu
 });
 
 test('keeps the feed selector readable on narrow mobile headers and auto-sized on desktop', () => {
-  assert.match(headerSource, /w-28 min-w-28 shrink-0/);
+  assert.match(headerSource, /w-32 min-w-32 shrink-0/);
   assert.match(headerSource, /sm:w-auto sm:min-w-0 sm:max-w-none/);
   assert.match(headerSource, /w-full min-w-0 sm:w-auto/);
+});
+
+test('uses AA-safe foreground tokens for small filter counts', () => {
+  assert.doesNotMatch(filterPanelSource, /text-\[10px\][^"\n]*text-fg-3/);
+  assert.match(filterPanelSource, /text-\[10px\][^"\n]*text-fg-2/);
 });
 
 test('keeps row selection and the source link as sibling interactive controls', () => {
@@ -428,7 +456,14 @@ test('maps appended legacy feeds with deterministic IDs and unverified provenanc
     mappedRows.forEach((row, index) => {
       assert.equal(row.projectId, legacyProjectId(feedId, rawRows[index], index));
       assert.equal(row.verificationStatus, 'expired');
-      assert.deepEqual(row.tags, legacyDisplayTags(rawRows[index].tags));
+      assert.deepEqual(
+        row.tags,
+        resolveSchoolTierTags(
+          rawRows[index].name,
+          legacyDisplayTags(rawRows[index].tags),
+          [],
+        ),
+      );
       assert.equal(row.tags.includes('已开营'), false);
       assert.equal(row.tags.includes('已结营'), false);
       assert.equal(sourceLinkLabel(row), '历史来源（未核验）');

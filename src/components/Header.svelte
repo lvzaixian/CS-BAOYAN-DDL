@@ -35,7 +35,7 @@
     </div>
 
     <!-- source switcher -->
-    <div class="ml-1 w-28 min-w-28 shrink-0 sm:ml-3 sm:w-auto sm:min-w-0 sm:max-w-none">
+    <div class="ml-1 w-32 min-w-32 shrink-0 sm:ml-3 sm:w-auto sm:min-w-0 sm:max-w-none">
       <label class="sr-only" for="source-select">数据源</label>
       <div class="relative min-w-0">
         <select

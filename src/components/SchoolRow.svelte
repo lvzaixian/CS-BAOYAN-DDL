@@ -75,30 +75,13 @@
     <!-- main: name + meta -->
     <div class="min-w-0 flex flex-col gap-1.5">
       <div class="flex items-baseline gap-2 min-w-0">
-        <span class="text-fg-0 font-medium text-sm shrink-0 max-w-[38%] truncate">{school.name}</span>
-        <span class="text-fg-3 text-xs min-w-0 truncate">
-          {school.institute}<span class="text-fg-4"> · {school.project}</span>
-        </span>
+        <span class="text-fg-0 font-medium text-sm shrink-0 max-w-[68%] sm:max-w-[38%] truncate">{school.name}</span>
+        <span class="text-fg-3 text-xs min-w-0 truncate">{school.institute}</span>
       </div>
       <div class="flex items-center gap-1.5 min-w-0 overflow-hidden min-h-[18px]">
-        <span
-          class="inline-flex shrink-0 items-center gap-1 text-[10.5px] font-medium px-1.5 py-0.5 rounded ring-1 bg-violet-100 text-violet-700 ring-violet-200 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30"
-          aria-label="活动形式：{modeLabel}"
-        >
-          {#if school.eventArrangement.mode === 'online'}
-            <Monitor class="w-3 h-3" aria-hidden="true" />
-          {:else if school.eventArrangement.mode === 'offline'}
-            <MapPin class="w-3 h-3" aria-hidden="true" />
-          {:else if school.eventArrangement.mode === 'hybrid'}
-            <GitMerge class="w-3 h-3" aria-hidden="true" />
-          {:else}
-            <CircleHelp class="w-3 h-3" aria-hidden="true" />
-          {/if}
-          {modeLabel}
-        </span>
         {#each displayTags as t}
           <span
-            class="hidden sm:inline-block shrink-0 text-[10.5px] tracking-tight font-medium px-1.5 py-0.5 rounded
+            class="inline-block shrink-0 text-[10.5px] tracking-tight font-medium px-1.5 py-0.5 rounded
               {t === 'TOP2' ? 'bg-rose-100 text-rose-700 ring-1 ring-rose-200 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/30'
               : t === '港三' || t === '华五' ? 'bg-fuchsia-100 text-fuchsia-700 ring-1 ring-fuchsia-200 dark:bg-fuchsia-500/15 dark:text-fuchsia-300 dark:ring-fuchsia-500/30'
               : t === 'C9' ? 'bg-violet-100 text-violet-700 ring-1 ring-violet-200 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30'
@@ -112,6 +95,22 @@
             · {province}
           </span>
         {/if}
+        <span
+          class="inline-flex shrink-0 items-center gap-1 text-fg-3 text-[10.5px]"
+          aria-label="活动形式：{modeLabel}"
+        >
+          ·
+          {#if school.eventArrangement.mode === 'online'}
+            <Monitor class="w-3 h-3" aria-hidden="true" />
+          {:else if school.eventArrangement.mode === 'offline'}
+            <MapPin class="w-3 h-3" aria-hidden="true" />
+          {:else if school.eventArrangement.mode === 'hybrid'}
+            <GitMerge class="w-3 h-3" aria-hidden="true" />
+          {:else}
+            <CircleHelp class="w-3 h-3" aria-hidden="true" />
+          {/if}
+          {modeLabel}
+        </span>
         <span class="min-w-0 truncate text-fg-4 text-[10.5px]">· {school.eventType}</span>
       </div>
     </div>
