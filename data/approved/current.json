@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-07-18T07:19:00+08:00",
+  "scanAt": "2026-07-18T10:32:32+08:00",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -11,10 +11,10 @@
     }
   ],
   "counts": {
-    "confirmedOpen": 81,
-    "confirmedUnknownDeadline": 21,
-    "pendingExcluded": 36,
-    "expired": 60
+    "confirmedOpen": 89,
+    "confirmedUnknownDeadline": 22,
+    "pendingExcluded": 33,
+    "expired": 61
   },
   "opportunities": [
     {
@@ -485,7 +485,7 @@
       "deadlineEpochMs": 1784505600000,
       "website": "https://icci.sjtu.edu.cn/announcement/view/2195",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:24:00+08:00",
+      "verifiedAt": "2026-07-18T10:06:05+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -510,7 +510,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：必须提交2封上海交通大学文创学院教师推荐信，至少1封英文，均需推荐人手写签名；推荐信模板：官网存在推荐信附件链接，但本轮未完成附件内容核验，模板要求待确认。"
+        "summary": "推荐信数量：必须提交2封上海交通大学文创学院教师推荐信，至少1封英文，均需推荐人手写签名；推荐信模板：要求2封院内教师推荐信，但官网未见独立推荐信模板。"
       },
       "materials": {
         "status": "confirmed",
@@ -903,6 +903,98 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：高：系统、专家在线推荐和鹏城实验室邮箱PDF三条路径须在同一截止前完成；材料清单：身份证明、在学证明、本人自述、外语证明、本科成绩单及排名、2封专家推荐信、诚信承诺书、推免报名登记表、科研能力证明；另将不含推荐信的材料合并为一个PDF邮件提交"
+      }
+    },
+    {
+      "projectId": "2027|清华大学|深圳国际研究生院|博士研究生申请时间1",
+      "feedId": "camp2027",
+      "name": "清华大学",
+      "institute": "深圳国际研究生院",
+      "project": "深圳国际研究生院2027年博士研究生申请时间1（含本科直博）",
+      "eventType": "直博申请",
+      "description": "深圳国际研究生院2027年博士研究生申请时间1（含本科直博）",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-28T15:00:00+08:00",
+      "deadlineOriginal": "申请开放时间为2026年7月1日10:00至7月28日15:00。",
+      "deadlineEpochMs": 1785222000000,
+      "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/0232d6b4-273b-4212-8dff-c9efc89f2493?yxsdm=599",
+      "tags": [],
+      "verifiedAt": "2026-07-18T10:06:05+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/0232d6b4-273b-4212-8dff-c9efc89f2493?yxsdm=599"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "综合考核时间由院系另行通知"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "综合考核形式和地点未在申请时间通知中公布。"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：须由2位与申请学科相关的副教授及以上专家在线提交推荐信，并保留纸质原件供后续寄送。；推荐信模板：推荐专家通过清华大学报名系统在线提交，未提供独立纸质模板；纸质原件后续按通知寄送或密封转交申请人寄送。"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：很高：直博方向选择、导师匹配、系统材料和2位专家推荐。；材料清单：系统申请、个人陈述、成绩与排名、外语、科研成果、导师与方向信息以及2位专家在线推荐。"
+      }
+    },
+    {
+      "projectId": "2027|清华大学|深圳国际研究生院|推免报名",
+      "feedId": "camp2027",
+      "name": "清华大学",
+      "institute": "深圳国际研究生院",
+      "project": "深圳国际研究生院2027年推免报名（院级入口）",
+      "eventType": "推免报名",
+      "description": "深圳国际研究生院2027年推免报名（院级入口）",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-28T15:00:00+08:00",
+      "deadlineOriginal": "推免报名截止时间为2026年7月28日15:00。",
+      "deadlineEpochMs": 1785222000000,
+      "website": "https://www.sigs.tsinghua.edu.cn/2026/0630/c7769a291820/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-18T10:06:05+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://www.sigs.tsinghua.edu.cn/2026/0630/c7769a291820/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "材料审核与综合考核安排由项目另行通知"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "综合考核形式和地点由具体项目另行通知。"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：通常须由2位专家在线提交推荐信；清华大学本校本科生按通知可免；专家须保留纸质原件供后续寄送。；推荐信模板：通过清华大学报名系统在线提交，未提供独立纸质模板；纸质原件后续按通知寄送或密封转交申请人寄送。"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：高：项目选择、系统材料和2位专家在线推荐。；材料清单：系统申请、个人陈述、成绩与排名、外语、科研和获奖证明；具体项目可补充要求。"
       }
     },
     {
@@ -2279,6 +2371,52 @@
       }
     },
     {
+      "projectId": "2027|复旦大学|全校招生院系|招收推荐免试研究生报名",
+      "feedId": "camp2027",
+      "name": "复旦大学",
+      "institute": "全校招生院系",
+      "project": "2027年招收推荐免试研究生报名（校级入口）",
+      "eventType": "推免报名",
+      "description": "2027年招收推荐免试研究生报名（校级入口）",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-10T17:00:00+08:00",
+      "deadlineOriginal": "各院系一般报名时间为2026年7月6日10:00至8月10日17:00，部分院系可调整，以系统为准。",
+      "deadlineEpochMs": 1786352400000,
+      "website": "https://gsao.fudan.edu.cn/fb/0b/c15014a785163/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-18T10:06:05+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://gsao.fudan.edu.cn/fb/0b/c15014a785163/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "各院系另行通知复试时间"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：申请直博须由2位相关学科专家在线提交推荐信；硕士校级通知未统一要求推荐信。；推荐信模板：直博推荐由专家按报名系统要求在线提交，校级通知未提供独立纸质推荐信模板。"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：高：系统报名、签字材料、盖章成绩单和院系补充材料；直博另需2位专家在线推荐。；材料清单：证件照和系统申请信息、本人签字的申请表与承诺书、盖章成绩单、外语水平证明、科研与获奖材料、约1000字个人陈述、院系要求的其他材料"
+      }
+    },
+    {
       "projectId": "2027|复旦大学|类脑智能科学与技术研究院|推免生预报名",
       "feedId": "camp2027",
       "name": "复旦大学",
@@ -3157,6 +3295,57 @@
       }
     },
     {
+      "projectId": "2027|中国农业大学|信息与电气工程学院（校级通道）|推免预报名",
+      "feedId": "camp2027",
+      "name": "中国农业大学",
+      "institute": "信息与电气工程学院（校级通道）",
+      "project": "信息与电气工程学院推免预报名（校级通道）",
+      "eventType": "推免预报名",
+      "description": "信息与电气工程学院推免预报名（校级通道）",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-31T18:00:00+08:00",
+      "deadlineOriginal": "校级推免预报名截止时间为2026年8月31日18:00。",
+      "deadlineEpochMs": 1788170400000,
+      "website": "https://yt.cau.edu.cn/art/2026/7/14/art_43337_1122495.html",
+      "tags": [],
+      "verifiedAt": "2026-07-18T10:06:05+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yt.cau.edu.cn/art/2026/7/14/art_43337_1122495.html"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/216361"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "学院另行通知"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "复试日期、形式和地点由学院另行通知。"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：校级通知未要求专家推荐信，学院补充要求以学院通知为准。；推荐信模板：未见校级推荐信模板。"
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": "未公布"
+      }
+    },
+    {
       "projectId": "2027|南方科技大学|计算机科学与工程系|国优计划推免预报名",
       "feedId": "camp2027",
       "name": "南方科技大学",
@@ -3256,6 +3445,52 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：中高；材料清单：身份证、学生证、盖章完整成绩单、盖章排名、个人简历、1000字以内个人陈述、英语证明、科研与获奖材料；直博另需2封专家推荐信。按附件顺序合并PDF并上传问卷"
+      }
+    },
+    {
+      "projectId": "2027|厦门大学|创意与创新学院|设计专业学位硕士推免预报名",
+      "feedId": "camp2027",
+      "name": "厦门大学",
+      "institute": "创意与创新学院",
+      "project": "创意与创新学院设计专业学位硕士推免预报名",
+      "eventType": "推免预报名",
+      "description": "创意与创新学院设计专业学位硕士推免预报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-31T23:59:00+08:00",
+      "deadlineOriginal": "申请截止日期为2026年8月31日，官方未公布具体时刻。",
+      "deadlineEpochMs": 1788191940000,
+      "website": "https://ici.xmu.edu.cn/info/1331/12195.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-18T10:06:05+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://ici.xmu.edu.cn/info/1331/12195.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试安排另行通知"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：须提交2封中英文专家推荐信。；推荐信模板：官网未见独立推荐信模板。"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：很高：双语材料、2封推荐信和3至5项作品集，时间成本显著。；材料清单：中英文成绩单、中英文个人陈述、2封中英文专家推荐信、3至5项作品组成的不超过30页作品集、申请材料合并PDF且不超过15MB"
       }
     },
     {
@@ -3639,6 +3874,144 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：中；材料清单：校级通知未公开逐项材料清单，须进入预报名系统查看申请须知"
+      }
+    },
+    {
+      "projectId": "2027|天津大学|国际工程师学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "天津大学",
+      "institute": "国际工程师学院",
+      "project": "国际工程师学院2027年推免预报名",
+      "eventType": "推免预报名",
+      "description": "国际工程师学院2027年推免预报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T23:59:00+08:00",
+      "deadlineOriginal": "预报名最终截止日期为2026年9月15日，官方未公布具体时刻；7月31日和8月25日为分批审核节点。",
+      "deadlineEpochMs": 1789487940000,
+      "website": "https://mp.weixin.qq.com/s/cMg_DtcJtg_qQ_d8fJ9kzA",
+      "tags": [],
+      "verifiedAt": "2026-07-18T10:06:05+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://mp.weixin.qq.com/s/cMg_DtcJtg_qQ_d8fJ9kzA"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "分批审核与后续考核安排另行通知"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方公众号已确认预报名窗口，但当前可读信息未列出统一推荐信要求。；推荐信模板：未见统一推荐信模板。"
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": "待官方公布"
+      }
+    },
+    {
+      "projectId": "2027|同济大学|全校招生学院|接收推荐免试研究生预报名",
+      "feedId": "camp2027",
+      "name": "同济大学",
+      "institute": "全校招生学院",
+      "project": "2027年接收推荐免试研究生预报名（校级入口）",
+      "eventType": "推免预报名",
+      "description": "2027年接收推荐免试研究生预报名（校级入口）",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-20T00:00:00+08:00",
+      "deadlineOriginal": "校级预报名系统开放至2026年9月19日24:00，各学院可自行确定更早的报名截止时间。",
+      "deadlineEpochMs": 1789833600000,
+      "website": "https://yz.tongji.edu.cn/info/1010/4219.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-18T10:06:05+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yz.tongji.edu.cn/info/1010/4219.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "各学院另行组织复试"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "复试形式、时间和地点由各学院另行通知。"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：申请直接攻博须由2位相关学科专家在系统中提交推荐信；硕士校级通知未统一要求。；推荐信模板：直博推荐通过系统提交，校级通知未提供独立纸质推荐信模板。"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：高：校级系统与学院要求并行；直博另需2位专家系统推荐。；材料清单：系统申请信息、成绩与排名、外语、科研和获奖等证明；学院可要求补充材料。"
+      }
+    },
+    {
+      "projectId": "2027|南京农业大学|全校全日制招生专业|推免生提前申请",
+      "feedId": "camp2027",
+      "name": "南京农业大学",
+      "institute": "全校全日制招生专业",
+      "project": "2027年推免生提前申请（校级入口）",
+      "eventType": "推免提前申请",
+      "description": "2027年推免生提前申请（校级入口）",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-20T12:00:00+08:00",
+      "deadlineOriginal": "提前申请截止时间为2026年9月20日12:00。",
+      "deadlineEpochMs": 1789876800000,
+      "website": "https://zsgz.njau.edu.cn/info/1007/1734.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-18T10:06:05+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://zsgz.njau.edu.cn/info/1007/1734.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "学院另行通知复试安排"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "复试形式和地点未在校级通知中公布。"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：校级通知未要求专家推荐信。；推荐信模板：无推荐信模板；须使用学校硕士或直博申请表。"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中高：官方申请表、政审材料、盖章成绩单和单PDF提交。；材料清单：身份证、学籍证明、盖章成绩单、思想政治品德考核表、学校硕士或直博申请表、其他证明材料合并为单个PDF"
       }
     },
     {
@@ -4104,6 +4477,57 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：中；材料清单：报名表签字、身份证、学生证或在读证明、盖章成绩单与排名、能力证明；按要求合并PDF"
+      }
+    },
+    {
+      "projectId": "2027|中国科学院国家空间科学中心|推免预报名|2026",
+      "feedId": "camp2027",
+      "name": "中国科学院国家空间科学中心",
+      "institute": "推免预报名",
+      "project": "2027年接收推荐免试研究生预报名",
+      "eventType": "推免预报名",
+      "description": "2027年接收推荐免试研究生预报名",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "2026年9月28日是由国科大系统转入教育部推免系统的切换点，不是官方最终截止；最终截止未公布。",
+      "deadlineEpochMs": null,
+      "website": "http://www.nssc.cas.cn/yjsb/zsxx/zsdt/202607/t20260703_8241596.html",
+      "tags": [],
+      "verifiedAt": "2026-07-18T10:06:05+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "http://www.nssc.cas.cn/yjsb/zsxx/zsdt/202607/t20260703_8241596.html"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/178895"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "推免考核时间由招生部门邮件通知"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文未要求专家推荐信。；推荐信模板：无推荐信模板。"
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": "待官方公布"
       }
     },
     {
@@ -6662,6 +7086,52 @@
       }
     },
     {
+      "projectId": "2027|国防科技大学|系统工程学院|推免第二批",
+      "feedId": "camp2027",
+      "name": "国防科技大学",
+      "institute": "系统工程学院",
+      "project": "系统工程学院接收地方高校推免硕士第二批",
+      "eventType": "推免预报名/复试",
+      "description": "系统工程学院接收地方高校推免硕士第二批",
+      "verificationStatus": "expired",
+      "deadline": "2026-07-18T10:00:00+08:00",
+      "deadlineOriginal": "预报名7月18日10:00前；电子材料7月18日12:00前。",
+      "deadlineEpochMs": 1784340000000,
+      "website": "https://yjszs.nudt.edu.cn/zsmh/pubweb/homePageList/detailed.view?keyId=14884",
+      "tags": [],
+      "verifiedAt": "2026-07-18T10:06:05+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yjszs.nudt.edu.cn/zsmh/pubweb/homePageList/detailed.view?keyId=14884"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "2026-07-20至2026-07-22；7月20日报到"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "思想政治考核、专家面试和心理测试的具体时间地点在复试报到后明确。"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：材料清单未要求专家推荐信。；推荐信模板：无推荐信模板；提供申请表、身心检查告知书、政审表和体检项目附件。"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：高；材料清单：身份证和学生证、学籍认证报告、地方硕士或参军入伍申请表、1000字以内本人自述、盖章成绩单和排名证明、科研成果与获奖证明、照片、身心检查告知书及诚信承诺书、思想政治素质和品德考核表、体检报告、电子材料和报到纸质材料均需提交"
+      }
+    },
+    {
       "projectId": "2027|山东大学|人工智能学院|2026全国优秀大学生暑期夏令营",
       "feedId": "camp2027",
       "name": "山东大学",
@@ -7725,8 +8195,8 @@
       }
     }
   ],
-  "snapshotId": "2026-07-17T23:28:46.372Z-e7ff2621e55e",
-  "approvedAt": "2026-07-17T23:28:46.372Z",
-  "previousSnapshotId": "2026-07-17T16:07:32.019Z-454744c76c23",
-  "dataHash": "e7ff2621e55e6608185e1cf7f569feb99c2937168a6def80ecb5c2c07720225e"
+  "snapshotId": "2026-07-18T02:39:59.582Z-b2848033ac54",
+  "approvedAt": "2026-07-18T02:39:59.582Z",
+  "previousSnapshotId": "2026-07-17T23:28:46.372Z-e7ff2621e55e",
+  "dataHash": "b2848033ac54aebbb9bf35747011ffd91ceed5fc4f99fdb049a1c01a64069d80"
 }
