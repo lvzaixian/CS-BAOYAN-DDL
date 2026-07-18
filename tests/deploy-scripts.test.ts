@@ -1661,6 +1661,58 @@ test('smoke requires a credential-free HTTP(S) root origin and strict expected h
   assert.match(invalidHash.stderr, /EXPECTED_DATA_HASH.*64.*hex/i);
 });
 
+test('smoke can pin a validated HTTPS origin to the local TLS listener', async (t) => {
+  const { fakeBin } = makeDeployRoot(t);
+  const curlLog = join(dirname(fakeBin), 'curl-arguments.log');
+  writeExecutable(
+    join(fakeBin, 'curl'),
+    '#!/bin/sh\nprintf "%s\\n" "$@" > "$CURL_ARGUMENTS_LOG"\nexit 7\n',
+  );
+
+  const result = await runScript(smokeScript, {
+    SMOKE_URL: 'https://ddl.test',
+    SMOKE_LOOPBACK_RESOLVE: '1',
+    EXPECTED_RELEASE_SHA: 'd'.repeat(40),
+    EXPECTED_SNAPSHOT_ID: 'snapshot-loopback-tls',
+    EXPECTED_DATA_HASH: 'd'.repeat(64),
+    SMOKE_ATTEMPTS: '1',
+    SMOKE_RETRY_DELAY: '0',
+    CURL_ARGUMENTS_LOG: curlLog,
+    PATH: `${fakeBin}:${process.env.PATH}`,
+  });
+
+  assert.notEqual(result.status, 0);
+  const curlArguments = readFileSync(curlLog, 'utf8');
+  assert.match(curlArguments, /--resolve\nddl\.test:443:127\.0\.0\.1/);
+  assert.match(curlArguments, /--noproxy\n\*/);
+});
+
+test('loopback TLS smoke rejects legacy numeric IP aliases as DNS origins', async (t) => {
+  const { fakeBin } = makeDeployRoot(t);
+  const curlMarker = join(dirname(fakeBin), 'numeric-alias-curl-ran');
+  writeExecutable(join(fakeBin, 'curl'), '#!/bin/sh\n: > "$CURL_MARKER"\nexit 7\n');
+  const baseEnv = {
+    SMOKE_LOOPBACK_RESOLVE: '1',
+    EXPECTED_RELEASE_SHA: 'd'.repeat(40),
+    EXPECTED_SNAPSHOT_ID: 'snapshot-loopback-numeric-alias',
+    EXPECTED_DATA_HASH: 'd'.repeat(64),
+    SMOKE_ATTEMPTS: '1',
+    SMOKE_RETRY_DELAY: '0',
+    CURL_MARKER: curlMarker,
+    PATH: `${fakeBin}:${process.env.PATH}`,
+  };
+
+  for (const host of ['127.1', '2130706433', '0x7f000001']) {
+    const result = await runScript(smokeScript, {
+      ...baseEnv,
+      SMOKE_URL: `https://${host}`,
+    });
+    assert.notEqual(result.status, 0, host);
+    assert.match(result.stderr, /SMOKE_LOOPBACK_RESOLVE requires an HTTPS DNS origin/);
+    assert.equal(existsSync(curlMarker), false, `${host} reached curl before validation`);
+  }
+});
+
 test('package metadata exposes no gh-pages deployment bypass', () => {
   const packageJson = JSON.parse(readFileSync(packagePath, 'utf8')) as {
     scripts?: Record<string, string>;
@@ -1776,6 +1828,73 @@ test('workflow bridges smoke identity, compensates attempted activation, and rec
   assert.match(workflow.slice(postActivationCheck, publicSmokeStart), /latest_main=/);
   assert.match(workflow.slice(postActivationCheck, publicSmokeStart), /id:\s*post_activation_main/);
   assert.match(compensation, /steps\.post_activation_main\.outcome != 'success'/);
+});
+
+test('workflow runs local activation smoke through the exact-domain TLS listener', () => {
+  const workflow = readFileSync(workflowPath, 'utf8');
+  const activateStart = workflow.indexOf('- name: Verify archive and activate release');
+  const activateEnd = workflow.indexOf('- name: Recheck latest main after activation');
+  const compensationStart = workflow.indexOf('- name: Compensate a failed activation attempt');
+  const cleanupStart = workflow.indexOf('- name: Remove remote staging', compensationStart);
+  assert.ok(activateStart >= 0 && activateEnd > activateStart);
+  assert.ok(compensationStart > activateEnd && cleanupStart > compensationStart);
+
+  for (const step of [
+    workflow.slice(activateStart, activateEnd),
+    workflow.slice(compensationStart, cleanupStart),
+  ]) {
+    assert.match(step, /SMOKE_URL=%q[^\n]*SMOKE_LOOPBACK_RESOLVE=%q/);
+    assert.match(step, /"\$PUBLIC_BASE_URL"[^\n]*'1'/);
+    assert.doesNotMatch(step, /'http:\/\/127\.0\.0\.1'/);
+  }
+});
+
+test('remote cleanup workflow block is valid Bash after YAML indentation', (t) => {
+  const workflow = readFileSync(workflowPath, 'utf8');
+  const cleanupStart = workflow.indexOf('- name: Remove remote staging and local SSH material');
+  const runMarker = '        run: |\n';
+  const runStart = workflow.indexOf(runMarker, cleanupStart);
+  assert.ok(cleanupStart >= 0 && runStart > cleanupStart);
+  const bodyStart = runStart + runMarker.length;
+  const nextStep = workflow.indexOf('\n      - name:', bodyStart);
+  const rawBody = workflow.slice(bodyStart, nextStep >= 0 ? nextStep : workflow.length);
+  const shellBody = rawBody
+    .split('\n')
+    .map((line) => line.startsWith('          ') ? line.slice(10) : line)
+    .join('\n');
+  const syntax = spawnSync('bash', ['-n'], { input: shellBody, encoding: 'utf8' });
+  assert.equal(syntax.status, 0, syntax.stderr);
+
+  const remoteMatch = shellBody.match(/<<'REMOTE' \|\| true\n([\s\S]*?)\nREMOTE/);
+  assert.ok(remoteMatch, 'cleanup must contain an inspectable remote script');
+  const remoteScript = remoteMatch[1];
+  const sandbox = realpathSync(mkdtempSync(join(tmpdir(), 'deploy-cleanup-')));
+  t.after(() => rmSync(sandbox, { recursive: true, force: true }));
+  const deployRoot = join(sandbox, 'deploy-root');
+  const stagingParent = join(deployRoot, 'shared', 'staging');
+  const outside = join(sandbox, 'outside');
+  const runToken = 'run-cleanup-test';
+  mkdirSync(join(deployRoot, 'shared'), { recursive: true });
+  mkdirSync(join(outside, runToken), { recursive: true });
+  symlinkSync(outside, stagingParent);
+
+  const escaped = spawnSync('bash', ['-c', remoteScript], {
+    env: { ...process.env, DEPLOY_ROOT: deployRoot, RUN_TOKEN: runToken },
+    encoding: 'utf8',
+  });
+  assert.notEqual(escaped.status, 0, 'cleanup must reject a symlinked staging parent');
+  assert.equal(existsSync(join(outside, runToken)), true, 'outside run directory was removed');
+
+  rmSync(stagingParent);
+  mkdirSync(join(stagingParent, runToken), { recursive: true });
+  mkdirSync(join(stagingParent, 'sibling'), { recursive: true });
+  const confined = spawnSync('bash', ['-c', remoteScript], {
+    env: { ...process.env, DEPLOY_ROOT: deployRoot, RUN_TOKEN: runToken },
+    encoding: 'utf8',
+  });
+  assert.equal(confined.status, 0, confined.stderr);
+  assert.equal(existsSync(join(stagingParent, runToken)), false);
+  assert.equal(existsSync(join(stagingParent, 'sibling')), true);
 });
 
 test('workflow allowlists SSH user, host, and port before constructing OpenSSH arguments', () => {

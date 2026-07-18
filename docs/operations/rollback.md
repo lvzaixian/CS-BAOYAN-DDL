@@ -43,18 +43,18 @@ deploy/rollback-release.sh
 
 ## 3. 执行明确目标回滚
 
-在服务器上执行已审阅副本；`SMOKE_HOST_HEADER` 使用 bootstrap 时配置的实际 `SERVER_NAME`：
+在服务器上执行已审阅副本。TLS vhost 必须使用实际 HTTPS 域名，并通过受限的 loopback resolve 同时保留证书校验、SNI 和本机路由验证：
 
 ```bash
 DEPLOY_ROOT=/srv/cs-baoyan-ddl \
 TARGET_RELEASE_SHA=<人工选择的40位小写commit-sha> \
 RUN_TOKEN=manual-<唯一操作编号> \
-SMOKE_URL=http://127.0.0.1 \
-SMOKE_HOST_HEADER=ddl.example.com \
+SMOKE_URL=https://ddl.example.com \
+SMOKE_LOOPBACK_RESOLVE=1 \
 bash /srv/cs-baoyan-ddl/shared/manual-rollback-<operator-token>/rollback-release.sh
 ```
 
-脚本在服务器侧获取 `flock`，验证目标严格位于 `DEPLOY_ROOT/releases`，原子替换 `current`，并从目标自己的 `release.json` 读取三元身份执行本地 smoke。若新目标 smoke 失败，脚本恢复操作前的 current；有原 current 时还会再次对其执行本地 smoke。
+脚本在服务器侧获取 `flock`，验证目标严格位于 `DEPLOY_ROOT/releases`，原子替换 `current`，并从目标自己的 `release.json` 读取三元身份执行本地 smoke。`SMOKE_LOOPBACK_RESOLVE=1` 只允许 HTTPS DNS origin，并等价于为 curl 添加 `<域名>:<端口>:127.0.0.1` 的 resolve，不关闭证书校验。若新目标 smoke 失败，脚本恢复操作前的 current；有原 current 时还会再次对其执行本地 smoke。
 
 `current` 与 transaction state 的临时项会先落盘并 fsync，再原子替换并 fsync 父目录；任何 fsync 错误都会停止。fsync 不替代主机断电后的 rollback/reconcile 对账，恢复供电后仍须核验 `current`、transaction、内部 checksum marker 和 smoke 结果。
 

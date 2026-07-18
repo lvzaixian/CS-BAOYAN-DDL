@@ -3,6 +3,7 @@ set -euo pipefail
 
 SMOKE_URL=${SMOKE_URL:-${1:-}}
 SMOKE_HOST_HEADER=${SMOKE_HOST_HEADER:-}
+SMOKE_LOOPBACK_RESOLVE=${SMOKE_LOOPBACK_RESOLVE:-0}
 SMOKE_ATTEMPTS=${SMOKE_ATTEMPTS:-5}
 SMOKE_RETRY_DELAY=${SMOKE_RETRY_DELAY:-2}
 SMOKE_CONNECT_TIMEOUT=${SMOKE_CONNECT_TIMEOUT:-3}
@@ -52,9 +53,14 @@ require_uint SMOKE_ATTEMPTS "$SMOKE_ATTEMPTS"
 require_uint SMOKE_RETRY_DELAY "$SMOKE_RETRY_DELAY"
 require_uint SMOKE_CONNECT_TIMEOUT "$SMOKE_CONNECT_TIMEOUT"
 require_uint SMOKE_MAX_TIME "$SMOKE_MAX_TIME"
+require_uint SMOKE_LOOPBACK_RESOLVE "$SMOKE_LOOPBACK_RESOLVE"
 
 if test "$SMOKE_ATTEMPTS" -lt 1; then
   fail 'SMOKE_ATTEMPTS must be at least 1'
+  exit 2
+fi
+if test "$SMOKE_LOOPBACK_RESOLVE" -ne 0 && test "$SMOKE_LOOPBACK_RESOLVE" -ne 1; then
+  fail 'SMOKE_LOOPBACK_RESOLVE must be 0 or 1'
   exit 2
 fi
 case "$EXPECTED_RELEASE_SHA" in
@@ -135,6 +141,48 @@ curl_options=(
   --connect-timeout "$SMOKE_CONNECT_TIMEOUT"
   --max-time "$SMOKE_MAX_TIME"
 )
+if test "$SMOKE_LOOPBACK_RESOLVE" -eq 1; then
+  if ! resolve_entry=$(python3 - "$SMOKE_URL" <<'PY'
+import ipaddress
+import re
+import socket
+import sys
+from urllib.parse import urlsplit
+
+parsed = urlsplit(sys.argv[1])
+host = parsed.hostname
+if parsed.scheme != "https" or host is None or len(host) > 253:
+    raise SystemExit(1)
+labels = host.split(".")
+if any(
+    not label
+    or len(label) > 63
+    or not re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?", label)
+    for label in labels
+):
+    raise SystemExit(1)
+try:
+    ipaddress.ip_address(host)
+except ValueError:
+    pass
+else:
+    raise SystemExit(1)
+try:
+    socket.inet_aton(host)
+except OSError:
+    pass
+else:
+    raise SystemExit(1)
+if host.lower() == "localhost":
+    raise SystemExit(1)
+print(f"{host}:{parsed.port or 443}:127.0.0.1")
+PY
+  ); then
+    fail 'SMOKE_LOOPBACK_RESOLVE requires an HTTPS DNS origin'
+    exit 2
+  fi
+  curl_options+=(--noproxy '*' --resolve "$resolve_entry")
+fi
 if test -n "$SMOKE_HOST_HEADER"; then
   curl_options+=(--header "Host: $SMOKE_HOST_HEADER")
 fi

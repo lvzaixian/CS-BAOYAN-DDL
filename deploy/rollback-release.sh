@@ -10,6 +10,7 @@ FAILED_RELEASE_SHA=${FAILED_RELEASE_SHA:-}
 TARGET_RELEASE_SHA=${TARGET_RELEASE_SHA:-}
 SMOKE_URL=${SMOKE_URL:-http://127.0.0.1}
 SMOKE_HOST_HEADER=${SMOKE_HOST_HEADER:-}
+SMOKE_LOOPBACK_RESOLVE=${SMOKE_LOOPBACK_RESOLVE:-0}
 
 fail() {
   printf 'rollback failed: %s\n' "$*" >&2
@@ -228,6 +229,7 @@ PY
   test "$release_sha" = "$(basename -- "$target")" || return 1
   SMOKE_URL="$SMOKE_URL" \
   SMOKE_HOST_HEADER="$SMOKE_HOST_HEADER" \
+  SMOKE_LOOPBACK_RESOLVE="$SMOKE_LOOPBACK_RESOLVE" \
   EXPECTED_RELEASE_SHA="$release_sha" \
   EXPECTED_SNAPSHOT_ID="$snapshot_id" \
   EXPECTED_DATA_HASH="$data_hash" \
