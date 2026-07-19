@@ -668,7 +668,7 @@ async function monitorPublicReleaseWithinDeadline(config, dependencies, signal) 
   if (release.releaseSha !== config.expectedSha) {
     warnings.push(
       `Deployed release ${release.releaseSha} differs from main ${config.expectedSha}; `
-      + 'public release integrity is valid but deployment is behind main.',
+      + 'public release integrity is valid but release parity needs review.',
     );
   }
 

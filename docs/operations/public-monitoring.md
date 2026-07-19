@@ -14,7 +14,7 @@ https://admissions.example.edu.cn
 
 当前 production environment 中即使存在同名 `PUBLIC_BASE_URL`，监控也不会读取它。workflow 不声明 environment，只读取 repository-level `vars.PUBLIC_BASE_URL`。
 
-截至 2026-07-17，仓库级 `PUBLIC_BASE_URL` 尚未配置；这是必须在 GitHub 仓库设置中完成的外部配置。代码不会内置域名或回退值来掩盖缺失，变量未配置时监控会在 configuration 阶段失败关闭。
+仓库级 `PUBLIC_BASE_URL` 已配置为 `https://ddl.meta-mind.cn`。代码不会内置域名或回退值来掩盖缺失；变量被删除或置空时，监控会在 configuration 阶段失败关闭。
 
 ## 安全边界
 
@@ -38,7 +38,7 @@ https://admissions.example.edu.cn
 2. 公网 `/data/current.json` 使用拒绝普通与 Unicode escaped 重复键的严格 JSON 解析，并只接受共享 approved snapshot schema；
 3. 远端 current 通过仓库共享的 `validateApprovedSnapshot`、canonical `dataHash` 完整性校验和 freshness 校验；快照内状态与截止时间的对应关系按 `approvedAt` 校验，运行时已过截止日期由前端即时归为“已结束”；monitor 按当前时间在 24 小时后告警、72 小时后失败，且不读取本地 `data/approved/current.json` 代替公网本体；
 4. 公网 `/data/release.json` 同样严格解析，只包含 `releaseSha`、`snapshotId`、`dataHash`；
-5. `releaseSha` 格式合法，`snapshotId` 与 `dataHash` 等于同次运行读取并验证的远端 current；若公开部署版本落后于本次检出的 `GITHUB_SHA`，monitor 产生 warning 但不把仍然健康的公开站点判为故障。发布动作本身仍由 deploy workflow 的精确 SHA smoke 校验负责；
+5. `releaseSha` 格式合法，`snapshotId` 与 `dataHash` 等于同次运行读取并验证的远端 current；若公开部署版本与本次检出的 `GITHUB_SHA` 不一致，monitor 产生中性 warning 并要求复核发布状态，但不会在未验证提交祖先关系时声称“部署落后”。发布动作本身仍由 deploy workflow 的精确 SHA smoke 校验负责；
 6. 远端 current 的 `scanAt`、`approvedAt` 不在未来，`approvedAt` 不早于 `scanAt`，且两者不超过 72 小时硬限制；
 7. TLS 证书 SAN 匹配目标 hostname，`notAfter` 至少还剩 21 个完整日。
 

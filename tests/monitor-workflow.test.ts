@@ -653,11 +653,29 @@ test('remote current integrity, freshness, schema, and release identity fail clo
     );
   });
 
-  await t.test('a healthy deployed release behind main warns instead of failing', async () => {
+  await t.test('a healthy deployed release differing from main warns without claiming ancestry', async () => {
     const result = await runMonitor({
       release: { ...releaseIdentity, releaseSha: 'b'.repeat(40) },
     });
     assert.match(result.warnings.join('\n'), /release.*main/i);
+    assert.doesNotMatch(result.warnings.join('\n'), /behind main/i);
+  });
+
+  await t.test('warning-band freshness never weakens release identity failures', async () => {
+    const checkedAt = Math.max(
+      Date.parse(String(approvedSnapshot.scanAt)),
+      Date.parse(String(approvedSnapshot.approvedAt)),
+    ) + 25 * 60 * 60 * 1_000;
+
+    await assert.rejects(
+      runMonitor({
+        checkedAt,
+        warnAgeHours: '24',
+        maxAgeHours: '72',
+        release: { ...releaseIdentity, dataHash: 'b'.repeat(64) },
+      }),
+      /dataHash.*current snapshot/i,
+    );
   });
 
   for (const [name, release, pattern] of [
