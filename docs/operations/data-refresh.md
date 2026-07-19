@@ -106,7 +106,7 @@ pnpm run test:unit
 pnpm run snapshot:validate
 pnpm run snapshot:check-freshness -- \
   --snapshot data/approved/current.json \
-  --max-age-hours 6
+  --max-age-hours 24
 pnpm run check:public
 pnpm run check
 pnpm run build

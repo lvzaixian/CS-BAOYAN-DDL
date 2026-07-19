@@ -441,4 +441,6 @@ test('workflow checks freshness at approval, before SSH, and immediately before 
   assert.match(operations, /三重检查/);
   assert.match(operations, /production.*第二次人工批准[\s\S]*TOCTOU/);
   assert.match(operations, /激活前[\s\S]*再次.*24 小时[\s\S]*(?:失败关闭|fail closed)/);
+  assert.equal([...operations.matchAll(/--max-age-hours 24/g)].length, 2);
+  assert.doesNotMatch(operations, /--max-age-hours 6(?:\D|$)/);
 });
