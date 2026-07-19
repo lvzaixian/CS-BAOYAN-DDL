@@ -6,11 +6,14 @@ import { resolveProvince } from '$data/provinces';
 export function deriveSchool(s: School, nowMs: number): DerivedSchool {
   const deadlineMs = s.deadlineEpochMs;
   const remainingMs = deadlineMs === null ? null : deadlineMs - nowMs;
-  const group = rowGroup(s);
-  return {
+  const derived = {
     ...s,
     deadlineMs,
     remainingMs,
+  };
+  const group = rowGroup(derived);
+  return {
+    ...derived,
     urgency: group === 'expired' ? 'expired' : group === 'active-unknown' ? 'unknown' : urgency(remainingMs),
   };
 }
@@ -23,10 +26,26 @@ const ROW_GROUP_ORDER: Record<RowGroup, number> = {
   expired: 2,
 };
 
+type RuntimeStatusRow = Pick<School, 'verificationStatus' | 'deadlineEpochMs'> & {
+  remainingMs?: number | null;
+};
+
+function isEffectivelyExpired(row: RuntimeStatusRow, nowMs?: number): boolean {
+  if (row.verificationStatus === 'expired') return true;
+  if (row.verificationStatus !== 'confirmed-open' || row.deadlineEpochMs === null) return false;
+  const remainingMs = row.remainingMs !== undefined
+    ? row.remainingMs
+    : nowMs === undefined
+      ? null
+      : row.deadlineEpochMs - nowMs;
+  return remainingMs !== null && remainingMs <= 0;
+}
+
 export function rowGroup(
-  row: Pick<School, 'verificationStatus' | 'deadlineEpochMs'>,
+  row: RuntimeStatusRow,
+  nowMs?: number,
 ): RowGroup {
-  if (row.verificationStatus === 'expired') return 'expired';
+  if (isEffectivelyExpired(row, nowMs)) return 'expired';
   if (row.verificationStatus === 'confirmed-unknown-deadline' || row.deadlineEpochMs === null) {
     return 'active-unknown';
   }
@@ -38,13 +57,13 @@ export function rowKey(row: Pick<School, 'projectId'>): string {
 }
 
 export function opportunityStatusLabel(
-  row: Pick<School, 'verificationStatus'>,
+  row: RuntimeStatusRow,
 ): StatusTag {
-  return row.verificationStatus === 'expired' ? '已结束' : '开放';
+  return isEffectivelyExpired(row) ? '已结束' : '开放';
 }
 
 export function countStatuses(
-  rows: readonly Pick<School, 'verificationStatus'>[],
+  rows: readonly RuntimeStatusRow[],
 ): Record<StatusTag, number> {
   const counts: Record<StatusTag, number> = { 开放: 0, 已结束: 0 };
   for (const row of rows) counts[opportunityStatusLabel(row)] += 1;
@@ -79,9 +98,9 @@ export function sourceLinkLabel(
 }
 
 export function expiredDeadlineText(
-  row: Pick<School, 'verificationStatus'>,
+  row: RuntimeStatusRow,
 ): '已结束' | null {
-  return row.verificationStatus === 'expired' ? '已结束' : null;
+  return isEffectivelyExpired(row) ? '已结束' : null;
 }
 
 export function pickCalendarMonth(
@@ -92,7 +111,7 @@ export function pickCalendarMonth(
   let earliestArchive: number | null = null;
   for (const row of rows) {
     if (row.deadlineEpochMs === null) continue;
-    if (rowGroup(row) === 'active-timed') {
+    if (rowGroup(row, nowMs) === 'active-timed') {
       if (earliestActive === null || row.deadlineEpochMs < earliestActive) {
         earliestActive = row.deadlineEpochMs;
       }
@@ -133,7 +152,7 @@ export function applyFilters(
       const hit = r.tags.some((t) => tagSet.has(t));
       if (!hit) return false;
     }
-    // opening status: OR across selected, derived from authoritative verification state
+    // opening status: OR across selected, with elapsed approved deadlines closed at runtime
     if (statusSet.size > 0 && !statusSet.has(opportunityStatusLabel(r))) return false;
     // event modes: OR within the dimension, AND with every other dimension
     if (modeSet.size > 0 && !modeSet.has(r.eventArrangement.mode)) return false;
@@ -150,7 +169,7 @@ export function applyFilters(
     return true;
   });
 
-  // Approved verification status is authoritative for grouping.
+  // Approved status remains source truth; elapsed deadlines close reactively in the UI.
   out.sort((a, b) => {
     const aGroup = rowGroup(a);
     const bGroup = rowGroup(b);

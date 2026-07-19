@@ -874,6 +874,26 @@ test('validate-current CLI prints the true four-count summary', () => {
   }
 });
 
+test('validate-current CLI revalidates an aged approved snapshot at its approval time', () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-validate-aged-current-'));
+  const approvedPath = join(tempRoot, 'current.json');
+  const input = candidate();
+  input.scanAt = '2020-01-01T08:00:00+08:00';
+  input.opportunities[0].verifiedAt = input.scanAt;
+  input.opportunities[0].deadline = '2020-01-02T23:59:00+08:00';
+  input.opportunities[0].deadlineOriginal = '2020年1月2日23:59';
+  input.opportunities[0].deadlineEpochMs = Date.parse(input.opportunities[0].deadline);
+  writeJson(approvedPath, approveCandidate(input, null, '2020-01-01T08:05:00+08:00'));
+
+  try {
+    const result = runCli(validateCliPath, ['--approved', approvedPath]);
+    assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+    assert.match(result.stdout, /^confirmedOpen=1 /);
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
 test('validate-current CLI prints every structural and hash error', () => {
   const tempRoot = mkdtempSync(join(tmpdir(), 'snapshot-validate-errors-'));
   const approvedPath = join(tempRoot, 'current.json');

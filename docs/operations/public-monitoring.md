@@ -36,7 +36,7 @@ https://admissions.example.edu.cn
 
 1. 首页返回成功的 HTML，响应可在大小上有界读取；
 2. 公网 `/data/current.json` 使用拒绝普通与 Unicode escaped 重复键的严格 JSON 解析，并只接受共享 approved snapshot schema；
-3. 远端 current 通过仓库共享的 `validateApprovedSnapshot`、canonical `dataHash` 完整性校验和 freshness 校验；monitor 不读取本地 `data/approved/current.json` 代替公网本体；
+3. 远端 current 通过仓库共享的 `validateApprovedSnapshot`、canonical `dataHash` 完整性校验和 freshness 校验；快照内状态与截止时间的对应关系按 `approvedAt` 校验，运行时已过截止日期由前端即时归为“已结束”，monitor 仍按当前时间严格执行 24 小时 freshness 校验；monitor 不读取本地 `data/approved/current.json` 代替公网本体；
 4. 公网 `/data/release.json` 同样严格解析，只包含 `releaseSha`、`snapshotId`、`dataHash`；
 5. `releaseSha` 等于本次检出的 `GITHUB_SHA`，`snapshotId` 与 `dataHash` 等于同次运行读取并验证的远端 current；
 6. 远端 current 的 `scanAt`、`approvedAt` 不在未来，`approvedAt` 不早于 `scanAt`，且两者不超过最大年龄；

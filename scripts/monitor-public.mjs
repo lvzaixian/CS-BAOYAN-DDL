@@ -9,7 +9,7 @@ import { pathToFileURL } from 'node:url';
 import {
   isValidIsoTimestamp,
   MAX_SNAPSHOT_JSON_BYTES,
-  validateApprovedSnapshot,
+  validateStoredApprovedSnapshot,
 } from '../src/lib/snapshot-integrity.js';
 import { checkSnapshotFreshness } from './snapshot/check-freshness.js';
 
@@ -622,7 +622,7 @@ async function monitorPublicReleaseWithinDeadline(config, dependencies, signal) 
     async () => parseStrictJson(currentText, 'current snapshot response'),
   );
   await atStage('snapshot-integrity', async () => {
-    const errors = validateApprovedSnapshot(approvedSnapshot, nowMs);
+    const errors = validateStoredApprovedSnapshot(approvedSnapshot, nowMs);
     if (errors.length > 0) throw new Error(errors.join('; '));
     assertSnapshotFreshness(approvedSnapshot, nowMs, maxAgeMs);
   });

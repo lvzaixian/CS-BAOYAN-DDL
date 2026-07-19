@@ -3,7 +3,7 @@ import { pathToFileURL } from 'node:url';
 
 import {
   readRegularJsonFile,
-  validateApprovedSnapshot,
+  validateStoredApprovedSnapshot,
 } from '../../src/lib/snapshot-integrity.js';
 import type { PublicSnapshot } from '../../src/lib/snapshot-types.js';
 
@@ -43,7 +43,7 @@ async function runCli(): Promise<void> {
   if (argv[0] === '--') argv.shift();
   const options = parseCliOptions(argv);
   const input = await readSnapshot(options.approved);
-  const errors = validateApprovedSnapshot(input, Date.now());
+  const errors = validateStoredApprovedSnapshot(input);
   if (errors.length > 0) {
     for (const error of errors) console.error(error);
     process.exitCode = 1;
