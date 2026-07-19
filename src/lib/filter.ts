@@ -89,6 +89,22 @@ export function countModes(
   return counts;
 }
 
+export function countUpcomingDeadlines(
+  rows: readonly Pick<DerivedSchool, 'remainingMs'>[],
+): { week: number; month: number; all: number } {
+  const oneDay = 86_400_000;
+  let week = 0;
+  let month = 0;
+  let all = 0;
+  for (const row of rows) {
+    if (row.remainingMs === null || row.remainingMs <= 0) continue;
+    all += 1;
+    if (row.remainingMs < 7 * oneDay) week += 1;
+    if (row.remainingMs < 30 * oneDay) month += 1;
+  }
+  return { week, month, all };
+}
+
 export function sourceLinkLabel(
   row: Pick<School, 'discoverySources'>,
 ): '官方来源' | '历史来源（未核验）' {

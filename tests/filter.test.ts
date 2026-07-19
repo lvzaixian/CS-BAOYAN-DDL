@@ -4,6 +4,7 @@ import test from 'node:test';
 import {
   applyFilters,
   countModes,
+  countUpcomingDeadlines,
   countStatuses,
   deriveSchool,
   eventModeLabel,
@@ -198,6 +199,17 @@ test('moves a confirmed-open row into the ended group when its deadline arrives'
     applyFilters([before, ended], { ...emptyFilters, status: ['已结束'] }).map(rowKey),
     [ended.projectId],
   );
+});
+
+test('excludes the exact-deadline row from upcoming toolbar counts', () => {
+  const deadlineEpochMs = Date.parse('2026-07-18T12:00:00+08:00');
+  const ended = deriveSchool(school({ projectId: 'ended-now', deadlineEpochMs }), deadlineEpochMs);
+  const upcoming = deriveSchool(
+    school({ projectId: 'upcoming', deadlineEpochMs: deadlineEpochMs + 1 }),
+    deadlineEpochMs,
+  );
+
+  assert.deepEqual(countUpcomingDeadlines([ended, upcoming]), { week: 1, month: 1, all: 1 });
 });
 
 test('filters status from verificationStatus with OR semantics and ignores contradictory tags', () => {
