@@ -310,7 +310,6 @@ import json
 import math
 import re
 import sys
-import time
 import unicodedata
 from datetime import datetime, timezone
 from urllib.parse import unquote, urlsplit
@@ -618,6 +617,10 @@ try:
     if isinstance(schema_version, bool) or schema_version not in {1, 2}:
         invalid("snapshot.schemaVersion: expected exactly 1 or 2")
     scan_at_ms = timestamp_ms(snapshot["scanAt"], "snapshot.scanAt")
+    approved_at = string(snapshot["approvedAt"], "snapshot.approvedAt")
+    approved_at_ms = timestamp_ms(approved_at, "snapshot.approvedAt")
+    if approved_at_ms < scan_at_ms:
+        invalid("snapshot.approvedAt: must not precede scanAt")
     default_feed_id = string(snapshot["defaultFeedId"], "snapshot.defaultFeedId")
     if not isinstance(snapshot["feeds"], list):
         invalid("snapshot.feeds: expected an array")
@@ -636,9 +639,10 @@ try:
         integer(counts[key], f"snapshot.counts.{key}", True)
     if not isinstance(snapshot["opportunities"], list):
         invalid("snapshot.opportunities: expected an array")
-    now_ms = int(time.time() * 1000)
     opportunities = [
-        validate_opportunity(row, index, schema_version, known_feeds, feed_cycles, now_ms)
+        validate_opportunity(
+            row, index, schema_version, known_feeds, feed_cycles, approved_at_ms
+        )
         for index, row in enumerate(snapshot["opportunities"])
     ]
     project_ids = [row["projectId"] for row in opportunities]
@@ -670,10 +674,6 @@ try:
         previous_deadline = row["deadlineEpochMs"]
     if any(row["verifiedAtMs"] > scan_at_ms for row in opportunities):
         invalid("snapshot.opportunities: verifiedAt must not follow scanAt")
-    approved_at = string(snapshot["approvedAt"], "snapshot.approvedAt")
-    approved_at_ms = timestamp_ms(approved_at, "snapshot.approvedAt")
-    if approved_at_ms < scan_at_ms:
-        invalid("snapshot.approvedAt: must not precede scanAt")
     if any(row["verifiedAtMs"] > approved_at_ms for row in opportunities):
         invalid("snapshot.opportunities: verifiedAt must not follow approvedAt")
     previous_snapshot_id = snapshot["previousSnapshotId"]
