@@ -342,7 +342,7 @@ test('workflow checks freshness at approval, before SSH, and immediately before 
     /actions\/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093/,
   );
   assert.match(productionGate, /production-build-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/);
-  assert.match(productionGate, /MAX_AGE_SECONDS = 21600/);
+  assert.match(productionGate, /MAX_AGE_SECONDS = 86400/);
   assert.match(productionGate, /datetime\.now\(timezone\.utc\)/);
   assert.match(productionGate, /snapshotScanAt/);
   assert.match(productionGate, /snapshotApprovedAt/);
@@ -396,7 +396,7 @@ test('workflow checks freshness at approval, before SSH, and immediately before 
     /metadata\["releaseSha"\] != os\.environ\["RELEASE_SHA"\]/,
   );
   assert.match(deployFreshnessStep, /re\.fullmatch\(r"\[0-9a-f\]\{40\}"/);
-  assert.match(deployFreshnessStep, /MAX_AGE_SECONDS = 21600/);
+  assert.match(deployFreshnessStep, /MAX_AGE_SECONDS = 86400/);
   assert.match(deployFreshnessStep, /datetime\.now\(timezone\.utc\)/);
   assert.match(deployFreshnessStep, /approved_at < scan_at/);
   assert.match(deployFreshnessStep, /timestamp > now/);
@@ -413,7 +413,7 @@ test('workflow checks freshness at approval, before SSH, and immediately before 
     activationFreshnessStep,
     /metadata\["releaseSha"\] != os\.environ\["RELEASE_SHA"\]/,
   );
-  assert.match(activationFreshnessStep, /MAX_AGE_SECONDS = 21600/);
+  assert.match(activationFreshnessStep, /MAX_AGE_SECONDS = 86400/);
   assert.match(activationFreshnessStep, /datetime\.now\(timezone\.utc\)/);
   assert.match(activationFreshnessStep, /approved_at < scan_at/);
   assert.match(activationFreshnessStep, /timestamp > now/);
@@ -425,7 +425,12 @@ test('workflow checks freshness at approval, before SSH, and immediately before 
   assert.doesNotMatch(beforeSsh, /\$\{\{\s*secrets\./);
   assert.doesNotMatch(beforeSsh, /HOME\/\.ssh|deploy_key|known_hosts|ssh-keygen/);
   assert.doesNotMatch(beforeSsh, /(?:^|\n)\s*(?:ssh|scp)\s/m);
-  assert.equal([...workflow.matchAll(/MAX_AGE_SECONDS = 21600/g)].length, 3);
+  assert.equal([...workflow.matchAll(/MAX_AGE_SECONDS = 86400/g)].length, 3);
+  assert.equal(
+    [...workflow.matchAll(/older than \{MAX_AGE_SECONDS\} seconds/g)].length,
+    3,
+  );
+  assert.doesNotMatch(workflow, /MAX_AGE_SECONDS = 21600|older than 21600 seconds/);
 
   const cleanupStart = deploy.indexOf('- name: Remove remote staging and local SSH material');
   assert.ok(cleanupStart >= 0);
@@ -435,5 +440,5 @@ test('workflow checks freshness at approval, before SSH, and immediately before 
   const operations = readFileSync(operationsPath, 'utf8');
   assert.match(operations, /三重检查/);
   assert.match(operations, /production.*第二次人工批准[\s\S]*TOCTOU/);
-  assert.match(operations, /激活前[\s\S]*再次.*六小时[\s\S]*(?:失败关闭|fail closed)/);
+  assert.match(operations, /激活前[\s\S]*再次.*24 小时[\s\S]*(?:失败关闭|fail closed)/);
 });

@@ -123,21 +123,21 @@ git add data/approved/current.json docs/operations/data-refresh.md
 git commit -m "data: publish first verified snapshot"
 ```
 
-CI 通过后仍需由 reviewer 决定是否合并。合并到 `main` 是发布批准，部署 workflow 的 `production-approval` Environment 是另一个独立信任边界。`production-approval` 不得配置任何 secrets，并且必须配置 required reviewer；它只批准 release metadata 校验和六小时 freshness gate。现有 `production` Environment 继续持有腾讯云部署 secrets；若 `production` 仍配置 required reviewer，真正部署前会出现第二次人工批准。
+CI 通过后仍需由 reviewer 决定是否合并。合并到 `main` 是发布批准，部署 workflow 的 `production-approval` Environment 是另一个独立信任边界。`production-approval` 不得配置任何 secrets，并且必须配置 required reviewer；它只批准 release metadata 校验和 24 小时 freshness gate。现有 `production` Environment 继续持有腾讯云部署 secrets；若 `production` 仍配置 required reviewer，真正部署前会出现第二次人工批准。
 
-## 六小时发布契约
+## 24 小时发布契约
 
-启动发布或批准 `production-approval` gate 时，批准快照的 `scanAt` 和 `approvedAt` 都必须处于当前 UTC 时间之前且不超过六小时。恰好六小时仍可接受；超过六小时哪怕一毫秒也必须失败关闭。时间字段缺失、格式错误、位于未来，或 `approvedAt` 早于 `scanAt` 时，同样不得发布。
+启动发布或批准 `production-approval` gate 时，批准快照的 `scanAt` 和 `approvedAt` 都必须处于当前 UTC 时间之前且不超过 24 小时。恰好 24 小时仍可接受；超过 24 小时哪怕一毫秒也必须失败关闭。时间字段缺失、格式错误、位于未来，或 `approvedAt` 早于 `scanAt` 时，同样不得发布。
 
 本地合并前和启动发布前都运行：
 
 ```bash
 pnpm run snapshot:check-freshness -- \
   --snapshot data/approved/current.json \
-  --max-age-hours 6
+  --max-age-hours 24
 ```
 
-构建阶段把批准快照原样复制为公开的 `dist/data/current.json`，复制后同时核对字节内容、`snapshotId` 和 `dataHash`；把完全相同且仅含 `releaseSha`、`snapshotId`、`dataHash` 的三字段 identity 写入 `dist/data/release.json` 和兼容既有 rollback/smoke 的 `dist/release.json`。公开监控只以两个 `/data/*` 端点为事实源。`snapshotScanAt` 和 `snapshotApprovedAt` 只写入私有的 `release-build/release-metadata.json`，其六字段 schema 保持不变。发布采用三重检查：无密钥的 `production_gate` job 绑定 `production-approval`，在 reviewer 批准后下载构建 artifact，首次校验 release SHA、metadata 精确 schema、字段格式和六小时 freshness；gate 成功后，control-plane 打包和真正的 `deploy` job 才会继续。`deploy` 仍绑定持有腾讯云 secrets 的 `production`，并在已下载 artifact、完成第二次人工批准和排队后，紧邻首个 secret/SSH 步骤再次执行同样的 schema、release SHA 和六小时检查。这样可防止 `production` 第二次人工批准或 runner 排队跨过六小时形成 TOCTOU。归档上传完成且即将激活前，workflow 第三次校验同一 release metadata 和六小时窗口，关闭传输或远端预检期间跨过阈值的剩余窗口。任一检查失败时都必须失败关闭；首个 deploy 检查失败时 SSH step 保持 skipped，cleanup 不得注入 host secrets。gate 本身不引用任何 secrets、不写入 SSH key、不配置 host key，也不联系生产主机。若激活前再次检查发现六小时窗口已过，重新扫描、审阅差异并批准新快照，不得放宽阈值或复用旧批准时间。
+构建阶段把批准快照原样复制为公开的 `dist/data/current.json`，复制后同时核对字节内容、`snapshotId` 和 `dataHash`；把完全相同且仅含 `releaseSha`、`snapshotId`、`dataHash` 的三字段 identity 写入 `dist/data/release.json` 和兼容既有 rollback/smoke 的 `dist/release.json`。公开监控只以两个 `/data/*` 端点为事实源。`snapshotScanAt` 和 `snapshotApprovedAt` 只写入私有的 `release-build/release-metadata.json`，其六字段 schema 保持不变。发布采用三重检查：无密钥的 `production_gate` job 绑定 `production-approval`，在 reviewer 批准后下载构建 artifact，首次校验 release SHA、metadata 精确 schema、字段格式和 24 小时 freshness；gate 成功后，control-plane 打包和真正的 `deploy` job 才会继续。`deploy` 仍绑定持有腾讯云 secrets 的 `production`，并在已下载 artifact、完成第二次人工批准和排队后，紧邻首个 secret/SSH 步骤再次执行同样的 schema、release SHA 和 24 小时检查。这样可防止 `production` 第二次人工批准或 runner 排队跨过 24 小时形成 TOCTOU。归档上传完成且即将激活前，workflow 第三次校验同一 release metadata 和 24 小时窗口，关闭传输或远端预检期间跨过阈值的剩余窗口。任一检查失败时都必须失败关闭；首个 deploy 检查失败时 SSH step 保持 skipped，cleanup 不得注入 host secrets。gate 本身不引用任何 secrets、不写入 SSH key、不配置 host key，也不联系生产主机。若激活前再次检查发现 24 小时窗口已过，重新扫描、审阅差异并批准新快照，不得放宽阈值或复用旧批准时间。
 
 ## 失败处理
 
