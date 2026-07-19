@@ -1273,6 +1273,37 @@ test('smoke verifies all public data endpoints, title, asset, SPA fallback, and 
   assert.match(wrongIdentity.stderr, /smoke failed/i);
 });
 
+test('smoke validates stored opportunity status at snapshot approval time', async (t) => {
+  const { deployRoot, fakeBin } = makeDeployRoot(t);
+  const releaseSha = '6'.repeat(40);
+  const release = join(deployRoot, 'releases', releaseSha);
+  const snapshot = validSmokeSnapshot() as Record<string, any>;
+  const approvedAt = snapshot.approvedAt;
+  snapshot.opportunities[0].verificationStatus = 'confirmed-open';
+  snapshot.opportunities[0].deadline = '2026-07-16T23:59:00+08:00';
+  snapshot.opportunities[0].deadlineEpochMs = Date.parse(snapshot.opportunities[0].deadline);
+  snapshot.counts.confirmedOpen = 1;
+  snapshot.counts.confirmedUnknownDeadline = 0;
+  delete snapshot.snapshotId;
+  delete snapshot.dataHash;
+  const dataHash = canonicalDataHash(snapshot);
+  snapshot.dataHash = dataHash;
+  snapshot.snapshotId = deriveSnapshotId(approvedAt, dataHash);
+  const identity = writeValidatedReleaseTree(release, releaseSha, snapshot as PublicSnapshot);
+  symlinkSync(release, join(deployRoot, 'current'));
+  const smokeUrl = await startCurrentFixture(t, deployRoot);
+  const result = await runScript(smokeScript, {
+    SMOKE_URL: smokeUrl,
+    EXPECTED_RELEASE_SHA: identity.releaseSha,
+    EXPECTED_SNAPSHOT_ID: identity.snapshotId,
+    EXPECTED_DATA_HASH: identity.dataHash,
+    SMOKE_ATTEMPTS: '1',
+    SMOKE_RETRY_DELAY: '0',
+    PATH: `${fakeBin}:${process.env.PATH}`,
+  });
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+});
+
 test('smoke rejects ordinary and Unicode-escaped duplicate JSON keys', async (t) => {
   for (const duplicateKind of ['ordinary release key', 'Unicode current key'] as const) {
     await t.test(duplicateKind, async (subtest) => {
