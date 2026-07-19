@@ -6,7 +6,7 @@ import { promisify } from 'node:util';
 
 import {
   readRegularJsonFile,
-  validateApprovedSnapshot,
+  validateStoredApprovedSnapshot,
 } from '../../src/lib/snapshot-integrity.js';
 import type { RegularJsonFile } from '../../src/lib/snapshot-integrity.js';
 import type { PublicSnapshot } from '../../src/lib/snapshot-types.js';
@@ -86,8 +86,8 @@ function validateAliases(input: unknown, base: PublicSnapshot): void {
   validateProjectIdAliases(input, base);
 }
 
-function validateSnapshot(input: unknown, label: string, nowMs: number): PublicSnapshot {
-  const errors = validateApprovedSnapshot(input, nowMs);
+function validateSnapshot(input: unknown, label: string): PublicSnapshot {
+  const errors = validateStoredApprovedSnapshot(input);
   if (errors.length > 0) {
     throw new Error(`${label} is not a valid approved snapshot:\n${errors.join('\n')}`);
   }
@@ -109,8 +109,8 @@ export function prepareDataPrPlan(input: PrepareDataPrInput): DataPrPlan {
   if (!Number.isFinite(now.getTime())) throw new Error('now must be a valid Date');
 
   const changedFiles = assertDataOnlyFiles(input.changedFiles);
-  const base = validateSnapshot(input.base, 'base snapshot', now.getTime());
-  const next = validateSnapshot(input.next, 'next snapshot', now.getTime());
+  const base = validateSnapshot(input.base, 'base snapshot');
+  const next = validateSnapshot(input.next, 'next snapshot');
 
   if (changedFiles.includes('data/project-id-aliases.json')) {
     if (input.aliases === undefined) throw new Error('changed alias file requires alias contents');

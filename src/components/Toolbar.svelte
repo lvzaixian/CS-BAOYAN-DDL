@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Search, X, Zap, CalendarDays, Layers } from 'lucide-svelte';
   import { filters, clearAllFilters, toggle } from '$lib/urlState.svelte';
-  import { eventModeLabel } from '$lib/filter';
+  import { countUpcomingDeadlines, eventModeLabel } from '$lib/filter';
   import type { DerivedSchool } from '$lib/types';
 
   let { totalCount, visibleCount, rows }: {
@@ -11,17 +11,7 @@
   } = $props();
 
   // quick stats: not-yet-due
-  const stats = $derived.by(() => {
-    const oneDay = 86_400_000;
-    let week = 0, month = 0, all = 0;
-    for (const r of rows) {
-      if (r.remainingMs === null || r.remainingMs < 0) continue;
-      all++;
-      if (r.remainingMs < 7 * oneDay) week++;
-      if (r.remainingMs < 30 * oneDay) month++;
-    }
-    return { week, month, all };
-  });
+  const stats = $derived(countUpcomingDeadlines(rows));
 
   const activeFilterCount = $derived(
     filters.tags.length + filters.status.length + filters.modes.length + filters.provinces.length + (filters.query ? 1 : 0),

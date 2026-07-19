@@ -56,6 +56,18 @@ test('returns no-change when canonical public data is identical', () => {
   });
 });
 
+test('revalidates unchanged approved snapshots at approval time after their deadlines pass', () => {
+  const base = approvedSnapshot();
+  const plan = prepareDataPrPlan({
+    base,
+    next: structuredClone(base),
+    changedFiles: [],
+    now: new Date('2026-07-21T10:00:00+08:00'),
+  });
+
+  assert.equal(plan.status, 'no-change');
+});
+
 test('returns a deterministic bounded data-only PR plan for changed data', () => {
   const base = approvedSnapshot();
   const next = approvedSnapshot('更新后的项目');

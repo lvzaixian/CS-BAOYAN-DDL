@@ -4,10 +4,12 @@ import test from 'node:test';
 import {
   applyFilters,
   countModes,
+  countUpcomingDeadlines,
   countStatuses,
   deriveSchool,
   eventModeLabel,
   expiredDeadlineText,
+  opportunityStatusLabel,
   pickCalendarMonth,
   rowGroup,
   rowKey,
@@ -180,6 +182,34 @@ test('keeps an approved expired row with a null deadline in the expired group', 
 
   assert.equal(rowGroup(row), 'expired');
   assert.equal(row.urgency, 'expired');
+});
+
+test('moves a confirmed-open row into the ended group when its deadline arrives', () => {
+  const deadlineEpochMs = Date.parse('2026-07-18T12:00:00+08:00');
+  const before = deriveSchool(school({ projectId: 'runtime-deadline', deadlineEpochMs }), deadlineEpochMs - 1);
+  const ended = deriveSchool(school({ projectId: 'runtime-deadline', deadlineEpochMs }), deadlineEpochMs);
+
+  assert.equal(rowGroup(before), 'active-timed');
+  assert.equal(rowGroup(ended), 'expired');
+  assert.equal(ended.urgency, 'expired');
+  assert.equal(opportunityStatusLabel(ended), '已结束');
+  assert.equal(expiredDeadlineText(ended), '已结束');
+  assert.deepEqual(countStatuses([before, ended]), { 开放: 1, 已结束: 1 });
+  assert.deepEqual(
+    applyFilters([before, ended], { ...emptyFilters, status: ['已结束'] }).map(rowKey),
+    [ended.projectId],
+  );
+});
+
+test('excludes the exact-deadline row from upcoming toolbar counts', () => {
+  const deadlineEpochMs = Date.parse('2026-07-18T12:00:00+08:00');
+  const ended = deriveSchool(school({ projectId: 'ended-now', deadlineEpochMs }), deadlineEpochMs);
+  const upcoming = deriveSchool(
+    school({ projectId: 'upcoming', deadlineEpochMs: deadlineEpochMs + 1 }),
+    deadlineEpochMs,
+  );
+
+  assert.deepEqual(countUpcomingDeadlines([ended, upcoming]), { week: 1, month: 1, all: 1 });
 });
 
 test('filters status from verificationStatus with OR semantics and ignores contradictory tags', () => {

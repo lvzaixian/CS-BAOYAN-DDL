@@ -148,6 +148,18 @@ export function validateApprovedSnapshot(input: unknown, nowMs = Date.now()): st
   return errors;
 }
 
+export function validateStoredApprovedSnapshot(
+  input: unknown,
+  fallbackNowMs = Date.now(),
+): string[] {
+  const referenceTimeMs = isObject(input)
+    && typeof input.approvedAt === 'string'
+    && isValidIsoTimestamp(input.approvedAt)
+    ? Date.parse(input.approvedAt)
+    : fallbackNowMs;
+  return validateApprovedSnapshot(input, referenceTimeMs);
+}
+
 async function readRegularText(
   path: string,
   label: string,

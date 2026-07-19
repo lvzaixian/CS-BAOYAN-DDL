@@ -610,6 +610,20 @@ test('remote current integrity, freshness, schema, and release identity fail clo
       /freshness.*older/i,
     );
   });
+  await t.test('deadline passage does not invalidate an otherwise fresh approved snapshot', async () => {
+    const opportunities = approvedSnapshot.opportunities as Array<Record<string, unknown>>;
+    const firstDeadlineMs = Math.min(
+      ...opportunities
+        .filter((row) => row.verificationStatus === 'confirmed-open')
+        .map((row) => Number(row.deadlineEpochMs)),
+    );
+    const scanAtMs = Date.parse(String(approvedSnapshot.scanAt));
+    const freshnessHours = String(Math.ceil((firstDeadlineMs - scanAtMs) / (60 * 60 * 1_000)) + 1);
+
+    await assert.doesNotReject(
+      runMonitor({ checkedAt: firstDeadlineMs, maxAgeHours: freshnessHours }),
+    );
+  });
 
   for (const [name, release, pattern] of [
     ['expected SHA', { ...releaseIdentity, releaseSha: 'b'.repeat(40) }, /releaseSha.*expected/i],
