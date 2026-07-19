@@ -92,7 +92,9 @@ test('monitor workflow is scheduled, manually runnable, read-only, and isolated 
     workflow,
     /PUBLIC_BASE_URL:\s*\$\{\{\s*vars\.PUBLIC_BASE_URL\s*\}\}/,
   );
-  assert.match(workflow, /MAX_SNAPSHOT_AGE_HOURS:\s*['"]24['"]/);
+  assert.match(workflow, /WARN_SNAPSHOT_AGE_HOURS:\s*['"]24['"]/);
+  assert.match(workflow, /MAX_SNAPSHOT_AGE_HOURS:\s*['"]72['"]/);
+  assert.doesNotMatch(workflow, /vars\.WARN_SNAPSHOT_AGE_HOURS/);
   assert.doesNotMatch(workflow, /vars\.MAX_SNAPSHOT_AGE_HOURS/);
   const jobEnv = workflow.match(/\n    env:\n([\s\S]*?)\n    steps:/)?.[1] ?? '';
   assert.notEqual(jobEnv, '', 'monitor job must define its non-secret environment');
@@ -236,7 +238,7 @@ test('release metadata has exactly the three strict identity fields', async (t) 
   const parseRelease = exported('parseRelease');
   const assertReleaseIdentity = exported('assertReleaseIdentity');
   assert.deepEqual(parseRelease(JSON.stringify(releaseIdentity)), releaseIdentity);
-  assert.doesNotThrow(() => assertReleaseIdentity(releaseIdentity, approvedSnapshot, expectedSha));
+  assert.doesNotThrow(() => assertReleaseIdentity(releaseIdentity, approvedSnapshot));
 
   const invalidPayloads: Array<[string, unknown]> = [
     ['extra field', { ...releaseIdentity, deployedAt: '2026-07-17T00:00:00Z' }],
@@ -279,7 +281,6 @@ test('release metadata has exactly the three strict identity fields', async (t) 
   );
 
   const mismatches: Array<[string, Record<string, unknown>, RegExp]> = [
-    ['release SHA', { ...releaseIdentity, releaseSha: 'b'.repeat(40) }, /releaseSha.*expected/i],
     [
       'snapshot ID',
       { ...releaseIdentity, snapshotId: `2026-07-17T00:00:00.000Z-${'b'.repeat(12)}` },
@@ -289,9 +290,13 @@ test('release metadata has exactly the three strict identity fields', async (t) 
   ];
   for (const [name, identity, pattern] of mismatches) {
     await t.test(name, () => {
-      assert.throws(() => assertReleaseIdentity(identity, approvedSnapshot, expectedSha), pattern);
+      assert.throws(() => assertReleaseIdentity(identity, approvedSnapshot), pattern);
     });
   }
+  assert.doesNotThrow(() => assertReleaseIdentity(
+    { ...releaseIdentity, releaseSha: 'b'.repeat(40) },
+    approvedSnapshot,
+  ));
 });
 
 test('snapshot age input and timestamps fail closed at exact boundaries', async (t) => {
@@ -475,6 +480,7 @@ test('normal monitor path binds public HTTPS checks to one validated address and
     {
       publicBaseUrl: 'https://admissions.example',
       expectedSha,
+      warnSnapshotAgeHours: '24',
       maxSnapshotAgeHours: '24',
       approvedPath: '/must-not-be-read/local-approved.json',
       nowMs,
@@ -532,6 +538,7 @@ test('normal monitor path binds public HTTPS checks to one validated address and
   assert.deepEqual(result.release, releaseIdentity);
   assert.equal(result.origin, 'https://admissions.example');
   assert.equal(result.certificateDaysRemaining, 30);
+  assert.deepEqual(result.warnings, []);
 });
 
 test('remote current integrity, freshness, schema, and release identity fail closed', async (t) => {
@@ -541,17 +548,20 @@ test('remote current integrity, freshness, schema, and release identity fail clo
     currentStatus = 200,
     release = releaseIdentity,
     checkedAt = nowMs,
+    warnAgeHours = '24',
     maxAgeHours = '24',
   }: {
     currentText?: string;
     currentStatus?: number;
     release?: Record<string, unknown>;
     checkedAt?: number;
+    warnAgeHours?: string;
     maxAgeHours?: string;
   }) => monitorPublicRelease(
     {
       publicBaseUrl: 'https://admissions.example',
       expectedSha,
+      warnSnapshotAgeHours: warnAgeHours,
       maxSnapshotAgeHours: maxAgeHours,
       nowMs: checkedAt,
     },
@@ -606,9 +616,23 @@ test('remote current integrity, freshness, schema, and release identity fail clo
   });
   await t.test('stale remote current', async () => {
     await assert.rejects(
-      runMonitor({ maxAgeHours: '0.0001' }),
+      runMonitor({ warnAgeHours: '0.00005', maxAgeHours: '0.0001' }),
       /freshness.*older/i,
     );
+  });
+  await t.test('daily cadence breach warns before the 72-hour hard limit', async () => {
+    const checkedAt = Math.max(
+      Date.parse(String(approvedSnapshot.scanAt)),
+      Date.parse(String(approvedSnapshot.approvedAt)),
+    ) + 25 * 60 * 60 * 1_000;
+
+    const result = await runMonitor({
+      checkedAt,
+      warnAgeHours: '24',
+      maxAgeHours: '72',
+    });
+
+    assert.match(result.warnings.join('\n'), /snapshot.*24.*hour/i);
   });
   await t.test('deadline passage does not invalidate an otherwise fresh approved snapshot', async () => {
     const opportunities = approvedSnapshot.opportunities as Array<Record<string, unknown>>;
@@ -621,12 +645,40 @@ test('remote current integrity, freshness, schema, and release identity fail clo
     const freshnessHours = String(Math.ceil((firstDeadlineMs - scanAtMs) / (60 * 60 * 1_000)) + 1);
 
     await assert.doesNotReject(
-      runMonitor({ checkedAt: firstDeadlineMs, maxAgeHours: freshnessHours }),
+      runMonitor({
+        checkedAt: firstDeadlineMs,
+        warnAgeHours: freshnessHours,
+        maxAgeHours: freshnessHours,
+      }),
+    );
+  });
+
+  await t.test('a healthy deployed release differing from main warns without claiming ancestry', async () => {
+    const result = await runMonitor({
+      release: { ...releaseIdentity, releaseSha: 'b'.repeat(40) },
+    });
+    assert.match(result.warnings.join('\n'), /release.*main/i);
+    assert.doesNotMatch(result.warnings.join('\n'), /behind main/i);
+  });
+
+  await t.test('warning-band freshness never weakens release identity failures', async () => {
+    const checkedAt = Math.max(
+      Date.parse(String(approvedSnapshot.scanAt)),
+      Date.parse(String(approvedSnapshot.approvedAt)),
+    ) + 25 * 60 * 60 * 1_000;
+
+    await assert.rejects(
+      runMonitor({
+        checkedAt,
+        warnAgeHours: '24',
+        maxAgeHours: '72',
+        release: { ...releaseIdentity, dataHash: 'b'.repeat(64) },
+      }),
+      /dataHash.*current snapshot/i,
     );
   });
 
   for (const [name, release, pattern] of [
-    ['expected SHA', { ...releaseIdentity, releaseSha: 'b'.repeat(40) }, /releaseSha.*expected/i],
     [
       'current snapshot ID',
       { ...releaseIdentity, snapshotId: `2026-07-17T00:00:00.000Z-${'b'.repeat(12)}` },

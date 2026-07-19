@@ -330,15 +330,9 @@ export function parseRelease(text) {
   return assertReleaseSchema(value);
 }
 
-export function assertReleaseIdentity(release, currentSnapshot, expectedSha) {
+export function assertReleaseIdentity(release, currentSnapshot) {
   assertReleaseSchema(release);
-  if (!/^[0-9a-f]{40}$/.test(expectedSha)) {
-    throw new Error('expected GITHUB_SHA must be exactly 40 lowercase hexadecimal characters');
-  }
   if (!isObject(currentSnapshot)) throw new Error('current snapshot must be an object');
-  if (release.releaseSha !== expectedSha) {
-    throw new Error('releaseSha does not match the expected GITHUB_SHA');
-  }
   if (release.snapshotId !== currentSnapshot.snapshotId) {
     throw new Error('snapshotId does not match the current snapshot');
   }
@@ -539,11 +533,24 @@ function parseResponseDeadlineMs(value) {
 async function monitorPublicReleaseWithinDeadline(config, dependencies, signal) {
   const nowMs = config.nowMs ?? Date.now();
   const originUrl = await atStage('configuration', async () => parsePublicOrigin(config.publicBaseUrl));
+  const warnAgeMs = await atStage(
+    'configuration',
+    async () => parseMaxSnapshotAgeHours(config.warnSnapshotAgeHours),
+  );
   const maxAgeMs = await atStage(
     'configuration',
     async () => parseMaxSnapshotAgeHours(config.maxSnapshotAgeHours),
   );
+  await atStage('configuration', async () => {
+    if (warnAgeMs > maxAgeMs) {
+      throw new Error('snapshot warning age must not exceed the maximum age');
+    }
+    if (!/^[0-9a-f]{40}$/.test(config.expectedSha)) {
+      throw new Error('expected GITHUB_SHA must be exactly 40 lowercase hexadecimal characters');
+    }
+  });
   const minimumCertificateDays = config.minimumCertificateDays ?? 21;
+  const warnings = [];
 
   const hostname = unbracket(originUrl.hostname);
   const addresses = await atStage(
@@ -626,6 +633,12 @@ async function monitorPublicReleaseWithinDeadline(config, dependencies, signal) 
     if (errors.length > 0) throw new Error(errors.join('; '));
     assertSnapshotFreshness(approvedSnapshot, nowMs, maxAgeMs);
   });
+  if (checkSnapshotFreshness(approvedSnapshot, nowMs, warnAgeMs).length > 0) {
+    warnings.push(
+      `Snapshot is older than the ${warnAgeMs / hourMs}-hour daily scan target `
+      + `but remains within the ${maxAgeMs / hourMs}-hour hard limit.`,
+    );
+  }
 
   const releaseResponse = await atStage(
     'release',
@@ -650,13 +663,21 @@ async function monitorPublicReleaseWithinDeadline(config, dependencies, signal) 
   const release = await atStage('release', async () => parseRelease(releaseText));
   await atStage(
     'release-identity',
-    async () => assertReleaseIdentity(release, approvedSnapshot, config.expectedSha),
+    async () => assertReleaseIdentity(release, approvedSnapshot),
   );
+  if (release.releaseSha !== config.expectedSha) {
+    warnings.push(
+      `Deployed release ${release.releaseSha} differs from main ${config.expectedSha}; `
+      + 'public release integrity is valid but release parity needs review.',
+    );
+  }
 
   return {
     origin: originUrl.origin,
     release,
     certificateDaysRemaining,
+    warnings,
+    warnSnapshotAgeHours: warnAgeMs / hourMs,
     maxSnapshotAgeHours: maxAgeMs / hourMs,
   };
 }
@@ -702,6 +723,7 @@ async function runCli() {
     const result = await monitorPublicRelease({
       publicBaseUrl: process.env.PUBLIC_BASE_URL,
       expectedSha: process.env.GITHUB_SHA,
+      warnSnapshotAgeHours: process.env.WARN_SNAPSHOT_AGE_HOURS,
       maxSnapshotAgeHours: process.env.MAX_SNAPSHOT_AGE_HOURS,
       minimumCertificateDays: Number(process.env.CERT_MIN_VALID_DAYS ?? '21'),
     });
@@ -710,6 +732,9 @@ async function runCli() {
       + `snapshotId=${result.release.snapshotId} `
       + `certificateDaysRemaining=${result.certificateDaysRemaining}`,
     );
+    for (const warning of result.warnings) {
+      console.warn(`::warning title=Public monitor::${messageOf(warning)}`);
+    }
   } catch (error) {
     const diagnostic = {
       ok: false,
