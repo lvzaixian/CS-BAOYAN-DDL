@@ -10,7 +10,7 @@
 https://admissions.example.edu.cn
 ```
 
-不得包含账号、密码、路径、query 或 fragment，也不能使用 localhost、回环地址或私网地址。公开快照陈旧阈值固定为 24 小时，不读取可变仓库配置，避免静默放宽监控标准。
+不得包含账号、密码、路径、query 或 fragment，也不能使用 localhost、回环地址或私网地址。公开快照在 24 小时后产生 warning，超过 72 小时才使 monitor 失败。这两个阈值固定在 workflow 中，不读取可变仓库配置，避免静默放宽监控标准。24 小时对应每日增量扫描目标，72 小时对应全量覆盖审计周期；部署新版本时仍单独执行严格的 24 小时 freshness 门禁。
 
 当前 production environment 中即使存在同名 `PUBLIC_BASE_URL`，监控也不会读取它。workflow 不声明 environment，只读取 repository-level `vars.PUBLIC_BASE_URL`。
 
@@ -36,10 +36,10 @@ https://admissions.example.edu.cn
 
 1. 首页返回成功的 HTML，响应可在大小上有界读取；
 2. 公网 `/data/current.json` 使用拒绝普通与 Unicode escaped 重复键的严格 JSON 解析，并只接受共享 approved snapshot schema；
-3. 远端 current 通过仓库共享的 `validateApprovedSnapshot`、canonical `dataHash` 完整性校验和 freshness 校验；快照内状态与截止时间的对应关系按 `approvedAt` 校验，运行时已过截止日期由前端即时归为“已结束”，monitor 仍按当前时间严格执行 24 小时 freshness 校验；monitor 不读取本地 `data/approved/current.json` 代替公网本体；
+3. 远端 current 通过仓库共享的 `validateApprovedSnapshot`、canonical `dataHash` 完整性校验和 freshness 校验；快照内状态与截止时间的对应关系按 `approvedAt` 校验，运行时已过截止日期由前端即时归为“已结束”；monitor 按当前时间在 24 小时后告警、72 小时后失败，且不读取本地 `data/approved/current.json` 代替公网本体；
 4. 公网 `/data/release.json` 同样严格解析，只包含 `releaseSha`、`snapshotId`、`dataHash`；
-5. `releaseSha` 等于本次检出的 `GITHUB_SHA`，`snapshotId` 与 `dataHash` 等于同次运行读取并验证的远端 current；
-6. 远端 current 的 `scanAt`、`approvedAt` 不在未来，`approvedAt` 不早于 `scanAt`，且两者不超过最大年龄；
+5. `releaseSha` 格式合法，`snapshotId` 与 `dataHash` 等于同次运行读取并验证的远端 current；若公开部署版本落后于本次检出的 `GITHUB_SHA`，monitor 产生 warning 但不把仍然健康的公开站点判为故障。发布动作本身仍由 deploy workflow 的精确 SHA smoke 校验负责；
+6. 远端 current 的 `scanAt`、`approvedAt` 不在未来，`approvedAt` 不早于 `scanAt`，且两者不超过 72 小时硬限制；
 7. TLS 证书 SAN 匹配目标 hostname，`notAfter` 至少还剩 21 个完整日。
 
 部署产物必须在上述两个精确 `/data/*` 路径提供 JSON；它们是 monitor 的唯一数据事实源。根路径 `/release.json` 保留给 rollback 和既有部署 smoke 兼容，但不属于 monitor 契约。部署 smoke 会同时严格解析根 `/release.json` 与 `/data/release.json` 的精确三字段身份，对 `/data/current.json` 执行完整 approved snapshot schema 校验并重算 canonical `dataHash`，不信任 current 自报 hash，同时要求未知 `/data/*` 路径返回 404。任一事实源缺失、返回 SPA fallback、含普通或 Unicode escaped 重复键、schema 非法、canonical hash 不一致、含额外 identity 字段或身份不一致都会失败关闭。
