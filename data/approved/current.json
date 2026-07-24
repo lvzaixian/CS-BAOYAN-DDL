@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-07-22T09:45:39+08:00",
+  "scanAt": "2026-07-24T18:22:59+08:00",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -11,9 +11,9 @@
     }
   ],
   "counts": {
-    "confirmedOpen": 78,
-    "confirmedUnknownDeadline": 23,
-    "pendingExcluded": 26,
+    "confirmedOpen": 69,
+    "confirmedUnknownDeadline": 16,
+    "pendingExcluded": 59,
     "expired": 80
   },
   "opportunities": [
@@ -31,7 +31,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/3415cd69-b74a-413f-bfb6-6a43bed3f344?yxsdm=047",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -56,7 +56,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：外校本科直博申请人需2封相关学科副教授或相当职称以上专家推荐信；清华本科推免生免交。；推荐信模板：申请服务系统在线邀请专家填写；未提供独立下载模板。"
+        "summary": "推荐信数量：外校本科直博申请人需2封相关学科副教授或相当职称以上专家推荐信；推荐信模板：申请服务系统在线邀请专家填写"
       },
       "materials": {
         "status": "confirmed",
@@ -77,7 +77,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/1ee20a84-f070-4db8-9dc0-7383cad560a7?yxsdm=094",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -102,7 +102,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：外校本科直博申请人需2封相关学科副教授或相当职称以上专家推荐信；清华本科推免生免交。；推荐信模板：申请服务系统在线邀请专家填写；未提供独立下载模板。"
+        "summary": "推荐信数量：外校本科直博申请人需2封相关学科副教授或相当职称以上专家推荐信；推荐信模板：申请服务系统在线邀请专家填写"
       },
       "materials": {
         "status": "confirmed",
@@ -123,7 +123,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/df2d4f5a-5242-4f35-8f6b-05bd842fdfb9?yxsdm=599",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -169,7 +169,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/2581f75f-63ec-4d59-ba1f-8126bdd7a855?yxsdm=599",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -215,7 +215,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/0232d6b4-273b-4212-8dff-c9efc89f2493?yxsdm=599",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -261,7 +261,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://www.sigs.tsinghua.edu.cn/2026/0630/c7769a291820/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -286,7 +286,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：外校申请人需2封与申请学科相关的副教授及以上专家在线推荐信；清华本校应届生免交。；推荐信模板：申请服务系统在线填写；官方正文未提供独立下载模板，纸质原件后续按通知寄送。"
+        "summary": "推荐信数量：外校申请人需2封与申请学科相关的副教授及以上专家在线推荐信；推荐信模板：申请服务系统在线填写"
       },
       "materials": {
         "status": "confirmed",
@@ -307,7 +307,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://www.sigs.tsinghua.edu.cn/2026/0630/c7769a291820/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -332,7 +332,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：外校申请人需2封相关学科副教授及以上专家在线推荐信；清华本校应届生免交。；推荐信模板：申请服务系统在线填写；官方正文未提供独立下载模板，纸质原件后续按通知寄送。"
+        "summary": "推荐信数量：外校申请人需2封相关学科副教授及以上专家在线推荐信；推荐信模板：申请服务系统在线填写"
       },
       "materials": {
         "status": "confirmed",
@@ -353,7 +353,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/3645e3d1-9783-416d-933b-5f0d844a870b?yxsdm=023",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -378,7 +378,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：外校本科直博申请人提交2封与报考专业相关的副教授或相当职称以上专家推荐信；清华本科推免生免交。；推荐信模板：通过清华研究生申请服务系统在线邀请专家填写；官方简章未提供独立下载模板。"
+        "summary": "推荐信数量：外校本科直博申请人提交2封与报考专业相关的副教授或相当职称以上专家推荐信；推荐信模板：通过清华研究生申请服务系统在线邀请专家填写"
       },
       "materials": {
         "status": "confirmed",
@@ -399,7 +399,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/71db5046-7fdd-4e14-b2da-8373ef05bd2e?yxsdm=088",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -424,7 +424,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：外校本科直博申请人需2封相关学科副教授或相当职称以上专家推荐信。；推荐信模板：申请服务系统在线邀请专家填写；未提供独立下载模板。"
+        "summary": "推荐信数量：外校本科直博申请人需2封相关学科副教授或相当职称以上专家推荐信。；推荐信模板：申请服务系统在线邀请专家填写"
       },
       "materials": {
         "status": "confirmed",
@@ -445,7 +445,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/18724121-b96d-422d-9e73-de9fb1b43614?yxsdm=412",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -470,7 +470,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：外校申请人需2封相关学科副教授或相当职称以上专家推荐信；推荐专家不得为报考导师。；推荐信模板：申请服务系统在线邀请专家填写；未提供独立下载模板。"
+        "summary": "推荐信数量：外校申请人需2封相关学科副教授或相当职称以上专家推荐信；推荐信模板：申请服务系统在线邀请专家填写"
       },
       "materials": {
         "status": "confirmed",
@@ -491,7 +491,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/e16d784f-403e-4ac4-98ff-15fd79e051a4?yxsdm=025",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -516,7 +516,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：外校申请人需2封相关学科副教授或相当职称以上专家推荐信；申请导师不得作为推荐专家。；推荐信模板：申请服务系统在线邀请专家填写；未提供独立下载模板。"
+        "summary": "推荐信数量：外校申请人需2封相关学科副教授或相当职称以上专家推荐信；推荐信模板：申请服务系统在线邀请专家填写"
       },
       "materials": {
         "status": "confirmed",
@@ -537,7 +537,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/df93bde9-53c9-40dc-8fe1-b160d8b4be9f?yxsdm=024",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -562,7 +562,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：外校本科直博申请人需2封相关学科副教授或相当职称以上专家推荐信；推荐专家不得为报考导师。；推荐信模板：申请服务系统在线邀请专家填写；未提供独立下载模板。"
+        "summary": "推荐信数量：外校本科直博申请人需2封相关学科副教授或相当职称以上专家推荐信；推荐信模板：申请服务系统在线邀请专家填写"
       },
       "materials": {
         "status": "confirmed",
@@ -583,7 +583,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/37edd7f4-6fd0-4e4c-96cd-a18cfefa2081?yxsdm=410",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -608,7 +608,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：外校本科直博申请人需2封相关学科副教授或相当职称以上专家推荐信。；推荐信模板：申请服务系统在线邀请专家填写；未提供独立下载模板。"
+        "summary": "推荐信数量：外校本科直博申请人需2封相关学科副教授或相当职称以上专家推荐信。；推荐信模板：申请服务系统在线邀请专家填写"
       },
       "materials": {
         "status": "confirmed",
@@ -629,7 +629,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/714cdf85-15f4-40df-b1fb-fc79b2c20f13?yxsdm=026",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -654,7 +654,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：外校本科直博申请人需2封相关学科副教授或相当职称以上专家推荐信；清华本科推免生免交。；推荐信模板：专家通过申请服务系统在线填写并保存纸质原件；未提供独立下载模板。"
+        "summary": "推荐信数量：外校本科直博申请人需2封相关学科副教授或相当职称以上专家推荐信；推荐信模板：专家通过申请服务系统在线填写并保存纸质原件"
       },
       "materials": {
         "status": "confirmed",
@@ -675,7 +675,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/360ad084-262e-44aa-ac79-00a161549a7c?yxsdm=026",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -700,7 +700,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：外校本科直博申请人需2封相关学科副教授或相当职称以上专家推荐信；清华本科推免生免交。；推荐信模板：专家通过申请服务系统在线填写并保存纸质原件；未提供独立下载模板。"
+        "summary": "推荐信数量：外校本科直博申请人需2封相关学科副教授或相当职称以上专家推荐信；推荐信模板：专家通过申请服务系统在线填写并保存纸质原件"
       },
       "materials": {
         "status": "confirmed",
@@ -721,7 +721,7 @@
       "deadlineEpochMs": 1785384000000,
       "website": "https://radio.seu.edu.cn/2026/0704/c19195a575536/pagem.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:34+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -746,11 +746,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：硕士0封；直博2封；推荐信模板：直博使用系统生成的专家推荐信模板"
+        "summary": "推荐信数量：硕士0封；推荐信模板：直博使用系统生成的专家推荐信模板"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知；材料清单：申请表、身份证、学籍在线验证报告、盖章成绩单、外语、学术、获奖及实践证明、一页带照片简历；直博另交2封推荐信及导师同意材料"
+        "summary": "材料复杂度：未知；材料清单：申请表、身份证、学籍在线验证报告、盖章成绩单、外语、学术、获奖及实践证明、一页带照片简历"
       }
     },
     {
@@ -767,7 +767,7 @@
       "deadlineEpochMs": 1785402000000,
       "website": "https://www.qltrans.sdu.edu.cn/info/1022/5611.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:09:20+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -776,7 +776,7 @@
         }
       ],
       "eventArrangement": {
-        "mode": "online",
+        "mode": "unknown",
         "time": {
           "status": "confirmed",
           "summary": "2026年8月上旬，具体安排另行通知"
@@ -792,11 +792,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：可读官方简章正文未列推荐信要求或模板；报名系统内要求尚需申请人登录后核对，不将未公开内容写成无要求。"
+        "summary": "推荐信数量：可读官方简章正文未列推荐信要求或模板"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：中；材料清单：山东大学研究生招生服务平台在线报名；报名系统要求的申请材料（公开正文未逐项公布）"
+        "summary": "材料复杂度：中；材料清单：山东大学研究生招生服务平台在线报名"
       }
     },
     {
@@ -813,7 +813,7 @@
       "deadlineEpochMs": 1785405600000,
       "website": "https://www.afeu.edu.cn/info/1057/11453.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:17:48+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -842,7 +842,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：很高；材料清单：学生证和有效居民身份证原件及复印件；学籍认证报告；盖章本科成绩单；2027年招收推荐免试入伍攻读硕士研究生申请表；科研成果、获奖、英语等证明（如有）；一寸彩色免冠照片2张；体格检查和政治考核"
+        "summary": "材料复杂度：很高；材料清单：学生证和有效居民身份证原件及复印件"
       }
     },
     {
@@ -859,7 +859,7 @@
       "deadlineEpochMs": 1785427199000,
       "website": "https://env.ustc.edu.cn/2026/0703/c9571a746160/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:50+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -888,7 +888,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：中；材料清单：前两年半成绩单及总成绩排名证明，均需教务部门或院系盖章；可提交获奖证书、英语水平证明、学术论文等能力材料。"
+        "summary": "材料复杂度：中；材料清单：前两年半成绩单及总成绩排名证明，均需教务部门或院系盖章"
       }
     },
     {
@@ -905,7 +905,7 @@
       "deadlineEpochMs": 1785427199000,
       "website": "https://hf.cas.cn/sbpy/yjsc/zs/zs_zsxc/zsxc_dxsxly/202607/t20260702_8237108.html",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:17:48+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -934,53 +934,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：中；材料清单：前两年半盖章成绩单；盖章总成绩排名证明；获奖证书复印件（如有）；英语水平证明（如有）；学术论文等能力证明（如有）"
-      }
-    },
-    {
-      "projectId": "2027|天津大学|国际工程师学院|推免预报名",
-      "feedId": "camp2027",
-      "name": "天津大学",
-      "institute": "国际工程师学院",
-      "project": "国际工程师学院2027年推免预报名",
-      "eventType": "推免预报名",
-      "description": "国际工程师学院2027年推免预报名",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-07-30T23:59:59+08:00",
-      "deadlineOriginal": "校级系统拟于2026年7月7日12:00至9月20日开放；国际工程师学院集中审核节点为7月31日、8月25日、9月15日，学院官微正文当前无法读取；机器截止按首轮审核前一日2026年7月30日Asia/Shanghai 23:59:59处理。",
-      "deadlineEpochMs": 1785427199000,
-      "website": "https://yzb.tju.edu.cn/xwzx/tkss_xw/202607/t20260702_324675.htm",
-      "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://yzb.tju.edu.cn/xwzx/tkss_xw/202607/t20260702_324675.htm"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "confirmed",
-          "summary": "分批审核与后续考核安排由学院另行通知。"
-        },
-        "formatLocation": {
-          "status": "not-published",
-          "summary": "未公布"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：校级正文未提出统一推荐信要求；学院官微正文不可读，学院附加要求待核。；推荐信模板：校级正文未提供统一模板；学院官微正文不可读，模板状态待核。"
-      },
-      "materials": {
-        "status": "unverified",
-        "summary": "待官方公布"
+        "summary": "材料复杂度：中；材料清单：前两年半盖章成绩单"
       }
     },
     {
@@ -997,7 +951,7 @@
       "deadlineEpochMs": 1785470400000,
       "website": "https://automation.seu.edu.cn/2026/0707/c24460a575743/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:34+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1022,11 +976,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：硕士0封；直博2封；推荐信模板：直博使用系统生成的专家推荐信模板"
+        "summary": "推荐信数量：硕士0封；推荐信模板：直博使用系统生成的专家推荐信模板"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知；材料清单：申请表、身份证、学籍在线验证报告、盖章成绩单、外语、学术、获奖及实践证明；直博另交2封推荐信"
+        "summary": "材料复杂度：未知；材料清单：申请表、身份证、学籍在线验证报告、盖章成绩单、外语、学术、获奖及实践证明"
       }
     },
     {
@@ -1043,7 +997,7 @@
       "deadlineEpochMs": 1785470400000,
       "website": "https://ic.seu.edu.cn/2026/0708/c62523a576138/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:34+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1068,11 +1022,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：硕士0封；直博2封；推荐信模板：直博使用系统生成的专家推荐信模板"
+        "summary": "推荐信数量：硕士0封；推荐信模板：直博使用系统生成的专家推荐信模板"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知；材料清单：申请表、身份证、学籍在线验证报告、盖章成绩单、外语、学术、获奖及实践证明，一页A4简历；直博另交2封推荐信及导师同意材料"
+        "summary": "材料复杂度：未知；材料清单：申请表、身份证、学籍在线验证报告、盖章成绩单、外语、学术、获奖及实践证明，一页A4简历"
       }
     },
     {
@@ -1089,7 +1043,7 @@
       "deadlineEpochMs": 1785506400000,
       "website": "https://yz.scu.edu.cn/xly/register",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:13:55+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1118,7 +1072,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：medium；材料清单：2MB以内JPG或PNG照片；个人身份与联系方式；本科院校、专业、GPA与排名；外语成绩；校级及以上获奖；科研/论文情况；社会活动经历；家庭联系人信息；学院后续要求的上传材料"
+        "summary": "材料复杂度：medium；材料清单：2MB以内JPG或PNG照片"
       }
     },
     {
@@ -1135,7 +1089,7 @@
       "deadlineEpochMs": 1785513540000,
       "website": "https://grs.um.edu.mo/index.php/prospective-students/doctoral-degrees-programmes/",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:11:29+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1181,7 +1135,7 @@
       "deadlineEpochMs": 1785513599000,
       "website": "https://sist.shanghaitech.edu.cn/2026/0715/c2863a1125416/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:17:48+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1190,7 +1144,7 @@
         }
       ],
       "eventArrangement": {
-        "mode": "offline",
+        "mode": "unknown",
         "time": {
           "status": "not-published",
           "summary": "未公布"
@@ -1210,7 +1164,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：中高；材料清单：身份证和学生证；英文简历与中文简历；英文个人陈述与中文个人陈述；盖章本科成绩单；CET6或TOEFL或IELTS成绩单；可选获奖、论文和科研成果"
+        "summary": "材料复杂度：中高；材料清单：身份证和学生证"
       }
     },
     {
@@ -1227,7 +1181,7 @@
       "deadlineEpochMs": 1785513599000,
       "website": "https://www.lamda.nju.edu.cn/recruit-2027/recruit-2027.html",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:34+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1273,7 +1227,7 @@
       "deadlineEpochMs": 1785556800000,
       "website": "https://stat.seu.edu.cn/2026/0708/c60842a575966/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:34+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1298,11 +1252,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：硕士0封；直博2封；推荐信模板：直博使用系统生成的专家推荐信模板"
+        "summary": "推荐信数量：硕士0封；推荐信模板：直博使用系统生成的专家推荐信模板"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知；材料清单：申请表、身份证、学籍在线验证报告、盖章成绩单、外语、学术、获奖及实践证明；直博另交2封推荐信"
+        "summary": "材料复杂度：未知；材料清单：申请表、身份证、学籍在线验证报告、盖章成绩单、外语、学术、获奖及实践证明"
       }
     },
     {
@@ -1319,7 +1273,7 @@
       "deadlineEpochMs": 1785592800000,
       "website": "https://tjjt.tongji.edu.cn/info/1561/11990.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:10:27+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1330,11 +1284,11 @@
       "eventArrangement": {
         "mode": "unknown",
         "time": {
-          "status": "unverified",
+          "status": "confirmed",
           "summary": "待官方公布"
         },
         "formatLocation": {
-          "status": "unverified",
+          "status": "confirmed",
           "summary": "待官方公布"
         }
       },
@@ -1343,12 +1297,12 @@
         "summary": "未公布"
       },
       "recommendation": {
-        "status": "unverified",
-        "summary": "待官方公布"
+        "status": "not-published",
+        "summary": "未公布"
       },
       "materials": {
-        "status": "unverified",
-        "summary": "待官方公布"
+        "status": "not-published",
+        "summary": "未公布"
       }
     },
     {
@@ -1365,7 +1319,7 @@
       "deadlineEpochMs": 1785592800000,
       "website": "https://umi.tongji.edu.cn/info/1070/2237.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:10:27+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1390,11 +1344,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：硕士与直博均需2份拟攻读学科相关的副教授及以上专家推荐信；直博在系统提交，硕士按附件3模板且可用电子签名。；推荐信模板：官方附件3提供专家推荐信模板。"
+        "summary": "推荐信数量：硕士与直博均需2份拟攻读学科相关的副教授及以上专家推荐信；推荐信模板：官方附件3提供专家推荐信模板。"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：高：系统与问卷星双轨、盖章材料、单PDF格式、2份推荐信。；材料清单：系统申请表、盖章成绩单与排名证明、身份证、学籍验证报告、外语证明、论文/竞赛/专利等成果、2份专家推荐信；所有材料按附件格式合并为单一PDF，并另填问卷星。"
+        "summary": "材料复杂度：高：系统与问卷星双轨、盖章材料、单PDF格式、2份推荐信。；材料清单：系统申请表、盖章成绩单与排名证明、身份证、学籍验证报告、外语证明、论文/竞赛/专利等成果、2份专家推荐信"
       }
     },
     {
@@ -1411,7 +1365,7 @@
       "deadlineEpochMs": 1786161600000,
       "website": "https://smjgs.seu.edu.cn/2026/0710/c8471a576384/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:34+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1436,11 +1390,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：计算机技术/人工智能硕士0封；网页未要求推荐信；推荐信模板：无"
+        "summary": "推荐信数量：计算机技术/人工智能硕士0封；推荐信模板：无"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知；材料清单：申请表、身份证、学籍在线验证报告、盖章成绩单、外语证明、学术成果、获奖及社会实践材料；特殊学术专长另附证明"
+        "summary": "材料复杂度：未知；材料清单：申请表、身份证、学籍在线验证报告、盖章成绩单、外语证明、学术成果、获奖及社会实践材料"
       }
     },
     {
@@ -1457,7 +1411,7 @@
       "deadlineEpochMs": 1786334400000,
       "website": "https://cyber.seu.edu.cn/2026/0709/c18210a576205/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:34+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1482,57 +1436,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：硕士0封；直博2封；推荐信模板：直博使用系统生成的专家推荐信模板"
+        "summary": "推荐信数量：硕士0封；推荐信模板：直博使用系统生成的专家推荐信模板"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知；材料清单：申请表、身份证、学籍在线验证报告、盖章成绩单、外语、学术、获奖及实践证明；直博另交2封推荐信及导师同意材料"
-      }
-    },
-    {
-      "projectId": "2027|东南大学|计算机科学与工程学院/软件学院|接收推荐免试研究生报名",
-      "feedId": "camp2027",
-      "name": "东南大学",
-      "institute": "计算机科学与工程学院/软件学院",
-      "project": "接收推荐免试研究生报名",
-      "eventType": "推免预报名",
-      "description": "接收推荐免试研究生报名",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-08-10T12:00:00+08:00",
-      "deadlineOriginal": "2026年7月10日16:00—8月10日12:00",
-      "deadlineEpochMs": 1786334400000,
-      "website": "https://cse.seu.edu.cn/2026/0710/c49342a576431/page.htm",
-      "tags": [],
-      "verifiedAt": "2026-07-22T09:12:34+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://cse.seu.edu.cn/2026/0710/c49342a576431/page.htm"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "confirmed",
-          "summary": "入选后的具体工作安排由学院另行通过系统发布"
-        },
-        "formatLocation": {
-          "status": "not-published",
-          "summary": "未公布"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：硕士0封；直博2封；推荐信模板：直博使用系统生成的专家推荐信模板"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：未知；材料清单：申请表、身份证、学籍在线验证报告、盖章成绩单、外语、学术、获奖及实践证明；特殊学术专长附证明；直博另交2封推荐信及导师同意材料"
+        "summary": "材料复杂度：未知；材料清单：申请表、身份证、学籍在线验证报告、盖章成绩单、外语、学术、获奖及实践证明"
       }
     },
     {
@@ -1549,7 +1457,7 @@
       "deadlineEpochMs": 1786334400000,
       "website": "https://cs.seu.edu.cn/2026/0710/c49342a576440/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:34+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1595,7 +1503,7 @@
       "deadlineEpochMs": 1786352400000,
       "website": "https://gsao.fudan.edu.cn/fb/0b/c15014a785163/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:10:27+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1620,11 +1528,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：直博需填写2名推荐人并由推荐人在线提交；硕士如院系无特殊要求无需推荐信。；推荐信模板：直博按报名系统在线提交；校级通知未提供独立纸质模板。"
+        "summary": "推荐信数量：直博需填写2名推荐人并由推荐人在线提交；推荐信模板：直博按报名系统在线提交"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：高：校级系统、签字材料和院系补充要求并行；直博另有2名推荐人在线提交。；材料清单：证件照、盖章成绩单、外语证明、获奖与科研成果、手写签名诚信承诺书、约1000字个人自述、院系要求的其他材料。"
+        "summary": "材料复杂度：高：校级系统、签字材料和院系补充要求并行；材料清单：证件照、盖章成绩单、外语证明、获奖与科研成果、手写签名诚信承诺书、约1000字个人自述、院系要求的其他材料。"
       }
     },
     {
@@ -1641,7 +1549,7 @@
       "deadlineEpochMs": 1786352400000,
       "website": "https://gsao.fudan.edu.cn/fb/0b/c15014a785163/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:10:27+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1665,8 +1573,8 @@
         "summary": "未公布"
       },
       "recommendation": {
-        "status": "unverified",
-        "summary": "待官方公布"
+        "status": "not-published",
+        "summary": "未公布"
       },
       "materials": {
         "status": "confirmed",
@@ -1687,7 +1595,7 @@
       "deadlineEpochMs": 1786550340000,
       "website": "https://cse.sysu.edu.cn/article/3587",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:11:29+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1733,7 +1641,7 @@
       "deadlineEpochMs": 1786550399000,
       "website": "https://sxy.nuist.edu.cn/2026/0717/c6814a300221/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:34+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1742,7 +1650,7 @@
         }
       ],
       "eventArrangement": {
-        "mode": "offline",
+        "mode": "unknown",
         "time": {
           "status": "confirmed",
           "summary": "2026年8月19日至8月27日"
@@ -1754,7 +1662,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：自理；餐食：自理；交通：自理；报销：未见报销安排；食宿、交通自理"
+        "summary": "住宿：自理；餐食：自理；交通：自理；报销：未见报销安排"
       },
       "recommendation": {
         "status": "confirmed",
@@ -1779,7 +1687,7 @@
       "deadlineEpochMs": 1786680000000,
       "website": "https://electronic.seu.edu.cn/2026/0708/c11484a575952/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:34+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1804,11 +1712,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：硕士0封；仅本科直博2封（副教授及以上或相当职称，拟报导师除外）；推荐信模板：直博使用系统生成的专家推荐信模板；硕士无"
+        "summary": "推荐信数量：硕士0封；推荐信模板：直博使用系统生成的专家推荐信模板"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知；材料清单：申请表、身份证、学籍在线验证报告、盖章成绩单、外语证明、学术成果、获奖及社会实践材料；直博另交2封专家推荐信"
+        "summary": "材料复杂度：未知；材料清单：申请表、身份证、学籍在线验证报告、盖章成绩单、外语证明、学术成果、获奖及社会实践材料"
       }
     },
     {
@@ -1825,7 +1733,7 @@
       "deadlineEpochMs": 1786694400000,
       "website": "https://stat-ds.sustech.edu.cn/notice/437",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:11:29+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1846,7 +1754,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：异地学校营员提供预推免期间免费住宿；深圳高校考生原则上不安排住宿；餐食：异地学校营员提供免费食宿；深圳高校考生原则上提供免费用餐；交通：异地考生自行往返深圳；报销：最终录取考生及能提供贫困生认定的困难外地考生可报销，最高不超过高铁二等座票价"
+        "summary": "住宿：异地学校营员提供预推免期间免费住宿；餐食：异地学校营员提供免费食宿；交通：异地考生自行往返深圳；报销：最终录取考生及能提供贫困生认定的困难外地考生可报销，最高不超过高铁二等座票价"
       },
       "recommendation": {
         "status": "not-published",
@@ -1871,7 +1779,7 @@
       "deadlineEpochMs": 1786766400000,
       "website": "https://ins.seu.edu.cn/2026/0708/c26759a576105/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:34+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1896,57 +1804,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：硕士0封；直博2封；推荐信模板：直博使用系统生成的专家推荐信模板"
+        "summary": "推荐信数量：硕士0封；推荐信模板：直博使用系统生成的专家推荐信模板"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知；材料清单：标准申请材料及学院个人简历表；直博另交2封专家推荐信"
-      }
-    },
-    {
-      "projectId": "2027|香港浸会大学|计算机科学系|PhD Early Admission",
-      "feedId": "camp2027",
-      "name": "香港浸会大学",
-      "institute": "计算机科学系",
-      "project": "计算机科学系2027 PhD Early Admission Scheme",
-      "eventType": "博士早招",
-      "description": "计算机科学系2027 PhD Early Admission Scheme",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-08-15T23:59:00+08:00",
-      "deadlineOriginal": "Application Deadline: August 15, 2026",
-      "deadlineEpochMs": 1786809540000,
-      "website": "https://www.comp.hkbu.edu.hk/phd-eas/2026/",
-      "tags": [],
-      "verifiedAt": "2026-07-22T09:11:29+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://www.comp.hkbu.edu.hk/phd-eas/2026/"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "not-published",
-          "summary": "未公布"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：中；材料清单：正文只确认申请表与支持材料，具体上传项不得由旧值或摘要补齐。"
+        "summary": "材料复杂度：未知；材料清单：标准申请材料及学院个人简历表"
       }
     },
     {
@@ -1963,7 +1825,7 @@
       "deadlineEpochMs": 1786809540000,
       "website": "https://isd.hkust.edu.hk/academics/early-admission/",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:11:29+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2009,7 +1871,7 @@
       "deadlineEpochMs": 1786809540000,
       "website": "https://cse.hkust.edu.hk/pg/admissions/recruiting/",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:11:29+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2055,7 +1917,7 @@
       "deadlineEpochMs": 1787238000000,
       "website": "https://riis.sufe.edu.cn/jxChinese/14/36/c10362a267318/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:17:48+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2084,7 +1946,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：系统申请表；个人陈述；2封专家推荐信；前六学期盖章成绩单；盖章排名证明；英语证明；身份证；学生证；学籍在线验证报告；诚信承诺书；其他证明材料"
+        "summary": "材料复杂度：高；材料清单：系统申请表"
       }
     },
     {
@@ -2101,7 +1963,7 @@
       "deadlineEpochMs": 1787241599000,
       "website": "https://gs.sufe.edu.cn/Home/Detail/8021",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:17:48+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2130,7 +1992,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：系统申请表；个人陈述；2封专家推荐信；前六学期盖章成绩单；盖章排名证明；外语成绩证明；身份证；学生证；学籍在线验证报告；个人诚信承诺书；获奖和科研成果；学院要求的其他材料"
+        "summary": "材料复杂度：高；材料清单：系统申请表"
       }
     },
     {
@@ -2147,7 +2009,7 @@
       "deadlineEpochMs": 1787241599000,
       "website": "https://ssds.sufe.edu.cn/13/aa/c18504a267178/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:17:48+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2176,7 +2038,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：申请表；个人陈述；2封专家推荐信；前六学期盖章成绩单；盖章排名证明；英语成绩证明；身份证；学生证；学籍在线验证报告；个人诚信承诺书；其他证明材料"
+        "summary": "材料复杂度：高；材料清单：申请表"
       }
     },
     {
@@ -2193,7 +2055,7 @@
       "deadlineEpochMs": 1787241599000,
       "website": "https://gs.sufe.edu.cn/Home/Detail/8021",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:17:48+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2218,57 +2080,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：需2位副教授（含）以上老师分别推荐；在报名系统维护推荐人后下载模板，专家填写签字后上传彩色扫描件。；推荐信模板：https://yz.sufe.edu.cn/ks/"
+        "summary": "推荐信数量：需2位副教授（含）以上老师分别推荐；推荐信模板：https://yz.sufe.edu.cn/ks/"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：系统申请表；个人陈述；2封专家推荐信；前六学期盖章成绩单；前六学期盖章排名证明；外语成绩证明；身份证；学生证；学籍在线验证报告；个人诚信承诺书；获奖和科研成果；学院要求的其他材料"
-      }
-    },
-    {
-      "projectId": "2027|天津大学|电气自动化与信息工程学院|推免预报名",
-      "feedId": "camp2027",
-      "name": "天津大学",
-      "institute": "电气自动化与信息工程学院",
-      "project": "电气自动化与信息工程学院推免预报名",
-      "eventType": "推免预报名",
-      "description": "电气自动化与信息工程学院推免预报名",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-08-20T23:59:59+08:00",
-      "deadlineOriginal": "校级系统拟于2026年7月7日12:00至9月20日开放；学院集中审核节点为8月21日、9月11日，官方要求在审核之前申报但未写具体时刻；机器截止按首轮审核前一日2026年8月20日Asia/Shanghai 23:59:59处理。",
-      "deadlineEpochMs": 1787241599000,
-      "website": "https://yzb.tju.edu.cn/xwzx/tkss_xw/202607/t20260702_324675.htm",
-      "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://yzb.tju.edu.cn/xwzx/tkss_xw/202607/t20260702_324675.htm"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "confirmed",
-          "summary": "学院分批考核，具体时间及安排由学院自行组织。"
-        },
-        "formatLocation": {
-          "status": "not-published",
-          "summary": "未公布"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信模板：校级官方通知未提供推荐信模板，学院附加模板待核。"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：未知"
+        "summary": "材料复杂度：高；材料清单：系统申请表"
       }
     },
     {
@@ -2285,7 +2101,7 @@
       "deadlineEpochMs": 1787302800000,
       "website": "https://www.sice.uestc.edu.cn/info/1142/16511.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:13:55+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2294,7 +2110,7 @@
         }
       ],
       "eventArrangement": {
-        "mode": "offline",
+        "mode": "unknown",
         "time": {
           "status": "confirmed",
           "summary": "拟分两批组织，最后一批暂定2026年8月下旬，具体时间由QQ群或学院通知。"
@@ -2310,11 +2126,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：材料清单未要求专家推荐信；推荐信模板：未提供推荐信模板；提供诚信承诺书附件"
+        "summary": "推荐信数量：材料清单未要求专家推荐信；推荐信模板：未提供推荐信模板"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：high；材料清单：系统生成并签字、加盖学院公章的申请表；诚信承诺书；前五或六学期成绩单（盖章）；个人简历；身份证与学籍在线验证报告；论文、奖项、资格证书、英语成绩等证明；按顺序合并为姓名-学校PDF并上传系统、发送意向导师"
+        "summary": "材料复杂度：high；材料清单：系统生成并签字、加盖学院公章的申请表"
       }
     },
     {
@@ -2331,7 +2147,7 @@
       "deadlineEpochMs": 1787475600000,
       "website": "https://srias.tongji.edu.cn/cb/69/c17827a379753/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:10:27+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2356,11 +2172,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：直博须提交2封副高级及以上专家亲笔签名推荐信并按系统步骤在线签署验证；硕士未统一要求推荐信。；推荐信模板：直博采用系统在线推荐流程；正文未提供独立模板。"
+        "summary": "推荐信数量：直博须提交2封副高级及以上专家亲笔签名推荐信并按系统步骤在线签署验证；推荐信模板：直博采用系统在线推荐流程"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：高：系统、邮件、信息采集多通道并行，且有盖章、合并PDF与直博在线推荐要求。；材料清单：1-2页简历、教务处鲜章成绩单、排名证明、外语证明、身份证、学籍验证报告、科研成果与获奖等；直博另需2封推荐信；系统上传后还需合并PDF发邮件，并填写中心报名表。"
+        "summary": "材料复杂度：高：系统、邮件、信息采集多通道并行，且有盖章、合并PDF与直博在线推荐要求。；材料清单：1-2页简历、教务处鲜章成绩单、排名证明、外语证明、身份证、学籍验证报告、科研成果与获奖等"
       }
     },
     {
@@ -2377,7 +2193,7 @@
       "deadlineEpochMs": 1787529600000,
       "website": "https://sph.jlu.edu.cn/info/1146/9760.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:27+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2386,7 +2202,7 @@
         }
       ],
       "eventArrangement": {
-        "mode": "online",
+        "mode": "unknown",
         "time": {
           "status": "not-published",
           "summary": "未公布"
@@ -2406,7 +2222,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：中；材料清单：报名系统生成的报名表、加盖教务部门公章的成绩单、外语水平证明、获奖证明和发表论文材料；按顺序合并为一个PDF，完成网报后按规定文件名和邮件主题发送。"
+        "summary": "材料复杂度：中；材料清单：报名系统生成的报名表、加盖教务部门公章的成绩单、外语水平证明、获奖证明和发表论文材料"
       }
     },
     {
@@ -2423,7 +2239,7 @@
       "deadlineEpochMs": 1787673540000,
       "website": "https://scst.sysu.edu.cn/article/502",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:11:29+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2456,52 +2272,6 @@
       }
     },
     {
-      "projectId": "2027|天津大学|计算机/软件/网络安全/人工智能学院|推免预报名",
-      "feedId": "camp2027",
-      "name": "天津大学",
-      "institute": "计算机/软件/网络安全/人工智能学院",
-      "project": "计算机、软件、网络安全、人工智能学院推免预报名",
-      "eventType": "校级推免预报名",
-      "description": "计算机、软件、网络安全、人工智能学院推免预报名",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-08-25T23:59:59+08:00",
-      "deadlineOriginal": "校级系统拟于2026年7月7日12:00至9月20日开放；网络安全学院首轮审核8月26日，计算机学院、软件学院、人工智能学院首轮审核8月27日，官方要求审核前申报但未写时分；机器截止按最早审核前一日2026年8月25日Asia/Shanghai 23:59:59处理。",
-      "deadlineEpochMs": 1787673599000,
-      "website": "https://yzb.tju.edu.cn/xwzx/tkss_xw/202607/t20260702_324675.htm",
-      "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://yzb.tju.edu.cn/xwzx/tkss_xw/202607/t20260702_324675.htm"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "confirmed",
-          "summary": "各学院在8月至9月分批考核，具体安排由学院通知。"
-        },
-        "formatLocation": {
-          "status": "not-published",
-          "summary": "未公布"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信模板：校级官方通知未提供统一推荐信模板，各学院模板待核。"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：未知；材料清单：校级系统填报并上传电子证明材料；各学院附加材料要求待通知。"
-      }
-    },
-    {
       "projectId": "2027|广西大学|计算机与电子信息学院|推免预报名",
       "feedId": "camp2027",
       "name": "广西大学",
@@ -2515,7 +2285,7 @@
       "deadlineEpochMs": 1788105599000,
       "website": "https://yjsc.gxu.edu.cn/info/1021/4680.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:13:55+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2543,8 +2313,8 @@
         "summary": "推荐信数量：校级通知未要求；推荐信模板：未提供"
       },
       "materials": {
-        "status": "unverified",
-        "summary": "待官方公布"
+        "status": "not-published",
+        "summary": "未公布"
       }
     },
     {
@@ -2561,7 +2331,7 @@
       "deadlineEpochMs": 1788170400000,
       "website": "https://yt.cau.edu.cn/art/2026/7/14/art_43337_1122495.html",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2570,7 +2340,7 @@
         }
       ],
       "eventArrangement": {
-        "mode": "offline",
+        "mode": "unknown",
         "time": {
           "status": "confirmed",
           "summary": "各招生院系审核后通知复试，具体安排以学院通知为准。"
@@ -2581,108 +2351,16 @@
         }
       },
       "logistics": {
-        "status": "unverified",
-        "summary": "待官方公布"
+        "status": "not-published",
+        "summary": "未公布"
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：校级报名通知未要求专家推荐信；学院可另行追加材料。；推荐信模板：校级通知未提供推荐信模板，学院附加要求待后续实施细则。"
+        "summary": "推荐信数量：校级报名通知未要求专家推荐信；推荐信模板：校级通知未提供推荐信模板，学院附加要求待后续实施细则。"
       },
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：未知；材料清单：系统生成的推免生报名志愿填报信息表、加盖教务部门公章的最新成绩单、外语水平证明、可选科研成果与获奖证明、学院要求的其他材料。"
-      }
-    },
-    {
-      "projectId": "2027|南方科技大学|计算机科学与工程系|国优计划推免预报名",
-      "feedId": "camp2027",
-      "name": "南方科技大学",
-      "institute": "计算机科学与工程系",
-      "project": "计算机科学与工程系2027年国优计划推免预报名",
-      "eventType": "国优计划推免预报名",
-      "description": "计算机科学与工程系2027年国优计划推免预报名",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-08-31T23:59:00+08:00",
-      "deadlineOriginal": "2026年7月15日至8月31日，我系开放在线报名通道",
-      "deadlineEpochMs": 1788191940000,
-      "website": "https://cse.sustech.edu.cn/notices/3776.html",
-      "tags": [],
-      "verifiedAt": "2026-07-22T09:11:29+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://cse.sustech.edu.cn/notices/3776.html"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "not-published",
-          "summary": "未公布"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信模板：https://cse.sustech.edu.cn/uploads/file/20260710/1783655249395910.doc"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：中高；材料清单：附件一明确十类材料及合并PDF要求。"
-      }
-    },
-    {
-      "projectId": "2027|南方科技大学|计算机科学与工程系|推免预报名普通项目",
-      "feedId": "camp2027",
-      "name": "南方科技大学",
-      "institute": "计算机科学与工程系",
-      "project": "计算机科学与工程系2027年推免预报名普通项目",
-      "eventType": "推免预报名",
-      "description": "计算机科学与工程系2027年推免预报名普通项目",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-08-31T23:59:00+08:00",
-      "deadlineOriginal": "2026年7月15日至8月31日，我系开放在线报名通道",
-      "deadlineEpochMs": 1788191940000,
-      "website": "https://cse.sustech.edu.cn/graduate/3775.html",
-      "tags": [],
-      "verifiedAt": "2026-07-22T09:11:29+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://cse.sustech.edu.cn/graduate/3775.html"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "not-published",
-          "summary": "未公布"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信模板：https://cse.sustech.edu.cn/uploads/file/20260710/1783655647728973.doc"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：中高；材料清单：附件一明确材料清单、合并PDF和补交盖章材料规则。"
       }
     },
     {
@@ -2699,7 +2377,7 @@
       "deadlineEpochMs": 1788191940000,
       "website": "https://www.cs.hku.hk/programmes/research-based/mphil-phd-admission",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:11:29+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2745,7 +2423,7 @@
       "deadlineEpochMs": 1788191999000,
       "website": "https://ici.xmu.edu.cn/info/1331/12195.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:50+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2770,11 +2448,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：须提交两位副教授及以上专家的中、英文推荐信；正文未提供独立推荐信模板链接。"
+        "summary": "推荐信数量：须提交两位副教授及以上专家的中、英文推荐信"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：系统生成申请表；两封中英文专家推荐信；中英文成绩单及排名证明；英语证明；中英文科研/获奖材料；身份证、学生证；中英文报考陈述；3至5项双语设计作品组成、不超过30页的作品集。1至9项按顺序合并为不超过15MB的PDF。"
+        "summary": "材料复杂度：高；材料清单：系统生成申请表"
       }
     },
     {
@@ -2791,7 +2469,7 @@
       "deadlineEpochMs": 1788191999000,
       "website": "https://it.swufe.edu.cn/info/1166/22608.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:17:48+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2800,7 +2478,7 @@
         }
       ],
       "eventArrangement": {
-        "mode": "online",
+        "mode": "unknown",
         "time": {
           "status": "not-published",
           "summary": "未公布"
@@ -2837,7 +2515,7 @@
       "deadlineEpochMs": 1788742800000,
       "website": "https://gs.dlut.edu.cn/info/1173/51492.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:27+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2883,7 +2561,7 @@
       "deadlineEpochMs": 1789142340000,
       "website": "https://www.polyu.edu.hk/study/pg/rpg/20262/dsai",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:11:29+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2929,7 +2607,7 @@
       "deadlineEpochMs": 1789228799000,
       "website": "https://cc.nankai.edu.cn/2026/0709/c13297a600172/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2958,7 +2636,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知；材料清单：个人简历及最高英语水平证明、系统打印申请表、加盖校级公章的前五学期成绩单、加盖校级公章的专业排名证明、获奖证书及代表性论文首页；网上报名后还须发送至相关导师或实验室邮箱。"
+        "summary": "材料复杂度：未知；材料清单：个人简历及最高英语水平证明、系统打印申请表、加盖校级公章的前五学期成绩单、加盖校级公章的专业排名证明、获奖证书及代表性论文首页"
       }
     },
     {
@@ -2975,7 +2653,7 @@
       "deadlineEpochMs": 1789315200000,
       "website": "https://yz.shmtu.edu.cn/2026/0707/c8927a294832/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:10:27+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3004,7 +2682,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知：需登录预报名系统查看完整字段与附件要求。；材料清单：按推免生预报名系统要求填写申请信息；校级正文未逐项列出上传附件。"
+        "summary": "材料复杂度：未知：需登录预报名系统查看完整字段与附件要求。；材料清单：按推免生预报名系统要求填写申请信息"
       }
     },
     {
@@ -3021,7 +2699,7 @@
       "deadlineEpochMs": 1789444800000,
       "website": "https://gs.dlut.edu.cn/info/1173/51492.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:27+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3067,7 +2745,7 @@
       "deadlineEpochMs": 1789487940000,
       "website": "https://sme.xidian.edu.cn/html/tzgg/jl/2026/0720/3660.html",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:20:00+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3096,7 +2774,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：中；材料清单：本科阶段成绩单原件扫描件（教务部门盖章）；全国英语四、六级成绩单或TOEFL/GRE/GMAT等英语证明；获奖证书、已发表或已录用论文、出版物或原创成果等能力证明（可选）"
+        "summary": "材料复杂度：中；材料清单：本科阶段成绩单原件扫描件（教务部门盖章）"
       }
     },
     {
@@ -3113,7 +2791,7 @@
       "deadlineEpochMs": 1789487999000,
       "website": "https://www.graduate.nuaa.edu.cn/2026/0715/c2145a405484/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:34+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3138,7 +2816,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：0封；校级通知未要求专家推荐信；推荐信模板：无"
+        "summary": "推荐信数量：0封；推荐信模板：无"
       },
       "materials": {
         "status": "confirmed",
@@ -3159,7 +2837,7 @@
       "deadlineEpochMs": 1789833600000,
       "website": "https://yz.tongji.edu.cn/info/1010/4219.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:10:27+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3184,11 +2862,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：申请直接攻博另须提交2封专家推荐信并在系统中完成；硕士按学院要求。；推荐信模板：直博按系统要求在线填写；校级通知未提供独立纸质模板。"
+        "summary": "推荐信数量：申请直接攻博另须提交2封专家推荐信并在系统中完成；推荐信模板：直博按系统要求在线填写"
       },
       "materials": {
-        "status": "unverified",
-        "summary": "待官方公布"
+        "status": "not-published",
+        "summary": "未公布"
       }
     },
     {
@@ -3205,7 +2883,7 @@
       "deadlineEpochMs": 1789876800000,
       "website": "https://zsgz.njau.edu.cn/info/1007/1734.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:34+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3230,7 +2908,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：硕士0封；校级通知未要求专家推荐信；推荐信模板：硕士使用官方《推荐免试硕士生申请表》；无专家推荐信模板要求"
+        "summary": "推荐信数量：硕士0封；推荐信模板：硕士使用官方《推荐免试硕士生申请表》"
       },
       "materials": {
         "status": "confirmed",
@@ -3251,7 +2929,7 @@
       "deadlineEpochMs": 1789919999000,
       "website": "https://imris.tju.edu.cn/info/1012/2352.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3272,7 +2950,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：仅对提前在院实习或入职开展课题研究的拟报博士人员写明提供工资津贴及住宿支持；不等同于普通推免考核住宿。"
+        "summary": "住宿：仅对提前在院实习或入职开展课题研究的拟报博士人员写明提供工资津贴及住宿支持"
       },
       "recommendation": {
         "status": "confirmed",
@@ -3297,7 +2975,7 @@
       "deadlineEpochMs": 1790762400000,
       "website": "https://yz.cqu.edu.cn/news/2026-06/2553.html",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:13:55+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3326,7 +3004,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：medium；材料清单：本科成绩单（加盖学校或院系公章）；外语水平证明；获奖证书、科研成果或其他能力证明（如有）；学院另行要求的材料"
+        "summary": "材料复杂度：medium；材料清单：本科成绩单（加盖学校或院系公章）"
       }
     },
     {
@@ -3343,7 +3021,7 @@
       "deadlineEpochMs": 1790783940000,
       "website": "https://www.polyu.edu.hk/study/pg/rpg/20262/eee",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:11:29+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3389,7 +3067,7 @@
       "deadlineEpochMs": 1790783940000,
       "website": "https://www.polyu.edu.hk/study/pg/rpg/20262/comp",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:11:29+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3435,7 +3113,7 @@
       "deadlineEpochMs": 1799855940000,
       "website": "https://www.polyu.edu.hk/study/pg/rpg/20263/dsai",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:11:29+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3464,53 +3142,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：五月入学页沿用同一项目材料契约；截止为13-Jan-2027。"
-      }
-    },
-    {
-      "projectId": "2027|香港理工大学|电机及电子工程学系|2027年5月入学PhD-MPhil",
-      "feedId": "camp2027",
-      "name": "香港理工大学",
-      "institute": "电机及电子工程学系",
-      "project": "电机及电子工程学系2027年5月入学PhD/MPhil",
-      "eventType": "研究型硕博招生",
-      "description": "电机及电子工程学系2027年5月入学PhD/MPhil",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2027-01-31T23:59:00+08:00",
-      "deadlineOriginal": "Application Deadline: 31-Jan-2027",
-      "deadlineEpochMs": 1801411140000,
-      "website": "https://www.polyu.edu.hk/study/pg/rpg/20263/eee",
-      "tags": [],
-      "verifiedAt": "2026-07-22T09:11:29+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://www.polyu.edu.hk/study/pg/rpg/20263/eee"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "not-published",
-          "summary": "未公布"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：需要推荐信 2 封；推荐信模板：https://www.polyu.edu.hk/study/pg/rpg/20263/eee"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：项目页四类支持文件均标为Compulsory。"
+        "summary": "材料复杂度：高；材料清单：五月入学页沿用同一项目材料契约"
       }
     },
     {
@@ -3527,7 +3159,7 @@
       "deadlineEpochMs": 1801411140000,
       "website": "https://www.polyu.edu.hk/study/pg/rpg/20263/comp",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:11:29+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3560,98 +3192,6 @@
       }
     },
     {
-      "projectId": "2027|香港科技大学（广州）|未来技术学院红鸟硕士班|申请审核制",
-      "feedId": "camp2027",
-      "name": "香港科技大学（广州）",
-      "institute": "未来技术学院红鸟硕士班",
-      "project": "未来技术学院红鸟硕士班2027/28申请审核制",
-      "eventType": "跨学科研究型硕士申请审核制",
-      "description": "未来技术学院红鸟硕士班2027/28申请审核制",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2027-03-01T23:59:00+08:00",
-      "deadlineOriginal": "Application opens: April 2, 2026; Application deadline: 23:59 March 1, 2027",
-      "deadlineEpochMs": 1803916740000,
-      "website": "https://cft.hkust-gz.edu.cn/admission/",
-      "tags": [],
-      "verifiedAt": "2026-07-22T09:11:29+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://cft.hkust-gz.edu.cn/admission/"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "not-published",
-          "summary": "未公布"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：官方明确不要求推荐信；推荐信模板：https://cft.hkust-gz.edu.cn/admission/"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：中；材料清单：项目页未逐项展开所有系统必填文件，因此仅记录明确项目要求。"
-      }
-    },
-    {
-      "projectId": "2027|上海人工智能实验室|联培博士项目|2027级启动轮",
-      "feedId": "camp2027",
-      "name": "上海人工智能实验室",
-      "institute": "联培博士项目",
-      "project": "2027级联合培养博士生项目",
-      "eventType": "联培博士招生启动",
-      "description": "2027级联合培养博士生项目",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "官网仅确认2027级联培博士招生工作现已启动，未公布统一截止日期。",
-      "deadlineEpochMs": null,
-      "website": "https://www.shlab.org.cn/news/5444256",
-      "tags": [],
-      "verifiedAt": "2026-07-22T09:17:48+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://www.shlab.org.cn/news/5444256"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "not-published",
-          "summary": "未公布"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：未知"
-      }
-    },
-    {
       "projectId": "2027|东南大学|PALM模式学习与挖掘实验室|实验室提前招生",
       "feedId": "camp2027",
       "name": "东南大学",
@@ -3665,7 +3205,7 @@
       "deadlineEpochMs": null,
       "website": "https://aiia.seu.edu.cn/palm/2026/0527/c68597a569220/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:34+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3694,7 +3234,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知；材料清单：通过PALM报名系统填写提交；公开页未列统一附件清单"
+        "summary": "材料复杂度：未知；材料清单：通过PALM报名系统填写提交"
       }
     },
     {
@@ -3711,7 +3251,7 @@
       "deadlineEpochMs": null,
       "website": "https://grs.cup.edu.cn/zssstzgg/91457.jhtml",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3736,11 +3276,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：仅直博生统一要求2名与本学科有关的教授或相当职称专家推荐信；推免硕士未见校级统一要求。；推荐信模板：校级通知未提供统一下载模板，材料按学院具体要求提交。"
+        "summary": "推荐信数量：仅直博生统一要求2名与本学科有关的教授或相当职称专家推荐信；推荐信模板：校级通知未提供统一下载模板，材料按学院具体要求提交。"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知；材料清单：身份证正反面、申请人自述、加盖教务处公章的历年成绩单、可选论文与学术成果、可选课外科技或社会实践证明、其他获奖或资格证明；直博生另需2封专家推荐信；学院可追加材料。"
+        "summary": "材料复杂度：未知；材料清单：身份证正反面、申请人自述、加盖教务处公章的历年成绩单、可选论文与学术成果、可选课外科技或社会实践证明、其他获奖或资格证明"
       }
     },
     {
@@ -3757,7 +3297,7 @@
       "deadlineEpochMs": null,
       "website": "https://sse.ustc.edu.cn/2026/0708/c19741a746681/pagem.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:50+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3778,7 +3318,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：学院为录取营员提供住宿并承担相关活动资助。；餐食：学院为录取营员提供餐食并承担相关活动资助。；交通：往返交通先自理；正式入学后按规定范围及标准报销。；报销：次年9月研究生入学后凭证报销苏州至学校或家庭所在地的火车硬座、硬卧或动车二等座等符合规定费用。"
+        "summary": "住宿：学院为录取营员提供住宿并承担相关活动资助。；餐食：学院为录取营员提供餐食并承担相关活动资助。；交通：往返交通先自理；报销：次年9月研究生入学后凭证报销苏州至学校或家庭所在地的火车硬座、硬卧或动车二等座等符合规定费用。"
       },
       "recommendation": {
         "status": "confirmed",
@@ -3786,53 +3326,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：中；材料清单：本人签字的报名登记表、身份证正反面、学生证或在读证明、盖章成绩单及排名证明、个人能力证明，按顺序汇总为一个PDF；报名阶段不邮寄，参加线下活动时提供原件及复印件。"
-      }
-    },
-    {
-      "projectId": "2027|中国科学院国家空间科学中心|推免预报名|2026",
-      "feedId": "camp2027",
-      "name": "中国科学院国家空间科学中心",
-      "institute": "推免预报名",
-      "project": "2027年接收推荐免试研究生预报名",
-      "eventType": "推免预报名",
-      "description": "2027年接收推荐免试研究生预报名",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "7月3日至9月28日使用国科大推免申请系统收集信息；9月28日起改用研招网推免系统。9月28日是系统切换点，官网未公布最终申请截止。",
-      "deadlineEpochMs": null,
-      "website": "https://www.nssc.cas.cn/yjsb/zsxx/zsdt/202607/t20260703_8241596.html",
-      "tags": [],
-      "verifiedAt": "2026-07-22T09:17:48+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://www.nssc.cas.cn/yjsb/zsxx/zsdt/202607/t20260703_8241596.html"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "推免考核包含线上测评及复试；复试具体安排通过邮件通知，不能据局部线上测评推断整体形式。"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：必须和自愿材料清单均未要求专家推荐信。"
-      },
-      "materials": {
-        "status": "unverified",
-        "summary": "待官方公布"
+        "summary": "材料复杂度：中；材料清单：本人签字的报名登记表、身份证正反面、学生证或在读证明、盖章成绩单及排名证明、个人能力证明，按顺序汇总为一个PDF"
       }
     },
     {
@@ -3849,7 +3343,7 @@
       "deadlineEpochMs": null,
       "website": "https://ai.ucas.ac.cn/index.php/zh-cn/tzgg/7698-2027",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:17:48+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3874,57 +3368,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：专家推荐书为自愿材料，需副教授或相当职称及以上专家手写签名；官网未规定数量。；推荐信模板：https://admission.ucas.ac.cn/"
+        "summary": "推荐信数量：专家推荐书为自愿材料，需副教授或相当职称及以上专家手写签名；推荐信模板：https://admission.ucas.ac.cn/"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：中；材料清单：前三年课程成绩单（五年制提供前四年）；个人简历及专业学习情况介绍；有效居民身份证；可选专家推荐书；可选论文、专利或原创成果证明；可选英语和获奖证明"
-      }
-    },
-    {
-      "projectId": "2027|南京大学|计算机软件研究所|本科生开放日提前招生",
-      "feedId": "camp2027",
-      "name": "南京大学",
-      "institute": "计算机软件研究所",
-      "project": "本科生开放日提前招生",
-      "eventType": "实验室/研究所提前招生",
-      "description": "本科生开放日提前招生",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "建议在2026年8月20日之前完成申请；该日期为建议性安排，不是硬截止",
-      "deadlineEpochMs": null,
-      "website": "https://ics.nju.edu.cn/recruit/index.html",
-      "tags": [],
-      "verifiedAt": "2026-07-22T09:12:34+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://ics.nju.edu.cn/recruit/index.html"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "not-published",
-          "summary": "未公布"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：0封；推荐信模板：无"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：未知；材料清单：cv.pdf（带照片、不超过2页）、statement.pdf（研究方向思考与动机、不超过1页）、supplementary.pdf（成绩单等），打包ZIP不超过8M"
+        "summary": "材料复杂度：中；材料清单：前三年课程成绩单（五年制提供前四年）"
       }
     },
     {
@@ -3941,7 +3389,7 @@
       "deadlineEpochMs": null,
       "website": "https://yjszs.nudt.edu.cn/zsmh/pubweb/homePageList/newDetailed.view?keyId=14847",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:17:48+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3970,7 +3418,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：中高；材料清单：学生证及复印件；学籍认证报告；2027级推免申请表一式两份；1000字以内本人自述；加盖教务部门公章的历年成绩单；科研成果和获奖证书复印件（如有）；近期一寸彩色免冠照片2张；招生学院要求的其他材料"
+        "summary": "材料复杂度：中高；材料清单：学生证及复印件"
       }
     },
     {
@@ -3987,7 +3435,7 @@
       "deadlineEpochMs": null,
       "website": "https://grs.dlmu.edu.cn/info/1139/34511.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:27+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4016,7 +3464,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：按顺序合并为一个PDF并发至学院邮箱：申请表、加盖教务部门公章的前5或前6学期成绩单、身份证、学生证，以及外语成绩、论文、专利、获奖证书等学业学术证明；直博另需专家推荐意见并提前联系导师。"
+        "summary": "材料复杂度：高；材料清单：按顺序合并为一个PDF并发至学院邮箱：申请表、加盖教务部门公章的前5或前6学期成绩单、身份证、学生证，以及外语成绩、论文、专利、获奖证书等学业学术证明"
       }
     },
     {
@@ -4033,7 +3481,7 @@
       "deadlineEpochMs": null,
       "website": "https://gs.hhu.edu.cn/_t186/2026/0710/c3624a331446/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:34+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4058,11 +3506,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：硕士0封；直博2封（相关领域正高级职称专家亲笔签名）；推荐信模板：直博推荐书模板在报名系统下载；硕士无"
+        "summary": "推荐信数量：硕士0封；推荐信模板：直博推荐书模板在报名系统下载"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知；材料清单：申请表、盖章成绩单、身份证和学生证；可附计算机/外语证明、论文专利项目及获奖；直博另交2封推荐书；招生单位可另增材料"
+        "summary": "材料复杂度：未知；材料清单：申请表、盖章成绩单、身份证和学生证"
       }
     },
     {
@@ -4079,7 +3527,7 @@
       "deadlineEpochMs": null,
       "website": "https://cybersec.xjtu.edu.cn/info/1017/2181.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:20:00+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4104,7 +3552,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：正文未说明推荐信要求；导师附件被验证码阻断，不能据附件补写。"
+        "summary": "推荐信数量：正文未说明推荐信要求"
       },
       "materials": {
         "status": "confirmed",
@@ -4125,7 +3573,7 @@
       "deadlineEpochMs": null,
       "website": "https://faculty.xauat.edu.cn/liguanlin/zh_CN/index/120261/list/index.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:20:00+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4171,7 +3619,7 @@
       "deadlineEpochMs": null,
       "website": "https://web.xidian.edu.cn/kwu/index.html",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:20:00+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4217,7 +3665,7 @@
       "deadlineEpochMs": null,
       "website": "https://web.xidian.edu.cn/sfwang/zsxx.html",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:20:00+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4246,7 +3694,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：低至中；材料清单：个人简历；本科成绩单；证明材料"
+        "summary": "材料复杂度：低至中；材料清单：个人简历"
       }
     },
     {
@@ -4263,7 +3711,7 @@
       "deadlineEpochMs": null,
       "website": "https://web.xidian.edu.cn/dchliu/index.html",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:20:00+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4292,7 +3740,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：低至中；材料清单：数学能力证明或当面展示；编程能力证明或当面展示；英语能力证明或当面展示"
+        "summary": "材料复杂度：低至中；材料清单：数学能力证明或当面展示"
       }
     },
     {
@@ -4309,7 +3757,7 @@
       "deadlineEpochMs": null,
       "website": "https://web.xidian.edu.cn/suncong/zhaosheng.html",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:20:00+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4338,7 +3786,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：低；材料清单：简历；本科成绩单"
+        "summary": "材料复杂度：低；材料清单：简历"
       }
     },
     {
@@ -4355,7 +3803,7 @@
       "deadlineEpochMs": null,
       "website": "https://web.xidian.edu.cn/jcao/zhaosheng.html",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:20:00+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4388,52 +3836,6 @@
       }
     },
     {
-      "projectId": "2027|西安电子科技大学|计算机科学与技术学院张涛团队|2027保研招募",
-      "feedId": "camp2027",
-      "name": "西安电子科技大学",
-      "institute": "计算机科学与技术学院张涛团队",
-      "project": "2027保研招募",
-      "eventType": "导师级提前招生",
-      "description": "2027保研招募",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "官方教师主页未公布截止日期。",
-      "deadlineEpochMs": null,
-      "website": "https://web.xidian.edu.cn/taozhang/",
-      "tags": [],
-      "verifiedAt": "2026-07-22T09:20:00+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://web.xidian.edu.cn/taozhang/"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "not-published",
-          "summary": "未公布"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：官方页未说明推荐信要求。"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：低至未知；材料清单：主页未列统一材料包；仅提供联系邮箱。"
-      }
-    },
-    {
       "projectId": "2027|西安电子科技大学|通信工程学院刘毅课题组|推免硕士预报名",
       "feedId": "camp2027",
       "name": "西安电子科技大学",
@@ -4447,7 +3849,7 @@
       "deadlineEpochMs": null,
       "website": "https://web.xidian.edu.cn/yliu/",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:20:00+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4480,144 +3882,6 @@
       }
     },
     {
-      "projectId": "2027|西安电子科技大学|通信工程学院程德团队|2027保研招募",
-      "feedId": "camp2027",
-      "name": "西安电子科技大学",
-      "institute": "通信工程学院程德团队",
-      "project": "2027保研招募",
-      "eventType": "导师团队提前招生/保研招募",
-      "description": "2027保研招募",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "官方教师主页未公布截止日期。",
-      "deadlineEpochMs": null,
-      "website": "https://web.xidian.edu.cn/dcheng/index.html",
-      "tags": [],
-      "verifiedAt": "2026-07-22T09:20:00+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://web.xidian.edu.cn/dcheng/index.html"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "not-published",
-          "summary": "未公布"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：未说明推荐信要求。"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：低至未知；材料清单：主页未列统一申请材料。"
-      }
-    },
-    {
-      "projectId": "2027|西安电子科技大学|通信工程学院董文倩课题组|2027推免硕士招募",
-      "feedId": "camp2027",
-      "name": "西安电子科技大学",
-      "institute": "通信工程学院董文倩课题组",
-      "project": "2027推免硕士招募",
-      "eventType": "导师级提前招生",
-      "description": "2027推免硕士招募",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "官方教师主页未公布截止日期。",
-      "deadlineEpochMs": null,
-      "website": "https://web.xidian.edu.cn/wqdong/",
-      "tags": [],
-      "verifiedAt": "2026-07-22T09:20:00+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://web.xidian.edu.cn/wqdong/"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "not-published",
-          "summary": "未公布"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：未说明推荐信要求。"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：低；材料清单：邮件联系"
-      }
-    },
-    {
-      "projectId": "2027|西安电子科技大学|通信工程学院高隆团队|2027推免招募",
-      "feedId": "camp2027",
-      "name": "西安电子科技大学",
-      "institute": "通信工程学院高隆团队",
-      "project": "2027推免招募",
-      "eventType": "导师级提前招生",
-      "description": "2027推免招募",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "官方教师主页未公布截止日期。",
-      "deadlineEpochMs": null,
-      "website": "https://web.xidian.edu.cn/gaolong/",
-      "tags": [],
-      "verifiedAt": "2026-07-22T09:20:00+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://web.xidian.edu.cn/gaolong/"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "not-published",
-          "summary": "未公布"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：未说明推荐信要求。"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：低至未知；材料清单：主页未列材料清单。"
-      }
-    },
-    {
       "projectId": "2027|重庆邮电大学|计算机科学与技术学院陈鹏团队|2027级硕士提前招生",
       "feedId": "camp2027",
       "name": "重庆邮电大学",
@@ -4631,7 +3895,7 @@
       "deadlineEpochMs": null,
       "website": "https://faculty.cqupt.edu.cn/chenpeng/zh_CN/index/125984/list/index.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:13:55+08:00",
+      "verifiedAt": "2026-07-24T18:21:19+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4660,7 +3924,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：low；材料清单：个人简历；成绩单；加入缘由；邮件申请"
+        "summary": "材料复杂度：low；材料清单：个人简历"
       }
     },
     {
@@ -4677,7 +3941,7 @@
       "deadlineEpochMs": 1784505600000,
       "website": "https://icci.sjtu.edu.cn/announcement/view/2195",
       "tags": [],
-      "verifiedAt": "2026-07-18T10:06:05+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4723,7 +3987,7 @@
       "deadlineEpochMs": 1783656000000,
       "website": "https://www.cse.neu.edu.cn/2026/0702/c6274a457292/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:28+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4769,7 +4033,7 @@
       "deadlineEpochMs": 1784390340000,
       "website": "https://cse.csu.edu.cn/info/1057/11380.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:08:44+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4815,7 +4079,7 @@
       "deadlineEpochMs": 1784044740000,
       "website": "http://ai.ruc.edu.cn/newslist/notice/20260623106.html",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4861,7 +4125,7 @@
       "deadlineEpochMs": 1784440800000,
       "website": "https://agis.caas.cn/xwzx/yw/f48a1bba135d4b21a6b899087128432f.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:00:24+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4907,7 +4171,7 @@
       "deadlineEpochMs": 1782810000000,
       "website": "https://cs.cug.edu.cn/info/1021/11791.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:08:44+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4953,7 +4217,7 @@
       "deadlineEpochMs": null,
       "website": "https://saids.ustc.edu.cn/2026/0526/c15435a741761/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:50+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4982,7 +4246,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：中；材料清单：报名登记表（本人手写签名）、前两年半盖章成绩单、盖章总成绩排名证明、英语证明、可选科研能力材料，并按顺序汇总为一个PDF上传；不需邮寄，参营时带原件和复印件。"
+        "summary": "材料复杂度：中；材料清单：报名登记表（本人手写签名）、前两年半盖章成绩单、盖章总成绩排名证明、英语证明、可选科研能力材料，并按顺序汇总为一个PDF上传"
       }
     },
     {
@@ -4999,7 +4263,7 @@
       "deadlineEpochMs": 1781971140000,
       "website": "https://www.ynao.ac.cn/yjsjy/jydt/zs/202605/t20260509_8197882.html",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:56:23+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5045,7 +4309,7 @@
       "deadlineEpochMs": 1782835140000,
       "website": "https://www.iie.cas.cn/xsjy/zxtz/202606/t20260612_8227807.html",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5091,7 +4355,7 @@
       "deadlineEpochMs": 1782403200000,
       "website": "https://big.cas.cn/yjs/zsxx/kjrh/202605/t20260528_8210320.html",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5137,7 +4401,7 @@
       "deadlineEpochMs": 1783699140000,
       "website": "https://soc.ucas.ac.cn/index.php/zh/zsxxs/shzs/1572-2027",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5188,7 +4452,7 @@
       "deadlineEpochMs": 1782143940000,
       "website": "https://xao.cas.cn/xwdt/zs/202605/t20260508_8197477.html",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:56:45+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5234,7 +4498,7 @@
       "deadlineEpochMs": 1782403140000,
       "website": "https://xjipc.cas.cn/yjs/tzgg/202605/t20260511_8199711.html",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:56:45+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5280,7 +4544,7 @@
       "deadlineEpochMs": 1782835140000,
       "website": "https://www.kiz.ac.cn/yjsjy/tzgg/202605/t20260509_8198981.html",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:56:23+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5326,7 +4590,7 @@
       "deadlineEpochMs": 1783007940000,
       "website": "https://sia.cas.cn/zpjy/yjsjy/zs/zsgg/202605/t20260525_8208968.html",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:28+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5372,7 +4636,7 @@
       "deadlineEpochMs": 1783699140000,
       "website": "https://www.siat.ac.cn/jyjx/zsxx/xly/202606/t20260603_8213255.html",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:00:24+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5418,7 +4682,7 @@
       "deadlineEpochMs": 1784303940000,
       "website": "https://aircas.ac.cn/tzgg/202606/t20260624_8232672.html",
       "tags": [],
-      "verifiedAt": "2026-07-18T00:04:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5469,7 +4733,7 @@
       "deadlineEpochMs": 1784563140000,
       "website": "https://www.ia.cas.cn/yjsjy/zs/sszs/202606/t20260624_8232737.html",
       "tags": [],
-      "verifiedAt": "2026-07-17T23:02:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5520,7 +4784,7 @@
       "deadlineEpochMs": 1784095200000,
       "website": "https://ict.cas.cn/yjsjy/zsxx/sszs/202607/t20260702_8237097.html",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5566,7 +4830,7 @@
       "deadlineEpochMs": 1782748740000,
       "website": "https://cnic.cas.cn/yjsjy/tzgg/202605/t20260527_8209811.html",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5612,7 +4876,7 @@
       "deadlineEpochMs": 1782143940000,
       "website": "https://www.is.cas.cn/yjsjy2016/zsxx2016/202605/t20260528_8210508.html",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5658,7 +4922,7 @@
       "deadlineEpochMs": 1782835140000,
       "website": "https://career.cic.tsinghua.edu.cn/xsglxt/f/jyxt/anony/showZwxx?zpxxid=550009604",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:56:45+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5704,7 +4968,7 @@
       "deadlineEpochMs": 1784303940000,
       "website": "https://mst.sysu.edu.cn/node/1355",
       "tags": [],
-      "verifiedAt": "2026-07-18T07:16:38+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5755,7 +5019,7 @@
       "deadlineEpochMs": 1783353540000,
       "website": "https://cigit.cas.cn/qt/gg/202606/t20260612_8227858.html",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:56:23+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5801,7 +5065,7 @@
       "deadlineEpochMs": 1784455200000,
       "website": "https://www.ise.ynu.edu.cn/page/160/?news_list_id=3",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:56:23+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5852,7 +5116,7 @@
       "deadlineEpochMs": 1784451600000,
       "website": "https://www.sei.ynu.edu.cn/info/1057/2652.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:56:23+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5903,7 +5167,7 @@
       "deadlineEpochMs": 1782896400000,
       "website": "https://www.ai.pku.edu.cn/info/1088/4090.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5949,7 +5213,7 @@
       "deadlineEpochMs": 1782288000000,
       "website": "https://ss.pku.edu.cn/zsxx/zstz/08b3e84f435b4cab85fbf7b8f3aaea0a.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5995,7 +5259,7 @@
       "deadlineEpochMs": 1782100800000,
       "website": "https://ai.bnu.edu.cn/ggjxz/tzgg/ada97c6b63724b75b67be35d57b06cc0.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6041,7 +5305,7 @@
       "deadlineEpochMs": 1783155600000,
       "website": "https://soft.buaa.edu.cn/news_nry.jsp?urltype=news.NewsContentUrl&wbnewsid=12392&wbtreeid=1325",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6087,7 +5351,7 @@
       "deadlineEpochMs": 1782964800000,
       "website": "https://cse.hust.edu.cn/info/1079/4480.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:08:44+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6133,7 +5397,7 @@
       "deadlineEpochMs": 1784217540000,
       "website": "https://gcxy.scau.edu.cn/2026/0713/c2105a440085/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:00:24+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6184,7 +5448,7 @@
       "deadlineEpochMs": 1784390400000,
       "website": "https://dii.nju.edu.cn/c3/f5/c11317a836597/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:00:28+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6235,7 +5499,7 @@
       "deadlineEpochMs": 1781971199000,
       "website": "https://tcs.nju.edu.cn/wiki/index.php?title=2026%E5%B9%B4%E6%9A%91%E6%9C%9F%E5%AD%A6%E6%A0%A1",
       "tags": [],
-      "verifiedAt": "2026-07-17T02:13:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6281,7 +5545,7 @@
       "deadlineEpochMs": 1784365200000,
       "website": "https://scie.njupt.edu.cn/2026/0707/c2890a306108/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:24:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6332,7 +5596,7 @@
       "deadlineEpochMs": 1783440000000,
       "website": "https://informatics.xmu.edu.cn/info/1072/202371.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:01:09+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6378,7 +5642,7 @@
       "deadlineEpochMs": 1782014400000,
       "website": "https://sai.jlu.edu.cn/info/1125/5444.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:28+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6424,7 +5688,7 @@
       "deadlineEpochMs": 1782086400000,
       "website": "https://ccst.jlu.edu.cn/info/1229/21077.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:28+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6470,7 +5734,7 @@
       "deadlineEpochMs": 1782345600000,
       "website": "https://csw.jlu.edu.cn/info/1156/8437.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:28+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6516,7 +5780,7 @@
       "deadlineEpochMs": 1781971200000,
       "website": "https://hitee.hit.edu.cn/2026/0605/c17101a393578/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T02:53:07+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6562,7 +5826,7 @@
       "deadlineEpochMs": 1782143940000,
       "website": "https://cs.hit.edu.cn/2026/0605/c11271a393612/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:28+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6608,7 +5872,7 @@
       "deadlineEpochMs": 1783958340000,
       "website": "https://icec.hrbeu.edu.cn/2026/0703/c4633a350491/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:28+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6654,7 +5918,7 @@
       "deadlineEpochMs": 1782896400000,
       "website": "https://cisse.hrbeu.edu.cn/info/1219/10243.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:55:28+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6700,7 +5964,7 @@
       "deadlineEpochMs": 1783908000000,
       "website": "https://cstc.hrbeu.edu.cn/2026/0707/c3688a350602/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:24:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6746,7 +6010,7 @@
       "deadlineEpochMs": 1782792000000,
       "website": "https://eie.scu.edu.cn/info/1025/15213.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:56:23+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6792,7 +6056,7 @@
       "deadlineEpochMs": 1782662340000,
       "website": "https://ccs.scu.edu.cn/info/1013/2252.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:56:23+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6838,7 +6102,7 @@
       "deadlineEpochMs": 1784390400000,
       "website": "https://yjszs.nudt.edu.cn/pubweb/homePageList/newDetailed.view?keyId=14868",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:24:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6889,7 +6153,7 @@
       "deadlineEpochMs": 1784390400000,
       "website": "https://yjszs.nudt.edu.cn/pubweb/homePageList/newDetailed.view?keyId=14867",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:24:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6940,7 +6204,7 @@
       "deadlineEpochMs": 1784552400000,
       "website": "https://mp.weixin.qq.com/s/49XiAG3zd7MUBkiGft4AxQ",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:24:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6991,7 +6255,7 @@
       "deadlineEpochMs": 1784340000000,
       "website": "https://yjszs.nudt.edu.cn/zsmh/pubweb/homePageList/detailed.view?keyId=14884",
       "tags": [],
-      "verifiedAt": "2026-07-18T10:06:05+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7037,7 +6301,7 @@
       "deadlineEpochMs": null,
       "website": "https://ticnn.tju.edu.cn/info/1052/2813.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:02+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7066,7 +6330,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知；材料清单：报到携带身份证、学生证原件及复印件；准备个人简历一式五份和本科成绩单。"
+        "summary": "材料复杂度：未知；材料清单：报到携带身份证、学生证原件及复印件"
       }
     },
     {
@@ -7083,7 +6347,7 @@
       "deadlineEpochMs": 1783526340000,
       "website": "https://www.ai.sdu.edu.cn/info/1088/1506.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:01:09+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7129,7 +6393,7 @@
       "deadlineEpochMs": 1782489540000,
       "website": "https://www.ise.sdu.edu.cn/info/1096/16720.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:01:09+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7175,7 +6439,7 @@
       "deadlineEpochMs": 1782662340000,
       "website": "https://frontier.qd.sdu.edu.cn/info/1011/9425.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:01:09+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7221,7 +6485,7 @@
       "deadlineEpochMs": 1784106000000,
       "website": "https://cse.sdu.edu.cn/info/1090/1149.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:01:09+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7267,7 +6531,7 @@
       "deadlineEpochMs": 1783850400000,
       "website": "https://control.sdu.edu.cn/info/1018/8167.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:01:09+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7313,7 +6577,7 @@
       "deadlineEpochMs": 1782273600000,
       "website": "https://dsi.sdu.edu.cn/info/1093/4593.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:01:09+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7359,7 +6623,7 @@
       "deadlineEpochMs": 1783828800000,
       "website": "https://www.jc.sdu.edu.cn/info/1103/14634.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:01:09+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7405,7 +6669,7 @@
       "deadlineEpochMs": 1784300400000,
       "website": "https://iict.sdu.edu.cn/info/1027/1317.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T23:02:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7456,7 +6720,7 @@
       "deadlineEpochMs": 1782810000000,
       "website": "https://cst.qd.sdu.edu.cn/info/1023/4121.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:01:09+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7502,7 +6766,7 @@
       "deadlineEpochMs": 1783526340000,
       "website": "https://www.cs.sdu.edu.cn/info/1068/6855.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:01:09+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7548,7 +6812,7 @@
       "deadlineEpochMs": 1782230340000,
       "website": "https://www.sc.sdu.edu.cn/info/1019/6003.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:01:09+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7594,7 +6858,7 @@
       "deadlineEpochMs": 1783526340000,
       "website": "https://ic.sdu.edu.cn/info/1036/5162.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:01:09+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7640,7 +6904,7 @@
       "deadlineEpochMs": null,
       "website": "https://zxxy.sxu.edu.cn/rcpy/zsgz/15d2092c5b004e43b6ad76bedf2bca87.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:09:27+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7661,7 +6925,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：入选的外校学生在活动期间由学院统一安排食宿；官方未拆分住宿标准。；餐食：入选的外校学生在活动期间由学院统一安排食宿；官方未拆分餐食标准。"
+        "summary": "住宿：入选的外校学生在活动期间由学院统一安排食宿；餐食：入选的外校学生在活动期间由学院统一安排食宿"
       },
       "recommendation": {
         "status": "not-published",
@@ -7669,7 +6933,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知；材料清单：《山西大学哲学学院优秀大学生夏令营申请表》1份；《个人陈述》1份；外语水平证明彩色照片或扫描件；本科阶段成绩单1份；本科前两年半或三年总成绩排名证明；体现学术能力的论文或其他相关材料（合并为1份PDF）"
+        "summary": "材料复杂度：未知；材料清单：《山西大学哲学学院优秀大学生夏令营申请表》1份"
       }
     },
     {
@@ -7686,7 +6950,7 @@
       "deadlineEpochMs": 1783007999000,
       "website": "https://zjui.intl.zju.edu.cn/node/3455",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:00:28+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7732,7 +6996,7 @@
       "deadlineEpochMs": null,
       "website": "https://ai.zju.edu.cn/2026/0529/c90497a3168021/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:12:50+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7753,7 +7017,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：学院不统一安排；申请人可自理校外住宿，或在截止日前申请紫金港校区有限校内宿舍，约120元/人·天、自费。"
+        "summary": "住宿：学院不统一安排"
       },
       "recommendation": {
         "status": "confirmed",
@@ -7761,7 +7025,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：中；材料清单：个人简历、盖章成绩单及排名、英语证明、可选学术成果证明，按顺序合并为不超过10MB的PDF；在研究生招生服务系统网申，并将材料邮件发给意向导师且抄送学院公邮。"
+        "summary": "材料复杂度：中；材料清单：个人简历、盖章成绩单及排名、英语证明、可选学术成果证明，按顺序合并为不超过10MB的PDF"
       }
     },
     {
@@ -7778,7 +7042,7 @@
       "deadlineEpochMs": 1783267140000,
       "website": "https://www.muhn.edu.cn/zy/info/9683/7943.htm",
       "tags": [],
-      "verifiedAt": "2026-07-18T07:16:38+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7824,7 +7088,7 @@
       "deadlineEpochMs": 1780243140000,
       "website": "https://ici.um.edu.mo/the-institute-of-collaborative-innovation-summer-camp-for-outstanding-students-now-open-for-application-%E6%BE%B3%E9%96%80%E5%A4%A7%E5%AD%B8%E5%8D%94%E5%90%8C%E5%89%B5%E6%96%B0%E7%A0%94%E7%A9%B6-3/",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:00:24+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7870,7 +7134,7 @@
       "deadlineEpochMs": 1779724740000,
       "website": "https://skliotsc.um.edu.mo/summer-camp/",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:00:24+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7916,7 +7180,7 @@
       "deadlineEpochMs": 1778860740000,
       "website": "https://www.fst.um.edu.mo/event/the-7th-summer-camp-for-outstanding-students-now-open-for-application/",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:00:24+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7962,7 +7226,7 @@
       "deadlineEpochMs": 1783526340000,
       "website": "https://wurenxitong.nwpu.edu.cn/info/1373/13728.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:56:45+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -8008,7 +7272,7 @@
       "deadlineEpochMs": 1783526340000,
       "website": "https://wlkjaqxy.nwpu.edu.cn/info/1103/19990.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:56:45+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -8054,7 +7318,7 @@
       "deadlineEpochMs": 1782964800000,
       "website": "https://jsj.nwpu.edu.cn/info/1599/29795.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:56:45+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -8100,7 +7364,7 @@
       "deadlineEpochMs": 1783674000000,
       "website": "https://scai.swjtu.edu.cn/web/page-newsDetail.html?nid=0bdfb172-8d0c-4cd5-a720-d2b9b052e7a9",
       "tags": [],
-      "verifiedAt": "2026-07-17T10:56:23+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -8146,7 +7410,7 @@
       "deadlineEpochMs": 1781539199000,
       "website": "https://yjszs.cqjtu.edu.cn/info/1099/2716.htm",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:13:55+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -8175,7 +7439,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：medium；材料清单：各学院邮箱提交的压缩报名材料；官方夏令营报名表；官方安全告知书；报到时提交报名表、安全告知书及其他材料原件"
+        "summary": "材料复杂度：medium；材料清单：各学院邮箱提交的压缩报名材料"
       }
     },
     {
@@ -8192,7 +7456,7 @@
       "deadlineEpochMs": 1784628000000,
       "website": "https://dsai.chd.edu.cn/info/1040/1321.htm",
       "tags": [],
-      "verifiedAt": "2026-07-17T23:02:00+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -8243,7 +7507,7 @@
       "deadlineEpochMs": 1784649540000,
       "website": "https://www.cse.cuhk.edu.hk/admission/mphil-phd/early-admission/",
       "tags": [],
-      "verifiedAt": "2026-07-22T09:11:29+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -8289,7 +7553,7 @@
       "deadlineEpochMs": 1784476740000,
       "website": "https://sse.cuhk.edu.cn/event/2307",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:00:24+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -8340,7 +7604,7 @@
       "deadlineEpochMs": 1782057540000,
       "website": "https://summercamp-intr.hkust-gz.edu.cn/",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:00:24+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -8386,7 +7650,7 @@
       "deadlineEpochMs": 1782057540000,
       "website": "https://summercamp-roas.hkust-gz.edu.cn/",
       "tags": [],
-      "verifiedAt": "2026-07-17T11:00:24+08:00",
+      "verifiedAt": "2026-07-24T18:22:59+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -8419,8 +7683,8 @@
       }
     }
   ],
-  "snapshotId": "2026-07-22T01:48:42.766Z-084529db367a",
-  "approvedAt": "2026-07-22T01:48:42.766Z",
-  "previousSnapshotId": "2026-07-18T02:39:59.582Z-b2848033ac54",
-  "dataHash": "084529db367a67da1aecaeef5eac410b840d36de45dc23049cc6261e86975fae"
+  "snapshotId": "2026-07-24T12:11:06.210Z-0f46cbde99bd",
+  "approvedAt": "2026-07-24T12:11:06.210Z",
+  "previousSnapshotId": "2026-07-22T01:48:42.766Z-084529db367a",
+  "dataHash": "0f46cbde99bd741f9839831c5f547c5ffcafa50b9ed8c0280d55b3bfdb686ce0"
 }
