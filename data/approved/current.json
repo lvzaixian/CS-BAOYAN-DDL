@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-07-25T20:26:07+08:00",
+  "scanAt": "2026-07-25T22:54:49+08:00",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -11,7 +11,7 @@
     }
   ],
   "counts": {
-    "confirmedOpen": 67,
+    "confirmedOpen": 74,
     "confirmedUnknownDeadline": 15,
     "pendingExcluded": 3,
     "expired": 80
@@ -2180,6 +2180,52 @@
       }
     },
     {
+      "projectId": "2027|华东师范大学|上海智能教育研究院|推免预报名",
+      "feedId": "camp2027",
+      "name": "华东师范大学",
+      "institute": "上海智能教育研究院",
+      "project": "上海智能教育研究院｜2027年招收优秀本科毕业生免试攻读研究生预报名",
+      "eventType": "推免预报名",
+      "description": "上海智能教育研究院｜2027年招收优秀本科毕业生免试攻读研究生预报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-26T00:00:00+08:00",
+      "deadlineOriginal": "报名时间：2026年7月27日00:00至2026年8月25日24:00。",
+      "deadlineEpochMs": 1787673600000,
+      "website": "https://aiedu.ecnu.edu.cn/c3/b0/c49538a770992/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T22:54:49+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://aiedu.ecnu.edu.cn/c3/b0/c49538a770992/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "待学院复试通知"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "待学院复试通知"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "申请直接攻博的考生须上传两封副教授（或相当专业技术职务）及以上专家推荐信；硕士推荐信未单列。"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "有效居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书、学生个人简历与陈述、其他证明材料合并PDF；申请直接攻博须上传两封专家推荐信。"
+      }
+    },
+    {
       "projectId": "2027|广西大学|计算机与电子信息学院|推免预报名",
       "feedId": "camp2027",
       "name": "广西大学",
@@ -2223,6 +2269,52 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：未知"
+      }
+    },
+    {
+      "projectId": "2027|华东师范大学|密码学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "华东师范大学",
+      "institute": "密码学院",
+      "project": "密码学院｜2027年接收优秀应届本科毕业生免试攻读研究生预报名",
+      "eventType": "推免预报名",
+      "description": "密码学院｜2027年接收优秀应届本科毕业生免试攻读研究生预报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-31T16:00:00+08:00",
+      "deadlineOriginal": "我院报名截止时间为8月31日16:00。",
+      "deadlineEpochMs": 1788163200000,
+      "website": "https://sc.ecnu.edu.cn/c3/e8/c50224a771048/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T22:54:49+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://sc.ecnu.edu.cn/c3/e8/c50224a771048/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "not-published",
+          "summary": "复试等相关安排另行通知，预计于9月进行。"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "复试方式为现场面试面谈（不设笔试和机试），预计于9月在中山北路校区进行。"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "有效期内居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书、个人自述和佐证材料；个人自述/成绩单/获奖论文成果/外语能力证明等4份材料按顺序合并为一个PDF上传。"
       }
     },
     {
@@ -2410,6 +2502,52 @@
       }
     },
     {
+      "projectId": "2027|华东师范大学|计算机科学与技术学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "华东师范大学",
+      "institute": "计算机科学与技术学院",
+      "project": "计算机科学与技术学院｜2027年接收优秀应届本科毕业生免试攻读研究生预报名",
+      "eventType": "推免预报名",
+      "description": "计算机科学与技术学院｜2027年接收优秀应届本科毕业生免试攻读研究生预报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-05T23:00:00+08:00",
+      "deadlineOriginal": "预报名起止时间为2026年7月24日9:00至2026年9月5日23:00。",
+      "deadlineEpochMs": 1788620400000,
+      "website": "https://cs.ecnu.edu.cn/c3/c2/c19867a771010/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T22:54:49+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://cs.ecnu.edu.cn/c3/c2/c19867a771010/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "待学院复试通知"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "待学院复试通知"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "有效居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书。"
+      }
+    },
+    {
       "projectId": "2027|大连理工大学|计算机科学与技术学院|推免预报名",
       "feedId": "camp2027",
       "name": "大连理工大学",
@@ -2453,6 +2591,144 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：中；材料清单：校级通知要求申请人阅读并遵照预报名系统申请须知，但网页正文未公开逐项材料清单。"
+      }
+    },
+    {
+      "projectId": "2027|华东师范大学|软件工程学院（滴水湖国际软件学院）|推免预报名",
+      "feedId": "camp2027",
+      "name": "华东师范大学",
+      "institute": "软件工程学院（滴水湖国际软件学院）",
+      "project": "软件工程学院（滴水湖国际软件学院）｜2027年接收优秀应届本科毕业生免试攻读研究生预报名",
+      "eventType": "推免预报名",
+      "description": "软件工程学院（滴水湖国际软件学院）｜2027年接收优秀应届本科毕业生免试攻读研究生预报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-07T12:00:00+08:00",
+      "deadlineOriginal": "预报名起止时间为2026年7月27日09:00至2026年9月7日中午12:00。",
+      "deadlineEpochMs": 1788753600000,
+      "website": "https://sei.ecnu.edu.cn/c4/0d/c33171a771085/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T22:54:49+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://sei.ecnu.edu.cn/c4/0d/c33171a771085/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "待学院复试通知"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "待学院复试通知"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "有效居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书、本科阶段成绩排名证明、其他证明材料；硕士申请人备用信息填写意向研究领域，直博申请人填写意向导师姓名。"
+      }
+    },
+    {
+      "projectId": "2027|华东师范大学|数据科学与工程学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "华东师范大学",
+      "institute": "数据科学与工程学院",
+      "project": "数据科学与工程学院｜2027年接收优秀应届本科毕业生免试攻读研究生预报名",
+      "eventType": "推免预报名",
+      "description": "数据科学与工程学院｜2027年接收优秀应届本科毕业生免试攻读研究生预报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-08T12:00:00+08:00",
+      "deadlineOriginal": "预报名起止时间为2026年7月27日9:00至2026年9月8日12:00。",
+      "deadlineEpochMs": 1788840000000,
+      "website": "https://dase.ecnu.edu.cn/c4/1f/c41465a771103/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T22:54:49+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://dase.ecnu.edu.cn/c4/1f/c41465a771103/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "待学院复试通知"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "待学院复试通知"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "有效居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书、个人陈述、本科学习成绩单、外语能力证明、获奖证明及其他能反映研究能力和创新潜质的材料；其他材料合并为小于10M的PDF上传。"
+      }
+    },
+    {
+      "projectId": "2027|华东师范大学|空间人工智能学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "华东师范大学",
+      "institute": "空间人工智能学院",
+      "project": "空间人工智能学院｜2027年接收优秀应届本科毕业生免试攻读研究生预报名",
+      "eventType": "推免预报名",
+      "description": "空间人工智能学院｜2027年接收优秀应届本科毕业生免试攻读研究生预报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T10:00:00+08:00",
+      "deadlineOriginal": "报名时间为2026年7月24日9:00至2026年9月10日10:00。",
+      "deadlineEpochMs": 1789005600000,
+      "website": "https://geoai.ecnu.edu.cn/c3/bc/c48289a771004/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T22:54:49+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://geoai.ecnu.edu.cn/c3/bc/c48289a771004/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "待学院复试通知"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "待学院复试通知"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "有效居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书、推免生资格证明、本科成绩单、英语/计算机等级证书和获奖证书、论文/专利及其他研究能力材料；按规定顺序合并为一个PDF上传。"
       }
     },
     {
@@ -2545,6 +2821,52 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：未知；材料清单：个人简历及最高英语水平证明、系统打印申请表、加盖校级公章的前五学期成绩单、加盖校级公章的专业排名证明、获奖证书及代表性论文首页"
+      }
+    },
+    {
+      "projectId": "2027|华东师范大学|信息与电子工程学院（集成电路科学与工程学院）|推免预报名",
+      "feedId": "camp2027",
+      "name": "华东师范大学",
+      "institute": "信息与电子工程学院（集成电路科学与工程学院）",
+      "project": "信息与电子工程学院（集成电路科学与工程学院）｜2027年接收优秀应届本科毕业生免试攻读研究生预报名",
+      "eventType": "推免预报名",
+      "description": "信息与电子工程学院（集成电路科学与工程学院）｜2027年接收优秀应届本科毕业生免试攻读研究生预报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-13T17:00:00+08:00",
+      "deadlineOriginal": "学院预推免报名时间：2026年7月26日8:00至2026年9月13日17:00。",
+      "deadlineEpochMs": 1789290000000,
+      "website": "https://ieeic.ecnu.edu.cn/c4/1e/c4170a771102/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T22:54:49+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://ieeic.ecnu.edu.cn/c4/1e/c4170a771102/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "待学院复试通知"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "待学院复试通知"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "有效居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书、证明材料；证明材料按顺序排列，合并为一个PDF文档，并在文档首页列出目录。"
       }
     },
     {
@@ -7545,8 +7867,8 @@
       }
     }
   ],
-  "snapshotId": "2026-07-25T13:43:21.715Z-011a987833a5",
-  "approvedAt": "2026-07-25T13:43:21.715Z",
-  "previousSnapshotId": "2026-07-25T13:19:09.587Z-0748ec336c2e",
-  "dataHash": "011a987833a537994bf6e9037bb5d71e6c11765c0273c3357b81dc46f5d63831"
+  "snapshotId": "2026-07-25T14:55:10.000Z-eb772b22b395",
+  "approvedAt": "2026-07-25T14:55:10.000Z",
+  "previousSnapshotId": "2026-07-25T13:43:21.715Z-011a987833a5",
+  "dataHash": "eb772b22b3955a4a0a5ea1dd923d6364981008004df9d0c83ff5ab382dcc137d"
 }
