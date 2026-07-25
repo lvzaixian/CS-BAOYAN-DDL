@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-07-25T22:54:49+08:00",
+  "scanAt": "2026-07-25T23:34:56+08:00",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -11,12 +11,63 @@
     }
   ],
   "counts": {
-    "confirmedOpen": 74,
-    "confirmedUnknownDeadline": 15,
-    "pendingExcluded": 3,
+    "confirmedOpen": 96,
+    "confirmedUnknownDeadline": 16,
+    "pendingExcluded": 0,
     "expired": 80
   },
   "opportunities": [
+    {
+      "projectId": "2027|南京邮电大学|集成电路科学与工程学院（产教融合学院）|2026夏令营",
+      "feedId": "camp2027",
+      "name": "南京邮电大学",
+      "institute": "集成电路科学与工程学院（产教融合学院）",
+      "project": "集成电路科学与工程学院（产教融合学院）｜南京邮电大学集成电路科学与工程学院（产教融合学院） 2026年暑期科研训练营的通知",
+      "eventType": "校园开放日/学术活动",
+      "description": "集成电路科学与工程学院（产教融合学院）｜南京邮电大学集成电路科学与工程学院（产教融合学院） 2026年暑期科研训练营的通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-27T09:00:00+08:00",
+      "deadlineOriginal": "官方 PDF：即日起 - 7 月 27 日 9:00 之前，时间截止后不再接受任何形式的报名。",
+      "deadlineEpochMs": 1785114000000,
+      "website": "https://ic.njupt.edu.cn/2026/0713/c15125a306514/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:59+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://ic.njupt.edu.cn/2026/0713/c15125a306514/page.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/223135"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文自动摘录未见推荐信要求；推荐信模板：未见推荐信模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中"
+      }
+    },
     {
       "projectId": "2027|清华大学|交叉信息研究院|本科直博第一申请期",
       "feedId": "camp2027",
@@ -31,7 +82,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/3415cd69-b74a-413f-bfb6-6a43bed3f344?yxsdm=047",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -77,7 +128,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/1ee20a84-f070-4db8-9dc0-7383cad560a7?yxsdm=094",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -123,7 +174,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/df2d4f5a-5242-4f35-8f6b-05bd842fdfb9?yxsdm=599",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -169,7 +220,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/2581f75f-63ec-4d59-ba1f-8126bdd7a855?yxsdm=599",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -215,7 +266,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/0232d6b4-273b-4212-8dff-c9efc89f2493?yxsdm=599",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -261,7 +312,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://www.sigs.tsinghua.edu.cn/2026/0630/c7769a291820/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T20:26:05+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -307,7 +358,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://www.sigs.tsinghua.edu.cn/2026/0630/c7769a291820/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T20:26:05+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -353,7 +404,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/3645e3d1-9783-416d-933b-5f0d844a870b?yxsdm=023",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -399,7 +450,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/71db5046-7fdd-4e14-b2da-8373ef05bd2e?yxsdm=088",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -445,7 +496,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/18724121-b96d-422d-9e73-de9fb1b43614?yxsdm=412",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -491,7 +542,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/e16d784f-403e-4ac4-98ff-15fd79e051a4?yxsdm=025",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -537,7 +588,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/df93bde9-53c9-40dc-8fe1-b160d8b4be9f?yxsdm=024",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -583,7 +634,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/37edd7f4-6fd0-4e4c-96cd-a18cfefa2081?yxsdm=410",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -629,7 +680,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/714cdf85-15f4-40df-b1fb-fc79b2c20f13?yxsdm=026",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -675,7 +726,7 @@
       "deadlineEpochMs": 1785222000000,
       "website": "https://yzbm.tsinghua.edu.cn/publish/s03/s0302/detail/360ad084-262e-44aa-ac79-00a161549a7c?yxsdm=026",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -708,6 +759,57 @@
       }
     },
     {
+      "projectId": "2027|长安大学|机器人与具身智能学院|2026校园开放日",
+      "feedId": "camp2027",
+      "name": "长安大学",
+      "institute": "机器人与具身智能学院",
+      "project": "机器人与具身智能学院｜长安大学机器人与具身智能学院2026年线上学术开放日通知",
+      "eventType": "校园开放日/学术活动",
+      "description": "机器人与具身智能学院｜长安大学机器人与具身智能学院2026年线上学术开放日通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-29T23:59:59+08:00",
+      "deadlineOriginal": "动。欢迎广大优秀学子报名参加！ 一、时间安排 活动时间：2026年8月中旬。 活动方式：本次活动全程采取线上方式进行。 报名方式：请有意向参与的同学于2026年7月29日17:00前加入QQ群：1093511288，并修改姓名为“拟报考方向+姓名+本科院校”。 二、学院简介 长安大学直属国家教育部，是国家首批“211工程”重点建设大学、国家“985优势学科创新平台”建设高校、国家“双一流”建设高校。学校创建于新中国百业待兴之时，壮大于改革浪潮迭起之际，兴盛于高等教育强国大势之中，与共和国同向同行七十余载。自1951",
+      "deadlineEpochMs": 1785340799000,
+      "website": "https://ec.chd.edu.cn/info/1043/2892.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:59+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://ec.chd.edu.cn/info/1043/2892.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/232060"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "online",
+        "time": {
+          "status": "confirmed",
+          "summary": "2026年8月中旬"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "本次活动全程采取线上方式进行"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "交通：见官方通知，需逐项复核"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文自动摘录未见推荐信要求；推荐信模板：未见推荐信模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中"
+      }
+    },
+    {
       "projectId": "2027|东南大学|信息科学与工程学院|接收推荐免试研究生报名",
       "feedId": "camp2027",
       "name": "东南大学",
@@ -721,7 +823,7 @@
       "deadlineEpochMs": 1785384000000,
       "website": "https://radio.seu.edu.cn/2026/0704/c19195a575536/pagem.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -767,7 +869,7 @@
       "deadlineEpochMs": 1785402000000,
       "website": "https://www.qltrans.sdu.edu.cn/info/1022/5611.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -813,7 +915,7 @@
       "deadlineEpochMs": 1785405600000,
       "website": "https://www.afeu.edu.cn/info/1057/11453.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -859,7 +961,7 @@
       "deadlineEpochMs": 1785427199000,
       "website": "https://env.ustc.edu.cn/2026/0703/c9571a746160/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:45+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -905,7 +1007,7 @@
       "deadlineEpochMs": 1785427199000,
       "website": "https://hf.cas.cn/sbpy/yjsc/zs/zs_zsxc/zsxc_dxsxly/202607/t20260702_8237108.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:45+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -938,6 +1040,57 @@
       }
     },
     {
+      "projectId": "2027|南京理工大学|计算机科学与工程学院/人工智能学院|2026校园开放日",
+      "feedId": "camp2027",
+      "name": "南京理工大学",
+      "institute": "计算机科学与工程学院/人工智能学院",
+      "project": "计算机科学与工程学院/人工智能学院｜南京理工大学计算机科学与工程学院（人工智能学院、软件学院）2026年全国“优秀大学生”校园开放日活动公告",
+      "eventType": "校园开放日/学术活动",
+      "description": "计算机科学与工程学院/人工智能学院｜南京理工大学计算机科学与工程学院（人工智能学院、软件学院）2026年全国“优秀大学生”校园开放日活动公告",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-07-30T23:59:59+08:00",
+      "deadlineOriginal": "职军工央企、头部互联网、信创龙头企业，发展前景广阔，热忱欢迎全国优秀本科生走进南理工计算机学院。 1. 人数 100人左右 2. 申请时间 2026年7月5日-7月30日（不在时间范围内的申请无效） 3. 申请条件 （1）申请人为2027届全日制本科应届在校生，本科综合成绩优异，专业排名靠前，英语水平良好（提供含专业排名及绩点的成绩单、四六级/雅思/托福等英语成绩证明）； （2）本科专业为计算机类、人工智能、软件工程、电子信息、自动化、数学等计算机相关及相近专业，具备扎实专业基础，拥有科创、算法竞赛、科研项目经历者",
+      "deadlineEpochMs": 1785427199000,
+      "website": "https://mp.weixin.qq.com/s/WpList0QghYx0-tMN5WBRA",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:55+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://mp.weixin.qq.com/s/WpList0QghYx0-tMN5WBRA"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/176349"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文自动摘录未见推荐信要求；推荐信模板：未见推荐信模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：官方正文列出申请材料，提交前需按原文逐项核对"
+      }
+    },
+    {
       "projectId": "2027|东南大学|自动化学院|接收推荐免试研究生报名",
       "feedId": "camp2027",
       "name": "东南大学",
@@ -951,7 +1104,7 @@
       "deadlineEpochMs": 1785470400000,
       "website": "https://automation.seu.edu.cn/2026/0707/c24460a575743/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:45+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -997,7 +1150,7 @@
       "deadlineEpochMs": 1785470400000,
       "website": "https://ic.seu.edu.cn/2026/0708/c62523a576138/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:45+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1043,7 +1196,7 @@
       "deadlineEpochMs": 1785513540000,
       "website": "https://grs.um.edu.mo/index.php/prospective-students/doctoral-degrees-programmes/",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:45+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1068,7 +1221,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：需要推荐信 2 封；推荐信模板：https://grs.um.edu.mo/index.php/prospective-students/doctoral-degrees-programmes/mainland-china-students/"
+        "summary": "推荐信数量：需要推荐信 2 封；推荐信模板：官方系统链接"
       },
       "materials": {
         "status": "confirmed",
@@ -1089,7 +1242,7 @@
       "deadlineEpochMs": 1785513599000,
       "website": "https://www.lamda.nju.edu.cn/recruit-2027/recruit-2027.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:46+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1135,7 +1288,7 @@
       "deadlineEpochMs": 1785556800000,
       "website": "https://stat.seu.edu.cn/2026/0708/c60842a575966/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:46+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1181,7 +1334,7 @@
       "deadlineEpochMs": 1785592800000,
       "website": "https://tjjt.tongji.edu.cn/info/1561/11990.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:46+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1210,7 +1363,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知"
+        "summary": "材料复杂度：未知；材料清单：材料复杂度：未知"
       }
     },
     {
@@ -1227,7 +1380,7 @@
       "deadlineEpochMs": 1785592800000,
       "website": "https://umi.tongji.edu.cn/info/1070/2237.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:46+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1273,7 +1426,7 @@
       "deadlineEpochMs": 1786161600000,
       "website": "https://smjgs.seu.edu.cn/2026/0710/c8471a576384/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:46+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1319,7 +1472,7 @@
       "deadlineEpochMs": 1786334400000,
       "website": "https://cyber.seu.edu.cn/2026/0709/c18210a576205/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:46+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1352,6 +1505,57 @@
       }
     },
     {
+      "projectId": "2027|东南大学|计算机科学与工程学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "东南大学",
+      "institute": "计算机科学与工程学院",
+      "project": "计算机科学与工程学院｜东南大学计算机科学与工程学院、软件学院2027年接收推荐免试研究生报名通知",
+      "eventType": "推免预报名",
+      "description": "计算机科学与工程学院｜东南大学计算机科学与工程学院、软件学院2027年接收推荐免试研究生报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-10T12:00:00+08:00",
+      "deadlineOriginal": "官方 PDF：报名时间：2026 年 7 月 10 日下午 16:00 - 2026 年 8 月 10 日中午 12:00。",
+      "deadlineEpochMs": 1786334400000,
+      "website": "https://cs.seu.edu.cn/2026/0710/c49342a576431/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:50+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://cs.seu.edu.cn/2026/0710/c49342a576431/page.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/199829"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文自动摘录未见推荐信要求；推荐信模板：未见推荐信模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：未知"
+      }
+    },
+    {
       "projectId": "2027|东南大学|雷恩研究生学院计算机技术专业|推免预报名",
       "feedId": "camp2027",
       "name": "东南大学",
@@ -1365,7 +1569,7 @@
       "deadlineEpochMs": 1786334400000,
       "website": "https://cs.seu.edu.cn/2026/0710/c49342a576440/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:46+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1411,7 +1615,7 @@
       "deadlineEpochMs": 1786352400000,
       "website": "https://gsao.fudan.edu.cn/fb/0b/c15014a785163/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:46+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1457,7 +1661,7 @@
       "deadlineEpochMs": 1786352400000,
       "website": "https://gsao.fudan.edu.cn/fb/0b/c15014a785163/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:46+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1503,7 +1707,7 @@
       "deadlineEpochMs": 1786550340000,
       "website": "https://cse.sysu.edu.cn/article/3587",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:46+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1549,7 +1753,7 @@
       "deadlineEpochMs": 1786550399000,
       "website": "https://sxy.nuist.edu.cn/2026/0717/c6814a300221/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:46+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1570,7 +1774,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：自理；报销：未见报销安排"
+        "summary": "住宿：住宿：自理；报销：未见报销安排；餐食：住宿：自理；报销：未见报销安排；交通：住宿：自理；报销：未见报销安排；报销：住宿：自理；报销：未见报销安排"
       },
       "recommendation": {
         "status": "confirmed",
@@ -1579,6 +1783,57 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：未知；材料清单：报名表扫描件、学生证或录取通知书、资质证明（奖项、作品、论文、课题等），合并单PDF邮件提交"
+      }
+    },
+    {
+      "projectId": "2027|合肥工业大学|计算机与信息学院（人工智能学院）|2026夏令营",
+      "feedId": "camp2027",
+      "name": "合肥工业大学",
+      "institute": "计算机与信息学院（人工智能学院）",
+      "project": "计算机与信息学院（人工智能学院）｜合肥工业大学计算机与信息学院2026年优秀大学生暑期夏令营活动通知",
+      "eventType": "优秀大学生夏令营",
+      "description": "计算机与信息学院（人工智能学院）｜合肥工业大学计算机与信息学院2026年优秀大学生暑期夏令营活动通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-12T23:59:59+08:00",
+      "deadlineOriginal": "平：英语水平良好，通过英语四级。 5.推免潜力：预计能获得所在学校推荐免试攻读研究生资格。 二、申请程序及材料 1.网上报名 (1)报名时间：即日起至2026年8月12日23:59。 (2)报名方式：申请人将申请材料按顺序扫描合并成一个PDF文件，文件命名为\"计算机与信息学院夏令营2026-姓名-本科学校\"，发送至指定邮箱：官方指定邮箱。 2.电子材料清单 (1)《合肥工业大学计算机与信息学院2026年优秀大学生夏令营申请表》（附件1，本人手写签名）； (2)本科阶段前五学期成绩单（需加盖学",
+      "deadlineEpochMs": 1786550399000,
+      "website": "https://ci.hfut.edu.cn/info/1063/16556.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:59+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://ci.hfut.edu.cn/info/1063/16556.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/245916"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "online",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文提到推荐信/专家推荐，数量和模板需提交前复核；推荐信模板：官方页面含附件，模板需下载复核"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：官方正文列出申请材料，提交前需按原文逐项核对"
       }
     },
     {
@@ -1595,7 +1850,7 @@
       "deadlineEpochMs": 1786680000000,
       "website": "https://electronic.seu.edu.cn/2026/0708/c11484a575952/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:46+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1641,7 +1896,7 @@
       "deadlineEpochMs": 1786694400000,
       "website": "https://stat-ds.sustech.edu.cn/notice/437",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:46+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1662,7 +1917,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：异地学校营员提供预推免期间免费住宿；报销：最终录取考生及能提供贫困生认定的困难外地考生可报销，最高不超过高铁二等座票价"
+        "summary": "住宿：住宿：异地学校营员提供预推免期间免费住宿；报销：最终录取考生及能提供贫困生认定的困难外地考生可报销，最高不超过高铁二等座票价；餐食：住宿：异地学校营员提供预推免期间免费住宿；报销：最终录取考生及能提供贫困生认定的困难外地考生可报销，最高不超过高铁二等座票价；交通：住宿：异地学校营员提供预推免期间免费住宿；报销：最终录取考生及能提供贫困生认定的困难外地考生可报销，最高不超过高铁二等座票价；报销：住宿：异地学校营员提供预推免期间免费住宿；报销：最终录取考生及能提供贫困生认定的困难外地考生可报销，最高不超过高铁二等座票价"
       },
       "recommendation": {
         "status": "not-published",
@@ -1687,7 +1942,7 @@
       "deadlineEpochMs": 1786766400000,
       "website": "https://ins.seu.edu.cn/2026/0708/c26759a576105/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:46+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1733,7 +1988,7 @@
       "deadlineEpochMs": 1786809540000,
       "website": "https://isd.hkust.edu.hk/academics/early-admission/",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:46+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1779,7 +2034,7 @@
       "deadlineEpochMs": 1786809540000,
       "website": "https://cse.hkust.edu.hk/pg/admissions/recruiting/",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:46+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1808,7 +2063,58 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：中"
+        "summary": "材料复杂度：中；材料清单：材料复杂度：中"
+      }
+    },
+    {
+      "projectId": "2027|中央民族大学|信息工程学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "中央民族大学",
+      "institute": "信息工程学院",
+      "project": "信息工程学院｜中央民族大学信息工程学院关于2027年接收推荐免试研究生预报名的通知",
+      "eventType": "推免预报名",
+      "description": "信息工程学院｜中央民族大学信息工程学院关于2027年接收推荐免试研究生预报名的通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-18T23:59:59+08:00",
+      "deadlineOriginal": "或雅思 5 分及以上或全国大学英语四级考试达到 425 分及以上。 四、接收程序 （一） 申请人报名。 请 申请人 于 2026 年 8 月 1 日 0 时— 8 月 18 日 17 时， 登录中央民族大学研究生招生平台系统（ 官方系统链接 ）进行报名，并按要求提交报名材料。 （二） 公布进入复试名单。 学院考核组将 对申请者的申请资格和报名材料进行审核 并 择优 确定进入复试名单 。 不符合条件者不 进行审核 。 复试名单将于 8 月 23 日前在学院网站 （ 官方系统链接",
+      "deadlineEpochMs": 1787068799000,
+      "website": "https://xingong.muc.edu.cn/info/1041/6425.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:59+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://xingong.muc.edu.cn/info/1041/6425.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/245919"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文提到推荐信/专家推荐，数量和模板需提交前复核；推荐信模板：未见推荐信模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：官方正文列出申请材料，提交前需按原文逐项核对"
       }
     },
     {
@@ -1825,7 +2131,7 @@
       "deadlineEpochMs": 1787238000000,
       "website": "https://riis.sufe.edu.cn/jxChinese/14/36/c10362a267318/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:46+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1850,7 +2156,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：需2位副教授（含）以上老师分别推荐，系统下载推荐信，专家填写签字后上传彩色扫描件；推荐信模板：https://yz.sufe.edu.cn/ks/"
+        "summary": "推荐信数量：需2位副教授（含）以上老师分别推荐，系统下载推荐信，专家填写签字后上传彩色扫描件；推荐信模板：官方系统链接"
       },
       "materials": {
         "status": "confirmed",
@@ -1871,7 +2177,7 @@
       "deadlineEpochMs": 1787241599000,
       "website": "https://gs.sufe.edu.cn/Home/Detail/8021",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:48+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1896,7 +2202,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：校级官网要求2位副教授（含）以上老师分别推荐，系统下载模板后由专家填写签字；推荐信模板：https://yz.sufe.edu.cn/ks/"
+        "summary": "推荐信数量：校级官网要求2位副教授（含）以上老师分别推荐，系统下载模板后由专家填写签字；推荐信模板：官方系统链接"
       },
       "materials": {
         "status": "confirmed",
@@ -1917,7 +2223,7 @@
       "deadlineEpochMs": 1787241599000,
       "website": "https://ssds.sufe.edu.cn/13/aa/c18504a267178/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:48+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1942,7 +2248,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：需2封副教授（含）以上专家推荐信，从系统下载、专家填写签字后扫描上传；推荐信模板：https://yz.sufe.edu.cn/ks/"
+        "summary": "推荐信数量：需2封副教授（含）以上专家推荐信，从系统下载、专家填写签字后扫描上传；推荐信模板：官方系统链接"
       },
       "materials": {
         "status": "confirmed",
@@ -1963,7 +2269,7 @@
       "deadlineEpochMs": 1787241599000,
       "website": "https://gs.sufe.edu.cn/Home/Detail/8021",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:48+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -1988,11 +2294,62 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：需2位副教授（含）以上老师分别推荐；推荐信模板：https://yz.sufe.edu.cn/ks/"
+        "summary": "推荐信数量：需2位副教授（含）以上老师分别推荐；推荐信模板：官方系统链接"
       },
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：高；材料清单：系统申请表"
+      }
+    },
+    {
+      "projectId": "2027|重庆邮电大学|计算机科学与技术学院/人工智能学院|2026夏令营",
+      "feedId": "camp2027",
+      "name": "重庆邮电大学",
+      "institute": "计算机科学与技术学院/人工智能学院",
+      "project": "计算机科学与技术学院/人工智能学院｜重庆邮电大学人工智能学院2026年全国优秀大学生夏令营（线上）活动通知",
+      "eventType": "优秀大学生夏令营",
+      "description": "计算机科学与技术学院/人工智能学院｜重庆邮电大学人工智能学院2026年全国优秀大学生夏令营（线上）活动通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-20T23:59:59+08:00",
+      "deadlineOriginal": "优秀， 本科前三学年（或前五个学期）总评成绩排名在就读专业前20%之内(在科研方面有突出表现的学生可不受此约束) 。 04 申请程序 1、 网上报名（2026年8月20日18:00前完成报名，逾期不受理） 申请人 扫描以下二维码 ，按提示和要求填写相关信息（包括申请人个人信息、三个推免意向导师志愿等）。 报名信息请务必真实、准确。凡提供虚假信息的，一经查实，即取消申请人营员资格，并保留追溯的权利。 2、我院将根据报名情况和择优原则，对申请者提交的网报信息进行审核并最终确定入选营员名单。 3、我院将在 2026年8月",
+      "deadlineEpochMs": 1787241599000,
+      "website": "https://mp.weixin.qq.com/s/SrnecIiHhHnzZBa0HMH9Kg",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:27:01+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://mp.weixin.qq.com/s/SrnecIiHhHnzZBa0HMH9Kg"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/250217"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "online",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文自动摘录未见推荐信要求；推荐信模板：未见推荐信模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：官方正文列出申请材料，提交前需按原文逐项核对"
       }
     },
     {
@@ -2009,7 +2366,7 @@
       "deadlineEpochMs": 1787302800000,
       "website": "https://www.sice.uestc.edu.cn/info/1142/16511.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:48+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2055,7 +2412,7 @@
       "deadlineEpochMs": 1787475600000,
       "website": "https://srias.tongji.edu.cn/cb/69/c17827a379753/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:48+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2088,6 +2445,108 @@
       }
     },
     {
+      "projectId": "2027|中山大学|集成电路学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "中山大学",
+      "institute": "集成电路学院",
+      "project": "集成电路学院｜中山大学集成电路学院2027年接收优秀应届本科毕业生推荐免试攻读研究生报名通知",
+      "eventType": "推免预报名",
+      "description": "集成电路学院｜中山大学集成电路学院2027年接收优秀应届本科毕业生推荐免试攻读研究生报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-23T23:59:59+08:00",
+      "deadlineOriginal": "业伦理、诚实守信等方面的不当行为，一经查实，立即取消其申请资格、录取资格、入学资格，已入学的取消学籍。 （二）申请流程 1.网上报名时间：截止时间为 2026年8月23日23：59 。 2.报名链接：官方系统链接。 3.报名链接中须上传电子版申请材料，申请人请按照报名材料顺序合并成一个PDF（大小不超过20M），命名规则要求为：报考专业名称+直博/硕士+本科学校名称+姓名（示例：集成电路科学与工程+直博+中山大学+张三），材料将用于资格审查。所有申请材料应尽量简明，并按顺序",
+      "deadlineEpochMs": 1787500799000,
+      "website": "https://sic.sysu.edu.cn/rc/rc05/1421838.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:50+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://sic.sysu.edu.cn/rc/rc05/1421838.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/239865"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文提到推荐信/专家推荐，数量和模板需提交前复核；推荐信模板：官方页面含附件，模板需下载复核"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：官方正文列出申请材料，提交前需按原文逐项核对"
+      }
+    },
+    {
+      "projectId": "2027|吉林大学|通信工程学院|2026校园开放日",
+      "feedId": "camp2027",
+      "name": "吉林大学",
+      "institute": "通信工程学院",
+      "project": "通信工程学院｜吉林大学通信工程学院2026年校园学术活动开放日通知",
+      "eventType": "校园开放日/学术活动",
+      "description": "通信工程学院｜吉林大学通信工程学院2026年校园学术活动开放日通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-23T23:59:59+08:00",
+      "deadlineOriginal": "保研通知网给出截止 2026-08-23 23:59:59；官方页面本轮可读但自动摘录未定位同一截止原文，需提交前复核。",
+      "deadlineEpochMs": 1787500799000,
+      "website": "https://dce.jlu.edu.cn/info/1032/11402.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:53+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://dce.jlu.edu.cn/info/1032/11402.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/151306"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "2026 年 9 月 3 日— 9 月 4 日 2. 活动地点：吉林大学南湖校区第一教学楼 3. 活动内容： （ 1 ）学术交流 （ 2 ）师生见面会 （ 3 ）参观考察 三、申请流程 1. 网上报名：申请的同学于 2026 年 8 月 14 日 8:00 至 23 日 24:00 登录以下网址进行网上报名 官方系统链接 ， 仅填写第一志愿即可"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "吉林大学南湖校区第一教学楼 3. 活动内容： （ 1 ）学术交流 （ 2 ）师生见面会 （ 3 ）参观考察 三、申请流程 1. 网上报名：申请的同学于 2026 年 8 月 14 日 8:00 至 23 日 24:00 登录以下网址进行网上报名 官方系统链接 ， 仅填写第一志愿即可"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文自动摘录未见推荐信要求；推荐信模板：未见推荐信模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：官方正文列出申请材料，提交前需按原文逐项核对"
+      }
+    },
+    {
       "projectId": "2027|吉林大学|公共卫生学院医学信息学|校园学术活动开放日",
       "feedId": "camp2027",
       "name": "吉林大学",
@@ -2101,7 +2560,7 @@
       "deadlineEpochMs": 1787529600000,
       "website": "https://sph.jlu.edu.cn/info/1146/9760.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:48+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2134,6 +2593,108 @@
       }
     },
     {
+      "projectId": "2027|同济大学|电子与信息工程学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "同济大学",
+      "institute": "电子与信息工程学院",
+      "project": "电子与信息工程学院｜同济大学电子与信息工程学院2027年接收推荐免试研究生（含直接攻博）预报名通知",
+      "eventType": "推免预报名",
+      "description": "电子与信息工程学院｜同济大学电子与信息工程学院2027年接收推荐免试研究生（含直接攻博）预报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-25T12:00:00+08:00",
+      "deadlineOriginal": "官方 PDF：申请起止时间：即日起至 2026 年 8 月 25 日 12:00。",
+      "deadlineEpochMs": 1787630400000,
+      "website": "https://see.tongji.edu.cn/info/1147/14904.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:52+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://see.tongji.edu.cn/info/1147/14904.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/250156"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文自动摘录未见推荐信要求；推荐信模板：未见推荐信模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中"
+      }
+    },
+    {
+      "projectId": "2027|同济大学|计算机科学与技术学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "同济大学",
+      "institute": "计算机科学与技术学院",
+      "project": "计算机科学与技术学院｜同济大学计算机科学与技术学院2027年接收推荐免试研究生（含直接攻博）预报名通知",
+      "eventType": "推免预报名",
+      "description": "计算机科学与技术学院｜同济大学计算机科学与技术学院2027年接收推荐免试研究生（含直接攻博）预报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-25T12:00:00+08:00",
+      "deadlineOriginal": "官方 PDF：申请时间即日起至 2026 年 8 月 25 日 12:00，逾期报名无效。",
+      "deadlineEpochMs": 1787630400000,
+      "website": "https://cs.tongji.edu.cn/info/1022/4119.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:52+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://cs.tongji.edu.cn/info/1022/4119.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/242178"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文自动摘录未见推荐信要求；推荐信模板：未见推荐信模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：未知"
+      }
+    },
+    {
       "projectId": "2027|中山大学|网络空间安全学院|推免预报名",
       "feedId": "camp2027",
       "name": "中山大学",
@@ -2147,7 +2708,7 @@
       "deadlineEpochMs": 1787673540000,
       "website": "https://scst.sysu.edu.cn/article/502",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:49+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2172,7 +2733,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：官方明确不要求推荐信；推荐信模板：https://scst.sysu.edu.cn/article/502"
+        "summary": "推荐信数量：官方明确不要求推荐信；推荐信模板：官方系统链接"
       },
       "materials": {
         "status": "confirmed",
@@ -2193,7 +2754,7 @@
       "deadlineEpochMs": 1787673600000,
       "website": "https://aiedu.ecnu.edu.cn/c3/b0/c49538a770992/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T22:54:49+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2204,11 +2765,11 @@
       "eventArrangement": {
         "mode": "unknown",
         "time": {
-          "status": "not-published",
+          "status": "confirmed",
           "summary": "待学院复试通知"
         },
         "formatLocation": {
-          "status": "not-published",
+          "status": "confirmed",
           "summary": "待学院复试通知"
         }
       },
@@ -2218,11 +2779,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "申请直接攻博的考生须上传两封副教授（或相当专业技术职务）及以上专家推荐信；硕士推荐信未单列。"
+        "summary": "推荐信数量：申请直接攻博的考生须上传两封副教授（或相当专业技术职务）及以上专家推荐信；硕士推荐信未单列。"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "有效居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书、学生个人简历与陈述、其他证明材料合并PDF；申请直接攻博须上传两封专家推荐信。"
+        "summary": "材料复杂度：未知；材料清单：有效居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书、学生个人简历与陈述、其他证明材料合并PDF；申请直接攻博须上传两封专家推荐信。"
       }
     },
     {
@@ -2239,7 +2800,7 @@
       "deadlineEpochMs": 1788105599000,
       "website": "https://yjsc.gxu.edu.cn/info/1021/4680.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:49+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2268,7 +2829,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知"
+        "summary": "材料复杂度：未知；材料清单：材料复杂度：未知"
       }
     },
     {
@@ -2285,7 +2846,7 @@
       "deadlineEpochMs": 1788163200000,
       "website": "https://sc.ecnu.edu.cn/c3/e8/c50224a771048/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T22:54:49+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2296,7 +2857,7 @@
       "eventArrangement": {
         "mode": "offline",
         "time": {
-          "status": "not-published",
+          "status": "confirmed",
           "summary": "复试等相关安排另行通知，预计于9月进行。"
         },
         "formatLocation": {
@@ -2314,7 +2875,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "有效期内居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书、个人自述和佐证材料；个人自述/成绩单/获奖论文成果/外语能力证明等4份材料按顺序合并为一个PDF上传。"
+        "summary": "材料复杂度：未知；材料清单：有效期内居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书、个人自述和佐证材料；个人自述/成绩单/获奖论文成果/外语能力证明等4份材料按顺序合并为一个PDF上传。"
       }
     },
     {
@@ -2331,7 +2892,7 @@
       "deadlineEpochMs": 1788170400000,
       "website": "https://yt.cau.edu.cn/art/2026/7/14/art_43337_1122495.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:49+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2377,7 +2938,7 @@
       "deadlineEpochMs": 1788191940000,
       "website": "https://www.cs.hku.hk/programmes/research-based/mphil-phd-admission",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:49+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2410,6 +2971,57 @@
       }
     },
     {
+      "projectId": "2027|中国科学院大学|电子电气与通信工程学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "中国科学院大学",
+      "institute": "电子电气与通信工程学院",
+      "project": "电子电气与通信工程学院｜中国科学院大学电子电气与通信工程学院接收2027级推荐免试攻读研究生公告",
+      "eventType": "推免预报名",
+      "description": "电子电气与通信工程学院｜中国科学院大学电子电气与通信工程学院接收2027级推荐免试攻读研究生公告",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-31T23:59:59+08:00",
+      "deadlineOriginal": "理健康状况良好。 三、申请和接收程序 1．网上报名 （1）登录“中国科学院大学招生信息网”，进入推荐免试生申请系统，填写相关信息，报名时间为2026年7月3日至8月31日。 网址:官方系统链接 （2）教育部推免服务系统开通后，考生需登录“全国推荐免试攻读研究生信息公开管理服务系统”进行报名，以便完成后续录取相关工作。网址:官方系统链接 2．提交材料 （1）本人电子签名的《中国科学院",
+      "deadlineEpochMs": 1788191999000,
+      "website": "https://eece.ucas.ac.cn/index.php/zh-cn/2014-06-13-06-51-06/2715-2027",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:27:01+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://eece.ucas.ac.cn/index.php/zh-cn/2014-06-13-06-51-06/2715-2027"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/176041"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文提到推荐信/专家推荐，数量和模板需提交前复核；推荐信模板：官方页面含附件，模板需下载复核"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：官方正文列出申请材料，提交前需按原文逐项核对"
+      }
+    },
+    {
       "projectId": "2027|厦门大学|创意与创新学院|设计专业学位硕士推免预报名",
       "feedId": "camp2027",
       "name": "厦门大学",
@@ -2423,7 +3035,7 @@
       "deadlineEpochMs": 1788191999000,
       "website": "https://ici.xmu.edu.cn/info/1331/12195.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:49+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2469,7 +3081,7 @@
       "deadlineEpochMs": 1788191999000,
       "website": "https://it.swufe.edu.cn/info/1166/22608.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:49+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2490,7 +3102,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：不适用（远程网络面试）；报销：不适用（远程网络面试）"
+        "summary": "住宿：住宿：不适用（远程网络面试）；报销：不适用（远程网络面试）；餐食：住宿：不适用（远程网络面试）；报销：不适用（远程网络面试）；交通：住宿：不适用（远程网络面试）；报销：不适用（远程网络面试）；报销：住宿：不适用（远程网络面试）；报销：不适用（远程网络面试）"
       },
       "recommendation": {
         "status": "not-published",
@@ -2498,7 +3110,58 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知"
+        "summary": "材料复杂度：未知；材料清单：材料复杂度：未知"
+      }
+    },
+    {
+      "projectId": "2027|南开大学|软件学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "南开大学",
+      "institute": "软件学院",
+      "project": "软件学院｜南开大学软件学院2026年接收优秀应届本科毕业生免试攻读研究生报名通知",
+      "eventType": "推免预报名",
+      "description": "软件学院｜南开大学软件学院2026年接收优秀应届本科毕业生免试攻读研究生报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-01T23:59:59+08:00",
+      "deadlineOriginal": "官方 PDF：报名时间：截止 2026 年 9 月 1 日；另有上传材料截止时间到 2026 年 9 月 3 日 23 时 59 分。",
+      "deadlineEpochMs": 1788278399000,
+      "website": "https://cs.nankai.edu.cn/info/1076/3673.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:52+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://cs.nankai.edu.cn/info/1076/3673.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/210790"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文提到推荐信/专家推荐，数量和模板需提交前复核；推荐信模板：官方页面含附件，模板需下载复核"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中"
       }
     },
     {
@@ -2515,7 +3178,7 @@
       "deadlineEpochMs": 1788620400000,
       "website": "https://cs.ecnu.edu.cn/c3/c2/c19867a771010/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T22:54:49+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2526,11 +3189,11 @@
       "eventArrangement": {
         "mode": "unknown",
         "time": {
-          "status": "not-published",
+          "status": "confirmed",
           "summary": "待学院复试通知"
         },
         "formatLocation": {
-          "status": "not-published",
+          "status": "confirmed",
           "summary": "待学院复试通知"
         }
       },
@@ -2544,7 +3207,58 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "有效居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书。"
+        "summary": "材料复杂度：未知；材料清单：有效居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书。"
+      }
+    },
+    {
+      "projectId": "2027|哈尔滨工业大学|电子与信息工程学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "哈尔滨工业大学",
+      "institute": "电子与信息工程学院",
+      "project": "电子与信息工程学院｜哈尔滨工业大学电子与信息工程学院2027年接收优秀应届本科毕业生免试攻读研究生报名通知",
+      "eventType": "推免预报名",
+      "description": "电子与信息工程学院｜哈尔滨工业大学电子与信息工程学院2027年接收优秀应届本科毕业生免试攻读研究生报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-05T23:59:59+08:00",
+      "deadlineOriginal": "官方 PDF：我院推免预报名系统关闭时间为 9 月 5 日。",
+      "deadlineEpochMs": 1788623999000,
+      "website": "https://seie.hit.edu.cn/2026/0722/c17148a398083/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:50+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://seie.hit.edu.cn/2026/0722/c17148a398083/page.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/245933"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文自动摘录未见推荐信要求；推荐信模板：未见推荐信模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：未知"
       }
     },
     {
@@ -2561,7 +3275,7 @@
       "deadlineEpochMs": 1788742800000,
       "website": "https://gs.dlut.edu.cn/info/1173/51492.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:53+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2607,7 +3321,7 @@
       "deadlineEpochMs": 1788753600000,
       "website": "https://sei.ecnu.edu.cn/c4/0d/c33171a771085/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T22:54:49+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2618,11 +3332,11 @@
       "eventArrangement": {
         "mode": "unknown",
         "time": {
-          "status": "not-published",
+          "status": "confirmed",
           "summary": "待学院复试通知"
         },
         "formatLocation": {
-          "status": "not-published",
+          "status": "confirmed",
           "summary": "待学院复试通知"
         }
       },
@@ -2636,7 +3350,58 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "有效居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书、本科阶段成绩排名证明、其他证明材料；硕士申请人备用信息填写意向研究领域，直博申请人填写意向导师姓名。"
+        "summary": "材料复杂度：未知；材料清单：有效居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书、本科阶段成绩排名证明、其他证明材料；硕士申请人备用信息填写意向研究领域，直博申请人填写意向导师姓名。"
+      }
+    },
+    {
+      "projectId": "2027|大连理工大学|控制科学与工程学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "大连理工大学",
+      "institute": "控制科学与工程学院",
+      "project": "控制科学与工程学院｜大连理工大学控制科学与工程学院2027年接收推荐免试研究生预报名通知",
+      "eventType": "推免预报名",
+      "description": "控制科学与工程学院｜大连理工大学控制科学与工程学院2027年接收推荐免试研究生预报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-07T23:59:59+08:00",
+      "deadlineOriginal": "： 专业代码 专业名称 学位类型、层次 081100 控制科学与工程 学术型 085406 控制工程 专业学位型 三、报名时间 报名时间 7 月 20 日 ——9月 7 日 24：00。 四、报名方式 1、申请者登录“大连理工大学接收推荐免试攻读研究生预报名系统”官方系统链接 进行报名，报名前请仔细阅读申请须知，并按照其要求完成申报； 注意：招生项目请选择 “推免生预报名” 2、申请者须在报名系统中提交如下材料： （ 1）本科学习期间成绩单，需有本科所在学",
+      "deadlineEpochMs": 1788796799000,
+      "website": "https://scse.dlut.edu.cn/info/1471/15392.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:53+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://scse.dlut.edu.cn/info/1471/15392.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/223231"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文自动摘录未见推荐信要求；推荐信模板：未见推荐信模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：官方正文列出申请材料，提交前需按原文逐项核对"
       }
     },
     {
@@ -2653,7 +3418,7 @@
       "deadlineEpochMs": 1788840000000,
       "website": "https://dase.ecnu.edu.cn/c4/1f/c41465a771103/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T22:54:49+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2664,11 +3429,11 @@
       "eventArrangement": {
         "mode": "unknown",
         "time": {
-          "status": "not-published",
+          "status": "confirmed",
           "summary": "待学院复试通知"
         },
         "formatLocation": {
-          "status": "not-published",
+          "status": "confirmed",
           "summary": "待学院复试通知"
         }
       },
@@ -2682,7 +3447,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "有效居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书、个人陈述、本科学习成绩单、外语能力证明、获奖证明及其他能反映研究能力和创新潜质的材料；其他材料合并为小于10M的PDF上传。"
+        "summary": "材料复杂度：未知；材料清单：有效居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书、个人陈述、本科学习成绩单、外语能力证明、获奖证明及其他能反映研究能力和创新潜质的材料；其他材料合并为小于10M的PDF上传。"
       }
     },
     {
@@ -2699,7 +3464,7 @@
       "deadlineEpochMs": 1789005600000,
       "website": "https://geoai.ecnu.edu.cn/c3/bc/c48289a771004/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T22:54:49+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2710,11 +3475,11 @@
       "eventArrangement": {
         "mode": "unknown",
         "time": {
-          "status": "not-published",
+          "status": "confirmed",
           "summary": "待学院复试通知"
         },
         "formatLocation": {
-          "status": "not-published",
+          "status": "confirmed",
           "summary": "待学院复试通知"
         }
       },
@@ -2728,7 +3493,160 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "有效居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书、推免生资格证明、本科成绩单、英语/计算机等级证书和获奖证书、论文/专利及其他研究能力材料；按规定顺序合并为一个PDF上传。"
+        "summary": "材料复杂度：未知；材料清单：有效居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书、推免生资格证明、本科成绩单、英语/计算机等级证书和获奖证书、论文/专利及其他研究能力材料；按规定顺序合并为一个PDF上传。"
+      }
+    },
+    {
+      "projectId": "2027|厦门大学|电子科学与技术学院（国家示范性微电子学院）|推免预报名",
+      "feedId": "camp2027",
+      "name": "厦门大学",
+      "institute": "电子科学与技术学院（国家示范性微电子学院）",
+      "project": "电子科学与技术学院（国家示范性微电子学院）｜厦门大学电子科学与技术学院、集成电路学院关于2027年招收推荐免试研究生（含直博生）预报名的通知",
+      "eventType": "推免预报名",
+      "description": "电子科学与技术学院（国家示范性微电子学院）｜厦门大学电子科学与技术学院、集成电路学院关于2027年招收推荐免试研究生（含直博生）预报名的通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T23:59:59+08:00",
+      "deadlineOriginal": "到 425 分及以上，或者 TOEFL 、 GMAT 、 GRE 或雅思考试成绩达到总分的 60% 及以上亦可。 二、申请程序 （一）申请流程 1. 即日起到 9 月 10 日 ，申请人可登录厦门大学推免生管理系统（ 官方系统链接 ）， 注册后在系统中填写报名信息， 并在报名系统备注栏填写 1-3 名意向导师 ， 提交申请。 提交预报名申请并上传附件材料，上传附件材料后表示报名申请成功。 2 ．待教育部开通 “ 全国推荐免试攻读研究生（免初试、转段）信息公开管理服务系统 ”",
+      "deadlineEpochMs": 1789055999000,
+      "website": "https://ese.xmu.edu.cn/info/1018/35471.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:53+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://ese.xmu.edu.cn/info/1018/35471.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/223223"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文提到推荐信/专家推荐，数量和模板需提交前复核；推荐信模板：官方页面含附件，模板需下载复核"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：官方正文列出申请材料，提交前需按原文逐项核对"
+      }
+    },
+    {
+      "projectId": "2027|天津大学|电气自动化与信息工程学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "天津大学",
+      "institute": "电气自动化与信息工程学院",
+      "project": "电气自动化与信息工程学院｜天津大学电气自动化与信息工程学院2027级研究生招生推免（普通推免）报名安排",
+      "eventType": "推免预报名",
+      "description": "电气自动化与信息工程学院｜天津大学电气自动化与信息工程学院2027级研究生招生推免（普通推免）报名安排",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T23:59:59+08:00",
+      "deadlineOriginal": "用于前期报名登记、信息采集。 1.申请人在我校规定时间内，按要求填写本人各项真实信息，学院会根据申请时间分批收集、审核考生信息。 系统开放时间：7月7日12点-9月10日24点 集中审核时间：第一批次8月21日，第二批次9月11日 2.申请人还需按照教育部、本科所在学校和省市招办要求在规定时间内登录教育部推荐免试服务系统，完成填报志愿、缴纳报名费、接受复试确认、接受待录取确认等环节，完成最终录取，具体网址和系统开放时间等内容后续将在天津大学研究生招生网（官方系统链接）另行通知。 3.学",
+      "deadlineEpochMs": 1789055999000,
+      "website": "https://mp.weixin.qq.com/s/zGLQBWGOPKA2iB8J6L1IJQ",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:52+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://mp.weixin.qq.com/s/zGLQBWGOPKA2iB8J6L1IJQ"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/223230"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文自动摘录未见推荐信要求；推荐信模板：未见推荐信模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：官方正文列出申请材料，提交前需按原文逐项核对"
+      }
+    },
+    {
+      "projectId": "2027|西安电子科技大学|计算机科学与技术学院（示范性软件学院）|推免预报名",
+      "feedId": "camp2027",
+      "name": "西安电子科技大学",
+      "institute": "计算机科学与技术学院（示范性软件学院）",
+      "project": "计算机科学与技术学院（示范性软件学院）｜西安电子科技大学计算机科学与技术学院2027年推荐免试研究生招生预报名的通知",
+      "eventType": "推免预报名",
+      "description": "计算机科学与技术学院（示范性软件学院）｜西安电子科技大学计算机科学与技术学院2027年推荐免试研究生招生预报名的通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T23:59:59+08:00",
+      "deadlineOriginal": "生资格。（正式报名阶段未取得推免生资格的，报名自动无效）。 5.无任何学术不端行为记录，无任何不良诚信或违法违纪行为记录。 三、报名流程 1.报名时间：即日起-9月10日17:00，请登陆西安电子科技大学研究生招生服务平台官方系统链接，点击“2027年推免生预报名”进行报名。 导师介绍： 官方系统链接。 招生专业 导师选择要求 导师选择要求 学术",
+      "deadlineEpochMs": 1789055999000,
+      "website": "https://cs.xidian.edu.cn/info/1003/25704.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:57+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://cs.xidian.edu.cn/info/1003/25704.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/239864"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文自动摘录未见推荐信要求；推荐信模板：官方页面含附件，模板需下载复核"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：官方正文列出申请材料，提交前需按原文逐项核对"
       }
     },
     {
@@ -2745,7 +3663,7 @@
       "deadlineEpochMs": 1789142340000,
       "website": "https://www.polyu.edu.hk/study/pg/rpg/20262/dsai",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:53+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2770,7 +3688,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：需要推荐信 2 封；推荐信模板：https://www.polyu.edu.hk/study/pg/rpg/20262/dsai"
+        "summary": "推荐信数量：需要推荐信 2 封；推荐信模板：官方系统链接"
       },
       "materials": {
         "status": "confirmed",
@@ -2791,7 +3709,7 @@
       "deadlineEpochMs": 1789228799000,
       "website": "https://cc.nankai.edu.cn/2026/0709/c13297a600172/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:53+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2837,7 +3755,7 @@
       "deadlineEpochMs": 1789290000000,
       "website": "https://ieeic.ecnu.edu.cn/c4/1e/c4170a771102/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T22:54:49+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2848,11 +3766,11 @@
       "eventArrangement": {
         "mode": "unknown",
         "time": {
-          "status": "not-published",
+          "status": "confirmed",
           "summary": "待学院复试通知"
         },
         "formatLocation": {
-          "status": "not-published",
+          "status": "confirmed",
           "summary": "待学院复试通知"
         }
       },
@@ -2866,7 +3784,58 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "有效居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书、证明材料；证明材料按顺序排列，合并为一个PDF文档，并在文档首页列出目录。"
+        "summary": "材料复杂度：未知；材料清单：有效居民身份证、教育部学籍在线验证报告、预报名申请表、诚信承诺书、证明材料；证明材料按顺序排列，合并为一个PDF文档，并在文档首页列出目录。"
+      }
+    },
+    {
+      "projectId": "2027|大连理工大学|信息与通信工程学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "大连理工大学",
+      "institute": "信息与通信工程学院",
+      "project": "信息与通信工程学院｜大连理工大学信息与通信工程学院2027年接收推荐免试研究生预报名通知",
+      "eventType": "推免预报名",
+      "description": "信息与通信工程学院｜大连理工大学信息与通信工程学院2027年接收推荐免试研究生预报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-13T23:59:59+08:00",
+      "deadlineOriginal": "保研通知网给出截止 2026-09-13 23:59:59；官方页面本轮可读但自动摘录未定位同一截止原文，需提交前复核。",
+      "deadlineEpochMs": 1789315199000,
+      "website": "https://ice.dlut.edu.cn/info/1208/7667.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:53+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://ice.dlut.edu.cn/info/1208/7667.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/210791"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文自动摘录未见推荐信要求；推荐信模板：未见推荐信模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：官方正文列出申请材料，提交前需按原文逐项核对"
       }
     },
     {
@@ -2883,7 +3852,7 @@
       "deadlineEpochMs": 1789315200000,
       "website": "https://yz.shmtu.edu.cn/2026/0707/c8927a294832/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:53+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2929,7 +3898,7 @@
       "deadlineEpochMs": 1789444800000,
       "website": "https://gs.dlut.edu.cn/info/1173/51492.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:53+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2975,7 +3944,7 @@
       "deadlineEpochMs": 1789487940000,
       "website": "https://sme.xidian.edu.cn/html/tzgg/jl/2026/0720/3660.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:53+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3021,7 +3990,7 @@
       "deadlineEpochMs": 1789487999000,
       "website": "https://www.graduate.nuaa.edu.cn/2026/0715/c2145a405484/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T20:26:07+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3054,6 +4023,108 @@
       }
     },
     {
+      "projectId": "2027|西安电子科技大学|人工智能学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "西安电子科技大学",
+      "institute": "人工智能学院",
+      "project": "人工智能学院｜西安电子科技大学人工智能学院2027年推荐免试研究生招生预报名通知",
+      "eventType": "推免预报名",
+      "description": "人工智能学院｜西安电子科技大学人工智能学院2027年推荐免试研究生招生预报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-18T23:59:59+08:00",
+      "deadlineOriginal": "格的考生可同样进行申请，正式报名阶段未取得推免生资格的，预报名自动无效。 三、预报名 学院 2027 年推免生预报名系统将于 2026 年 7 月 16 日至 9 月 18 日向考生开放。 考生可登录西安电子科技大学研究生招生服务平台推免生预报名系统（官方系统链接），在 “2027 年推免生预报名” 模块选择人工智能学院，按照报名要求填写相关信息，联系确认导师进行预报名（导师信息可通过西电教师主页获取https:/",
+      "deadlineEpochMs": 1789747199000,
+      "website": "https://sai.xidian.edu.cn/info/1106/28372.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:57+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://sai.xidian.edu.cn/info/1106/28372.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/236675"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文自动摘录未见推荐信要求；推荐信模板：官方页面含附件，模板需下载复核"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：官方正文列出申请材料，提交前需按原文逐项核对"
+      }
+    },
+    {
+      "projectId": "2027|西安电子科技大学|电子工程学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "西安电子科技大学",
+      "institute": "电子工程学院",
+      "project": "电子工程学院｜西安电子科技大学电子工程学院2027年推荐免试研究生招生预报名通知",
+      "eventType": "推免预报名",
+      "description": "电子工程学院｜西安电子科技大学电子工程学院2027年推荐免试研究生招生预报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-19T23:59:59+08:00",
+      "deadlineOriginal": "生可同样进行申请，正式报名阶段未取得推免生资格的，预 报名 自动 无效 。 三、预报名 1.学院202 7 年推免生预报名系统将于202 6 年7月 22 日至9月 19 日向考生开放。 2.考生可登录西安电子科技大学研究生招生服务平台推免生预报名系统（官方系统链接），在“ 202 7 年推免生预报名 ”模块选择 电子工程学院 ，按照报名要求填写相关信息，联系确认导师进行预报名（导师信息可通过西电教师主页获取htt",
+      "deadlineEpochMs": 1789833599000,
+      "website": "https://see.xidian.edu.cn/info/1053/104161.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:57+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://see.xidian.edu.cn/info/1053/104161.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/245935"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文自动摘录未见推荐信要求；推荐信模板：官方页面含附件，模板需下载复核"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：官方正文列出申请材料，提交前需按原文逐项核对"
+      }
+    },
+    {
       "projectId": "2027|同济大学|全校招生学院|接收推荐免试研究生预报名",
       "feedId": "camp2027",
       "name": "同济大学",
@@ -3067,7 +4138,7 @@
       "deadlineEpochMs": 1789833600000,
       "website": "https://yz.tongji.edu.cn/info/1010/4219.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:53+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3096,7 +4167,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知"
+        "summary": "材料复杂度：未知；材料清单：材料复杂度：未知"
       }
     },
     {
@@ -3113,7 +4184,7 @@
       "deadlineEpochMs": 1789876800000,
       "website": "https://zsgz.njau.edu.cn/info/1007/1734.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:53+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3159,7 +4230,7 @@
       "deadlineEpochMs": 1789919999000,
       "website": "https://imris.tju.edu.cn/info/1012/2352.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:53+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3180,15 +4251,66 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：仅对提前在院实习或入职开展课题研究的拟报博士人员写明提供工资津贴及住宿支持"
+        "summary": "住宿：住宿：仅对提前在院实习或入职开展课题研究的拟报博士人员写明提供工资津贴及住宿支持；餐食：住宿：仅对提前在院实习或入职开展课题研究的拟报博士人员写明提供工资津贴及住宿支持；交通：住宿：仅对提前在院实习或入职开展课题研究的拟报博士人员写明提供工资津贴及住宿支持；报销：住宿：仅对提前在院实习或入职开展课题研究的拟报博士人员写明提供工资津贴及住宿支持"
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信模板：研究院正文未提供，按相关学院后续要求执行。"
+        "summary": "推荐信数量：推荐信模板：研究院正文未提供，按相关学院后续要求执行。；推荐信模板：研究院正文未提供，按相关学院后续要求执行。"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知"
+        "summary": "材料复杂度：未知；材料清单：材料复杂度：未知"
+      }
+    },
+    {
+      "projectId": "2027|西安电子科技大学|信息力学与感知工程学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "西安电子科技大学",
+      "institute": "信息力学与感知工程学院",
+      "project": "信息力学与感知工程学院｜西安电子科技大学信息力学与感知工程学院2027年推荐免试研究生招生预报名通知",
+      "eventType": "推免预报名",
+      "description": "信息力学与感知工程学院｜西安电子科技大学信息力学与感知工程学院2027年推荐免试研究生招生预报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-20T23:59:59+08:00",
+      "deadlineOriginal": "、招生类型 我校招收推荐免试攻读硕士学位研究生（简称：推免生）和直接攻读博士学位研究生（简称：直博生）。 鼓励优秀推免生报考我校直博生。 三、报名时间 即日起-9月20日。 四、报名流程 1.预报名 (1)考生登录西电研究生招生服务平台（官方系统链接） 进行预报名，按照报名要求填写相关信息，联系确认导师进行预报名（导师信息可通过链接获取官方系统链接",
+      "deadlineEpochMs": 1789919999000,
+      "website": "https://imse.xidian.edu.cn/info/1030/6891.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:57+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://imse.xidian.edu.cn/info/1030/6891.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/242196"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文自动摘录未见推荐信要求；推荐信模板：官方页面含附件，模板需下载复核"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：官方正文列出申请材料，提交前需按原文逐项核对"
       }
     },
     {
@@ -3205,7 +4327,7 @@
       "deadlineEpochMs": 1790762400000,
       "website": "https://yz.cqu.edu.cn/news/2026-06/2553.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:53+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3251,7 +4373,7 @@
       "deadlineEpochMs": 1790783940000,
       "website": "https://www.polyu.edu.hk/study/pg/rpg/20262/eee",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:53+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3276,7 +4398,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：需要推荐信 2 封；推荐信模板：https://www.polyu.edu.hk/study/pg/rpg/20262/eee"
+        "summary": "推荐信数量：需要推荐信 2 封；推荐信模板：官方系统链接"
       },
       "materials": {
         "status": "confirmed",
@@ -3297,7 +4419,7 @@
       "deadlineEpochMs": 1790783940000,
       "website": "https://www.polyu.edu.hk/study/pg/rpg/20262/comp",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:54+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3322,7 +4444,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信模板：https://www.polyu.edu.hk/study/pg/rpg/20262/comp"
+        "summary": "推荐信数量：推荐信模板：官方系统链接；推荐信模板：官方系统链接"
       },
       "materials": {
         "status": "confirmed",
@@ -3343,7 +4465,7 @@
       "deadlineEpochMs": 1799855940000,
       "website": "https://www.polyu.edu.hk/study/pg/rpg/20263/dsai",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:54+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3368,7 +4490,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：需要推荐信 2 封；推荐信模板：https://www.polyu.edu.hk/study/pg/rpg/20263/dsai"
+        "summary": "推荐信数量：需要推荐信 2 封；推荐信模板：官方系统链接"
       },
       "materials": {
         "status": "confirmed",
@@ -3389,7 +4511,7 @@
       "deadlineEpochMs": 1801411140000,
       "website": "https://www.polyu.edu.hk/study/pg/rpg/20263/comp",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:54+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3414,7 +4536,7 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信模板：https://www.polyu.edu.hk/study/pg/rpg/20263/comp"
+        "summary": "推荐信数量：推荐信模板：官方系统链接；推荐信模板：官方系统链接"
       },
       "materials": {
         "status": "confirmed",
@@ -3435,7 +4557,7 @@
       "deadlineEpochMs": null,
       "website": "https://aiia.seu.edu.cn/palm/2026/0527/c68597a569220/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:54+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3481,7 +4603,7 @@
       "deadlineEpochMs": null,
       "website": "https://grs.cup.edu.cn/zssstzgg/91457.jhtml",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:54+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3527,7 +4649,7 @@
       "deadlineEpochMs": null,
       "website": "https://sse.ustc.edu.cn/2026/0708/c19741a746681/pagem.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:54+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3548,7 +4670,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：学院为录取营员提供住宿并承担相关活动资助；报销：次年9月研究生入学后凭证报销苏州至学校或家庭所在地的火车硬座、硬卧或动车二等座等符合规定费用。"
+        "summary": "住宿：住宿：学院为录取营员提供住宿并承担相关活动资助；报销：次年9月研究生入学后凭证报销苏州至学校或家庭所在地的火车硬座、硬卧或动车二等座等符合规定费用。；餐食：住宿：学院为录取营员提供住宿并承担相关活动资助；报销：次年9月研究生入学后凭证报销苏州至学校或家庭所在地的火车硬座、硬卧或动车二等座等符合规定费用。；交通：住宿：学院为录取营员提供住宿并承担相关活动资助；报销：次年9月研究生入学后凭证报销苏州至学校或家庭所在地的火车硬座、硬卧或动车二等座等符合规定费用。；报销：住宿：学院为录取营员提供住宿并承担相关活动资助；报销：次年9月研究生入学后凭证报销苏州至学校或家庭所在地的火车硬座、硬卧或动车二等座等符合规定费用。"
       },
       "recommendation": {
         "status": "confirmed",
@@ -3573,7 +4695,7 @@
       "deadlineEpochMs": null,
       "website": "https://ai.ucas.ac.cn/index.php/zh-cn/tzgg/7698-2027",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:57+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3598,11 +4720,62 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：专家推荐书为自愿材料，需副教授或相当职称及以上专家手写签名；推荐信模板：https://admission.ucas.ac.cn/"
+        "summary": "推荐信数量：专家推荐书为自愿材料，需副教授或相当职称及以上专家手写签名；推荐信模板：官方系统链接"
       },
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：中；材料清单：前三年课程成绩单（五年制提供前四年）"
+      }
+    },
+    {
+      "projectId": "2027|吉林大学|人工智能学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "吉林大学",
+      "institute": "人工智能学院",
+      "project": "人工智能学院｜吉林大学人工智能学院关于接收2027年优秀应届本科毕业生直接攻读博士学位研究生实施细则",
+      "eventType": "推免预报名",
+      "description": "人工智能学院｜吉林大学人工智能学院关于接收2027年优秀应届本科毕业生直接攻读博士学位研究生实施细则",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "官方确认开放，但本轮未抽取到统一截止。",
+      "deadlineEpochMs": null,
+      "website": "https://sai.jlu.edu.cn/info/1033/5450.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-25T23:26:53+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://sai.jlu.edu.cn/info/1033/5450.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/107145"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文提到推荐信/专家推荐，数量和模板需提交前复核；推荐信模板：官方页面含附件，模板需下载复核"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：官方正文列出申请材料，提交前需按原文逐项核对"
       }
     },
     {
@@ -3619,7 +4792,7 @@
       "deadlineEpochMs": null,
       "website": "https://yjszs.nudt.edu.cn/zsmh/pubweb/homePageList/newDetailed.view?keyId=14847",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:57+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3665,7 +4838,7 @@
       "deadlineEpochMs": null,
       "website": "https://grs.dlmu.edu.cn/info/1139/34511.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:57+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3711,7 +4884,7 @@
       "deadlineEpochMs": null,
       "website": "https://gs.hhu.edu.cn/_t186/2026/0710/c3624a331446/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:57+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3757,7 +4930,7 @@
       "deadlineEpochMs": null,
       "website": "https://cybersec.xjtu.edu.cn/info/1017/2181.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:57+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3803,7 +4976,7 @@
       "deadlineEpochMs": null,
       "website": "https://faculty.xauat.edu.cn/liguanlin/zh_CN/index/120261/list/index.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:57+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3849,7 +5022,7 @@
       "deadlineEpochMs": null,
       "website": "https://web.xidian.edu.cn/kwu/index.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:57+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3895,7 +5068,7 @@
       "deadlineEpochMs": null,
       "website": "https://web.xidian.edu.cn/sfwang/zsxx.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:57+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3941,7 +5114,7 @@
       "deadlineEpochMs": null,
       "website": "https://web.xidian.edu.cn/dchliu/index.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:57+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -3987,7 +5160,7 @@
       "deadlineEpochMs": null,
       "website": "https://web.xidian.edu.cn/suncong/zhaosheng.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:57+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4033,7 +5206,7 @@
       "deadlineEpochMs": null,
       "website": "https://web.xidian.edu.cn/jcao/zhaosheng.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:57+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4079,7 +5252,7 @@
       "deadlineEpochMs": null,
       "website": "https://faculty.cqupt.edu.cn/chenpeng/zh_CN/index/125984/list/index.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:58+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4125,7 +5298,7 @@
       "deadlineEpochMs": 1784505600000,
       "website": "https://icci.sjtu.edu.cn/announcement/view/2195",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4171,7 +5344,7 @@
       "deadlineEpochMs": 1783656000000,
       "website": "https://www.cse.neu.edu.cn/2026/0702/c6274a457292/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4192,7 +5365,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：自理；交通：自理"
+        "summary": "住宿：住宿：自理；交通：自理；餐食：住宿：自理；交通：自理；交通：住宿：自理；交通：自理；报销：住宿：自理；交通：自理"
       },
       "recommendation": {
         "status": "confirmed",
@@ -4217,7 +5390,7 @@
       "deadlineEpochMs": 1784390340000,
       "website": "https://cse.csu.edu.cn/info/1057/11380.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4246,7 +5419,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知"
+        "summary": "材料复杂度：未知；材料清单：材料复杂度：未知"
       }
     },
     {
@@ -4263,7 +5436,7 @@
       "deadlineEpochMs": 1784044740000,
       "website": "http://ai.ruc.edu.cn/newslist/notice/20260623106.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4309,7 +5482,7 @@
       "deadlineEpochMs": 1784440800000,
       "website": "https://agis.caas.cn/xwzx/yw/f48a1bba135d4b21a6b899087128432f.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4330,7 +5503,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：开放日期间在深免费住宿；报销：按高铁或动车二等座、硬卧、硬座标准，入营时提交发票"
+        "summary": "住宿：住宿：开放日期间在深免费住宿；报销：按高铁或动车二等座、硬卧、硬座标准，入营时提交发票；餐食：住宿：开放日期间在深免费住宿；报销：按高铁或动车二等座、硬卧、硬座标准，入营时提交发票；交通：住宿：开放日期间在深免费住宿；报销：按高铁或动车二等座、硬卧、硬座标准，入营时提交发票；报销：住宿：开放日期间在深免费住宿；报销：按高铁或动车二等座、硬卧、硬座标准，入营时提交发票"
       },
       "recommendation": {
         "status": "confirmed",
@@ -4355,7 +5528,7 @@
       "deadlineEpochMs": 1782810000000,
       "website": "https://cs.cug.edu.cn/info/1021/11791.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4384,7 +5557,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知"
+        "summary": "材料复杂度：未知；材料清单：材料复杂度：未知"
       }
     },
     {
@@ -4401,7 +5574,7 @@
       "deadlineEpochMs": null,
       "website": "https://saids.ustc.edu.cn/2026/0526/c15435a741761/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:59+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4447,7 +5620,7 @@
       "deadlineEpochMs": 1781971140000,
       "website": "https://www.ynao.ac.cn/yjsjy/jydt/zs/202605/t20260509_8197882.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4468,7 +5641,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：活动期间食宿免费；报销：往返路费按附件标准报销，并统一购买意外保险"
+        "summary": "住宿：住宿：活动期间食宿免费；报销：往返路费按附件标准报销，并统一购买意外保险；餐食：住宿：活动期间食宿免费；报销：往返路费按附件标准报销，并统一购买意外保险；交通：住宿：活动期间食宿免费；报销：往返路费按附件标准报销，并统一购买意外保险；报销：住宿：活动期间食宿免费；报销：往返路费按附件标准报销，并统一购买意外保险"
       },
       "recommendation": {
         "status": "confirmed",
@@ -4493,7 +5666,7 @@
       "deadlineEpochMs": 1782835140000,
       "website": "https://www.iie.cas.cn/xsjy/zxtz/202606/t20260612_8227807.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4539,7 +5712,7 @@
       "deadlineEpochMs": 1782403200000,
       "website": "https://big.cas.cn/yjs/zsxx/kjrh/202605/t20260528_8210320.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4560,7 +5733,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：线下营员发放定额食宿补贴；餐食：线下营员发放定额食宿补贴"
+        "summary": "住宿：住宿：线下营员发放定额食宿补贴；餐食：线下营员发放定额食宿补贴；餐食：住宿：线下营员发放定额食宿补贴；餐食：线下营员发放定额食宿补贴；交通：住宿：线下营员发放定额食宿补贴；餐食：线下营员发放定额食宿补贴；报销：住宿：线下营员发放定额食宿补贴；餐食：线下营员发放定额食宿补贴"
       },
       "recommendation": {
         "status": "confirmed",
@@ -4585,7 +5758,7 @@
       "deadlineEpochMs": 1783699140000,
       "website": "https://soc.ucas.ac.cn/index.php/zh/zsxxs/shzs/1572-2027",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4636,7 +5809,7 @@
       "deadlineEpochMs": 1782143940000,
       "website": "https://xao.cas.cn/xwdt/zs/202605/t20260508_8197477.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4657,7 +5830,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：天文台承担夏令营期间住宿费用；报销：按家庭/院校所在地至乌鲁木齐火车硬卧中铺或高铁二等座学生票标准报销单程。"
+        "summary": "住宿：住宿：天文台承担夏令营期间住宿费用；报销：按家庭/院校所在地至乌鲁木齐火车硬卧中铺或高铁二等座学生票标准报销单程。；餐食：住宿：天文台承担夏令营期间住宿费用；报销：按家庭/院校所在地至乌鲁木齐火车硬卧中铺或高铁二等座学生票标准报销单程。；交通：住宿：天文台承担夏令营期间住宿费用；报销：按家庭/院校所在地至乌鲁木齐火车硬卧中铺或高铁二等座学生票标准报销单程。；报销：住宿：天文台承担夏令营期间住宿费用；报销：按家庭/院校所在地至乌鲁木齐火车硬卧中铺或高铁二等座学生票标准报销单程。"
       },
       "recommendation": {
         "status": "confirmed",
@@ -4682,7 +5855,7 @@
       "deadlineEpochMs": 1782403140000,
       "website": "https://xjipc.cas.cn/yjs/tzgg/202605/t20260511_8199711.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4703,7 +5876,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：免费住宿，地点为所内；报销：疆内生源200元/人，疆外生源500元/人。"
+        "summary": "住宿：住宿：免费住宿，地点为所内；报销：疆内生源200元/人，疆外生源500元/人。；餐食：住宿：免费住宿，地点为所内；报销：疆内生源200元/人，疆外生源500元/人。；交通：住宿：免费住宿，地点为所内；报销：疆内生源200元/人，疆外生源500元/人。；报销：住宿：免费住宿，地点为所内；报销：疆内生源200元/人，疆外生源500元/人。"
       },
       "recommendation": {
         "status": "confirmed",
@@ -4728,7 +5901,7 @@
       "deadlineEpochMs": 1782835140000,
       "website": "https://www.kiz.ac.cn/yjsjy/tzgg/202605/t20260509_8198981.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4749,7 +5922,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：活动期间提供住宿；报销：动车/高铁二等座、普通列车硬卧标准"
+        "summary": "住宿：住宿：活动期间提供住宿；报销：动车/高铁二等座、普通列车硬卧标准；餐食：住宿：活动期间提供住宿；报销：动车/高铁二等座、普通列车硬卧标准；交通：住宿：活动期间提供住宿；报销：动车/高铁二等座、普通列车硬卧标准；报销：住宿：活动期间提供住宿；报销：动车/高铁二等座、普通列车硬卧标准"
       },
       "recommendation": {
         "status": "confirmed",
@@ -4774,7 +5947,7 @@
       "deadlineEpochMs": 1783007940000,
       "website": "https://sia.cas.cn/zpjy/yjsjy/zs/zsgg/202605/t20260525_8208968.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4795,7 +5968,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：研究所提供夏令营期间在沈阳的住宿；报销：录取为2027级研究生后，入学报到后再报销返程车船费"
+        "summary": "住宿：住宿：研究所提供夏令营期间在沈阳的住宿；报销：录取为2027级研究生后，入学报到后再报销返程车船费；餐食：住宿：研究所提供夏令营期间在沈阳的住宿；报销：录取为2027级研究生后，入学报到后再报销返程车船费；交通：住宿：研究所提供夏令营期间在沈阳的住宿；报销：录取为2027级研究生后，入学报到后再报销返程车船费；报销：住宿：研究所提供夏令营期间在沈阳的住宿；报销：录取为2027级研究生后，入学报到后再报销返程车船费"
       },
       "recommendation": {
         "status": "confirmed",
@@ -4820,7 +5993,7 @@
       "deadlineEpochMs": 1783699140000,
       "website": "https://www.siat.ac.cn/jyjx/zsxx/xly/202606/t20260603_8213255.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4841,7 +6014,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：夏令营期间免费住宿；报销：火车/汽车硬座、硬卧或动车二等座标准，报到现场交票据"
+        "summary": "住宿：住宿：夏令营期间免费住宿；报销：火车/汽车硬座、硬卧或动车二等座标准，报到现场交票据；餐食：住宿：夏令营期间免费住宿；报销：火车/汽车硬座、硬卧或动车二等座标准，报到现场交票据；交通：住宿：夏令营期间免费住宿；报销：火车/汽车硬座、硬卧或动车二等座标准，报到现场交票据；报销：住宿：夏令营期间免费住宿；报销：火车/汽车硬座、硬卧或动车二等座标准，报到现场交票据"
       },
       "recommendation": {
         "status": "confirmed",
@@ -4866,7 +6039,7 @@
       "deadlineEpochMs": 1784303940000,
       "website": "https://aircas.ac.cn/tzgg/202606/t20260624_8232672.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4892,7 +6065,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：不适用（全程线上）；交通：不适用（全程线上）"
+        "summary": "住宿：住宿：不适用（全程线上）；交通：不适用（全程线上）；餐食：住宿：不适用（全程线上）；交通：不适用（全程线上）；交通：住宿：不适用（全程线上）；交通：不适用（全程线上）；报销：住宿：不适用（全程线上）；交通：不适用（全程线上）"
       },
       "recommendation": {
         "status": "confirmed",
@@ -4917,7 +6090,7 @@
       "deadlineEpochMs": 1784563140000,
       "website": "https://www.ia.cas.cn/yjsjy/zs/sszs/202606/t20260624_8232737.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4968,7 +6141,7 @@
       "deadlineEpochMs": 1784095200000,
       "website": "https://ict.cas.cn/yjsjy/zsxx/sszs/202607/t20260702_8237097.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -4989,7 +6162,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：优先为京外学员提供，具体以届时安排为准"
+        "summary": "住宿：住宿：优先为京外学员提供，具体以届时安排为准；餐食：住宿：优先为京外学员提供，具体以届时安排为准；交通：住宿：优先为京外学员提供，具体以届时安排为准；报销：住宿：优先为京外学员提供，具体以届时安排为准"
       },
       "recommendation": {
         "status": "confirmed",
@@ -5014,7 +6187,7 @@
       "deadlineEpochMs": 1782748740000,
       "website": "https://cnic.cas.cn/yjsjy/tzgg/202605/t20260527_8209811.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5035,7 +6208,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：非北京地区营员安排；餐食：提供用餐补助"
+        "summary": "住宿：住宿：非北京地区营员安排；餐食：提供用餐补助；餐食：住宿：非北京地区营员安排；餐食：提供用餐补助；交通：住宿：非北京地区营员安排；餐食：提供用餐补助；报销：住宿：非北京地区营员安排；餐食：提供用餐补助"
       },
       "recommendation": {
         "status": "confirmed",
@@ -5060,7 +6233,7 @@
       "deadlineEpochMs": 1782143940000,
       "website": "https://www.is.cas.cn/yjsjy2016/zsxx2016/202605/t20260528_8210508.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5081,7 +6254,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：自理；报销：优秀营员可获硬座、硬卧或高铁/动车二等座补助"
+        "summary": "住宿：住宿：自理；报销：优秀营员可获硬座、硬卧或高铁/动车二等座补助；餐食：住宿：自理；报销：优秀营员可获硬座、硬卧或高铁/动车二等座补助；交通：住宿：自理；报销：优秀营员可获硬座、硬卧或高铁/动车二等座补助；报销：住宿：自理；报销：优秀营员可获硬座、硬卧或高铁/动车二等座补助"
       },
       "recommendation": {
         "status": "confirmed",
@@ -5106,7 +6279,7 @@
       "deadlineEpochMs": 1782835140000,
       "website": "https://career.cic.tsinghua.edu.cn/xsglxt/f/jyxt/anony/showZwxx?zpxxid=550009604",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5127,7 +6300,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：活动期间免费提供住宿；报销：往返高铁二等座车票"
+        "summary": "住宿：住宿：活动期间免费提供住宿；报销：往返高铁二等座车票；餐食：住宿：活动期间免费提供住宿；报销：往返高铁二等座车票；交通：住宿：活动期间免费提供住宿；报销：往返高铁二等座车票；报销：住宿：活动期间免费提供住宿；报销：往返高铁二等座车票"
       },
       "recommendation": {
         "status": "confirmed",
@@ -5152,7 +6325,7 @@
       "deadlineEpochMs": 1784303940000,
       "website": "https://mst.sysu.edu.cn/node/1355",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5203,7 +6376,7 @@
       "deadlineEpochMs": 1783353540000,
       "website": "https://cigit.cas.cn/qt/gg/202606/t20260612_8227858.html",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5224,7 +6397,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：线下营员活动期间免费住宿；报销：按附件1交通补助标准执行"
+        "summary": "住宿：住宿：线下营员活动期间免费住宿；报销：按附件1交通补助标准执行；餐食：住宿：线下营员活动期间免费住宿；报销：按附件1交通补助标准执行；交通：住宿：线下营员活动期间免费住宿；报销：按附件1交通补助标准执行；报销：住宿：线下营员活动期间免费住宿；报销：按附件1交通补助标准执行"
       },
       "recommendation": {
         "status": "confirmed",
@@ -5249,7 +6422,7 @@
       "deadlineEpochMs": 1784455200000,
       "website": "https://www.ise.ynu.edu.cn/page/160/?news_list_id=3",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5275,7 +6448,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场"
+        "summary": "住宿：住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场；餐食：住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场；交通：住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场；报销：住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场"
       },
       "recommendation": {
         "status": "confirmed",
@@ -5300,7 +6473,7 @@
       "deadlineEpochMs": 1784451600000,
       "website": "https://www.sei.ynu.edu.cn/info/1057/2652.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5326,7 +6499,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场"
+        "summary": "住宿：住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场；餐食：住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场；交通：住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场；报销：住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场"
       },
       "recommendation": {
         "status": "confirmed",
@@ -5351,7 +6524,7 @@
       "deadlineEpochMs": 1782896400000,
       "website": "https://www.ai.pku.edu.cn/info/1088/4090.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5372,7 +6545,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：校外营员提供住宿，北京高校学生除外；报销：经济困难营员凭证明可申请硬座、硬卧或高铁/动车二等座补助"
+        "summary": "住宿：住宿：校外营员提供住宿，北京高校学生除外；报销：经济困难营员凭证明可申请硬座、硬卧或高铁/动车二等座补助；餐食：住宿：校外营员提供住宿，北京高校学生除外；报销：经济困难营员凭证明可申请硬座、硬卧或高铁/动车二等座补助；交通：住宿：校外营员提供住宿，北京高校学生除外；报销：经济困难营员凭证明可申请硬座、硬卧或高铁/动车二等座补助；报销：住宿：校外营员提供住宿，北京高校学生除外；报销：经济困难营员凭证明可申请硬座、硬卧或高铁/动车二等座补助"
       },
       "recommendation": {
         "status": "confirmed",
@@ -5397,7 +6570,7 @@
       "deadlineEpochMs": 1782288000000,
       "website": "https://ss.pku.edu.cn/zsxx/zstz/08b3e84f435b4cab85fbf7b8f3aaea0a.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5418,7 +6591,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：自理；报销：无"
+        "summary": "住宿：住宿：自理；报销：无；餐食：住宿：自理；报销：无；交通：住宿：自理；报销：无；报销：住宿：自理；报销：无"
       },
       "recommendation": {
         "status": "confirmed",
@@ -5443,7 +6616,7 @@
       "deadlineEpochMs": 1782100800000,
       "website": "https://ai.bnu.edu.cn/ggjxz/tzgg/ada97c6b63724b75b67be35d57b06cc0.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5464,7 +6637,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：统一安排4晚住宿；报销：无"
+        "summary": "住宿：住宿：统一安排4晚住宿；报销：无；餐食：住宿：统一安排4晚住宿；报销：无；交通：住宿：统一安排4晚住宿；报销：无；报销：住宿：统一安排4晚住宿；报销：无"
       },
       "recommendation": {
         "status": "confirmed",
@@ -5489,7 +6662,7 @@
       "deadlineEpochMs": 1783155600000,
       "website": "https://soft.buaa.edu.cn/news_nry.jsp?urltype=news.NewsContentUrl&wbnewsid=12392&wbtreeid=1325",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5510,7 +6683,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：不适用（全程线上）；交通：不适用（全程线上）"
+        "summary": "住宿：住宿：不适用（全程线上）；交通：不适用（全程线上）；餐食：住宿：不适用（全程线上）；交通：不适用（全程线上）；交通：住宿：不适用（全程线上）；交通：不适用（全程线上）；报销：住宿：不适用（全程线上）；交通：不适用（全程线上）"
       },
       "recommendation": {
         "status": "confirmed",
@@ -5535,7 +6708,7 @@
       "deadlineEpochMs": 1782964800000,
       "website": "https://cse.hust.edu.cn/info/1079/4480.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5564,7 +6737,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知"
+        "summary": "材料复杂度：未知；材料清单：材料复杂度：未知"
       }
     },
     {
@@ -5581,7 +6754,7 @@
       "deadlineEpochMs": 1784217540000,
       "website": "https://gcxy.scau.edu.cn/2026/0713/c2105a440085/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5607,7 +6780,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：学院统一安排住宿，本校学生除外；报销：不报销往返交通"
+        "summary": "住宿：住宿：学院统一安排住宿，本校学生除外；报销：不报销往返交通；餐食：住宿：学院统一安排住宿，本校学生除外；报销：不报销往返交通；交通：住宿：学院统一安排住宿，本校学生除外；报销：不报销往返交通；报销：住宿：学院统一安排住宿，本校学生除外；报销：不报销往返交通"
       },
       "recommendation": {
         "status": "confirmed",
@@ -5632,7 +6805,7 @@
       "deadlineEpochMs": 1784390400000,
       "website": "https://dii.nju.edu.cn/c3/f5/c11317a836597/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5658,7 +6831,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：自理；交通：自理"
+        "summary": "住宿：住宿：自理；交通：自理；餐食：住宿：自理；交通：自理；交通：住宿：自理；交通：自理；报销：住宿：自理；交通：自理"
       },
       "recommendation": {
         "status": "confirmed",
@@ -5683,7 +6856,7 @@
       "deadlineEpochMs": 1781971199000,
       "website": "https://tcs.nju.edu.cn/wiki/index.php?title=2026%E5%B9%B4%E6%9A%91%E6%9C%9F%E5%AD%A6%E6%A0%A1",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5712,7 +6885,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知"
+        "summary": "材料复杂度：未知；材料清单：材料复杂度：未知"
       }
     },
     {
@@ -5729,7 +6902,7 @@
       "deadlineEpochMs": 1784365200000,
       "website": "https://scie.njupt.edu.cn/2026/0707/c2890a306108/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5755,7 +6928,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：线上活动，不涉及住宿安排；报销：不收取活动费用"
+        "summary": "住宿：住宿：线上活动，不涉及住宿安排；报销：不收取活动费用；餐食：住宿：线上活动，不涉及住宿安排；报销：不收取活动费用；交通：住宿：线上活动，不涉及住宿安排；报销：不收取活动费用；报销：住宿：线上活动，不涉及住宿安排；报销：不收取活动费用"
       },
       "recommendation": {
         "status": "confirmed",
@@ -5780,7 +6953,7 @@
       "deadlineEpochMs": 1783440000000,
       "website": "https://informatics.xmu.edu.cn/info/1072/202371.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5826,7 +6999,7 @@
       "deadlineEpochMs": 1782014400000,
       "website": "https://sai.jlu.edu.cn/info/1125/5444.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5847,7 +7020,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：自理；报销：无"
+        "summary": "住宿：住宿：自理；报销：无；餐食：住宿：自理；报销：无；交通：住宿：自理；报销：无；报销：住宿：自理；报销：无"
       },
       "recommendation": {
         "status": "confirmed",
@@ -5872,7 +7045,7 @@
       "deadlineEpochMs": 1782086400000,
       "website": "https://ccst.jlu.edu.cn/info/1229/21077.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5893,7 +7066,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：自理；交通：自理"
+        "summary": "住宿：住宿：自理；交通：自理；餐食：住宿：自理；交通：自理；交通：住宿：自理；交通：自理；报销：住宿：自理；交通：自理"
       },
       "recommendation": {
         "status": "confirmed",
@@ -5918,7 +7091,7 @@
       "deadlineEpochMs": 1782345600000,
       "website": "https://csw.jlu.edu.cn/info/1156/8437.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -5939,7 +7112,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：自理；报销：最终被推免录取的异地学生可按火车硬座标准申请路费补贴"
+        "summary": "住宿：住宿：自理；报销：最终被推免录取的异地学生可按火车硬座标准申请路费补贴；餐食：住宿：自理；报销：最终被推免录取的异地学生可按火车硬座标准申请路费补贴；交通：住宿：自理；报销：最终被推免录取的异地学生可按火车硬座标准申请路费补贴；报销：住宿：自理；报销：最终被推免录取的异地学生可按火车硬座标准申请路费补贴"
       },
       "recommendation": {
         "status": "confirmed",
@@ -5964,7 +7137,7 @@
       "deadlineEpochMs": 1781971200000,
       "website": "https://hitee.hit.edu.cn/2026/0605/c17101a393578/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6010,7 +7183,7 @@
       "deadlineEpochMs": 1782143940000,
       "website": "https://cs.hit.edu.cn/2026/0605/c11271a393612/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6031,7 +7204,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：学部提供在营期间住宿资助；餐食：学部提供在营期间餐食资助"
+        "summary": "住宿：住宿：学部提供在营期间住宿资助；餐食：学部提供在营期间餐食资助；餐食：住宿：学部提供在营期间住宿资助；餐食：学部提供在营期间餐食资助；交通：住宿：学部提供在营期间住宿资助；餐食：学部提供在营期间餐食资助；报销：住宿：学部提供在营期间住宿资助；餐食：学部提供在营期间餐食资助"
       },
       "recommendation": {
         "status": "confirmed",
@@ -6056,7 +7229,7 @@
       "deadlineEpochMs": 1783958340000,
       "website": "https://icec.hrbeu.edu.cn/2026/0703/c4633a350491/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6102,7 +7275,7 @@
       "deadlineEpochMs": 1782896400000,
       "website": "https://cisse.hrbeu.edu.cn/info/1219/10243.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6123,7 +7296,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：学院提供在哈尔滨工程大学活动期间住宿；报销：后续在国家推免系统报名并正式录取的外地同学，可按硬卧、高铁/动车二等座或硬座标准报销往返哈尔滨交通费"
+        "summary": "住宿：住宿：学院提供在哈尔滨工程大学活动期间住宿；报销：后续在国家推免系统报名并正式录取的外地同学，可按硬卧、高铁/动车二等座或硬座标准报销往返哈尔滨交通费；餐食：住宿：学院提供在哈尔滨工程大学活动期间住宿；报销：后续在国家推免系统报名并正式录取的外地同学，可按硬卧、高铁/动车二等座或硬座标准报销往返哈尔滨交通费；交通：住宿：学院提供在哈尔滨工程大学活动期间住宿；报销：后续在国家推免系统报名并正式录取的外地同学，可按硬卧、高铁/动车二等座或硬座标准报销往返哈尔滨交通费；报销：住宿：学院提供在哈尔滨工程大学活动期间住宿；报销：后续在国家推免系统报名并正式录取的外地同学，可按硬卧、高铁/动车二等座或硬座标准报销往返哈尔滨交通费"
       },
       "recommendation": {
         "status": "confirmed",
@@ -6148,7 +7321,7 @@
       "deadlineEpochMs": 1783908000000,
       "website": "https://cstc.hrbeu.edu.cn/2026/0707/c3688a350602/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6177,7 +7350,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知"
+        "summary": "材料复杂度：未知；材料清单：材料复杂度：未知"
       }
     },
     {
@@ -6194,7 +7367,7 @@
       "deadlineEpochMs": 1782792000000,
       "website": "https://eie.scu.edu.cn/info/1025/15213.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6215,7 +7388,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场"
+        "summary": "住宿：住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场；餐食：住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场；交通：住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场；报销：住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场"
       },
       "recommendation": {
         "status": "confirmed",
@@ -6240,7 +7413,7 @@
       "deadlineEpochMs": 1782662340000,
       "website": "https://ccs.scu.edu.cn/info/1013/2252.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6261,7 +7434,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：学院提供7月8日至10日3天免费校内住宿；报销：无交通报销说明"
+        "summary": "住宿：住宿：学院提供7月8日至10日3天免费校内住宿；报销：无交通报销说明；餐食：住宿：学院提供7月8日至10日3天免费校内住宿；报销：无交通报销说明；交通：住宿：学院提供7月8日至10日3天免费校内住宿；报销：无交通报销说明；报销：住宿：学院提供7月8日至10日3天免费校内住宿；报销：无交通报销说明"
       },
       "recommendation": {
         "status": "confirmed",
@@ -6286,7 +7459,7 @@
       "deadlineEpochMs": 1784390400000,
       "website": "https://yjszs.nudt.edu.cn/pubweb/homePageList/newDetailed.view?keyId=14868",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6312,7 +7485,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：正式营员免费住宿，限报到当日至活动结束当日；报销：后续经该院推免录取者，按官方条件和不高于高铁二等座标准报销往返差旅。"
+        "summary": "住宿：住宿：正式营员免费住宿，限报到当日至活动结束当日；报销：后续经该院推免录取者，按官方条件和不高于高铁二等座标准报销往返差旅。；餐食：住宿：正式营员免费住宿，限报到当日至活动结束当日；报销：后续经该院推免录取者，按官方条件和不高于高铁二等座标准报销往返差旅。；交通：住宿：正式营员免费住宿，限报到当日至活动结束当日；报销：后续经该院推免录取者，按官方条件和不高于高铁二等座标准报销往返差旅。；报销：住宿：正式营员免费住宿，限报到当日至活动结束当日；报销：后续经该院推免录取者，按官方条件和不高于高铁二等座标准报销往返差旅。"
       },
       "recommendation": {
         "status": "confirmed",
@@ -6337,7 +7510,7 @@
       "deadlineEpochMs": 1784390400000,
       "website": "https://yjszs.nudt.edu.cn/pubweb/homePageList/newDetailed.view?keyId=14867",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6388,7 +7561,7 @@
       "deadlineEpochMs": 1784552400000,
       "website": "https://mp.weixin.qq.com/s/49XiAG3zd7MUBkiGft4AxQ",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6414,7 +7587,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：主办方承担活动期间住宿；报销：承担住宿、餐饮、学习用品和参观费用"
+        "summary": "住宿：住宿：主办方承担活动期间住宿；报销：承担住宿、餐饮、学习用品和参观费用；餐食：住宿：主办方承担活动期间住宿；报销：承担住宿、餐饮、学习用品和参观费用；交通：住宿：主办方承担活动期间住宿；报销：承担住宿、餐饮、学习用品和参观费用；报销：住宿：主办方承担活动期间住宿；报销：承担住宿、餐饮、学习用品和参观费用"
       },
       "recommendation": {
         "status": "confirmed",
@@ -6439,7 +7612,7 @@
       "deadlineEpochMs": 1784340000000,
       "website": "https://yjszs.nudt.edu.cn/zsmh/pubweb/homePageList/detailed.view?keyId=14884",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6485,7 +7658,7 @@
       "deadlineEpochMs": null,
       "website": "https://ticnn.tju.edu.cn/info/1052/2813.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:11:01+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6531,7 +7704,7 @@
       "deadlineEpochMs": 1783526340000,
       "website": "https://www.ai.sdu.edu.cn/info/1088/1506.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6552,7 +7725,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：不适用（线上）；交通：不适用（线上）"
+        "summary": "住宿：住宿：不适用（线上）；交通：不适用（线上）；餐食：住宿：不适用（线上）；交通：不适用（线上）；交通：住宿：不适用（线上）；交通：不适用（线上）；报销：住宿：不适用（线上）；交通：不适用（线上）"
       },
       "recommendation": {
         "status": "confirmed",
@@ -6577,7 +7750,7 @@
       "deadlineEpochMs": 1782489540000,
       "website": "https://www.ise.sdu.edu.cn/info/1096/16720.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6598,7 +7771,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：不适用（线上）；报销：不适用（线上"
+        "summary": "住宿：住宿：不适用（线上）；报销：不适用（线上；餐食：住宿：不适用（线上）；报销：不适用（线上；交通：住宿：不适用（线上）；报销：不适用（线上；报销：住宿：不适用（线上）；报销：不适用（线上"
       },
       "recommendation": {
         "status": "confirmed",
@@ -6623,7 +7796,7 @@
       "deadlineEpochMs": 1782662340000,
       "website": "https://frontier.qd.sdu.edu.cn/info/1011/9425.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6644,7 +7817,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：不适用（线上）；交通：不适用（线上）"
+        "summary": "住宿：住宿：不适用（线上）；交通：不适用（线上）；餐食：住宿：不适用（线上）；交通：不适用（线上）；交通：住宿：不适用（线上）；交通：不适用（线上）；报销：住宿：不适用（线上）；交通：不适用（线上）"
       },
       "recommendation": {
         "status": "confirmed",
@@ -6669,7 +7842,7 @@
       "deadlineEpochMs": 1784106000000,
       "website": "https://cse.sdu.edu.cn/info/1090/1149.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6690,7 +7863,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：不适用（线上）；交通：不适用（线上）"
+        "summary": "住宿：住宿：不适用（线上）；交通：不适用（线上）；餐食：住宿：不适用（线上）；交通：不适用（线上）；交通：住宿：不适用（线上）；交通：不适用（线上）；报销：住宿：不适用（线上）；交通：不适用（线上）"
       },
       "recommendation": {
         "status": "confirmed",
@@ -6715,7 +7888,7 @@
       "deadlineEpochMs": 1783850400000,
       "website": "https://control.sdu.edu.cn/info/1018/8167.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6736,7 +7909,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：不适用（线上）；交通：不适用（线上）"
+        "summary": "住宿：住宿：不适用（线上）；交通：不适用（线上）；餐食：住宿：不适用（线上）；交通：不适用（线上）；交通：住宿：不适用（线上）；交通：不适用（线上）；报销：住宿：不适用（线上）；交通：不适用（线上）"
       },
       "recommendation": {
         "status": "confirmed",
@@ -6761,7 +7934,7 @@
       "deadlineEpochMs": 1782273600000,
       "website": "https://dsi.sdu.edu.cn/info/1093/4593.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6782,7 +7955,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：自行选择后凭发票报销，7月3日、4日两晚，每人每晚不超过200元；报销：交通和住宿合计每人不超过1200元"
+        "summary": "住宿：住宿：自行选择后凭发票报销，7月3日、4日两晚，每人每晚不超过200元；报销：交通和住宿合计每人不超过1200元；餐食：住宿：自行选择后凭发票报销，7月3日、4日两晚，每人每晚不超过200元；报销：交通和住宿合计每人不超过1200元；交通：住宿：自行选择后凭发票报销，7月3日、4日两晚，每人每晚不超过200元；报销：交通和住宿合计每人不超过1200元；报销：住宿：自行选择后凭发票报销，7月3日、4日两晚，每人每晚不超过200元；报销：交通和住宿合计每人不超过1200元"
       },
       "recommendation": {
         "status": "confirmed",
@@ -6807,7 +7980,7 @@
       "deadlineEpochMs": 1783828800000,
       "website": "https://www.jc.sdu.edu.cn/info/1103/14634.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6828,7 +8001,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：不适用（线上）；交通：不适用（线上）"
+        "summary": "住宿：住宿：不适用（线上）；交通：不适用（线上）；餐食：住宿：不适用（线上）；交通：不适用（线上）；交通：住宿：不适用（线上）；交通：不适用（线上）；报销：住宿：不适用（线上）；交通：不适用（线上）"
       },
       "recommendation": {
         "status": "confirmed",
@@ -6853,7 +8026,7 @@
       "deadlineEpochMs": 1784300400000,
       "website": "https://iict.sdu.edu.cn/info/1027/1317.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6904,7 +8077,7 @@
       "deadlineEpochMs": 1782810000000,
       "website": "https://cst.qd.sdu.edu.cn/info/1023/4121.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6925,7 +8098,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：学院为受邀线下营员安排住宿；交通：线下营员往返交通自理"
+        "summary": "住宿：住宿：学院为受邀线下营员安排住宿；交通：线下营员往返交通自理；餐食：住宿：学院为受邀线下营员安排住宿；交通：线下营员往返交通自理；交通：住宿：学院为受邀线下营员安排住宿；交通：线下营员往返交通自理；报销：住宿：学院为受邀线下营员安排住宿；交通：线下营员往返交通自理"
       },
       "recommendation": {
         "status": "confirmed",
@@ -6950,7 +8123,7 @@
       "deadlineEpochMs": 1783526340000,
       "website": "https://www.cs.sdu.edu.cn/info/1068/6855.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -6971,7 +8144,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：不适用（线上）；交通：不适用（线上）"
+        "summary": "住宿：住宿：不适用（线上）；交通：不适用（线上）；餐食：住宿：不适用（线上）；交通：不适用（线上）；交通：住宿：不适用（线上）；交通：不适用（线上）；报销：住宿：不适用（线上）；交通：不适用（线上）"
       },
       "recommendation": {
         "status": "confirmed",
@@ -6996,7 +8169,7 @@
       "deadlineEpochMs": 1782230340000,
       "website": "https://www.sc.sdu.edu.cn/info/1019/6003.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7017,7 +8190,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：不适用（线上）；报销：不适用（线上"
+        "summary": "住宿：住宿：不适用（线上）；报销：不适用（线上；餐食：住宿：不适用（线上）；报销：不适用（线上；交通：住宿：不适用（线上）；报销：不适用（线上；报销：住宿：不适用（线上）；报销：不适用（线上"
       },
       "recommendation": {
         "status": "confirmed",
@@ -7042,7 +8215,7 @@
       "deadlineEpochMs": 1783526340000,
       "website": "https://ic.sdu.edu.cn/info/1036/5162.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7063,7 +8236,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：不适用（线上）；报销：不适用（线上"
+        "summary": "住宿：住宿：不适用（线上）；报销：不适用（线上；餐食：住宿：不适用（线上）；报销：不适用（线上；交通：住宿：不适用（线上）；报销：不适用（线上；报销：住宿：不适用（线上）；报销：不适用（线上"
       },
       "recommendation": {
         "status": "confirmed",
@@ -7088,7 +8261,7 @@
       "deadlineEpochMs": null,
       "website": "https://zxxy.sxu.edu.cn/rcpy/zsgz/15d2092c5b004e43b6ad76bedf2bca87.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:11:01+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7109,7 +8282,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：入选的外校学生在活动期间由学院统一安排食宿；餐食：入选的外校学生在活动期间由学院统一安排食宿"
+        "summary": "住宿：住宿：入选的外校学生在活动期间由学院统一安排食宿；餐食：入选的外校学生在活动期间由学院统一安排食宿；餐食：住宿：入选的外校学生在活动期间由学院统一安排食宿；餐食：入选的外校学生在活动期间由学院统一安排食宿；交通：住宿：入选的外校学生在活动期间由学院统一安排食宿；餐食：入选的外校学生在活动期间由学院统一安排食宿；报销：住宿：入选的外校学生在活动期间由学院统一安排食宿；餐食：入选的外校学生在活动期间由学院统一安排食宿"
       },
       "recommendation": {
         "status": "not-published",
@@ -7134,7 +8307,7 @@
       "deadlineEpochMs": 1783007999000,
       "website": "https://zjui.intl.zju.edu.cn/node/3455",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7163,7 +8336,7 @@
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知"
+        "summary": "材料复杂度：未知；材料清单：材料复杂度：未知"
       }
     },
     {
@@ -7180,7 +8353,7 @@
       "deadlineEpochMs": null,
       "website": "https://ai.zju.edu.cn/2026/0529/c90497a3168021/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:11:01+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7201,7 +8374,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：学院不统一安排"
+        "summary": "住宿：住宿：学院不统一安排；餐食：住宿：学院不统一安排；交通：住宿：学院不统一安排；报销：住宿：学院不统一安排"
       },
       "recommendation": {
         "status": "confirmed",
@@ -7226,7 +8399,7 @@
       "deadlineEpochMs": 1783267140000,
       "website": "https://www.muhn.edu.cn/zy/info/9683/7943.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7247,7 +8420,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "报销：官方公布往返交通费用原则上每人不超过2000元"
+        "summary": "住宿：报销：官方公布往返交通费用原则上每人不超过2000元；餐食：报销：官方公布往返交通费用原则上每人不超过2000元；交通：报销：官方公布往返交通费用原则上每人不超过2000元；报销：报销：官方公布往返交通费用原则上每人不超过2000元"
       },
       "recommendation": {
         "status": "confirmed",
@@ -7272,7 +8445,7 @@
       "deadlineEpochMs": 1780243140000,
       "website": "https://ici.um.edu.mo/the-institute-of-collaborative-innovation-summer-camp-for-outstanding-students-now-open-for-application-%E6%BE%B3%E9%96%80%E5%A4%A7%E5%AD%B8%E5%8D%94%E5%90%8C%E5%89%B5%E6%96%B0%E7%A0%94%E7%A9%B6-3/",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7293,7 +8466,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：夏令营期间澳门大学宿舍住宿费免费；报销：不报销往返交通"
+        "summary": "住宿：住宿：夏令营期间澳门大学宿舍住宿费免费；报销：不报销往返交通；餐食：住宿：夏令营期间澳门大学宿舍住宿费免费；报销：不报销往返交通；交通：住宿：夏令营期间澳门大学宿舍住宿费免费；报销：不报销往返交通；报销：住宿：夏令营期间澳门大学宿舍住宿费免费；报销：不报销往返交通"
       },
       "recommendation": {
         "status": "confirmed",
@@ -7318,7 +8491,7 @@
       "deadlineEpochMs": 1779724740000,
       "website": "https://skliotsc.um.edu.mo/summer-camp/",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7339,7 +8512,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：澳大宾馆3晚免费住宿，双人标准间；报销：可竞争申请Travel Grant，名额有限，按录取后细则评审"
+        "summary": "住宿：住宿：澳大宾馆3晚免费住宿，双人标准间；报销：可竞争申请Travel Grant，名额有限，按录取后细则评审；餐食：住宿：澳大宾馆3晚免费住宿，双人标准间；报销：可竞争申请Travel Grant，名额有限，按录取后细则评审；交通：住宿：澳大宾馆3晚免费住宿，双人标准间；报销：可竞争申请Travel Grant，名额有限，按录取后细则评审；报销：住宿：澳大宾馆3晚免费住宿，双人标准间；报销：可竞争申请Travel Grant，名额有限，按录取后细则评审"
       },
       "recommendation": {
         "status": "confirmed",
@@ -7364,7 +8537,7 @@
       "deadlineEpochMs": 1778860740000,
       "website": "https://www.fst.um.edu.mo/event/the-7th-summer-camp-for-outstanding-students-now-open-for-application/",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7385,7 +8558,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：澳大聚贤楼2晚免费住宿；报销：不报销往返交通"
+        "summary": "住宿：住宿：澳大聚贤楼2晚免费住宿；报销：不报销往返交通；餐食：住宿：澳大聚贤楼2晚免费住宿；报销：不报销往返交通；交通：住宿：澳大聚贤楼2晚免费住宿；报销：不报销往返交通；报销：住宿：澳大聚贤楼2晚免费住宿；报销：不报销往返交通"
       },
       "recommendation": {
         "status": "confirmed",
@@ -7410,7 +8583,7 @@
       "deadlineEpochMs": 1783526340000,
       "website": "https://wurenxitong.nwpu.edu.cn/info/1373/13728.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7431,7 +8604,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：学院统一安排住宿；报销：不报销往返交通。"
+        "summary": "住宿：住宿：学院统一安排住宿；报销：不报销往返交通。；餐食：住宿：学院统一安排住宿；报销：不报销往返交通。；交通：住宿：学院统一安排住宿；报销：不报销往返交通。；报销：住宿：学院统一安排住宿；报销：不报销往返交通。"
       },
       "recommendation": {
         "status": "confirmed",
@@ -7456,7 +8629,7 @@
       "deadlineEpochMs": 1783526340000,
       "website": "https://wlkjaqxy.nwpu.edu.cn/info/1103/19990.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7502,7 +8675,7 @@
       "deadlineEpochMs": 1782964800000,
       "website": "https://jsj.nwpu.edu.cn/info/1599/29795.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7523,7 +8696,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：学院统一安排住宿；报销：不报销往返交通。"
+        "summary": "住宿：住宿：学院统一安排住宿；报销：不报销往返交通。；餐食：住宿：学院统一安排住宿；报销：不报销往返交通。；交通：住宿：学院统一安排住宿；报销：不报销往返交通。；报销：住宿：学院统一安排住宿；报销：不报销往返交通。"
       },
       "recommendation": {
         "status": "confirmed",
@@ -7548,7 +8721,7 @@
       "deadlineEpochMs": 1783674000000,
       "website": "https://scai.swjtu.edu.cn/web/page-newsDetail.html?nid=0bdfb172-8d0c-4cd5-a720-d2b9b052e7a9",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7569,7 +8742,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场"
+        "summary": "住宿：住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场；餐食：住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场；交通：住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场；报销：住宿：线上活动，不涉及住宿安排；交通：线上活动，无需赴现场"
       },
       "recommendation": {
         "status": "confirmed",
@@ -7594,7 +8767,7 @@
       "deadlineEpochMs": 1781539199000,
       "website": "https://yjszs.cqjtu.edu.cn/info/1099/2716.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:11:01+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7615,7 +8788,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：外地营员统一安排，本地营员不安排；报销：外地营员交通费按不高于动车二等座据实报销"
+        "summary": "住宿：住宿：外地营员统一安排，本地营员不安排；报销：外地营员交通费按不高于动车二等座据实报销；餐食：住宿：外地营员统一安排，本地营员不安排；报销：外地营员交通费按不高于动车二等座据实报销；交通：住宿：外地营员统一安排，本地营员不安排；报销：外地营员交通费按不高于动车二等座据实报销；报销：住宿：外地营员统一安排，本地营员不安排；报销：外地营员交通费按不高于动车二等座据实报销"
       },
       "recommendation": {
         "status": "confirmed",
@@ -7640,7 +8813,7 @@
       "deadlineEpochMs": 1784628000000,
       "website": "https://dsai.chd.edu.cn/info/1040/1321.htm",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7666,7 +8839,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：不适用（线上活动）；交通：不适用（线上活动）"
+        "summary": "住宿：住宿：不适用（线上活动）；交通：不适用（线上活动）；餐食：住宿：不适用（线上活动）；交通：不适用（线上活动）；交通：住宿：不适用（线上活动）；交通：不适用（线上活动）；报销：住宿：不适用（线上活动）；交通：不适用（线上活动）"
       },
       "recommendation": {
         "status": "confirmed",
@@ -7691,7 +8864,7 @@
       "deadlineEpochMs": 1784649540000,
       "website": "https://www.cse.cuhk.edu.hk/admission/mphil-phd/early-admission/",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7737,7 +8910,7 @@
       "deadlineEpochMs": 1784476740000,
       "website": "https://sse.cuhk.edu.cn/event/2307",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7763,7 +8936,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：线下受邀者提供3天2晚住宿；报销：非深圳学生凭有效票据，交通补助上限1000元"
+        "summary": "住宿：住宿：线下受邀者提供3天2晚住宿；报销：非深圳学生凭有效票据，交通补助上限1000元；餐食：住宿：线下受邀者提供3天2晚住宿；报销：非深圳学生凭有效票据，交通补助上限1000元；交通：住宿：线下受邀者提供3天2晚住宿；报销：非深圳学生凭有效票据，交通补助上限1000元；报销：住宿：线下受邀者提供3天2晚住宿；报销：非深圳学生凭有效票据，交通补助上限1000元"
       },
       "recommendation": {
         "status": "confirmed",
@@ -7788,7 +8961,7 @@
       "deadlineEpochMs": 1782057540000,
       "website": "https://summercamp-intr.hkust-gz.edu.cn/",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7809,7 +8982,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：学校为录取营员提供校内住宿"
+        "summary": "住宿：住宿：学校为录取营员提供校内住宿；餐食：住宿：学校为录取营员提供校内住宿；交通：住宿：学校为录取营员提供校内住宿；报销：住宿：学校为录取营员提供校内住宿"
       },
       "recommendation": {
         "status": "confirmed",
@@ -7834,7 +9007,7 @@
       "deadlineEpochMs": 1782057540000,
       "website": "https://summercamp-roas.hkust-gz.edu.cn/",
       "tags": [],
-      "verifiedAt": "2026-07-25T18:10:44+08:00",
+      "verifiedAt": "2026-07-25T23:34:56+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -7855,7 +9028,7 @@
       },
       "logistics": {
         "status": "confirmed",
-        "summary": "住宿：主办方提供；报销：不提供交通预订或补贴"
+        "summary": "住宿：住宿：主办方提供；报销：不提供交通预订或补贴；餐食：住宿：主办方提供；报销：不提供交通预订或补贴；交通：住宿：主办方提供；报销：不提供交通预订或补贴；报销：住宿：主办方提供；报销：不提供交通预订或补贴"
       },
       "recommendation": {
         "status": "confirmed",
@@ -7867,8 +9040,8 @@
       }
     }
   ],
-  "snapshotId": "2026-07-25T14:55:10.000Z-eb772b22b395",
-  "approvedAt": "2026-07-25T14:55:10.000Z",
-  "previousSnapshotId": "2026-07-25T13:43:21.715Z-011a987833a5",
-  "dataHash": "eb772b22b3955a4a0a5ea1dd923d6364981008004df9d0c83ff5ab382dcc137d"
+  "snapshotId": "2026-07-25T15:42:31.000Z-2bab53e9cf0c",
+  "approvedAt": "2026-07-25T23:42:31+08:00",
+  "previousSnapshotId": "2026-07-25T14:55:10.000Z-eb772b22b395",
+  "dataHash": "2bab53e9cf0c3e300c34cd9fee747efd199c772e5f29e4384849b9d797f7c65e"
 }
