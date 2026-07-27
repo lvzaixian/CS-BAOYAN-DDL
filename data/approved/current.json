@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-07-26T18:39:54+08:00",
+  "scanAt": "2026-07-27T15:24:11.670Z",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -11,63 +11,12 @@
     }
   ],
   "counts": {
-    "confirmedOpen": 104,
+    "confirmedOpen": 103,
     "confirmedUnknownDeadline": 16,
-    "pendingExcluded": 33,
-    "expired": 80
+    "pendingExcluded": 139,
+    "expired": 81
   },
   "opportunities": [
-    {
-      "projectId": "2027|南京邮电大学|集成电路科学与工程学院（产教融合学院）|2026夏令营",
-      "feedId": "camp2027",
-      "name": "南京邮电大学",
-      "institute": "集成电路科学与工程学院（产教融合学院）",
-      "project": "集成电路科学与工程学院（产教融合学院）｜南京邮电大学集成电路科学与工程学院（产教融合学院） 2026年暑期科研训练营的通知",
-      "eventType": "校园开放日/学术活动",
-      "description": "集成电路科学与工程学院（产教融合学院）｜南京邮电大学集成电路科学与工程学院（产教融合学院） 2026年暑期科研训练营的通知",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-07-27T09:00:00+08:00",
-      "deadlineOriginal": "官方 PDF：即日起 - 7 月 27 日 9:00 之前，时间截止后不再接受任何形式的报名。",
-      "deadlineEpochMs": 1785114000000,
-      "website": "https://ic.njupt.edu.cn/2026/0713/c15125a306514/page.htm",
-      "tags": [],
-      "verifiedAt": "2026-07-26T18:39:54+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://ic.njupt.edu.cn/2026/0713/c15125a306514/page.htm"
-        },
-        {
-          "kind": "baoyan-notice",
-          "label": "保研通知网",
-          "url": "https://www.baoyantongzhi.com/notice/detail/223135"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "not-published",
-          "summary": "未公布"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：官方正文自动摘录未见推荐信要求；推荐信模板：未见推荐信模板"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：中"
-      }
-    },
     {
       "projectId": "2027|清华大学|交叉信息研究院|本科直博第一申请期",
       "feedId": "camp2027",
@@ -2801,16 +2750,16 @@
       "feedId": "camp2027",
       "name": "同济大学",
       "institute": "计算机科学与技术学院",
-      "project": "计算机科学与技术学院｜同济大学计算机科学与技术学院2027年接收推荐免试研究生（含直接攻博）预报名通知",
+      "project": "计算机科学与技术学院（软件学院）｜2027年接收推荐免试研究生（含直接攻博）预报名",
       "eventType": "推免预报名",
-      "description": "计算机科学与技术学院｜同济大学计算机科学与技术学院2027年接收推荐免试研究生（含直接攻博）预报名通知",
+      "description": "计算机科学与技术学院（软件学院）｜2027年接收推荐免试研究生（含直接攻博）预报名",
       "verificationStatus": "confirmed-open",
       "deadline": "2026-08-25T12:00:00+08:00",
-      "deadlineOriginal": "官方 PDF：申请时间即日起至 2026 年 8 月 25 日 12:00，逾期报名无效。",
+      "deadlineOriginal": "官方 PDF：即日起至2026年8月25日12:00，逾期报名无效。",
       "deadlineEpochMs": 1787630400000,
       "website": "https://cs.tongji.edu.cn/info/1022/4119.htm",
       "tags": [],
-      "verifiedAt": "2026-07-26T18:39:54+08:00",
+      "verifiedAt": "2026-07-27T23:04:51+08:00",
       "discoverySources": [
         {
           "kind": "official",
@@ -2818,20 +2767,20 @@
           "url": "https://cs.tongji.edu.cn/info/1022/4119.htm"
         },
         {
-          "kind": "baoyan-notice",
-          "label": "保研通知网",
-          "url": "https://www.baoyantongzhi.com/notice/detail/242178"
+          "kind": "other-discovery",
+          "label": "学院 fan-out 补扫",
+          "url": "https://cs.tongji.edu.cn/info/1022/4119.htm"
         }
       ],
       "eventArrangement": {
         "mode": "offline",
         "time": {
           "status": "not-published",
-          "summary": "未公布"
+          "summary": "复试时间另行通知"
         },
         "formatLocation": {
-          "status": "not-published",
-          "summary": "未公布"
+          "status": "confirmed",
+          "summary": "本次预推免复试线下进行，复试时间、地点另行通知。"
         }
       },
       "logistics": {
@@ -2840,11 +2789,11 @@
       },
       "recommendation": {
         "status": "confirmed",
-        "summary": "推荐信数量：官方正文自动摘录未见推荐信要求；推荐信模板：未见推荐信模板"
+        "summary": "推荐信数量：直博生须两封拟攻读学位学科相关副教授及以上专家推荐信；硕士未要求推荐信。；推荐信模板：直博推荐信在报名系统中按提示由专家在线电子签署。"
       },
       "materials": {
         "status": "confirmed",
-        "summary": "材料复杂度：未知"
+        "summary": "材料复杂度：高：系统填报、合并PDF、复试现场纸质材料约7份，直博推荐信需系统在线签署。；材料清单：成绩单及排名证明、英语证明、身份证、学籍在线验证报告、退役士兵专项证明（如适用）、获奖/论文/成果等，1-6按顺序上传PDF；系统生成申请表复试现场核验。"
       }
     },
     {
@@ -4293,6 +4242,57 @@
       }
     },
     {
+      "projectId": "2027|南京航空航天大学|计算机科学与技术学院/软件学院及人工智能学院|接收推荐免试研究生预报名",
+      "feedId": "camp2027",
+      "name": "南京航空航天大学",
+      "institute": "计算机科学与技术学院/软件学院及人工智能学院",
+      "project": "计算机科学与技术学院/软件学院｜2027年接收推荐免试研究生预报名",
+      "eventType": "推免预报名",
+      "description": "计算机科学与技术学院/软件学院｜2027年接收推荐免试研究生预报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-14T23:59:00+08:00",
+      "deadlineOriginal": "学院 PDF：研究生报考服务系统开放时间为即日起至2026年9月14日23:59。",
+      "deadlineEpochMs": 1789401540000,
+      "website": "https://cs.nuaa.edu.cn/2026/0726/c10851a407213/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-27T23:04:51+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://cs.nuaa.edu.cn/2026/0726/c10851a407213/page.htm"
+        },
+        {
+          "kind": "other-discovery",
+          "label": "学院 fan-out 补扫",
+          "url": "https://cs.nuaa.edu.cn/2026/0726/c10851a407213/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "综合考核时间另行通知"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "综合考核时间、相关工作要求与安排将通过学院官网另行通知。"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": "待官方公布"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中：系统预报名并上传合并PDF，前期实验室开放日报名信息可自动转为预报名信息。；材料清单：成绩单及排名证明、英语水平材料、学术成果、荣誉奖励证书，按编号顺序合并为一个PDF，以“报名号+姓名”命名上传。"
+      }
+    },
+    {
       "projectId": "2027|大连理工大学|人工智能学院|推免预报名",
       "feedId": "camp2027",
       "name": "大连理工大学",
@@ -4382,52 +4382,6 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：中；材料清单：本科阶段成绩单原件扫描件（教务部门盖章）"
-      }
-    },
-    {
-      "projectId": "2027|南京航空航天大学|计算机科学与技术学院/软件学院及人工智能学院|接收推荐免试研究生预报名",
-      "feedId": "camp2027",
-      "name": "南京航空航天大学",
-      "institute": "计算机科学与技术学院/软件学院及人工智能学院",
-      "project": "计算机科学与技术学院/软件学院及人工智能学院｜接收推荐免试研究生预报名",
-      "eventType": "推免预报名",
-      "description": "计算机科学与技术学院/软件学院及人工智能学院｜接收推荐免试研究生预报名",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-09-15T23:59:59+08:00",
-      "deadlineOriginal": "研究生报考服务系统开放时间为2026年7月15日—2026年9月15日；部分学院可能提前截止",
-      "deadlineEpochMs": 1789487999000,
-      "website": "https://www.graduate.nuaa.edu.cn/2026/0715/c2145a405484/page.htm",
-      "tags": [],
-      "verifiedAt": "2026-07-26T18:39:54+08:00",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://www.graduate.nuaa.edu.cn/2026/0715/c2145a405484/page.htm"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "confirmed",
-          "summary": "各学院另行通知综合考核时间"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "考核以综合面试为主，具体形式和地点由学院另行通知"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：0封；推荐信模板：无"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：未知；材料清单：盖章成绩单（含排名）、四六级或其他英语证明、学术成果、荣誉奖励及学院其他材料，按序合并一个PDF"
       }
     },
     {
@@ -7348,6 +7302,57 @@
       }
     },
     {
+      "projectId": "2027|南京邮电大学|集成电路科学与工程学院（产教融合学院）|2026夏令营",
+      "feedId": "camp2027",
+      "name": "南京邮电大学",
+      "institute": "集成电路科学与工程学院（产教融合学院）",
+      "project": "集成电路科学与工程学院（产教融合学院）｜南京邮电大学集成电路科学与工程学院（产教融合学院） 2026年暑期科研训练营的通知",
+      "eventType": "校园开放日/学术活动",
+      "description": "集成电路科学与工程学院（产教融合学院）｜南京邮电大学集成电路科学与工程学院（产教融合学院） 2026年暑期科研训练营的通知",
+      "verificationStatus": "expired",
+      "deadline": "2026-07-27T09:00:00+08:00",
+      "deadlineOriginal": "官方 PDF：即日起 - 7 月 27 日 9:00 之前，时间截止后不再接受任何形式的报名。",
+      "deadlineEpochMs": 1785114000000,
+      "website": "https://ic.njupt.edu.cn/2026/0713/c15125a306514/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-07-26T18:39:54+08:00",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://ic.njupt.edu.cn/2026/0713/c15125a306514/page.htm"
+        },
+        {
+          "kind": "baoyan-notice",
+          "label": "保研通知网",
+          "url": "https://www.baoyantongzhi.com/notice/detail/223135"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公布"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方正文自动摘录未见推荐信要求；推荐信模板：未见推荐信模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中"
+      }
+    },
+    {
       "projectId": "2027|厦门大学|信息学院|推免预报名",
       "feedId": "camp2027",
       "name": "厦门大学",
@@ -9448,8 +9453,8 @@
       }
     }
   ],
-  "snapshotId": "2026-07-26T12:43:46.000Z-6e8df28dc5e9",
-  "approvedAt": "2026-07-26T20:43:46+08:00",
-  "previousSnapshotId": "2026-07-25T15:42:31.000Z-2bab53e9cf0c",
-  "dataHash": "6e8df28dc5e9986accbbdab53f11461fa1eb7cc9bc5cb763ce994e4bac992346"
+  "snapshotId": "2026-07-27T15:24:21.452Z-329fe1269e21",
+  "approvedAt": "2026-07-27T15:24:21.452Z",
+  "previousSnapshotId": "2026-07-26T12:43:46.000Z-6e8df28dc5e9",
+  "dataHash": "329fe1269e21d61f2199bf45bc10275c8377209e48aa8a1459fb37e26bbd2f51"
 }
