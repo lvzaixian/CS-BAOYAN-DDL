@@ -169,6 +169,8 @@ test('rejects every private token and contact category', async (t) => {
   const cases = [
     ['submitted project IDs', '{"submittedProjectIds":[]}'],
     ['submitted target path', '{"path":"targets/submitted/example"}'],
+    ['submitted identity review marker', '{"reason":"submitted identity review: title alias"}'],
+    ['submitted official project marker', '{"reason":"同一已投递官方项目的标题简写"}'],
     ['welfare score', '{"welfareScore":5}'],
     ['city platform value', '{"cityPlatformValue":5}'],
     ['social value', '{"socialValue":5}'],

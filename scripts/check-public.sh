@@ -25,7 +25,7 @@ for forbidden in public/CNAME .github/workflows/update_json.yml; do
   fi
 done
 
-private_pattern='(^|[^[:alnum:]_$])(submittedProjectIds|welfareScore|cityPlatformValue|socialValue|recommendationTier)([^[:alnum:]_$]|$)|targets[/\\]submitted|profile_space[/\\]targets|(^|[^[:alnum:].:/])/(Users|home)/[[:alnum:]_.-]+|file:/+([^/[:space:]]+/)?(Users|home)/[[:alnum:]_.-]+|[[:alpha:]]:[/\\][Uu]sers[/\\][[:alnum:]_.-]+'
+private_pattern='(^|[^[:alnum:]_$])(submittedProjectIds|welfareScore|cityPlatformValue|socialValue|recommendationTier)([^[:alnum:]_$]|$)|submitted[[:space:]_-]+identity[[:space:]_-]+review|已投递官方|targets[/\\]submitted|profile_space[/\\]targets|(^|[^[:alnum:].:/])/(Users|home)/[[:alnum:]_.-]+|file:/+([^/[:space:]]+/)?(Users|home)/[[:alnum:]_.-]+|[[:alpha:]]:[/\\][Uu]sers[/\\][[:alnum:]_.-]+'
 contact_pattern='[[:alnum:]._%+-]+(@|%40)[[:alnum:].-]+\.[[:alpha:]]{2,}|(^|[^[:alnum:]])((\+|%2B)86[ -]?)?1[3-9][0-9][ -]?[0-9]{4}[ -]?[0-9]{4}([^[:alnum:]]|$)'
 
 sanitize_reviewed_contacts() {
