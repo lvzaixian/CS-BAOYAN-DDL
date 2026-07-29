@@ -12,6 +12,7 @@ import type { RegularJsonFile } from '../../src/lib/snapshot-integrity.js';
 import type { PublicSnapshot } from '../../src/lib/snapshot-types.js';
 import { validatePublicPrivacyBoundary } from '../../src/lib/snapshot-validation.js';
 import { validateProjectIdAliases } from './import-scouting-data.js';
+import { parseIdentityRegistry } from './scan-release-contract.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -83,7 +84,8 @@ function validateAliases(input: unknown, base: PublicSnapshot): void {
   if (privacyErrors.length > 0) {
     throw new Error(`alias privacy validation failed:\n${privacyErrors.join('\n')}`);
   }
-  validateProjectIdAliases(input, base);
+  const registry = parseIdentityRegistry(input);
+  validateProjectIdAliases(registry, base);
 }
 
 function validateSnapshot(input: unknown, label: string): PublicSnapshot {

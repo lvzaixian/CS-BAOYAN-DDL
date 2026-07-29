@@ -20,14 +20,71 @@ import {
   readRegularJsonFile,
 } from '../src/lib/snapshot-integrity.js';
 import type { PublicSnapshot } from '../src/lib/snapshot-types.js';
+import type { ProjectIdentityRegistry } from '../scripts/snapshot/scan-release-contract.js';
 
 const fixture = JSON.parse(readFileSync(
   new URL('./fixtures/snapshot-valid.json', import.meta.url),
   'utf8',
 )) as PublicSnapshot;
-const validAliases = {
-  'https://cs.example.edu.cn/notice/1': '2027|测试大学|计算机学院|夏令营',
-};
+function identityRegistry(
+  overrides: Partial<ProjectIdentityRegistry> = {},
+): ProjectIdentityRegistry {
+  return {
+    schemaVersion: 2,
+    urlAliases: [],
+    projectAliases: [],
+    tombstones: [],
+    ...overrides,
+  };
+}
+
+function urlAlias(
+  url: string,
+  canonicalProjectId: string,
+): ProjectIdentityRegistry['urlAliases'][number] {
+  return {
+    url,
+    canonicalProjectId,
+    cycle: canonicalProjectId.slice(0, 4),
+    reason: '测试中的官网通知路径迁移',
+    introducedRunId: '20260729-data-pr-test',
+  };
+}
+
+function projectAlias(
+  sourceProjectId: string,
+  canonicalProjectId: string,
+): ProjectIdentityRegistry['projectAliases'][number] {
+  return {
+    sourceProjectId,
+    canonicalProjectId,
+    cycle: sourceProjectId.slice(0, 4),
+    reason: '测试中的项目名称迁移',
+    introducedRunId: '20260729-data-pr-test',
+  };
+}
+
+function tombstone(
+  projectId: string,
+  mergedInto: string,
+): ProjectIdentityRegistry['tombstones'][number] {
+  return {
+    projectId,
+    mergedInto,
+    cycle: projectId.slice(0, 4),
+    reason: '测试中的重复项目合并',
+    introducedRunId: '20260729-data-pr-test',
+  };
+}
+
+const validAliases = identityRegistry({
+  urlAliases: [
+    urlAlias(
+      'https://cs.example.edu.cn/notice/1',
+      '2027|测试大学|计算机学院|夏令营',
+    ),
+  ],
+});
 
 function approvedSnapshot(label = '原始项目'): PublicSnapshot {
   const snapshot = structuredClone(fixture);
@@ -164,9 +221,24 @@ test('validates changed alias contents against schema and the shared privacy bou
   next.snapshotId = deriveSnapshotId(next.approvedAt, next.dataHash);
 
   for (const aliases of [
-    { 'not-a-url': '2027|测试大学|计算机学院|夏令营' },
-    { 'https://cs.example.edu.cn/notice/1': 'broken-project-id' },
-    { 'https://cs.example.edu.cn/notice/1': '2027|测试大学|计算机学院|联系人a@example.com' },
+    identityRegistry({
+      urlAliases: [
+        urlAlias('not-a-url', '2027|测试大学|计算机学院|夏令营'),
+      ],
+    }),
+    identityRegistry({
+      urlAliases: [
+        urlAlias('https://cs.example.edu.cn/notice/1', 'broken-project-id'),
+      ],
+    }),
+    identityRegistry({
+      urlAliases: [
+        urlAlias(
+          'https://cs.example.edu.cn/notice/1',
+          '2027|测试大学|计算机学院|联系人a@example.com',
+        ),
+      ],
+    }),
   ]) {
     assert.throws(
       () => prepareDataPrPlan({
@@ -181,7 +253,29 @@ test('validates changed alias contents against schema and the shared privacy bou
   }
 });
 
-test('rejects aliases that the importer cannot apply to the validated base snapshot', () => {
+test('rejects a legacy bare alias map even when its target exists in the base snapshot', () => {
+  const base = approvedSnapshot();
+  const next = approvedSnapshot('更新后的项目');
+  next.previousSnapshotId = base.snapshotId;
+  next.dataHash = canonicalDataHash(next);
+  next.snapshotId = deriveSnapshotId(next.approvedAt, next.dataHash);
+
+  assert.throws(
+    () => prepareDataPrPlan({
+      base,
+      next,
+      changedFiles: ['data/approved/current.json', 'data/project-id-aliases.json'],
+      aliases: {
+        'https://cs.example.edu.cn/notice/1':
+          '2027|测试大学|计算机学院|夏令营',
+      },
+      now: new Date('2026-07-17T10:00:00+08:00'),
+    }),
+    /identity registry.*(?:not allowed|schemaVersion must be exactly 2)/i,
+  );
+});
+
+test('rejects registry cycle violations, normalized conflicts, and contradictory mappings', () => {
   const base = approvedSnapshot();
   const next = approvedSnapshot('更新后的项目');
   next.previousSnapshotId = base.snapshotId;
@@ -190,25 +284,62 @@ test('rejects aliases that the importer cannot apply to the validated base snaps
 
   for (const [label, aliases, expected] of [
     [
-      'simple target absent from base',
-      { 'https://new.example.edu.cn/notice': '2027|另一所大学|计算机学院|夏令营' },
-      /approved ID|previous snapshot/i,
-    ],
-    [
-      'compound cycle mismatch',
-      {
-        'https://cs.example.edu.cn/notice/1::2028|测试大学|计算机学院|夏令营':
-          '2027|测试大学|计算机学院|夏令营',
-      },
+      'project-alias cycle mismatch',
+      identityRegistry({
+        projectAliases: [
+          projectAlias(
+            '2028|测试大学|计算机学院|夏令营',
+            '2027|测试大学|计算机学院|夏令营',
+          ),
+        ],
+      }),
       /cycle/i,
     ],
     [
       'conflict after URL normalization',
-      {
-        'https://cs.example.edu.cn/notice/1': '2027|测试大学|计算机学院|夏令营',
-        'https://CS.EXAMPLE.EDU.CN/notice/1/': '2027|另一所大学|计算机学院|夏令营',
-      },
-      /conflicting simple alias/i,
+      identityRegistry({
+        urlAliases: [
+          urlAlias(
+            'https://cs.example.edu.cn/notice/1',
+            '2027|测试大学|计算机学院|夏令营',
+          ),
+          urlAlias(
+            'https://CS.EXAMPLE.EDU.CN/notice/1/',
+            '2027|另一所大学|计算机学院|夏令营',
+          ),
+        ],
+      }),
+      /conflicting URL alias/i,
+    ],
+    [
+      'tombstone cycle mismatch',
+      identityRegistry({
+        tombstones: [
+          tombstone(
+            '2028|测试大学|计算机学院|旧夏令营',
+            '2027|测试大学|计算机学院|夏令营',
+          ),
+        ],
+      }),
+      /cycle/i,
+    ],
+    [
+      'project alias and tombstone disagree',
+      identityRegistry({
+        projectAliases: [
+          projectAlias(
+            '2027|测试大学|计算机学院|旧夏令营',
+            '2027|测试大学|计算机学院|夏令营',
+          ),
+        ],
+        tombstones: [
+          tombstone(
+            '2027|测试大学|计算机学院|旧夏令营',
+            '2027|测试大学|计算机学院|开放日',
+          ),
+        ],
+      }),
+      /conflict.*disagree/i,
     ],
   ] as const) {
     assert.throws(
@@ -223,6 +354,78 @@ test('rejects aliases that the importer cannot apply to the validated base snaps
       label,
     );
   }
+});
+
+test('allows schema-valid historical registry targets absent from both base and next', () => {
+  const base = approvedSnapshot();
+  const next = approvedSnapshot('更新后的项目');
+  next.previousSnapshotId = base.snapshotId;
+  next.dataHash = canonicalDataHash(next);
+  next.snapshotId = deriveSnapshotId(next.approvedAt, next.dataHash);
+  const historicalTargets = [
+    '2027|测试大学|计算机学院|经审历史项目',
+    '2027|测试大学|计算机学院|经审历史暑期学校',
+    '2027|测试大学|计算机学院|经审历史合并项目',
+  ];
+
+  for (const target of historicalTargets) {
+    assert.equal(
+      [...base.opportunities, ...next.opportunities]
+        .some((row) => row.projectId === target),
+      false,
+    );
+  }
+
+  const plan = prepareDataPrPlan({
+    base,
+    next,
+    changedFiles: ['data/approved/current.json', 'data/project-id-aliases.json'],
+    aliases: identityRegistry({
+      urlAliases: [
+        urlAlias('https://history.example.edu.cn/notice', historicalTargets[0]),
+      ],
+      projectAliases: [
+        projectAlias(
+          '2027|测试大学|计算机学院|本轮观察名称',
+          historicalTargets[1],
+        ),
+      ],
+      tombstones: [
+        tombstone(
+          '2027|测试大学|计算机学院|已审重复旧项目',
+          historicalTargets[2],
+        ),
+      ],
+    }),
+    now: new Date('2026-07-17T10:00:00+08:00'),
+  });
+
+  assert.equal(plan.status, 'ready');
+});
+
+test('accepts a tombstone whose obsolete project ID is absent but merged target is approved', () => {
+  const base = approvedSnapshot();
+  const next = approvedSnapshot('更新后的项目');
+  next.previousSnapshotId = base.snapshotId;
+  next.dataHash = canonicalDataHash(next);
+  next.snapshotId = deriveSnapshotId(next.approvedAt, next.dataHash);
+
+  const plan = prepareDataPrPlan({
+    base,
+    next,
+    changedFiles: ['data/approved/current.json', 'data/project-id-aliases.json'],
+    aliases: identityRegistry({
+      tombstones: [
+        tombstone(
+          '2027|测试大学|计算机学院|已废弃旧项目',
+          '2027|测试大学|计算机学院|夏令营',
+        ),
+      ],
+    }),
+    now: new Date('2026-07-17T10:00:00+08:00'),
+  });
+
+  assert.equal(plan.status, 'ready');
 });
 
 test('CLI derives its file set from Git instead of accepting caller-declared paths', () => {

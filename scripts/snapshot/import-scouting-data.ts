@@ -14,12 +14,14 @@ import type {
   VerificationStatus,
 } from '../../src/lib/snapshot-types.js';
 import { validateCandidate } from '../../src/lib/snapshot-validation.js';
+import { parseIdentityRegistry } from './scan-release-contract.js';
+import type { ProjectIdentityRegistry } from './scan-release-contract.js';
 
 type JsonObject = Record<string, unknown>;
 
 export interface IdentityContext {
   previous: ReadablePublicSnapshot | null;
-  aliases: Record<string, string>;
+  registry: ProjectIdentityRegistry;
 }
 
 interface ParsedProjectId {
@@ -47,8 +49,9 @@ interface CliOptions {
 
 interface IdentityIndex {
   previousByUrl: Map<string, Set<string>>;
-  simpleAliasesByUrl: Map<string, string>;
-  compoundAliasesByUrlAndInput: Map<string, string>;
+  urlAliasesByUrl: Map<string, string>;
+  projectAliasesBySource: Map<string, string>;
+  tombstonesByProjectId: Map<string, string>;
 }
 
 interface CurrentUrlIdentity {
@@ -179,17 +182,13 @@ function addAlias(
   aliases: Map<string, string>,
   key: string,
   projectId: string,
-  kind: 'simple' | 'compound',
+  kind: 'URL',
 ): void {
   const existing = aliases.get(key);
   if (existing !== undefined && existing !== projectId) {
     throw new Error(`conflicting ${kind} alias entries after URL normalization`);
   }
   aliases.set(key, projectId);
-}
-
-function compoundAliasKey(normalizedUrl: string, inputProjectId: string): string {
-  return `${normalizedUrl}::${inputProjectId}`;
 }
 
 function withoutValidatedHttpUrlTokens(value: string): string {
@@ -239,7 +238,12 @@ function candidateContainsPrivateFreeText(value: unknown): boolean {
       : candidateContainsPrivateFreeText(child));
 }
 
-function identityMaps(identities: IdentityContext): IdentityIndex {
+function identityMaps(
+  identities: {
+    previous: ReadablePublicSnapshot | null;
+    registry: unknown;
+  },
+): IdentityIndex {
   if (identities.previous !== null) {
     const referenceTime = Date.parse(identities.previous.approvedAt);
     const errors = validateApprovedSnapshot(identities.previous, referenceTime);
@@ -249,72 +253,74 @@ function identityMaps(identities: IdentityContext): IdentityIndex {
   }
 
   const previousByUrl = new Map<string, Set<string>>();
-  const previousProjectIds = new Set<string>();
   for (const opportunity of identities.previous?.opportunities ?? []) {
-    previousProjectIds.add(opportunity.projectId);
     const normalized = normalizeUrl(opportunity.website, 'previous opportunity website');
     const projectIds = previousByUrl.get(normalized) ?? new Set<string>();
     projectIds.add(opportunity.projectId);
     previousByUrl.set(normalized, projectIds);
   }
 
-  const simpleAliasesByUrl = new Map<string, string>();
-  const compoundAliasesByUrlAndInput = new Map<string, string>();
-  if (!isObject(identities.aliases)) throw new Error('aliases must be an object');
-  for (const [alias, projectIdValue] of Object.entries(identities.aliases)) {
-    if (typeof projectIdValue !== 'string' || projectIdValue.trim() === '') {
-      throw new Error(`alias for ${alias} must be a non-empty project ID`);
+  const registry = parseIdentityRegistry(identities.registry);
+  const registryEntryCount =
+    registry.urlAliases.length
+    + registry.projectAliases.length
+    + registry.tombstones.length;
+  if (registryEntryCount > 10_000) {
+    throw new Error('identity registry exceeds the entry limit');
+  }
+
+  const urlAliasesByUrl = new Map<string, string>();
+  const projectAliasesBySource = new Map<string, string>();
+  const tombstonesByProjectId = new Map<string, string>();
+  const tombstoneIds = new Set(registry.tombstones.map((item) => item.projectId));
+
+  for (const alias of registry.urlAliases) {
+    if (tombstoneIds.has(alias.canonicalProjectId)) {
+      throw new Error('identity registry URL alias target must not be a tombstone');
     }
-    const projectId = projectIdValue.trim();
-    const delimiterIndex = alias.indexOf('::');
-    if (delimiterIndex === -1) {
-      parseProjectId(projectId, 'simple alias target');
-      const normalizedUrl = normalizeUrl(alias, 'simple alias URL');
-      addAlias(simpleAliasesByUrl, normalizedUrl, projectId, 'simple');
-      continue;
-    }
+    const normalizedUrl = normalizeUrl(alias.url, 'identity registry URL alias');
+    addAlias(urlAliasesByUrl, normalizedUrl, alias.canonicalProjectId, 'URL');
+  }
+  for (const alias of registry.projectAliases) {
+    projectAliasesBySource.set(alias.sourceProjectId, alias.canonicalProjectId);
+  }
+  for (const item of registry.tombstones) {
+    tombstonesByProjectId.set(item.projectId, item.mergedInto);
+    const projectAliasTarget = projectAliasesBySource.get(item.projectId);
     if (
-      delimiterIndex === 0
-      || delimiterIndex === alias.length - 2
-      || alias.indexOf('::', delimiterIndex + 2) !== -1
+      projectAliasTarget !== undefined
+      && projectAliasTarget !== item.mergedInto
     ) {
-      throw new Error(`malformed compound alias: ${alias}`);
-    }
-    const url = alias.slice(0, delimiterIndex);
-    const inputProjectId = alias.slice(delimiterIndex + 2).trim();
-    if (inputProjectId === '') throw new Error(`malformed compound alias: ${alias}`);
-    const inputCycle = parseProjectId(inputProjectId, 'compound alias input').cycle;
-    const targetCycle = parseProjectId(projectId, 'compound alias target').cycle;
-    if (inputCycle !== targetCycle) {
-      throw new Error('compound alias target cycle must match the current input cycle');
-    }
-    const normalizedUrl = normalizeUrl(url, 'compound alias URL');
-    addAlias(
-      compoundAliasesByUrlAndInput,
-      compoundAliasKey(normalizedUrl, inputProjectId),
-      projectId,
-      'compound',
-    );
-  }
-  for (const projectId of simpleAliasesByUrl.values()) {
-    if (!previousProjectIds.has(projectId)) {
       throw new Error(
-        'simple alias target must be an approved ID in the validated previous snapshot',
+        `identity registry conflict for ${item.projectId}: project alias and tombstone disagree`,
       );
     }
   }
-  for (const projectId of compoundAliasesByUrlAndInput.values()) {
-    if (!previousProjectIds.has(projectId)) {
-      throw new Error(
-        'compound alias target must be an approved ID in the validated previous snapshot',
-      );
-    }
-  }
+
   return {
     previousByUrl,
-    simpleAliasesByUrl,
-    compoundAliasesByUrlAndInput,
+    urlAliasesByUrl,
+    projectAliasesBySource,
+    tombstonesByProjectId,
   };
+}
+
+function projectRegistryTarget(
+  identityIndex: IdentityIndex,
+  inputProjectId: string,
+): string | undefined {
+  const projectAliasTarget = identityIndex.projectAliasesBySource.get(inputProjectId);
+  const tombstoneTarget = identityIndex.tombstonesByProjectId.get(inputProjectId);
+  if (
+    projectAliasTarget !== undefined
+    && tombstoneTarget !== undefined
+    && projectAliasTarget !== tombstoneTarget
+  ) {
+    throw new Error(
+      `identity registry conflict for ${inputProjectId}: project alias and tombstone disagree`,
+    );
+  }
+  return projectAliasTarget ?? tombstoneTarget;
 }
 
 function buildCurrentUrlIdentities(
@@ -371,16 +377,14 @@ function validateSharedUrlAliasCoverage(
 
       const coverage = new Map(missingPreviousIds.map((projectId) => [projectId, 0]));
       for (const currentId of currentIds) {
-        const aliasTarget = identityIndex.compoundAliasesByUrlAndInput.get(
-          compoundAliasKey(normalizedUrl, currentId),
-        );
+        const aliasTarget = projectRegistryTarget(identityIndex, currentId);
         if (aliasTarget !== undefined && coverage.has(aliasTarget)) {
           coverage.set(aliasTarget, (coverage.get(aliasTarget) ?? 0) + 1);
         }
       }
       if ([...coverage.values()].some((count) => count !== 1)) {
         throw new Error(
-          'shared URL has ambiguous previous IDs: compound aliases must cover every missing previous ID exactly once',
+          'shared URL has ambiguous previous IDs: project aliases must cover every missing previous ID exactly once',
         );
       }
     }
@@ -404,51 +408,56 @@ function resolveProjectId(
   const current = currentByUrl.get(normalizedOfficialUrl);
   if (current === undefined) throw new Error(`${path}.officialUrl is missing from current URL index`);
 
+  const projectTarget = projectRegistryTarget(identityIndex, inputProjectId);
+  const urlTarget = identityIndex.urlAliasesByUrl.get(normalizedOfficialUrl);
+  if (
+    projectTarget !== undefined
+    && urlTarget !== undefined
+    && projectTarget !== urlTarget
+  ) {
+    throw new Error(
+      `${path} identity registry project and URL aliases resolve to different IDs`,
+    );
+  }
+  const registryTarget = projectTarget ?? urlTarget;
+  if (
+    registryTarget !== undefined
+    && parseProjectId(registryTarget, 'identity registry target').cycle !== currentCycle
+  ) {
+    const kind = projectTarget === undefined ? 'URL alias' : 'project alias or tombstone';
+    throw new Error(`${kind} target cycle must match the current row cycle`);
+  }
+
   if (reusablePreviousIds.size > 0) {
+    if (registryTarget !== undefined) {
+      return registryTarget;
+    }
     if (reusablePreviousIds.has(inputProjectId)) return inputProjectId;
 
-    const compoundAlias = identityIndex.compoundAliasesByUrlAndInput.get(
-      compoundAliasKey(normalizedOfficialUrl, inputProjectId),
-    );
     const everyPreviousIdRemains = [...reusablePreviousIds].every((projectId) =>
       current.projectIds.has(projectId));
 
     if (current.rowCount > 1) {
       if (everyPreviousIdRemains) return inputProjectId;
-      const hasCompoundAssignment = [...current.projectIds].some((projectId) =>
-        identityIndex.compoundAliasesByUrlAndInput.has(
-          compoundAliasKey(normalizedOfficialUrl, projectId),
-        ));
-      if (!hasCompoundAssignment) {
+      const hasProjectAssignment = [...current.projectIds].some(
+        (projectId) => projectRegistryTarget(identityIndex, projectId) !== undefined,
+      );
+      if (!hasProjectAssignment) {
         throw new Error(
-          `${path}.officialUrl has ambiguous previous IDs in a one-to-many rename; an explicit compound alias is required`,
+          `${path}.officialUrl has ambiguous previous IDs in a one-to-many rename; an explicit project alias is required`,
         );
       }
-      if (compoundAlias === undefined) return inputProjectId;
-    } else if (compoundAlias === undefined && reusablePreviousIds.size === 1) {
+      return inputProjectId;
+    } else if (reusablePreviousIds.size === 1) {
       return reusablePreviousIds.values().next().value as string;
-    } else if (compoundAlias === undefined) {
+    } else {
       throw new Error(
-        `${path}.officialUrl has ambiguous previous IDs; an explicit compound alias is required`,
+        `${path}.officialUrl has ambiguous previous IDs; an explicit project alias is required`,
       );
     }
-
-    if (compoundAlias !== undefined) {
-      if (!reusablePreviousIds.has(compoundAlias)) {
-        throw new Error(`${path} compound alias must resolve to an approved ID for the shared URL`);
-      }
-      return compoundAlias;
-    }
   }
 
-  const simpleAlias = identityIndex.simpleAliasesByUrl.get(normalizedOfficialUrl);
-  if (simpleAlias !== undefined) {
-    if (parseProjectId(simpleAlias, 'simple alias target').cycle !== currentCycle) {
-      throw new Error('simple alias target cycle must match the current row cycle');
-    }
-    return simpleAlias;
-  }
-  return inputProjectId;
+  return registryTarget ?? inputProjectId;
 }
 
 function daysInMonth(year: number, month: number): number {
@@ -832,27 +841,11 @@ async function readOptionalApproved(
   return await readJson(path, 'approved snapshot') as ReadablePublicSnapshot;
 }
 
-function aliasesFrom(input: unknown): Record<string, string> {
-  const object = objectValue(input, 'aliases');
-  const aliases: Record<string, string> = {};
-  for (const [url, projectId] of Object.entries(object)) {
-    if (typeof projectId !== 'string' || projectId.trim() === '') {
-      throw new Error(`aliases.${url} must be a non-empty project ID`);
-    }
-    aliases[url] = projectId;
-  }
-  return aliases;
-}
-
 export function validateProjectIdAliases(
   input: unknown,
   previous: ReadablePublicSnapshot,
 ): void {
-  const aliases = aliasesFrom(input);
-  if (Object.keys(aliases).length > 10_000) {
-    throw new Error('aliases exceed the entry limit');
-  }
-  identityMaps({ previous, aliases });
+  identityMaps({ previous, registry: input });
 }
 
 function hasErrorCode(error: unknown, code: string): boolean {
@@ -944,13 +937,13 @@ async function runCli(): Promise<void> {
   const options = parseCliOptions(argv);
   const [input, aliasInput, previous] = await Promise.all([
     readJson(options.input, 'scouting input'),
-    readJson(options.aliases, 'project ID aliases'),
+    readJson(options.aliases, 'project identity registry'),
     readOptionalApproved(options.approved),
   ]);
   await assertSafeOutputPaths(options);
   const candidate = importScoutingData(input, {
     previous,
-    aliases: aliasesFrom(aliasInput),
+    registry: parseIdentityRegistry(aliasInput),
   });
   const freshnessErrors = validateCandidate(candidate, Date.now());
   if (freshnessErrors.length > 0) {

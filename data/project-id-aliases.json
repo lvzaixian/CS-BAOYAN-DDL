@@ -1,4 +1,303 @@
 {
-  "https://cs.hit.edu.cn/2026/0605/c11271a393612/page.htm": "2027|哈尔滨工业大学|计算学部|暑期学术交流营",
-  "https://www.qltrans.sdu.edu.cn/info/1022/5611.htm": "2027|山东大学|齐鲁交通学院|2026夏令营"
+  "schemaVersion": 2,
+  "urlAliases": [
+    {
+      "url": "https://cisse.hrbeu.edu.cn/info/1219/10243.htm",
+      "canonicalProjectId": "2027|哈尔滨工程大学|智能科学与工程学院|大学生暑期夏令营",
+      "cycle": "2027",
+      "reason": "identity review：官网正文仅对应一个2026年大学生暑期夏令营，合并历史重复命名",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "url": "https://computing.hit.edu.cn/2026/0726/c11271a398409/page.htm",
+      "canonicalProjectId": "2027|哈尔滨工业大学|计算学部|推免预选拔",
+      "cycle": "2027",
+      "reason": "identity review：计算学部旧域名重定向至当前 cs.hit.edu.cn 官网页面，保留同一稳定项目身份",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "url": "https://cs.dlut.edu.cn/info/1256/6390.htm",
+      "canonicalProjectId": "2027|大连理工大学|计算机科学与技术学院|优秀大学生暑期研学营",
+      "cycle": "2027",
+      "reason": "identity review：同一官方研学营通知的简称与完整名称差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "url": "https://cs.hit.edu.cn/2026/0605/c11271a393612/page.htm",
+      "canonicalProjectId": "2027|哈尔滨工业大学|计算学部|暑期学术交流营",
+      "cycle": "2027",
+      "reason": "historical identity：保留该官网 URL 与既有经审稳定 canonical ID 的跨轮绑定",
+      "introducedRunId": "20260729-pipeline-hardening"
+    },
+    {
+      "url": "https://cs.hit.edu.cn/2026/0726/c11271a398409/page.htm",
+      "canonicalProjectId": "2027|哈尔滨工业大学|计算学部|推免预选拔",
+      "cycle": "2027",
+      "reason": "identity review：当前计算学部官网 URL 与旧域名页面为同一通知",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "url": "https://cse.csu.edu.cn/info/1057/11380.htm",
+      "canonicalProjectId": "2027|中南大学|计算机学院|2026暑期招生宣讲开放日",
+      "cycle": "2027",
+      "reason": "identity review：官网正文仅对应一个2026年暑期招生宣讲开放日，合并历史重复命名",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "url": "https://cse.hust.edu.cn/info/1079/4480.htm",
+      "canonicalProjectId": "2027|华中科技大学|网络空间安全学院|2026学术夏令营",
+      "cycle": "2027",
+      "reason": "identity review：官网正文仅对应一个2026年全国优秀大学生学术夏令营，合并历史重复命名",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "url": "https://cse.sustech.edu.cn/notices/3775.html",
+      "canonicalProjectId": "2027|南方科技大学|计算机科学与工程系|推免预报名",
+      "cycle": "2027",
+      "reason": "historical identity：经审官网通知路径继续绑定既有稳定 canonical ID",
+      "introducedRunId": "20260729-pipeline-hardening"
+    },
+    {
+      "url": "https://cse.sustech.edu.cn/notices/3776.html",
+      "canonicalProjectId": "2027|南方科技大学|计算机科学与工程系|国优计划推免预报名",
+      "cycle": "2027",
+      "reason": "historical identity：经审官网通知路径继续绑定既有稳定 canonical ID",
+      "introducedRunId": "20260729-pipeline-hardening"
+    },
+    {
+      "url": "https://dsai.chd.edu.cn/info/1040/1321.htm",
+      "canonicalProjectId": "2027|长安大学|数据科学与人工智能研究院|2026全国优秀大学生暑期夏令营",
+      "cycle": "2027",
+      "reason": "identity review：同一官方夏令营通知的简称与完整名称差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "url": "https://scai.swjtu.edu.cn/web/page-newsDetail.html?nid=0bdfb172-8d0c-4cd5-a720-d2b9b052e7a9",
+      "canonicalProjectId": "2027|西南交通大学|计算机与人工智能学院|云上夏令营",
+      "cycle": "2027",
+      "reason": "identity review：同一云上夏令营通知的历史命名差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "url": "https://www.cse.cuhk.edu.hk/admission/mphil-phd/early-admission/",
+      "canonicalProjectId": "2027|香港中文大学|计算机科学与工程学系|Early Admission Round 2",
+      "cycle": "2027",
+      "reason": "identity review：同一早期招生第二轮通知的中英文名称差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "url": "https://www.qltrans.sdu.edu.cn/info/1022/5611.htm",
+      "canonicalProjectId": "2027|山东大学|齐鲁交通学院|2026夏令营",
+      "cycle": "2027",
+      "reason": "historical identity：保留该官网 URL 与既有经审稳定 canonical ID 的跨轮绑定",
+      "introducedRunId": "20260729-pipeline-hardening"
+    },
+    {
+      "url": "https://www.sigs.tsinghua.edu.cn/2026/0630/c7769a291820/page.htm",
+      "canonicalProjectId": "2027|清华大学|深圳国际研究生院|推免报名",
+      "cycle": "2027",
+      "reason": "identity review：同一学院、同一轮次、同一官方通知的历史命名差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    }
+  ],
+  "projectAliases": [
+    {
+      "sourceProjectId": "2027|中南大学|计算机学院|暑期招生宣讲开放日",
+      "canonicalProjectId": "2027|中南大学|计算机学院|2026暑期招生宣讲开放日",
+      "cycle": "2027",
+      "reason": "identity review：删除同一官网通知的无年份重复项目身份",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "sourceProjectId": "2027|华中科技大学|网络空间安全学院|全国优秀大学生学术夏令营",
+      "canonicalProjectId": "2027|华中科技大学|网络空间安全学院|2026学术夏令营",
+      "cycle": "2027",
+      "reason": "identity review：删除同一官网通知的无年份重复项目身份",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "sourceProjectId": "2027|哈尔滨工程大学|智能科学与工程学院|优秀大学生暑期夏令营",
+      "canonicalProjectId": "2027|哈尔滨工程大学|智能科学与工程学院|大学生暑期夏令营",
+      "cycle": "2027",
+      "reason": "identity review：删除同一官网通知的重复项目身份",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "sourceProjectId": "2027|大连理工大学|计算机科学与技术学院|暑期研学营",
+      "canonicalProjectId": "2027|大连理工大学|计算机科学与技术学院|优秀大学生暑期研学营",
+      "cycle": "2027",
+      "reason": "identity review：同一官方研学营通知的简称与完整名称差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "sourceProjectId": "2027|清华大学|深圳国际研究生院|推免预报名",
+      "canonicalProjectId": "2027|清华大学|深圳国际研究生院|推免报名",
+      "cycle": "2027",
+      "reason": "identity review：同一学院、同一轮次、同一官方通知的历史命名差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "sourceProjectId": "2027|西南交通大学|计算机与人工智能学院|2026云上学术夏令营",
+      "canonicalProjectId": "2027|西南交通大学|计算机与人工智能学院|云上夏令营",
+      "cycle": "2027",
+      "reason": "identity review：同一云上夏令营通知的历史命名差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "sourceProjectId": "2027|长安大学|数据科学与人工智能研究院|2026全国优秀大学生夏令营",
+      "canonicalProjectId": "2027|长安大学|数据科学与人工智能研究院|2026全国优秀大学生暑期夏令营",
+      "cycle": "2027",
+      "reason": "identity review：同一官方夏令营通知的简称与完整名称差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "sourceProjectId": "2027|香港中文大学|计算机科学与工程学系|2027早期招生第二轮",
+      "canonicalProjectId": "2027|香港中文大学|计算机科学与工程学系|Early Admission Round 2",
+      "cycle": "2027",
+      "reason": "identity review：同一早期招生第二轮通知的中英文名称差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "sourceProjectId": "2027|北京信息科技大学|电子信息类|优秀大学生夏令营",
+      "canonicalProjectId": "2027|北京信息科技大学|电子信息类|2026暑期优秀大学生夏令营",
+      "cycle": "2027",
+      "reason": "identity review：同一官方夏令营项目的标题简写",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "sourceProjectId": "2027|南方科技大学|智能制造与机器人系|2026年优秀大学生夏令营",
+      "canonicalProjectId": "2027|南方科技大学|自动化与智能制造学院|2026全国优秀大学生暑期交流营",
+      "cycle": "2027",
+      "reason": "identity review：同一官方活动的院系历史名称与标题差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "sourceProjectId": "2027|天津大学|人工智能学院|2026年暑期夏令营",
+      "canonicalProjectId": "2027|天津大学|人工智能学院|2026全国优秀大学生暑期夏令营",
+      "cycle": "2027",
+      "reason": "identity review：同一官方夏令营项目的标题简写",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "sourceProjectId": "2027|天津大学|网络安全学院|2026年暑期夏令营",
+      "canonicalProjectId": "2027|天津大学|网络安全学院|2026全国优秀大学生暑期夏令营",
+      "cycle": "2027",
+      "reason": "identity review：同一官方夏令营项目的标题简写",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "sourceProjectId": "2027|深圳大学|人工智能学院|2026年优秀大学生夏令营",
+      "canonicalProjectId": "2027|深圳大学|人工智能学院|2027级夏令营",
+      "cycle": "2027",
+      "reason": "identity review：同一官方夏令营项目的年份与标题差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "sourceProjectId": "2027|深圳大学|计算机与软件学院|2026年优秀大学生夏令营",
+      "canonicalProjectId": "2027|深圳大学|计算机与软件学院|第五届全国优秀大学生计算机夏令营",
+      "cycle": "2027",
+      "reason": "identity review：同一官方夏令营项目的届次与标题差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    }
+  ],
+  "tombstones": [
+    {
+      "projectId": "2027|中南大学|计算机学院|暑期招生宣讲开放日",
+      "mergedInto": "2027|中南大学|计算机学院|2026暑期招生宣讲开放日",
+      "cycle": "2027",
+      "reason": "identity review：同一学院、同一轮次、同一官网 URL 的历史重复项目",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "projectId": "2027|华中科技大学|网络空间安全学院|全国优秀大学生学术夏令营",
+      "mergedInto": "2027|华中科技大学|网络空间安全学院|2026学术夏令营",
+      "cycle": "2027",
+      "reason": "identity review：同一学院、同一轮次、同一官网 URL 的历史重复项目",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "projectId": "2027|哈尔滨工程大学|智能科学与工程学院|优秀大学生暑期夏令营",
+      "mergedInto": "2027|哈尔滨工程大学|智能科学与工程学院|大学生暑期夏令营",
+      "cycle": "2027",
+      "reason": "identity review：同一学院、同一轮次、同一官网 URL 的历史重复项目",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "projectId": "2027|大连理工大学|计算机科学与技术学院|暑期研学营",
+      "mergedInto": "2027|大连理工大学|计算机科学与技术学院|优秀大学生暑期研学营",
+      "cycle": "2027",
+      "reason": "identity review：同一官方研学营通知的简称与完整名称差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "projectId": "2027|清华大学|深圳国际研究生院|推免预报名",
+      "mergedInto": "2027|清华大学|深圳国际研究生院|推免报名",
+      "cycle": "2027",
+      "reason": "identity review：同一学院、同一轮次、同一官方通知的历史命名差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "projectId": "2027|西南交通大学|计算机与人工智能学院|2026云上学术夏令营",
+      "mergedInto": "2027|西南交通大学|计算机与人工智能学院|云上夏令营",
+      "cycle": "2027",
+      "reason": "identity review：同一云上夏令营通知的历史命名差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "projectId": "2027|长安大学|数据科学与人工智能研究院|2026全国优秀大学生夏令营",
+      "mergedInto": "2027|长安大学|数据科学与人工智能研究院|2026全国优秀大学生暑期夏令营",
+      "cycle": "2027",
+      "reason": "identity review：同一官方夏令营通知的简称与完整名称差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "projectId": "2027|香港中文大学|计算机科学与工程学系|2027早期招生第二轮",
+      "mergedInto": "2027|香港中文大学|计算机科学与工程学系|Early Admission Round 2",
+      "cycle": "2027",
+      "reason": "identity review：同一早期招生第二轮通知的中英文名称差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "projectId": "2027|北京信息科技大学|电子信息类|优秀大学生夏令营",
+      "mergedInto": "2027|北京信息科技大学|电子信息类|2026暑期优秀大学生夏令营",
+      "cycle": "2027",
+      "reason": "identity review：同一官方夏令营项目的标题简写",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "projectId": "2027|南方科技大学|智能制造与机器人系|2026年优秀大学生夏令营",
+      "mergedInto": "2027|南方科技大学|自动化与智能制造学院|2026全国优秀大学生暑期交流营",
+      "cycle": "2027",
+      "reason": "identity review：同一官方活动的院系历史名称与标题差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "projectId": "2027|天津大学|人工智能学院|2026年暑期夏令营",
+      "mergedInto": "2027|天津大学|人工智能学院|2026全国优秀大学生暑期夏令营",
+      "cycle": "2027",
+      "reason": "identity review：同一官方夏令营项目的标题简写",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "projectId": "2027|天津大学|网络安全学院|2026年暑期夏令营",
+      "mergedInto": "2027|天津大学|网络安全学院|2026全国优秀大学生暑期夏令营",
+      "cycle": "2027",
+      "reason": "identity review：同一官方夏令营项目的标题简写",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "projectId": "2027|深圳大学|人工智能学院|2026年优秀大学生夏令营",
+      "mergedInto": "2027|深圳大学|人工智能学院|2027级夏令营",
+      "cycle": "2027",
+      "reason": "identity review：同一官方夏令营项目的年份与标题差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "projectId": "2027|深圳大学|计算机与软件学院|2026年优秀大学生夏令营",
+      "mergedInto": "2027|深圳大学|计算机与软件学院|第五届全国优秀大学生计算机夏令营",
+      "cycle": "2027",
+      "reason": "identity review：同一官方夏令营项目的届次与标题差异",
+      "introducedRunId": "20260729-202750-full-944ba307"
+    }
+  ]
 }

@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "cycle": "2027",
+  "institutions": [
+    {
+      "school": "北京大学",
+      "minimumEvidenceRecords": 2,
+      "requiredOfficialKinds": [
+        "graduate-admissions",
+        "college-notice"
+      ]
+    },
+    {
+      "school": "清华大学",
+      "minimumEvidenceRecords": 2,
+      "requiredOfficialKinds": [
+        "graduate-admissions",
+        "college-notice"
+      ]
+    },
+    {
+      "school": "复旦大学",
+      "minimumEvidenceRecords": 2,
+      "requiredOfficialKinds": [
+        "graduate-admissions",
+        "college-notice"
+      ]
+    },
+    {
+      "school": "上海交通大学",
+      "minimumEvidenceRecords": 2,
+      "requiredOfficialKinds": [
+        "graduate-admissions",
+        "college-notice"
+      ]
+    },
+    {
+      "school": "浙江大学",
+      "minimumEvidenceRecords": 2,
+      "requiredOfficialKinds": [
+        "graduate-admissions",
+        "college-notice"
+      ]
+    },
+    {
+      "school": "南京大学",
+      "minimumEvidenceRecords": 2,
+      "requiredOfficialKinds": [
+        "graduate-admissions",
+        "college-notice"
+      ]
+    },
+    {
+      "school": "中国科学技术大学",
+      "minimumEvidenceRecords": 2,
+      "requiredOfficialKinds": [
+        "graduate-admissions",
+        "college-notice"
+      ]
+    },
+    {
+      "school": "同济大学",
+      "minimumEvidenceRecords": 2,
+      "requiredOfficialKinds": [
+        "graduate-admissions",
+        "college-notice"
+      ]
+    },
+    {
+      "school": "南方科技大学",
+      "minimumEvidenceRecords": 2,
+      "requiredOfficialKinds": [
+        "college-notice",
+        "application-system"
+      ]
+    },
+    {
+      "school": "北京邮电大学",
+      "minimumEvidenceRecords": 2,
+      "requiredOfficialKinds": [
+        "college-notice",
+        "application-system"
+      ]
+    }
+  ]
+}

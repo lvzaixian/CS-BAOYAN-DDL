@@ -21,9 +21,11 @@ import { fileURLToPath } from 'node:url';
 
 import {
   importScoutingData,
+  validateProjectIdAliases,
   writeCandidateAtomically,
   type IdentityContext,
 } from '../scripts/snapshot/import-scouting-data.js';
+import type { ProjectIdentityRegistry } from '../scripts/snapshot/scan-release-contract.js';
 import { canonicalDataHash } from '../src/lib/snapshot-integrity.js';
 import { validateCandidate } from '../src/lib/snapshot-validation.js';
 import type {
@@ -52,8 +54,63 @@ function validInput(): Record<string, any> {
 function identities(overrides: Partial<IdentityContext> = {}): IdentityContext {
   return {
     previous: null,
-    aliases: {},
+    registry: identityRegistry(),
     ...overrides,
+  } as IdentityContext;
+}
+
+function identityRegistry(
+  overrides: Partial<ProjectIdentityRegistry> = {},
+): ProjectIdentityRegistry {
+  return {
+    schemaVersion: 2,
+    urlAliases: [],
+    projectAliases: [],
+    tombstones: [],
+    ...overrides,
+  };
+}
+
+function cycleOf(projectId: string): string {
+  return projectId.slice(0, 4);
+}
+
+function urlAlias(
+  url: string,
+  canonicalProjectId: string,
+): ProjectIdentityRegistry['urlAliases'][number] {
+  return {
+    url,
+    canonicalProjectId,
+    cycle: cycleOf(canonicalProjectId),
+    reason: '测试中的官网通知路径迁移',
+    introducedRunId: '20260729-importer-test',
+  };
+}
+
+function projectAlias(
+  sourceProjectId: string,
+  canonicalProjectId: string,
+): ProjectIdentityRegistry['projectAliases'][number] {
+  return {
+    sourceProjectId,
+    canonicalProjectId,
+    cycle: cycleOf(sourceProjectId),
+    reason: '测试中的项目名称迁移',
+    introducedRunId: '20260729-importer-test',
+  };
+}
+
+function tombstone(
+  projectId: string,
+  mergedInto: string,
+): ProjectIdentityRegistry['tombstones'][number] {
+  return {
+    projectId,
+    mergedInto,
+    cycle: cycleOf(projectId),
+    reason: '测试中的重复项目合并',
+    introducedRunId: '20260729-importer-test',
   };
 }
 
@@ -146,7 +203,7 @@ function prepareCliSources(tempRoot: string, input = freshCliInput()) {
   const aliasesPath = join(tempRoot, 'aliases.json');
   const approvedPath = join(tempRoot, 'approved.json');
   writeJson(inputPath, input);
-  writeJson(aliasesPath, {});
+  writeJson(aliasesPath, identityRegistry());
   writeJson(approvedPath, sealCandidate(importScoutingData(input, identities())));
   return { inputPath, aliasesPath, approvedPath };
 }
@@ -469,11 +526,50 @@ test('uses an alias only for an explicit official URL migration', () => {
 
   const withAlias = importScoutingData(validInput(), identities({
     previous,
-    aliases: {
-      'HTTPS://CS.EXAMPLE.EDU.CN/admissions/summer-camp': previousId,
-    },
+    registry: identityRegistry({
+      urlAliases: [
+        urlAlias('HTTPS://CS.EXAMPLE.EDU.CN/admissions/summer-camp', previousId),
+      ],
+    }),
   }));
   assert.equal(opportunity(withAlias, '2026年优秀大学生夏令营').projectId, previousId);
+});
+
+test('rejects a legacy bare alias map as an importer production format', () => {
+  const previousId = '2027|测试大学|计算机学院|旧夏令营';
+  const previous = previousWith('https://cs.example.edu.cn/admissions/old', previousId);
+  const legacyMap = {
+    'https://cs.example.edu.cn/admissions/summer-camp': previousId,
+  };
+
+  assert.throws(
+    () => validateProjectIdAliases(legacyMap, previous),
+    /identity registry.*(?:not allowed|schemaVersion must be exactly 2)/i,
+  );
+  assert.throws(
+    () => importScoutingData(
+      validInput(),
+      identities({
+        previous,
+        registry: legacyMap as unknown as ProjectIdentityRegistry,
+      }),
+    ),
+    /identity registry.*(?:not allowed|schemaVersion must be exactly 2)/i,
+  );
+});
+
+test('consumes schema-v2 URL aliases through the importer identity context', () => {
+  const previousId = '2027|测试大学|计算机学院|旧夏令营';
+  const previous = previousWith('https://cs.example.edu.cn/admissions/old', previousId);
+  const registry = identityRegistry({
+    urlAliases: [
+      urlAlias('HTTPS://CS.EXAMPLE.EDU.CN/admissions/summer-camp', previousId),
+    ],
+  });
+
+  const candidate = importScoutingData(validInput(), identities({ previous, registry }));
+
+  assert.equal(opportunity(candidate, '2026年优秀大学生夏令营').projectId, previousId);
 });
 
 test('repeat import preserves distinct stable IDs that share one official URL', () => {
@@ -541,11 +637,11 @@ test('shared URL replacement is ambiguous when a previous ID is missing', () => 
 
   assert.throws(
     () => importScoutingData(currentInput, identities({ previous })),
-    /ambiguous.*compound alias/i,
+    /ambiguous.*project alias/i,
   );
 });
 
-test('shared URL rename rejects partial compound alias coverage', () => {
+test('shared URL rename rejects partial project-alias coverage', () => {
   const previousInput = sharedOfficialUrlInput();
   const previous = sealCandidate(importScoutingData(previousInput, identities()));
   const currentInput = renamedSharedOfficialUrlInput();
@@ -554,16 +650,20 @@ test('shared URL rename rejects partial compound alias coverage', () => {
   assert.throws(
     () => importScoutingData(currentInput, identities({
       previous,
-      aliases: {
-        [`${sharedUrl}::${currentInput.mainRows[0].projectId}`]:
-          previousInput.mainRows[0].projectId,
-      },
+      registry: identityRegistry({
+        projectAliases: [
+          projectAlias(
+            currentInput.mainRows[0].projectId,
+            previousInput.mainRows[0].projectId,
+          ),
+        ],
+      }),
     })),
-    /cover every missing previous ID exactly once/i,
+    /project aliases must cover every missing previous ID exactly once/i,
   );
 });
 
-test('shared URL rename accepts complete compound alias coverage', () => {
+test('shared URL rename accepts complete project-alias coverage', () => {
   const previousInput = sharedOfficialUrlInput();
   const previous = sealCandidate(importScoutingData(previousInput, identities()));
   const currentInput = renamedSharedOfficialUrlInput();
@@ -571,12 +671,18 @@ test('shared URL rename accepts complete compound alias coverage', () => {
 
   const candidate = importScoutingData(currentInput, identities({
     previous,
-    aliases: {
-      [`${sharedUrl}::${currentInput.mainRows[0].projectId}`]:
-        previousInput.mainRows[0].projectId,
-      [`${sharedUrl}::${currentInput.mainRows[1].projectId}`]:
-        previousInput.mainRows[1].projectId,
-    },
+    registry: identityRegistry({
+      projectAliases: [
+        projectAlias(
+          currentInput.mainRows[0].projectId,
+          previousInput.mainRows[0].projectId,
+        ),
+        projectAlias(
+          currentInput.mainRows[1].projectId,
+          previousInput.mainRows[1].projectId,
+        ),
+      ],
+    }),
   }));
 
   assert.deepEqual(
@@ -600,12 +706,18 @@ test('shared URL rename admits a new ID after complete previous-ID coverage', ()
 
   const candidate = importScoutingData(currentInput, identities({
     previous,
-    aliases: {
-      [`${sharedUrl}::${currentInput.mainRows[0].projectId}`]:
-        previousInput.mainRows[0].projectId,
-      [`${sharedUrl}::${currentInput.mainRows[1].projectId}`]:
-        previousInput.mainRows[1].projectId,
-    },
+    registry: identityRegistry({
+      projectAliases: [
+        projectAlias(
+          currentInput.mainRows[0].projectId,
+          previousInput.mainRows[0].projectId,
+        ),
+        projectAlias(
+          currentInput.mainRows[1].projectId,
+          previousInput.mainRows[1].projectId,
+        ),
+      ],
+    }),
   }));
 
   assert.deepEqual(
@@ -621,7 +733,7 @@ test('shared URL rename admits a new ID after complete previous-ID coverage', ()
   );
 });
 
-test('one previous row with multiple renamed current rows requires a compound alias', () => {
+test('one previous row with multiple renamed current rows requires a project alias', () => {
   const previous = sealCandidate(importScoutingData(validInput(), identities()));
   const currentInput = sharedOfficialUrlInput();
   currentInput.mainRows[0].projectId = '2027|测试大学|计算机学院|暑期学校';
@@ -629,11 +741,11 @@ test('one previous row with multiple renamed current rows requires a compound al
 
   assert.throws(
     () => importScoutingData(currentInput, identities({ previous })),
-    /ambiguous.*compound alias/i,
+    /ambiguous.*project alias/i,
   );
 });
 
-test('compound alias selects the renamed row in a one-to-many transition', () => {
+test('project alias selects the renamed row in a one-to-many transition', () => {
   const previousInput = validInput();
   const approvedId = previousInput.mainRows[0].projectId;
   const previous = sealCandidate(importScoutingData(previousInput, identities()));
@@ -645,9 +757,9 @@ test('compound alias selects the renamed row in a one-to-many transition', () =>
 
   const candidate = importScoutingData(currentInput, identities({
     previous,
-    aliases: {
-      [`${currentInput.mainRows[0].officialUrl}::${renamedId}`]: approvedId,
-    },
+    registry: identityRegistry({
+      projectAliases: [projectAlias(renamedId, approvedId)],
+    }),
   }));
 
   assert.deepEqual(
@@ -659,7 +771,7 @@ test('compound alias selects the renamed row in a one-to-many transition', () =>
   );
 });
 
-test('shared previous URL requires a compound alias when the current input ID changed', () => {
+test('shared previous URL requires a project alias when the current input ID changed', () => {
   const previousInput = sharedOfficialUrlInput();
   const previous = sealCandidate(importScoutingData(previousInput, identities()));
   const changedInput = sharedOfficialUrlInput();
@@ -667,11 +779,11 @@ test('shared previous URL requires a compound alias when the current input ID ch
 
   assert.throws(
     () => importScoutingData(changedInput, identities({ previous })),
-    /ambiguous previous IDs.*compound alias/i,
+    /ambiguous previous IDs.*project alias/i,
   );
 });
 
-test('compound alias resolves exactly one changed input ID on a shared URL', () => {
+test('project alias resolves exactly one changed input ID on a shared URL', () => {
   const previousInput = sharedOfficialUrlInput();
   const approvedId = previousInput.mainRows[0].projectId;
   const unchangedId = previousInput.mainRows[1].projectId;
@@ -682,9 +794,9 @@ test('compound alias resolves exactly one changed input ID on a shared URL', () 
 
   const candidate = importScoutingData(changedInput, identities({
     previous,
-    aliases: {
-      [`HTTPS://CS.EXAMPLE.EDU.CN/admissions/summer-camp::${changedId}`]: approvedId,
-    },
+    registry: identityRegistry({
+      projectAliases: [projectAlias(changedId, approvedId)],
+    }),
   }));
 
   assert.deepEqual(
@@ -696,7 +808,7 @@ test('compound alias resolves exactly one changed input ID on a shared URL', () 
   );
 });
 
-test('compound alias must resolve to an ID approved for that shared URL', () => {
+test('an absent project-alias target cannot bypass shared URL coverage', () => {
   const previousInput = sharedOfficialUrlInput();
   const previous = sealCandidate(importScoutingData(previousInput, identities()));
   const changedInput = sharedOfficialUrlInput();
@@ -706,29 +818,110 @@ test('compound alias must resolve to an ID approved for that shared URL', () => 
   assert.throws(
     () => importScoutingData(changedInput, identities({
       previous,
-      aliases: {
-        [`${changedInput.mainRows[0].officialUrl}::${changedId}`]:
-          '2027|测试大学|计算机学院|未批准项目',
-      },
+      registry: identityRegistry({
+        projectAliases: [
+          projectAlias(changedId, '2027|测试大学|计算机学院|未批准项目'),
+        ],
+      }),
     })),
-    /compound alias.*approved ID/i,
+    /shared URL.*project aliases.*missing previous ID/i,
   );
 });
 
-test('alias targets must exist in the previous snapshot and match the current cycle', async (t) => {
-  await t.test('simple alias rejects an arbitrary target without a previous snapshot', () => {
+test('tombstone preserves an absent source ID by merging it into an approved ID', () => {
+  const input = validInput();
+  const sourceId = input.mainRows[0].projectId;
+  const canonicalId = '2027|测试大学|计算机学院|合并后的夏令营';
+  const previous = previousWith('https://cs.example.edu.cn/admissions/old', canonicalId);
+
+  const candidate = importScoutingData(input, identities({
+    previous,
+    registry: identityRegistry({
+      tombstones: [tombstone(sourceId, canonicalId)],
+    }),
+  }));
+
+  assert.equal(
+    opportunity(candidate, '2026年优秀大学生夏令营').projectId,
+    canonicalId,
+  );
+});
+
+test('registry targets may be absent from the parent snapshot but must match the current cycle', async (t) => {
+  await t.test('URL alias restores a reviewed canonical ID absent from the parent snapshot', () => {
     const input = validInput();
-    assert.throws(
-      () => importScoutingData(input, identities({
-        aliases: {
-          [input.mainRows[0].officialUrl]: '2027|任意大学|计算机学院|任意项目',
-        },
-      })),
-      /simple alias target.*validated previous snapshot/i,
+    const canonicalId = '2027|测试大学|计算机学院|经审历史夏令营';
+    const previous = previousWith(
+      'https://cs.example.edu.cn/admissions/still-present',
+      '2027|测试大学|计算机学院|父快照现存项目',
+    );
+    assert.equal(
+      previous.opportunities.some((row) => row.projectId === canonicalId),
+      false,
+    );
+
+    const candidate = importScoutingData(input, identities({
+      previous,
+      registry: identityRegistry({
+        urlAliases: [
+          urlAlias(input.mainRows[0].officialUrl, canonicalId),
+        ],
+      }),
+    }));
+
+    assert.equal(
+      opportunity(candidate, '2026年优秀大学生夏令营').projectId,
+      canonicalId,
     );
   });
 
-  await t.test('simple alias rejects a previous target from another cycle', () => {
+  await t.test('project alias may target a reviewed canonical ID absent from the parent snapshot', () => {
+    const input = validInput();
+    const canonicalId = '2027|测试大学|计算机学院|经审历史暑期学校';
+    const previous = previousWith(
+      'https://cs.example.edu.cn/admissions/still-present',
+      '2027|测试大学|计算机学院|父快照现存项目',
+    );
+
+    const candidate = importScoutingData(input, identities({
+      previous,
+      registry: identityRegistry({
+        projectAliases: [
+          projectAlias(input.mainRows[0].projectId, canonicalId),
+        ],
+      }),
+    }));
+
+    assert.equal(
+      opportunity(candidate, '2026年优秀大学生夏令营').projectId,
+      canonicalId,
+    );
+  });
+
+  await t.test('tombstone may merge into a reviewed canonical ID absent from the parent snapshot', () => {
+    const input = validInput();
+    const canonicalId = '2027|测试大学|计算机学院|经审历史合并项目';
+    const previous = previousWith(
+      'https://cs.example.edu.cn/admissions/still-present',
+      '2027|测试大学|计算机学院|父快照现存项目',
+    );
+
+    const candidate = importScoutingData(input, identities({
+      previous,
+      registry: identityRegistry({
+        tombstones: [
+          tombstone(input.mainRows[0].projectId, canonicalId),
+        ],
+      }),
+    }));
+
+    assert.equal(
+      opportunity(candidate, '2026年优秀大学生夏令营').projectId,
+      canonicalId,
+    );
+  });
+
+  await t.test('URL alias rejects a target from another cycle', () => {
     const previousInput = validInput();
     const previousId = '2026|旧测试大学|计算机学院|夏令营';
     previousInput.mainRows[0].projectId = previousId;
@@ -740,13 +933,17 @@ test('alias targets must exist in the previous snapshot and match the current cy
     assert.throws(
       () => importScoutingData(input, identities({
         previous,
-        aliases: { [input.mainRows[0].officialUrl]: previousId },
+        registry: identityRegistry({
+          urlAliases: [
+            urlAlias(input.mainRows[0].officialUrl, previousId),
+          ],
+        }),
       })),
-      /simple alias target.*cycle/i,
+      /URL alias target.*cycle/i,
     );
   });
 
-  await t.test('compound alias rejects a previous target from another cycle', () => {
+  await t.test('project alias rejects a target from another cycle', () => {
     const previousInput = sharedOfficialUrlInput();
     const previousId = '2026|旧测试大学|计算机学院|夏令营';
     previousInput.mainRows[0].projectId = previousId;
@@ -759,54 +956,78 @@ test('alias targets must exist in the previous snapshot and match the current cy
     assert.throws(
       () => importScoutingData(input, identities({
         previous,
-        aliases: {
-          [`${input.mainRows[0].officialUrl}::${changedId}`]: previousId,
-        },
+        registry: identityRegistry({
+          projectAliases: [projectAlias(changedId, previousId)],
+        }),
       })),
-      /compound alias target.*cycle/i,
+      /cycle must match both project IDs/i,
+    );
+  });
+
+  await t.test('tombstone rejects a merged target from another cycle', () => {
+    const input = validInput();
+    assert.throws(
+      () => importScoutingData(input, identities({
+        registry: identityRegistry({
+          tombstones: [
+            tombstone(
+              input.mainRows[0].projectId,
+              '2026|旧测试大学|计算机学院|历史合并目标',
+            ),
+          ],
+        }),
+      })),
+      /cycle must match both project IDs/i,
     );
   });
 });
 
 test('rejects malformed and normalized conflicting alias entries', async (t) => {
-  await t.test('empty compound input ID', () => {
+  await t.test('empty project-alias source ID', () => {
     assert.throws(
       () => importScoutingData(validInput(), identities({
-        aliases: {
-          'https://cs.example.edu.cn/admissions/summer-camp/::':
-            '2027|测试大学|计算机学院|夏令营',
-        },
+        registry: identityRegistry({
+          projectAliases: [
+            projectAlias('', '2027|测试大学|计算机学院|夏令营'),
+          ],
+        }),
       })),
-      /malformed compound alias/i,
+      /sourceProjectId.*non-empty|sourceProjectId.*cycle\|school/i,
     );
   });
 
-  await t.test('conflicting simple aliases after URL normalization', () => {
+  await t.test('conflicting URL aliases after importer normalization', () => {
     assert.throws(
       () => importScoutingData(validInput(), identities({
-        aliases: {
-          'https://cs.example.edu.cn/admissions/summer-camp/':
-            '2027|测试大学|计算机学院|夏令营',
-          'HTTPS://CS.EXAMPLE.EDU.CN/admissions/summer-camp':
-            '2027|测试大学|计算机学院|开放日',
-        },
+        registry: identityRegistry({
+          urlAliases: [
+            urlAlias(
+              'https://cs.example.edu.cn/admissions/summer-camp/',
+              '2027|测试大学|计算机学院|夏令营',
+            ),
+            urlAlias(
+              'HTTPS://CS.EXAMPLE.EDU.CN/admissions/summer-camp',
+              '2027|测试大学|计算机学院|开放日',
+            ),
+          ],
+        }),
       })),
-      /conflicting simple alias/i,
+      /conflicting URL alias/i,
     );
   });
 
-  await t.test('conflicting compound aliases after URL normalization', () => {
+  await t.test('duplicate project aliases for one source ID', () => {
     const currentId = '2027|测试大学|计算机学院|暑期学校';
     assert.throws(
       () => importScoutingData(validInput(), identities({
-        aliases: {
-          [`https://cs.example.edu.cn/admissions/summer-camp/::${currentId}`]:
-            '2027|测试大学|计算机学院|夏令营',
-          [`HTTPS://CS.EXAMPLE.EDU.CN/admissions/summer-camp::${currentId}`]:
-            '2027|测试大学|计算机学院|开放日',
-        },
+        registry: identityRegistry({
+          projectAliases: [
+            projectAlias(currentId, '2027|测试大学|计算机学院|夏令营'),
+            projectAlias(currentId, '2027|测试大学|计算机学院|开放日'),
+          ],
+        }),
       })),
-      /conflicting compound alias/i,
+      /projectAliases.*duplicate/i,
     );
   });
 });
@@ -823,7 +1044,9 @@ test('simple URL alias cannot collapse multiple current rows into one ID', () =>
   assert.throws(
     () => importScoutingData(input, identities({
       previous,
-      aliases: { [migratedUrl]: input.mainRows[0].projectId },
+      registry: identityRegistry({
+        urlAliases: [urlAlias(migratedUrl, input.mainRows[0].projectId)],
+      }),
     })),
     /duplicate resolved projectId/i,
   );
@@ -1397,7 +1620,7 @@ test('CLI imports an absolute input and creates the output parent on first impor
   const aliasesPath = join(tempRoot, 'aliases.json');
   const outputPath = join(tempRoot, 'nested', 'candidate.json');
   writeJson(inputPath, freshCliInput());
-  writeJson(aliasesPath, {});
+  writeJson(aliasesPath, identityRegistry());
 
   try {
     const result = spawnSync('corepack', [
@@ -1458,7 +1681,7 @@ test('CLI rejects a hash-tampered v1 previous snapshot before candidate write', 
   const previous = legacySnapshotV1(importScoutingData(input, identities()));
   previous.opportunities[0].description = 'structurally valid but hash-tampered';
   writeJson(inputPath, input);
-  writeJson(aliasesPath, {});
+  writeJson(aliasesPath, identityRegistry());
   writeJson(approvedPath, previous);
   writeFileSync(outputPath, 'CURRENT_CANDIDATE_MUST_SURVIVE\n', 'utf8');
   const inputBefore = readFileSync(inputPath);
@@ -1688,7 +1911,7 @@ test('CLI rejects a stale confirmed-open candidate and leaves output untouched',
   const outputPath = join(tempRoot, 'candidate.json');
   const outputBefore = 'CURRENT_CANDIDATE_MUST_SURVIVE\n';
   writeJson(inputPath, staleCliInput());
-  writeJson(aliasesPath, {});
+  writeJson(aliasesPath, identityRegistry());
   writeFileSync(outputPath, outputBefore, 'utf8');
 
   try {
@@ -1719,7 +1942,7 @@ test('CLI rejects a denied official subdomain without creating output', () => {
   const aliasesPath = join(tempRoot, 'aliases.json');
   const outputPath = join(tempRoot, 'candidate.json');
   writeJson(inputPath, input);
-  writeJson(aliasesPath, {});
+  writeJson(aliasesPath, identityRegistry());
 
   try {
     const result = runImporterCli({
