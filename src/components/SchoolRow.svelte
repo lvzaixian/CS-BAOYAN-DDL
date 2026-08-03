@@ -78,6 +78,13 @@
         <span class="text-fg-0 font-medium text-sm shrink-0 max-w-[68%] sm:max-w-[38%] truncate">{school.name}</span>
         <span class="text-fg-3 text-xs min-w-0 truncate">{school.institute}</span>
       </div>
+      <div
+        class="text-fg-1 text-xs leading-4 truncate"
+        data-project-name
+        title={school.project}
+      >
+        {school.project}
+      </div>
       <div class="flex items-center gap-1.5 min-w-0 overflow-hidden min-h-[18px]">
         {#each displayTags as t}
           <span

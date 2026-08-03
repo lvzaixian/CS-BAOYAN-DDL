@@ -230,6 +230,12 @@ test('uses the fixture and renders exact ordered groups and active deadlines', a
   }
 });
 
+test('shows each project name in the list row', async ({ page }) => {
+  await expect(
+    page.locator(`[data-row-key="${KEYS.redwood}"]`).getByText('2026年优秀大学生夏令营', { exact: true }),
+  ).toBeVisible();
+});
+
 test('opens deterministic details with ordered facts and the official website CTA', async ({ page }) => {
   await page.getByRole('button', { name: '查看项目详情：红杉大学 人工智能学院' }).click();
   const dialog = page.getByRole('dialog', { name: '红杉大学' });
