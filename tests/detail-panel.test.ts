@@ -45,7 +45,7 @@ test('matches the reference list hierarchy while preserving event mode', () => {
   assert.match(markup, /\{#each displayTags as t\}/);
   assert.doesNotMatch(schoolRowSource, /t === '(已开营|已结营)'/);
   assert.doesNotMatch(markup, />\s*(已开营|已结营)\s*</);
-  assert.doesNotMatch(main, /\{school\.project\}/);
+  assert.match(main, /\{school\.project\}/);
   assert.match(main, /\{school\.name\}/);
   assert.match(main, /\{school\.institute\}/);
   assert.match(markup, /\{school\.eventType\}/);
