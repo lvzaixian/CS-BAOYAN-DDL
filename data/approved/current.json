@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-08-03T03:28:20.277Z",
+  "scanAt": "2026-08-03T05:09:30.006Z",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -11,10 +11,10 @@
     }
   ],
   "counts": {
-    "confirmedOpen": 78,
-    "confirmedUnknownDeadline": 28,
+    "confirmedOpen": 89,
+    "confirmedUnknownDeadline": 17,
     "pendingExcluded": 119,
-    "expired": 163
+    "expired": 164
   },
   "opportunities": [
     {
@@ -613,6 +613,98 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：高；材料清单：南科大系统报名"
+      }
+    },
+    {
+      "projectId": "2027|香港科技大学|综合系统与设计学部|Early Recruiting",
+      "feedId": "camp2027",
+      "name": "香港科技大学",
+      "institute": "综合系统与设计学部",
+      "project": "综合系统与设计学部｜Fall 2027 Early Recruiting",
+      "eventType": "跨学科博士早招",
+      "description": "综合系统与设计学部｜Fall 2027 Early Recruiting",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-15T23:59:59+08:00",
+      "deadlineOriginal": "Early Admission – Fall Term (commencing Sep 2027): August 15, 2026; no time stated",
+      "deadlineEpochMs": 1786809599000,
+      "website": "https://isd.hkust.edu.hk/academics/early-admission/",
+      "tags": [],
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://isd.hkust.edu.hk/academics/early-admission/"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "预计2026年10月面试"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "官方未明确线上或线下"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：早招页未列明，正式申请阶段以学校系统要求为准；推荐信模板：未见专用模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：填写学部Early Admission申请表"
+      }
+    },
+    {
+      "projectId": "2027|香港科技大学|计算机科学与工程学系|Early Recruiting",
+      "feedId": "camp2027",
+      "name": "香港科技大学",
+      "institute": "计算机科学与工程学系",
+      "project": "计算机科学与工程学系｜Fall 2027 Early Recruiting",
+      "eventType": "研究型硕博早招",
+      "description": "计算机科学与工程学系｜Fall 2027 Early Recruiting",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-15T23:59:59+08:00",
+      "deadlineOriginal": "The deadline for early admission application is Aug 15, 2026; no time stated",
+      "deadlineEpochMs": 1786809599000,
+      "website": "https://cse.hkust.edu.hk/pg/admissions/recruiting/",
+      "tags": [],
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://cse.hkust.edu.hk/pg/admissions/recruiting/"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "hybrid",
+        "time": {
+          "status": "confirmed",
+          "summary": "面试自2026年9月起分批进行"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线上或到校面试，由学系安排"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：早招页未列明，正式申请阶段以学校系统要求为准；推荐信模板：未见专用模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；材料清单：先完成计算机系Early Recruiting登记"
       }
     },
     {
@@ -1398,6 +1490,52 @@
       }
     },
     {
+      "projectId": "2027|中山大学|网络空间安全学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "中山大学",
+      "institute": "网络空间安全学院",
+      "project": "网络空间安全学院｜2027年接收推荐免试生报名",
+      "eventType": "推免预报名",
+      "description": "网络空间安全学院｜2027年接收推荐免试生报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-25T23:59:59+08:00",
+      "deadlineOriginal": "2026年8月25日前；官方未给出具体时刻",
+      "deadlineEpochMs": 1787673599000,
+      "website": "https://scst.sysu.edu.cn/article/502",
+      "tags": [],
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://scst.sysu.edu.cn/article/502"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "现场复试；具体时间与地点另行通知"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：0；推荐信模板：不适用"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中高；材料清单：学院申请表、盖章成绩单、排名证明、英语证明、身份证与学生证"
+      }
+    },
+    {
       "projectId": "2027|华东师范大学|上海智能教育研究院|推免预报名",
       "feedId": "camp2027",
       "name": "华东师范大学",
@@ -1487,6 +1625,52 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：中；材料清单：通过学校推免生信息采集系统填报，并按学院通知准备成绩、排名、英语、科研和获奖证明。"
+      }
+    },
+    {
+      "projectId": "2027|广西大学|计算机与电子信息学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "广西大学",
+      "institute": "计算机与电子信息学院",
+      "project": "计算机与电子信息学院｜2027年推免预报名",
+      "eventType": "推免预报名",
+      "description": "计算机与电子信息学院｜2027年推免预报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-30T23:59:59+08:00",
+      "deadlineOriginal": "预报名时间为2026年7月20日至8月30日；官方未给出具体时刻",
+      "deadlineEpochMs": 1788105599000,
+      "website": "https://yjsc.gxu.edu.cn/info/1021/4680.htm",
+      "tags": [],
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yjsc.gxu.edu.cn/info/1021/4680.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "网上预报名；后续考核方式与地点待学院通知"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：校级通知未要求；推荐信模板：未提供"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：待官方公布；材料清单：待官方公布"
       }
     },
     {
@@ -2548,6 +2732,52 @@
       }
     },
     {
+      "projectId": "2027|香港理工大学|数据科学与人工智能学系|2027年1月入学PhD-MPhil",
+      "feedId": "camp2027",
+      "name": "香港理工大学",
+      "institute": "数据科学与人工智能学系",
+      "project": "数据科学与人工智能学系｜2027年1月入学PhD/MPhil",
+      "eventType": "研究型硕博招生",
+      "description": "数据科学与人工智能学系｜2027年1月入学PhD/MPhil",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-11T23:59:59+08:00",
+      "deadlineOriginal": "Application Deadline: 11-Sep-2026; no time stated",
+      "deadlineEpochMs": 1789142399000,
+      "website": "https://www.polyu.edu.hk/study/pg/rpg/20262/dsai",
+      "tags": [],
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://www.polyu.edu.hk/study/pg/rpg/20262/dsai"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "由学系另行通知"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：2封学术推荐信；推荐信模板：https://www.polyu.edu.hk/gs/docdrive/forms/FormGSB1a.doc"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：高；材料清单：身份证明、学历与完整成绩单、研究计划、英语证明及两位学术推荐人"
+      }
+    },
+    {
       "projectId": "2027|南开大学|计算机学院/密码与网络空间安全学院|推免预报名",
       "feedId": "camp2027",
       "name": "南开大学",
@@ -3606,6 +3836,282 @@
       }
     },
     {
+      "projectId": "2027|香港理工大学|电机及电子工程学系|2027年1月入学PhD-MPhil",
+      "feedId": "camp2027",
+      "name": "香港理工大学",
+      "institute": "电机及电子工程学系",
+      "project": "电机及电子工程学系｜2027年1月入学PhD/MPhil",
+      "eventType": "研究型硕博招生",
+      "description": "电机及电子工程学系｜2027年1月入学PhD/MPhil",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-30T23:59:59+08:00",
+      "deadlineOriginal": "Application Deadline: 30-Sep-2026; no time stated",
+      "deadlineEpochMs": 1790783999000,
+      "website": "https://www.polyu.edu.hk/study/pg/rpg/20262/eee",
+      "tags": [],
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://www.polyu.edu.hk/study/pg/rpg/20262/eee"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "由学系另行通知"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：2封学术推荐信；推荐信模板：https://www.polyu.edu.hk/gs/docdrive/forms/FormGSB1a.doc"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：高；材料清单：身份证明、学历与成绩单、研究计划及两位学术推荐人"
+      }
+    },
+    {
+      "projectId": "2027|香港理工大学|计算学系|2027年1月入学PhD-MPhil",
+      "feedId": "camp2027",
+      "name": "香港理工大学",
+      "institute": "计算学系",
+      "project": "计算学系｜2027年1月入学PhD/MPhil",
+      "eventType": "研究型硕博招生",
+      "description": "计算学系｜2027年1月入学PhD/MPhil",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-30T23:59:59+08:00",
+      "deadlineOriginal": "Application Deadline: 30-Sep-2026; no time stated",
+      "deadlineEpochMs": 1790783999000,
+      "website": "https://www.polyu.edu.hk/study/pg/rpg/20262/comp",
+      "tags": [],
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://www.polyu.edu.hk/study/pg/rpg/20262/comp"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "由学系另行通知"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：奖学金或研究生院资助申请通常需2封；推荐信模板：https://www.polyu.edu.hk/gs/docdrive/forms/FormGSB1a.doc"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中高；材料清单：身份证明、学历与成绩单、标准研究计划表"
+      }
+    },
+    {
+      "projectId": "2027|香港科技大学（广州）|研究生院|2026-27学年春季博士招生",
+      "feedId": "camp2027",
+      "name": "香港科技大学（广州）",
+      "institute": "研究生院",
+      "project": "研究生院｜2026/27学年春季博士招生",
+      "eventType": "博士招生",
+      "description": "研究生院｜2026/27学年春季博士招生",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-12-25T23:59:59+08:00",
+      "deadlineOriginal": "Chinese mainland applicants: 25 December 2026; no time stated",
+      "deadlineEpochMs": 1798214399000,
+      "website": "https://fytgs.hkust-gz.edu.cn/admissions/apply-now",
+      "tags": [],
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://fytgs.hkust-gz.edu.cn/admissions/apply-now"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "2027年1月25日开学；面试时间由项目另行通知"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "官方未统一公布"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：需提供2至5位推荐人；推荐信模板：推荐人通过系统提交"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：高；材料清单：身份证明、完整学历与成绩单及评分说明、英语证明、研究计划和2至5位推荐人"
+      }
+    },
+    {
+      "projectId": "2027|香港理工大学|数据科学与人工智能学系|2027年5月入学PhD-MPhil",
+      "feedId": "camp2027",
+      "name": "香港理工大学",
+      "institute": "数据科学与人工智能学系",
+      "project": "数据科学与人工智能学系｜2027年5月入学PhD/MPhil",
+      "eventType": "研究型硕博招生",
+      "description": "数据科学与人工智能学系｜2027年5月入学PhD/MPhil",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2027-01-13T23:59:59+08:00",
+      "deadlineOriginal": "Application Deadline: 13-Jan-2027; no time stated",
+      "deadlineEpochMs": 1799855999000,
+      "website": "https://www.polyu.edu.hk/study/pg/rpg/20263/dsai",
+      "tags": [],
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://www.polyu.edu.hk/study/pg/rpg/20263/dsai"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "由学系另行通知"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：2封学术推荐信；推荐信模板：https://www.polyu.edu.hk/gs/docdrive/forms/FormGSB1a.doc"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：高；材料清单：身份证明、学历与完整成绩单、研究计划、英语证明及两位学术推荐人"
+      }
+    },
+    {
+      "projectId": "2027|香港理工大学|计算学系|2027年5月入学PhD-MPhil",
+      "feedId": "camp2027",
+      "name": "香港理工大学",
+      "institute": "计算学系",
+      "project": "计算学系｜2027年5月入学PhD/MPhil",
+      "eventType": "研究型硕博招生",
+      "description": "计算学系｜2027年5月入学PhD/MPhil",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2027-01-31T23:59:59+08:00",
+      "deadlineOriginal": "Application Deadline: 31-Jan-2027; no time stated",
+      "deadlineEpochMs": 1801411199000,
+      "website": "https://www.polyu.edu.hk/study/pg/rpg/20263/comp",
+      "tags": [],
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://www.polyu.edu.hk/study/pg/rpg/20263/comp"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "由学系另行通知"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：奖学金或研究生院资助申请通常需2封；推荐信模板：https://www.polyu.edu.hk/gs/docdrive/forms/FormGSB1a.doc"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中高；材料清单：身份证明、学历与成绩单、标准研究计划表"
+      }
+    },
+    {
+      "projectId": "2027|香港科技大学（广州）|研究生院|2027-28学年秋季博士招生",
+      "feedId": "camp2027",
+      "name": "香港科技大学（广州）",
+      "institute": "研究生院",
+      "project": "研究生院｜2027/28学年秋季博士招生",
+      "eventType": "博士招生",
+      "description": "研究生院｜2027/28学年秋季博士招生",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2027-07-15T23:59:59+08:00",
+      "deadlineOriginal": "Chinese mainland applicants: 15 July 2027; no time stated",
+      "deadlineEpochMs": 1815667199000,
+      "website": "https://fytgs.hkust-gz.edu.cn/admissions/before-submitting-an-application/admission-timeline",
+      "tags": [],
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://fytgs.hkust-gz.edu.cn/admissions/before-submitting-an-application/admission-timeline"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "2027年9月1日开学；面试时间由项目另行通知"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "官方未统一公布"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：需提供2至5位推荐人；推荐信模板：推荐人通过系统提交"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：高；材料清单：身份证明、完整学历与成绩单及评分说明、英语证明、研究计划和2至5位推荐人"
+      }
+    },
+    {
       "projectId": "2027|东北大学|研究生院|推免预报名",
       "feedId": "camp2027",
       "name": "东北大学",
@@ -3790,52 +4296,6 @@
       }
     },
     {
-      "projectId": "2027|中山大学|网络空间安全学院|推免预报名",
-      "feedId": "camp2027",
-      "name": "中山大学",
-      "institute": "网络空间安全学院",
-      "project": "网络空间安全学院｜2027年接收推荐免试生报名",
-      "eventType": "推免预报名",
-      "description": "网络空间安全学院｜2027年接收推荐免试生报名",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "2026年8月25日前；官方未给出具体时刻",
-      "deadlineEpochMs": null,
-      "website": "https://scst.sysu.edu.cn/article/502",
-      "tags": [],
-      "verifiedAt": "2026-08-02T17:21:00.029Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://scst.sysu.edu.cn/article/502"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "offline",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "现场复试；具体时间与地点另行通知"
-        }
-      },
-      "logistics": {
-        "status": "confirmed",
-        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：0；推荐信模板：不适用"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：中高；材料清单：学院申请表、盖章成绩单、排名证明、英语证明、身份证与学生证"
-      }
-    },
-    {
       "projectId": "2027|北京邮电大学|全校（招生系统级）|推免招生系统",
       "feedId": "camp2027",
       "name": "北京邮电大学",
@@ -3879,6 +4339,57 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：待官方公布；材料清单：待官方公布"
+      }
+    },
+    {
+      "projectId": "2027|南京大学|全校（招生系统级）|推免预报名",
+      "feedId": "camp2027",
+      "name": "南京大学",
+      "institute": "全校（招生系统级，覆盖计算机、软件、人工智能、电子信息等相关院系）",
+      "project": "全校（招生系统级）｜2027年接收推荐免试研究生预报名",
+      "eventType": "推免预报名",
+      "description": "南京大学研究生招生网 2026-08-03 发布 2027 年接收推荐免试研究生预报名通知；推免预报名系统入口开放，FAQ 要求在系统显示的报名开始/结束时间内填报个人信息、上传材料、填报志愿并提交申请。各学院审核进度和通知形式以学院要求为准。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "官方通知与FAQ未公开统一截止；FAQ要求在系统显示的“报名开始时间、报名结束时间”内提交，具体学院截止以系统/学院通知为准。",
+      "deadlineEpochMs": null,
+      "website": "https://yzb.nju.edu.cn/d4/57/c47868a840791/pagem.htm",
+      "tags": [],
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://yzb.nju.edu.cn/d4/57/c47868a840791/pagem.htm"
+        },
+        {
+          "kind": "official",
+          "label": "推免预报名系统FAQ",
+          "url": "https://yzb.nju.edu.cn/_upload/article/files/7a/8e/658d60bb49a1a429fda589790c43/5038c47a-e3b0-48a5-b5d9-b29a2d2d9811.pdf"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "各单位后续通知；系统审核后学生查看通知并反馈"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "未公开统一复试形式；各学院要求为准"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "住宿、餐食、交通、报销未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "申请直博者使用南京大学2027年报考攻读博士学位研究生专家推荐信；申请硕士是否需推荐信以学院要求为准"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：中；FAQ要求注册登录、填报个人信息、上传材料、填报志愿、提交申请、导出和打印申请材料；部分上传材料可能提供模板"
       }
     },
     {
@@ -4017,98 +4528,6 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：高；材料清单：报名申请表、盖章成绩单、身份证和学生证、英语/论文/专利/获奖等成果证明"
-      }
-    },
-    {
-      "projectId": "2027|广西大学|计算机与电子信息学院|推免预报名",
-      "feedId": "camp2027",
-      "name": "广西大学",
-      "institute": "计算机与电子信息学院",
-      "project": "计算机与电子信息学院｜2027年推免预报名",
-      "eventType": "推免预报名",
-      "description": "计算机与电子信息学院｜2027年推免预报名",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "预报名时间为2026年7月20日至8月30日；官方未给出具体时刻",
-      "deadlineEpochMs": null,
-      "website": "https://yjsc.gxu.edu.cn/info/1021/4680.htm",
-      "tags": [],
-      "verifiedAt": "2026-08-02T17:21:00.523Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://yjsc.gxu.edu.cn/info/1021/4680.htm"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "网上预报名；后续考核方式与地点待学院通知"
-        }
-      },
-      "logistics": {
-        "status": "confirmed",
-        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：校级通知未要求；推荐信模板：未提供"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：待官方公布；材料清单：待官方公布"
-      }
-    },
-    {
-      "projectId": "2027|澳门大学|研究生院/科技学院|2026-27第二学期计算机科学博士第三批",
-      "feedId": "camp2027",
-      "name": "澳门大学",
-      "institute": "研究生院/科技学院",
-      "project": "研究生院/科技学院｜2026/27学年第二学期计算机科学博士第三批",
-      "eventType": "博士招生",
-      "description": "研究生院/科技学院｜2026/27学年第二学期计算机科学博士第三批",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "To be admitted in 2nd Semester: 4 May 2026 – 31 July 2026 (3rd batch); no time stated",
-      "deadlineEpochMs": null,
-      "website": "https://grs.um.edu.mo/index.php/prospective-students/doctoral-degrees-programmes/",
-      "tags": [],
-      "verifiedAt": "2026-08-02T17:21:00.663Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://grs.um.edu.mo/index.php/prospective-students/doctoral-degrees-programmes/"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "由学院或项目另行通知"
-        }
-      },
-      "logistics": {
-        "status": "confirmed",
-        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：2封；推荐信模板：推荐人通过官方申请流程提交"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：身份、完整学历与成绩证明、英语能力材料、研究计划及两位推荐人"
       }
     },
     {
@@ -4480,420 +4899,6 @@
       }
     },
     {
-      "projectId": "2027|香港理工大学|数据科学与人工智能学系|2027年1月入学PhD-MPhil",
-      "feedId": "camp2027",
-      "name": "香港理工大学",
-      "institute": "数据科学与人工智能学系",
-      "project": "数据科学与人工智能学系｜2027年1月入学PhD/MPhil",
-      "eventType": "研究型硕博招生",
-      "description": "数据科学与人工智能学系｜2027年1月入学PhD/MPhil",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "Application Deadline: 11-Sep-2026; no time stated",
-      "deadlineEpochMs": null,
-      "website": "https://www.polyu.edu.hk/study/pg/rpg/20262/dsai",
-      "tags": [],
-      "verifiedAt": "2026-08-02T17:21:01.559Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://www.polyu.edu.hk/study/pg/rpg/20262/dsai"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "由学系另行通知"
-        }
-      },
-      "logistics": {
-        "status": "confirmed",
-        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：2封学术推荐信；推荐信模板：https://www.polyu.edu.hk/gs/docdrive/forms/FormGSB1a.doc"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：身份证明、学历与完整成绩单、研究计划、英语证明及两位学术推荐人"
-      }
-    },
-    {
-      "projectId": "2027|香港理工大学|数据科学与人工智能学系|2027年5月入学PhD-MPhil",
-      "feedId": "camp2027",
-      "name": "香港理工大学",
-      "institute": "数据科学与人工智能学系",
-      "project": "数据科学与人工智能学系｜2027年5月入学PhD/MPhil",
-      "eventType": "研究型硕博招生",
-      "description": "数据科学与人工智能学系｜2027年5月入学PhD/MPhil",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "Application Deadline: 13-Jan-2027; no time stated",
-      "deadlineEpochMs": null,
-      "website": "https://www.polyu.edu.hk/study/pg/rpg/20263/dsai",
-      "tags": [],
-      "verifiedAt": "2026-08-02T17:21:01.678Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://www.polyu.edu.hk/study/pg/rpg/20263/dsai"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "由学系另行通知"
-        }
-      },
-      "logistics": {
-        "status": "confirmed",
-        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：2封学术推荐信；推荐信模板：https://www.polyu.edu.hk/gs/docdrive/forms/FormGSB1a.doc"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：身份证明、学历与完整成绩单、研究计划、英语证明及两位学术推荐人"
-      }
-    },
-    {
-      "projectId": "2027|香港理工大学|电机及电子工程学系|2027年1月入学PhD-MPhil",
-      "feedId": "camp2027",
-      "name": "香港理工大学",
-      "institute": "电机及电子工程学系",
-      "project": "电机及电子工程学系｜2027年1月入学PhD/MPhil",
-      "eventType": "研究型硕博招生",
-      "description": "电机及电子工程学系｜2027年1月入学PhD/MPhil",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "Application Deadline: 30-Sep-2026; no time stated",
-      "deadlineEpochMs": null,
-      "website": "https://www.polyu.edu.hk/study/pg/rpg/20262/eee",
-      "tags": [],
-      "verifiedAt": "2026-08-02T17:21:01.708Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://www.polyu.edu.hk/study/pg/rpg/20262/eee"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "由学系另行通知"
-        }
-      },
-      "logistics": {
-        "status": "confirmed",
-        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：2封学术推荐信；推荐信模板：https://www.polyu.edu.hk/gs/docdrive/forms/FormGSB1a.doc"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：身份证明、学历与成绩单、研究计划及两位学术推荐人"
-      }
-    },
-    {
-      "projectId": "2027|香港理工大学|计算学系|2027年1月入学PhD-MPhil",
-      "feedId": "camp2027",
-      "name": "香港理工大学",
-      "institute": "计算学系",
-      "project": "计算学系｜2027年1月入学PhD/MPhil",
-      "eventType": "研究型硕博招生",
-      "description": "计算学系｜2027年1月入学PhD/MPhil",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "Application Deadline: 30-Sep-2026; no time stated",
-      "deadlineEpochMs": null,
-      "website": "https://www.polyu.edu.hk/study/pg/rpg/20262/comp",
-      "tags": [],
-      "verifiedAt": "2026-08-02T17:21:02.198Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://www.polyu.edu.hk/study/pg/rpg/20262/comp"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "由学系另行通知"
-        }
-      },
-      "logistics": {
-        "status": "confirmed",
-        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：奖学金或研究生院资助申请通常需2封；推荐信模板：https://www.polyu.edu.hk/gs/docdrive/forms/FormGSB1a.doc"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：中高；材料清单：身份证明、学历与成绩单、标准研究计划表"
-      }
-    },
-    {
-      "projectId": "2027|香港理工大学|计算学系|2027年5月入学PhD-MPhil",
-      "feedId": "camp2027",
-      "name": "香港理工大学",
-      "institute": "计算学系",
-      "project": "计算学系｜2027年5月入学PhD/MPhil",
-      "eventType": "研究型硕博招生",
-      "description": "计算学系｜2027年5月入学PhD/MPhil",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "Application Deadline: 31-Jan-2027; no time stated",
-      "deadlineEpochMs": null,
-      "website": "https://www.polyu.edu.hk/study/pg/rpg/20263/comp",
-      "tags": [],
-      "verifiedAt": "2026-08-02T17:21:02.259Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://www.polyu.edu.hk/study/pg/rpg/20263/comp"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "由学系另行通知"
-        }
-      },
-      "logistics": {
-        "status": "confirmed",
-        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：奖学金或研究生院资助申请通常需2封；推荐信模板：https://www.polyu.edu.hk/gs/docdrive/forms/FormGSB1a.doc"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：中高；材料清单：身份证明、学历与成绩单、标准研究计划表"
-      }
-    },
-    {
-      "projectId": "2027|香港科技大学|综合系统与设计学部|Early Recruiting",
-      "feedId": "camp2027",
-      "name": "香港科技大学",
-      "institute": "综合系统与设计学部",
-      "project": "综合系统与设计学部｜Fall 2027 Early Recruiting",
-      "eventType": "跨学科博士早招",
-      "description": "综合系统与设计学部｜Fall 2027 Early Recruiting",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "Early Admission – Fall Term (commencing Sep 2027): August 15, 2026; no time stated",
-      "deadlineEpochMs": null,
-      "website": "https://isd.hkust.edu.hk/academics/early-admission/",
-      "tags": [],
-      "verifiedAt": "2026-08-02T18:47:30.515Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://isd.hkust.edu.hk/academics/early-admission/"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "confirmed",
-          "summary": "预计2026年10月面试"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "官方未明确线上或线下"
-        }
-      },
-      "logistics": {
-        "status": "confirmed",
-        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：早招页未列明，正式申请阶段以学校系统要求为准；推荐信模板：未见专用模板"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：中；材料清单：填写学部Early Admission申请表"
-      }
-    },
-    {
-      "projectId": "2027|香港科技大学|计算机科学与工程学系|Early Recruiting",
-      "feedId": "camp2027",
-      "name": "香港科技大学",
-      "institute": "计算机科学与工程学系",
-      "project": "计算机科学与工程学系｜Fall 2027 Early Recruiting",
-      "eventType": "研究型硕博早招",
-      "description": "计算机科学与工程学系｜Fall 2027 Early Recruiting",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "The deadline for early admission application is Aug 15, 2026; no time stated",
-      "deadlineEpochMs": null,
-      "website": "https://cse.hkust.edu.hk/pg/admissions/recruiting/",
-      "tags": [],
-      "verifiedAt": "2026-08-02T18:47:30.515Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://cse.hkust.edu.hk/pg/admissions/recruiting/"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "hybrid",
-        "time": {
-          "status": "confirmed",
-          "summary": "面试自2026年9月起分批进行"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "线上或到校面试，由学系安排"
-        }
-      },
-      "logistics": {
-        "status": "confirmed",
-        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：早招页未列明，正式申请阶段以学校系统要求为准；推荐信模板：未见专用模板"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：中；材料清单：先完成计算机系Early Recruiting登记"
-      }
-    },
-    {
-      "projectId": "2027|香港科技大学（广州）|研究生院|2026-27学年春季博士招生",
-      "feedId": "camp2027",
-      "name": "香港科技大学（广州）",
-      "institute": "研究生院",
-      "project": "研究生院｜2026/27学年春季博士招生",
-      "eventType": "博士招生",
-      "description": "研究生院｜2026/27学年春季博士招生",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "Chinese mainland applicants: 25 December 2026; no time stated",
-      "deadlineEpochMs": null,
-      "website": "https://fytgs.hkust-gz.edu.cn/admissions/apply-now",
-      "tags": [],
-      "verifiedAt": "2026-08-02T17:21:02.548Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://fytgs.hkust-gz.edu.cn/admissions/apply-now"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "confirmed",
-          "summary": "2027年1月25日开学；面试时间由项目另行通知"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "官方未统一公布"
-        }
-      },
-      "logistics": {
-        "status": "confirmed",
-        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：需提供2至5位推荐人；推荐信模板：推荐人通过系统提交"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：身份证明、完整学历与成绩单及评分说明、英语证明、研究计划和2至5位推荐人"
-      }
-    },
-    {
-      "projectId": "2027|香港科技大学（广州）|研究生院|2027-28学年秋季博士招生",
-      "feedId": "camp2027",
-      "name": "香港科技大学（广州）",
-      "institute": "研究生院",
-      "project": "研究生院｜2027/28学年秋季博士招生",
-      "eventType": "博士招生",
-      "description": "研究生院｜2027/28学年秋季博士招生",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "Chinese mainland applicants: 15 July 2027; no time stated",
-      "deadlineEpochMs": null,
-      "website": "https://fytgs.hkust-gz.edu.cn/admissions/before-submitting-an-application/admission-timeline",
-      "tags": [],
-      "verifiedAt": "2026-08-02T17:21:02.560Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://fytgs.hkust-gz.edu.cn/admissions/before-submitting-an-application/admission-timeline"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "confirmed",
-          "summary": "2027年9月1日开学；面试时间由项目另行通知"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "官方未统一公布"
-        }
-      },
-      "logistics": {
-        "status": "confirmed",
-        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：需提供2至5位推荐人；推荐信模板：推荐人通过系统提交"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：高；材料清单：身份证明、完整学历与成绩单及评分说明、英语证明、研究计划和2至5位推荐人"
-      }
-    },
-    {
       "projectId": "2027|上海交通大学|文创学院|数字文创与管理暑期学术交流营",
       "feedId": "camp2027",
       "name": "上海交通大学",
@@ -5224,12 +5229,12 @@
       "eventType": "优秀大学生夏令营",
       "description": "研究生院｜2026年优秀大学生夏令营",
       "verificationStatus": "expired",
-      "deadline": null,
+      "deadline": "2026-07-10T23:59:59+08:00",
       "deadlineOriginal": "报名截止日期为2026年7月10日；未公布具体时刻",
-      "deadlineEpochMs": null,
+      "deadlineEpochMs": 1783699199000,
       "website": "https://yjs.dgut.edu.cn/info/1024/22166.htm",
       "tags": [],
-      "verifiedAt": "2026-07-29T13:22:00.610Z",
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -6374,12 +6379,12 @@
       "eventType": "优秀大学生夏令营",
       "description": "研究生院｜2026年优秀大学生夏令营",
       "verificationStatus": "expired",
-      "deadline": null,
+      "deadline": "2026-07-10T23:59:59+08:00",
       "deadlineOriginal": "报名截止日期为2026年7月10日；未公布具体时刻",
-      "deadlineEpochMs": null,
+      "deadlineEpochMs": 1783699199000,
       "website": "https://www.siat.ac.cn/jyjx/zsxx/xly/202606/t20260603_8213255.html",
       "tags": [],
-      "verifiedAt": "2026-07-29T13:22:00.610Z",
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -7616,12 +7621,12 @@
       "eventType": "优秀大学生夏令营",
       "description": "工程学院｜2026年优秀大学生夏令营",
       "verificationStatus": "expired",
-      "deadline": null,
+      "deadline": "2026-07-14T23:59:59+08:00",
       "deadlineOriginal": "报名截止日期为2026年7月14日；未公布具体时刻",
-      "deadlineEpochMs": null,
+      "deadlineEpochMs": 1784044799000,
       "website": "https://gcxy.scau.edu.cn/2026/0707/c2105a439577/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-29T13:22:00.610Z",
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -7662,12 +7667,12 @@
       "eventType": "优秀大学生夏令营",
       "description": "电子与信息学院｜2026年优秀大学生暑期夏令营",
       "verificationStatus": "expired",
-      "deadline": null,
+      "deadline": "2026-07-06T23:59:59+08:00",
       "deadlineOriginal": "报名截止日期为2026年7月6日；未公布具体时刻",
-      "deadlineEpochMs": null,
+      "deadlineEpochMs": 1783353599000,
       "website": "https://www2.scut.edu.cn/ee/2026/0618/c37550a630317/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-29T13:22:00.610Z",
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -9824,12 +9829,12 @@
       "eventType": "暑期实习生/夏令营",
       "description": "人工智能学院｜浙江大学人工智能学院2026年暑期实习生（夏令营）招收计划",
       "verificationStatus": "expired",
-      "deadline": null,
+      "deadline": "2026-06-25T23:59:59+08:00",
       "deadlineOriginal": "申请人须在2026年6月25日前完成材料准备与网申步骤。",
-      "deadlineEpochMs": null,
+      "deadlineEpochMs": 1782403199000,
       "website": "https://ai.zju.edu.cn/2026/0529/c90497a3168021/page.htm",
       "tags": [],
-      "verifiedAt": "2026-07-26T18:39:54+08:00",
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -9916,12 +9921,12 @@
       "eventType": "优秀大学生夏令营",
       "description": "大湾区国际创新学院｜2026年优秀大学生夏令营",
       "verificationStatus": "expired",
-      "deadline": null,
+      "deadline": "2026-07-01T23:59:59+08:00",
       "deadlineOriginal": "报名截止日期为2026年7月1日；未公布具体时刻",
-      "deadlineEpochMs": null,
+      "deadlineEpochMs": 1782921599000,
       "website": "https://mp.weixin.qq.com/s/sLBSFakg_Er0yvVWs_Npcw",
       "tags": [],
-      "verifiedAt": "2026-07-29T13:22:00.610Z",
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -9962,12 +9967,12 @@
       "eventType": "优秀大学生夏令营",
       "description": "微纳光电子学研究院｜2026年优秀大学生夏令营",
       "verificationStatus": "expired",
-      "deadline": null,
+      "deadline": "2026-06-28T23:59:59+08:00",
       "deadlineOriginal": "报名截止日期为2026年6月28日；未公布具体时刻",
-      "deadlineEpochMs": null,
+      "deadlineEpochMs": 1782662399000,
       "website": "https://mp.weixin.qq.com/s/uho5VQ-FcOURkqohu-4C6A",
       "tags": [],
-      "verifiedAt": "2026-07-29T13:22:00.610Z",
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -10008,12 +10013,12 @@
       "eventType": "优秀大学生夏令营",
       "description": "数学科学学院｜2026年优秀大学生夏令营",
       "verificationStatus": "expired",
-      "deadline": null,
+      "deadline": "2026-06-29T23:59:59+08:00",
       "deadlineOriginal": "报名截止日期为2026年6月29日；未公布具体时刻",
-      "deadlineEpochMs": null,
+      "deadlineEpochMs": 1782748799000,
       "website": "https://mp.weixin.qq.com/s/PZ1LJlA-AtxNSNCVMwxn6Q?scene=1&click_id=855276613",
       "tags": [],
-      "verifiedAt": "2026-07-29T13:22:00.610Z",
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -10054,12 +10059,12 @@
       "eventType": "优秀大学生夏令营",
       "description": "机电与控制工程学院｜2026年优秀大学生夏令营",
       "verificationStatus": "expired",
-      "deadline": null,
+      "deadline": "2026-07-14T23:59:59+08:00",
       "deadlineOriginal": "报名截止日期为2026年7月14日；未公布具体时刻",
-      "deadlineEpochMs": null,
+      "deadlineEpochMs": 1784044799000,
       "website": "https://mp.weixin.qq.com/s/8guuiof9Wt-G0AyU9bou6A",
       "tags": [],
-      "verifiedAt": "2026-07-29T13:22:00.610Z",
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -10100,12 +10105,12 @@
       "eventType": "优秀大学生夏令营",
       "description": "物理与光电工程学院｜2026年优秀大学生夏令营",
       "verificationStatus": "expired",
-      "deadline": null,
+      "deadline": "2026-06-25T23:59:59+08:00",
       "deadlineOriginal": "报名截止日期为2026年6月25日；未公布具体时刻",
-      "deadlineEpochMs": null,
+      "deadlineEpochMs": 1782403199000,
       "website": "https://mp.weixin.qq.com/s/mA78EYQYt5ONFjK6YeQExQ",
       "tags": [],
-      "verifiedAt": "2026-07-29T13:22:00.610Z",
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -10146,12 +10151,12 @@
       "eventType": "优秀大学生夏令营",
       "description": "电子与信息工程学院｜2026年优秀大学生夏令营",
       "verificationStatus": "expired",
-      "deadline": null,
+      "deadline": "2026-07-05T23:59:59+08:00",
       "deadlineOriginal": "报名截止日期为2026年7月5日；未公布具体时刻",
-      "deadlineEpochMs": null,
+      "deadlineEpochMs": 1783267199000,
       "website": "https://mp.weixin.qq.com/s/B8iY3jJP4jh1TU2Hz2EUPw",
       "tags": [],
-      "verifiedAt": "2026-07-29T13:22:00.610Z",
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -10238,12 +10243,12 @@
       "eventType": "优秀大学生夏令营",
       "description": "高等研究院｜2026年优秀大学生夏令营",
       "verificationStatus": "expired",
-      "deadline": null,
+      "deadline": "2026-06-28T23:59:59+08:00",
       "deadlineOriginal": "报名截止日期为2026年6月28日；未公布具体时刻",
-      "deadlineEpochMs": null,
+      "deadlineEpochMs": 1782662399000,
       "website": "https://mp.weixin.qq.com/s/mejJZIZ27pJ4q0t0l6MWgQ",
       "tags": [],
-      "verifiedAt": "2026-07-29T13:22:00.610Z",
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -11101,6 +11106,52 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：历史公开快照未记录；材料清单：材料复杂度：中：在线申请及多项证明，提交后不可补交或修改；材料清单：在线申请，至少含学生证、成绩单、简历等"
+      }
+    },
+    {
+      "projectId": "2027|澳门大学|研究生院/科技学院|2026-27第二学期计算机科学博士第三批",
+      "feedId": "camp2027",
+      "name": "澳门大学",
+      "institute": "研究生院/科技学院",
+      "project": "研究生院/科技学院｜2026/27学年第二学期计算机科学博士第三批",
+      "eventType": "博士招生",
+      "description": "研究生院/科技学院｜2026/27学年第二学期计算机科学博士第三批",
+      "verificationStatus": "expired",
+      "deadline": "2026-07-31T23:59:59+08:00",
+      "deadlineOriginal": "To be admitted in 2nd Semester: 4 May 2026 – 31 July 2026 (3rd batch); no time stated",
+      "deadlineEpochMs": 1785513599000,
+      "website": "https://grs.um.edu.mo/index.php/prospective-students/doctoral-degrees-programmes/",
+      "tags": [],
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://grs.um.edu.mo/index.php/prospective-students/doctoral-degrees-programmes/"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "由学院或项目另行通知"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "报销：住宿：官方未说明；餐食：官方未说明；交通：官方未说明；报销：官方未说明"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：2封；推荐信模板：推荐人通过官方申请流程提交"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：高；材料清单：身份、完整学历与成绩证明、英语能力材料、研究计划及两位推荐人"
       }
     },
     {
@@ -12216,12 +12267,12 @@
       "eventType": "研究型硕博早招",
       "description": "计算机科学与工程学系｜2027早期招生第二轮",
       "verificationStatus": "expired",
-      "deadline": null,
+      "deadline": "2026-07-21T23:59:59+08:00",
       "deadlineOriginal": "Round 2 application closed on 21 July 2026; no time stated",
-      "deadlineEpochMs": null,
+      "deadlineEpochMs": 1784649599000,
       "website": "https://www.cse.cuhk.edu.hk/admission/mphil-phd/early-admission/",
       "tags": [],
-      "verifiedAt": "2026-07-29T13:22:00.610Z",
+      "verifiedAt": "2026-08-03T05:09:30.006Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -12392,8 +12443,8 @@
       }
     }
   ],
-  "snapshotId": "2026-08-03T03:40:00.000Z-25c1033e383f",
-  "approvedAt": "2026-08-03T03:40:00.000Z",
-  "previousSnapshotId": "2026-07-29T16:22:27.556Z-e124ffd0354b",
-  "dataHash": "25c1033e383f88f54a08af875c5799eee550e32cf9e4706a9b9d5e1996efe65a"
+  "snapshotId": "2026-08-03T05:09:30.006Z-5abc0fea295a",
+  "approvedAt": "2026-08-03T05:09:30.006Z",
+  "previousSnapshotId": "2026-08-03T03:40:00.000Z-25c1033e383f",
+  "dataHash": "5abc0fea295aded37aa231cb3fb3ae221df8c0f15fca7f95279126a0699d50b8"
 }
