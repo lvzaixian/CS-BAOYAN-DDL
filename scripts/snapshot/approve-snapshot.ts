@@ -1063,32 +1063,26 @@ function decodeAdditiveSerializedJavaScriptEscapesOnce(value: string): string {
   ));
 }
 
-interface AdditiveJavaScriptEscapeExpansion {
-  values: readonly string[];
-  finalValue: string;
-  nestedEncoding: boolean;
-}
-
-function expandAdditiveSerializedJavaScriptEscapes(value: string): AdditiveJavaScriptEscapeExpansion {
-  const values = new Set<string>([value]);
-  let current = value;
-  for (let depth = 0; depth < additiveProvenanceDecodeDepth; depth += 1) {
-    const decoded = decodeAdditiveSerializedJavaScriptEscapesOnce(current);
-    if (decoded === current) {
-      return { values: [...values], finalValue: current, nestedEncoding: false };
-    }
-    values.add(decoded);
-    current = decoded;
-  }
-  return {
-    values: [...values],
-    finalValue: current,
-    nestedEncoding: decodeAdditiveSerializedJavaScriptEscapesOnce(current) !== current,
-  };
-}
-
 function normalizeAdditiveProvenanceText(value: string): string {
   return value.normalize('NFKC').replace(additiveIdnaEquivalentDotPattern, '.');
+}
+
+type AdditiveProvenanceTransformKind = 'percent' | 'javascript';
+
+interface AdditiveProvenanceCandidateTransform {
+  kind: AdditiveProvenanceTransformKind;
+  value: string;
+}
+
+function additiveProvenanceCandidateTransforms(
+  value: string,
+): readonly AdditiveProvenanceCandidateTransform[] {
+  const transforms: AdditiveProvenanceCandidateTransform[] = [];
+  const percentDecoded = decodeAdditivePercentByteRuns(value);
+  if (percentDecoded !== value) transforms.push({ kind: 'percent', value: percentDecoded });
+  const javascriptDecoded = decodeAdditiveSerializedJavaScriptEscapesOnce(value);
+  if (javascriptDecoded !== value) transforms.push({ kind: 'javascript', value: javascriptDecoded });
+  return transforms;
 }
 
 interface AdditiveProvenanceCandidates {
@@ -1099,34 +1093,46 @@ interface AdditiveProvenanceCandidates {
 
 function additiveHostDetectionCandidates(serializedContent: string): AdditiveProvenanceCandidates {
   const candidates = new Set<string>([serializedContent]);
-  let nestedJavaScriptEscapeEncoding = false;
-  const addNormalizedCandidates = (value: string): string => {
-    const expansion = expandAdditiveSerializedJavaScriptEscapes(value);
-    nestedJavaScriptEscapeEncoding ||= expansion.nestedEncoding;
-    for (const escapedValue of expansion.values) {
-      candidates.add(escapedValue);
-      const nfkc = escapedValue.normalize('NFKC');
-      candidates.add(nfkc);
-      candidates.add(normalizeAdditiveProvenanceText(escapedValue));
-    }
-    return normalizeAdditiveProvenanceText(expansion.finalValue);
-  };
-  let current = addNormalizedCandidates(serializedContent);
+  // NFKC/IDNA normalization is an idempotent inspection canonicalization, not
+  // an encoding layer. Canonicalize every newly derived state before applying
+  // the bounded percent/JavaScript frontier so transform order cannot hide it.
+  const initialCandidate = normalizeAdditiveProvenanceText(serializedContent);
+  candidates.add(initialCandidate);
+  const canonicalCandidates = new Set<string>([initialCandidate]);
+  let frontier = new Set<string>([initialCandidate]);
   for (let depth = 0; depth < additiveProvenanceDecodeDepth; depth += 1) {
-    const decoded = decodeAdditivePercentByteRuns(current);
-    if (decoded === current) {
+    const nextFrontier = new Set<string>();
+    for (const candidate of frontier) {
+      for (const transform of additiveProvenanceCandidateTransforms(candidate)) {
+        candidates.add(transform.value);
+        const normalized = normalizeAdditiveProvenanceText(transform.value);
+        candidates.add(normalized);
+        if (canonicalCandidates.has(normalized)) continue;
+        canonicalCandidates.add(normalized);
+        nextFrontier.add(normalized);
+      }
+    }
+    if (nextFrontier.size === 0) {
       return {
         candidates: [...candidates],
         nestedPercentEncoding: false,
-        nestedJavaScriptEscapeEncoding,
+        nestedJavaScriptEscapeEncoding: false,
       };
     }
-    candidates.add(decoded);
-    current = addNormalizedCandidates(decoded);
+    frontier = nextFrontier;
+  }
+
+  let nestedPercentEncoding = false;
+  let nestedJavaScriptEscapeEncoding = false;
+  for (const candidate of frontier) {
+    for (const transform of additiveProvenanceCandidateTransforms(candidate)) {
+      if (transform.kind === 'percent') nestedPercentEncoding = true;
+      if (transform.kind === 'javascript') nestedJavaScriptEscapeEncoding = true;
+    }
   }
   return {
     candidates: [...candidates],
-    nestedPercentEncoding: decodeAdditivePercentByteRuns(current) !== current,
+    nestedPercentEncoding,
     nestedJavaScriptEscapeEncoding,
   };
 }
@@ -1137,16 +1143,6 @@ function assertAdditivePublicProvenance(
 ): void {
   const serializedOpportunity = JSON.stringify(opportunity);
   const provenanceCandidates = additiveHostDetectionCandidates(serializedOpportunity);
-  if (provenanceCandidates.nestedPercentEncoding) {
-    throw new Error(
-      `addition ${quoted(opportunity.projectId)} nested percent encoding exceeds supported depth`,
-    );
-  }
-  if (provenanceCandidates.nestedJavaScriptEscapeEncoding) {
-    throw new Error(
-      `addition ${quoted(opportunity.projectId)} nested JavaScript escape encoding exceeds supported depth`,
-    );
-  }
   const { candidates } = provenanceCandidates;
   if (
     candidates.some((candidate) => additiveGitHubDiscoveryTextPattern.test(candidate))
@@ -1156,6 +1152,16 @@ function assertAdditivePublicProvenance(
   ) {
     throw new Error(
       `addition ${quoted(opportunity.projectId)} must not expose fixed discovery provenance`,
+    );
+  }
+  if (provenanceCandidates.nestedPercentEncoding) {
+    throw new Error(
+      `addition ${quoted(opportunity.projectId)} nested percent encoding exceeds supported depth`,
+    );
+  }
+  if (provenanceCandidates.nestedJavaScriptEscapeEncoding) {
+    throw new Error(
+      `addition ${quoted(opportunity.projectId)} nested JavaScript escape encoding exceeds supported depth`,
     );
   }
 }

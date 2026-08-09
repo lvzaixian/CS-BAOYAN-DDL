@@ -1554,6 +1554,110 @@ test('rejects double-backslash JavaScript escape provenance before a decision or
   }
 });
 
+test('rejects fullwidth-backslash JavaScript escape provenance before a decision or public write', async (t) => {
+  const cases: Array<{
+    name: string;
+    expose: (
+      addition: PublicSnapshot['opportunities'][number],
+      run: AdditiveApprovalRun,
+    ) => void;
+  }> = [
+    {
+      name: 'GitHub host after direct NFKC backslash normalization',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github\uFF3Cx2ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'raw GitHub host after direct NFKC Unicode-to-hex normalization',
+      expose: (addition) => {
+        addition.description = `${addition.description}\nhttps://raw\uFF3Cu005cx2egithubusercontent\uFF3Cu005cx2ecom/shenyanpai/notice/main/README.md`;
+      },
+    },
+    {
+      name: 'GitHub host after JavaScript Unicode decoding emits a fullwidth backslash',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github\\uFF3Cx2ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'GitHub host after JavaScript hex decoding emits a percent-encoded dot',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github\\x252ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'GitHub host after percent-decoding a fullwidth backslash',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github%EF%BC%BCx2ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'raw GitHub host after nested percent-decoding a fullwidth backslash',
+      expose: (addition) => {
+        addition.description = `${addition.description}\nhttps://raw%25EF%25BC%25BCx2egithubusercontent%25EF%25BC%25BCx2ecom/shenyanpai/notice/main/README.md`;
+      },
+    },
+    {
+      name: 'fixed private check ID after direct NFKC backslash normalization',
+      expose: (addition) => {
+        addition.projectId = '2027|新增测试大学|计算机学院|shenyanpai\uFF3Cx2dprofile';
+      },
+    },
+    {
+      name: 'fixed private artifact SHA-256 after percent-decoding a fullwidth backslash',
+      expose: (addition, run) => {
+        const artifactSha256 = fixedDiscoveryCheck(run, 'shenyanpai-profile').artifactSha256!;
+        addition.discoverySources[0].label =
+          `%EF%BC%BCx${artifactSha256.charCodeAt(0).toString(16).padStart(2, '0')}${artifactSha256.slice(1)}`;
+      },
+    },
+    {
+      name: 'fixed private artifact text after nested percent-decoding a fullwidth backslash',
+      expose: (addition) => {
+        addition.tags = [
+          ...addition.tags,
+          fixedDiscoveryArtifactContent('shenyanpai-profile')
+            .replace('shenyanpai-profile', 'shenyanpai%25EF%25BC%25BCx2dprofile'),
+        ];
+      },
+    },
+    {
+      name: 'blocked fixed-check reason after direct NFKC backslash normalization',
+      expose: (addition, run) => {
+        blockFixedDiscoveryCheck(run, 'shenyanpai-pre-recommend');
+        const reason = fixedDiscoveryCheck(run, 'shenyanpai-pre-recommend').reason!;
+        addition.discoverySources[0].label = reason.replace(/^n/u, '\uFF3Cx6e');
+      },
+    },
+  ];
+
+  for (const entry of cases) {
+    await t.test(entry.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      const run = additiveRun(parent, parentText, [addition]);
+      entry.expose(addition, run);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(
+          source,
+          parentText,
+          () => approve(source),
+          /addition .* must not expose fixed discovery provenance/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
 test('rejects immediately composed JavaScript escape provenance before a decision or public write', async (t) => {
   const cases: Array<{
     name: string;
@@ -1657,6 +1761,32 @@ test('rejects escaped-backslash JavaScript escape chains nested beyond four insp
   }
 });
 
+test('fails closed when a fullwidth-backslash provenance chain needs a fifth bounded decoding round', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  addition.tags = [
+    ...addition.tags,
+    'https://github%252525EF%252525BC%252525BCx2ecom/shenyanpai/notice',
+  ];
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    await assertRejectedBeforeApproval(
+      source,
+      parentText,
+      () => approve(source),
+      /nested JavaScript escape encoding exceeds supported depth/i,
+    );
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
 test('allows ordinary additive text while inspecting JavaScript hex escape provenance', async () => {
   const source = paths();
   const parent = sealedParent();
@@ -1692,10 +1822,14 @@ test('allows harmless or malformed double-backslash escape text without rewritin
   const addition = additionFor(parent);
   const harmlessDoubleBackslashEscape = '普通官方说明文本\\\\x41';
   const malformedDoubleBackslashEscape = '普通官方说明文本\\\\xGG';
+  const harmlessFullwidthBackslashEscape = '普通官方说明文本\uFF3Cx41';
+  const malformedFullwidthBackslashEscape = '普通官方说明文本\uFF3CxGG';
   addition.description = [
     addition.description,
     harmlessDoubleBackslashEscape,
     malformedDoubleBackslashEscape,
+    harmlessFullwidthBackslashEscape,
+    malformedFullwidthBackslashEscape,
   ].join('\n');
   addition.tags = [...addition.tags, 'ordinary-public-note'];
   const run = additiveRun(parent, parentText, [addition]);
@@ -1712,6 +1846,8 @@ test('allows harmless or malformed double-backslash escape text without rewritin
     assert.ok(approvedAddition.tags.includes('ordinary-public-note'));
     assert.ok(approvedAddition.description.includes(harmlessDoubleBackslashEscape));
     assert.ok(approvedAddition.description.includes(malformedDoubleBackslashEscape));
+    assert.ok(approvedAddition.description.includes(harmlessFullwidthBackslashEscape));
+    assert.ok(approvedAddition.description.includes(malformedFullwidthBackslashEscape));
   } finally {
     rmSync(source.root, { recursive: true, force: true });
   }
@@ -1914,9 +2050,11 @@ test('does not revalidate or rewrite historical parent provenance values', async
     historical.description,
     'https://gist.github.com/shenyanpai/historical-notice',
     'https://github.com/shenyanpai',
+    'https://github\uFF3Cx2ecom/shenyanpai/historical-notice',
     'https://github\\\\x2ecom/shenyanpai/historical-notice',
     'https://github\\u005cx2ecom/shenyanpai/historical-notice',
     'https://raw.githubusercontent.com/shenyanpai/historical/main/notice.html',
+    'https://raw%25EF%25BC%25BCx2egithubusercontent%25EF%25BC%25BCx2ecom/shenyanpai/historical/main/notice.html',
     'https://raw\\\\u005cx2egithubusercontent\\\\u005cx2ecom/shenyanpai/historical/main/notice.html',
     'https://raw%5Cu005cx2egithubusercontent%5Cu005cx2ecom/shenyanpai/historical/main/notice.html',
     'https://github%2Ecom/shenyanpai/historical-notice',
