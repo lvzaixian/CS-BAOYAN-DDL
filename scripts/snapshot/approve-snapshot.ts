@@ -1107,7 +1107,13 @@ const additiveUmbrellaInstituteSkeletons = [
   '报名系统',
   '系统级',
   '研究生招生办公室',
+  '研究生招生办',
+  '研究生招生处',
+  '研招办',
+  '研招处',
   '招生办公室',
+  '招生办',
+  '招生处',
 ] as const;
 const additiveInstituteFormatControlPattern = /\p{Cf}/u;
 const additiveInstituteSkeletonSeparatorPattern = /[\p{White_Space}\p{P}\p{S}\p{M}]+/gu;

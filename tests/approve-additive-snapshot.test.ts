@@ -1645,6 +1645,12 @@ test('rejects normalized umbrella, admissions-office, or generic graduate-school
     { name: 'school-named generic graduate-school label', institute: '新增测试大学·研究生院' },
     { name: 'graduate admissions-office label', institute: '研究生 招生·办公室' },
     { name: 'admissions-office label', institute: '招 生 办 公 室' },
+    { name: 'graduate admissions-office short label', institute: '研究生招生办' },
+    { name: 'graduate admissions short label', institute: '研招办' },
+    { name: 'admissions-office short label', institute: '招生办' },
+    { name: 'graduate admissions division label', institute: '研究生招生处' },
+    { name: 'graduate admissions division short label', institute: '研招处' },
+    { name: 'admissions division label', institute: '招生处' },
   ];
 
   for (const { name, institute } of cases) {
