@@ -1666,6 +1666,47 @@ test('rejects normalized umbrella or system institute labels before a decision o
   }
 });
 
+test('rejects format-control and typographic-dash umbrella institute labels before a decision or public write', async (t) => {
+  const cases: Array<{ name: string; institute: string; expected: RegExp }> = [
+    {
+      name: 'zero-width space within admissions-system label',
+      institute: '招生\u200b系统',
+      expected: /institute must not contain Unicode format controls/i,
+    },
+    {
+      name: 'zero-width space within whole-school label',
+      institute: 'whole\u200b-school',
+      expected: /institute must not contain Unicode format controls/i,
+    },
+    {
+      name: 'en dash within whole-school label',
+      institute: 'whole–school',
+      expected: /addition .* institute must name a concrete college-level unit/i,
+    },
+  ];
+
+  for (const { name, institute, expected } of cases) {
+    await t.test(name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      addition.institute = institute;
+      addition.projectId = `2027|${addition.name}|${addition.institute}|夏令营`;
+      const run = additiveRun(parent, parentText, [addition]);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(source, parentText, () => approve(source), expected);
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
 test('rejects additive projectIds that are malformed or disagree with public identity fields before a decision or public write', async (t) => {
   const cases: Array<{
     name: string;

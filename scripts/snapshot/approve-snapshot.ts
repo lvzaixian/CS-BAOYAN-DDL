@@ -1108,9 +1108,15 @@ const additiveUmbrellaInstituteSubstrings = [
   '报名系统',
   '系统级',
 ] as const;
+const additiveInstituteFormatControlPattern = /\p{Cf}/u;
+const additiveWholeSchoolDashSeparatorPattern = /[\u2010-\u2015\u2212]/gu;
 
 function normalizeAdditiveInstituteLabel(value: string): string {
-  return value.normalize('NFKC').replace(/\s+/gu, '').toLowerCase();
+  return value
+    .normalize('NFKC')
+    .replace(additiveWholeSchoolDashSeparatorPattern, '-')
+    .replace(/\s+/gu, '')
+    .toLowerCase();
 }
 
 function assertAdditiveCollegeGranularity(opportunity: PublicOpportunity): void {
@@ -1129,6 +1135,11 @@ function assertAdditiveCollegeGranularity(opportunity: PublicOpportunity): void 
   if (projectIdInstitute !== opportunity.institute) {
     throw new Error(
       `addition ${quoted(opportunity.projectId)} projectId institute segment must exactly match opportunity institute`,
+    );
+  }
+  if (additiveInstituteFormatControlPattern.test(opportunity.institute)) {
+    throw new Error(
+      `addition ${quoted(opportunity.projectId)} institute must not contain Unicode format controls`,
     );
   }
   const normalizedInstitute = normalizeAdditiveInstituteLabel(opportunity.institute);
