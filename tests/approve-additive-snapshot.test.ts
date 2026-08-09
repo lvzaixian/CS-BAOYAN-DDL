@@ -1400,6 +1400,95 @@ test('allows ordinary additive text while inspecting Unicode escape provenance',
   }
 });
 
+test('rejects literal JavaScript hex escape provenance before a decision or public write', async (t) => {
+  const cases: Array<{
+    name: string;
+    expose: (
+      addition: PublicSnapshot['opportunities'][number],
+      run: AdditiveApprovalRun,
+    ) => void;
+  }> = [
+    {
+      name: 'GitHub host in tags',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github\\x2ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'raw GitHub host in description',
+      expose: (addition) => {
+        addition.description = `${addition.description}\nhttps://raw\\x2egithubusercontent\\x2ecom/shenyanpai/notice/main/README.md`;
+      },
+    },
+    {
+      name: 'fixed private check ID in project ID',
+      expose: (addition) => {
+        addition.projectId = '2027|新增测试大学|计算机学院|shenyanpai\\x2dprofile';
+      },
+    },
+    {
+      name: 'fixed private artifact SHA-256 in discovery source label',
+      expose: (addition, run) => {
+        const artifactSha256 = fixedDiscoveryCheck(run, 'shenyanpai-profile').artifactSha256!;
+        addition.discoverySources[0].label = `\\x${artifactSha256.charCodeAt(0).toString(16)}${artifactSha256.slice(1)}`;
+      },
+    },
+  ];
+
+  for (const entry of cases) {
+    await t.test(entry.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      const run = additiveRun(parent, parentText, [addition]);
+      entry.expose(addition, run);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        assert.equal(JSON.stringify(addition).includes('\\\\x'), true);
+        await assertRejectedBeforeApproval(
+          source,
+          parentText,
+          () => approve(source),
+          /addition .* must not expose fixed discovery provenance/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('allows ordinary additive text while inspecting JavaScript hex escape provenance', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  const harmlessLiteralJavaScriptHexEscape = '普通官方说明文本\\x41';
+  addition.description = `${addition.description}\n${harmlessLiteralJavaScriptHexEscape}`;
+  addition.tags = [...addition.tags, 'ordinary-public-note'];
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.equal(result.status, 'ready');
+    const approved = JSON.parse(readFileSync(source.approved, 'utf8')) as PublicSnapshot;
+    const approvedAddition = approved.opportunities.find((opportunity) =>
+      opportunity.projectId === addition.projectId);
+    assert.ok(approvedAddition);
+    assert.ok(approvedAddition.tags.includes('ordinary-public-note'));
+    assert.ok(approvedAddition.description.includes(harmlessLiteralJavaScriptHexEscape));
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
 test('rejects encoded GitHub provenance despite malformed percent text in another public field', async (t) => {
   const cases: Array<{
     name: string;

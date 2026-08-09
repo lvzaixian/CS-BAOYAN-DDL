@@ -991,6 +991,7 @@ const additiveProvenanceDecodeDepth = 4;
 const additivePercentByteRunPattern = /(?:%[0-9A-Fa-f]{2})+/gu;
 const additiveIdnaEquivalentDotPattern = /[\u3002\uFF0E\uFF61]/gu;
 const additiveUnicodeEscapePattern = /\\{1,2}u(?:([0-9A-Fa-f]{4})|\{([0-9A-Fa-f]{1,6})\})/gu;
+const additiveJavaScriptHexEscapePattern = /\\{1,2}x([0-9A-Fa-f]{2})/gu;
 
 function additiveFixedDiscoveryPrivateValues(
   run: AdditiveApprovalRun,
@@ -1037,6 +1038,13 @@ function decodeAdditiveUnicodeEscapes(value: string): string {
   });
 }
 
+function decodeAdditiveSerializedJavaScriptEscapes(value: string): string {
+  return decodeAdditiveUnicodeEscapes(value.replace(
+    additiveJavaScriptHexEscapePattern,
+    (_escape, hex) => String.fromCodePoint(Number.parseInt(hex, 16)),
+  ));
+}
+
 function normalizeAdditiveProvenanceText(value: string): string {
   return value.normalize('NFKC').replace(additiveIdnaEquivalentDotPattern, '.');
 }
@@ -1049,11 +1057,11 @@ interface AdditiveProvenanceCandidates {
 function additiveHostDetectionCandidates(serializedContent: string): AdditiveProvenanceCandidates {
   const candidates = new Set<string>([serializedContent]);
   const addNormalizedCandidates = (value: string): string => {
-    const unicodeDecoded = decodeAdditiveUnicodeEscapes(value);
-    candidates.add(unicodeDecoded);
-    const nfkc = unicodeDecoded.normalize('NFKC');
+    const escapedDecoded = decodeAdditiveSerializedJavaScriptEscapes(value);
+    candidates.add(escapedDecoded);
+    const nfkc = escapedDecoded.normalize('NFKC');
     candidates.add(nfkc);
-    const normalized = normalizeAdditiveProvenanceText(unicodeDecoded);
+    const normalized = normalizeAdditiveProvenanceText(escapedDecoded);
     candidates.add(normalized);
     return normalized;
   };
