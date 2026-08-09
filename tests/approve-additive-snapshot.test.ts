@@ -45,8 +45,8 @@ function shanghaiSourceYear(checkedAt: string): string {
   return year;
 }
 
-function fixedDiscoveryArtifactContent(checkId: string, url: string): string {
-  return `<html><body>GitHub fixed discovery check: ${checkId}\n${url}</body></html>`;
+function fixedDiscoveryArtifactContent(checkId: string): string {
+  return `<html><body>GitHub fixed discovery check: ${checkId}</body></html>`;
 }
 
 function fixedDiscoveryArtifactFixtures(checkedAt: string) {
@@ -66,7 +66,7 @@ function fixedDiscoveryArtifactFixtures(checkedAt: string) {
     },
   ];
   return checks.map(({ checkId, url }) => {
-    const content = fixedDiscoveryArtifactContent(checkId, url);
+    const content = fixedDiscoveryArtifactContent(checkId);
     const artifactSha256 = sha256(content);
     return {
       check: {
@@ -85,7 +85,6 @@ function fixedDiscoveryArtifactFixtures(checkedAt: string) {
         fetchedAt: checkedAt,
         extractedTextArtifactSha256: null,
       },
-      content,
     };
   });
 }
@@ -365,7 +364,7 @@ function materializeRunArtifacts(
       .filter((check) => check.artifactSha256 !== null)
       .map((check) => [
         check.artifactSha256!,
-        fixedDiscoveryArtifactContent(check.checkId, check.url),
+        fixedDiscoveryArtifactContent(check.checkId),
       ]),
   );
   for (const artifact of run.artifacts) {
@@ -382,6 +381,33 @@ function materializeRunArtifacts(
     );
   }
 }
+
+test('allows a fixed discovery URL mutation to reach the normal path before source gating', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const run = additiveRun(parent, parentText, []);
+  const profile = run.fixedDiscoveryChecks.find((check) => check.checkId === 'shenyanpai-profile');
+  if (profile === undefined) throw new Error('fixture must include the Shenyanpai profile check');
+  profile.url = 'https://github.com/not-shenyanpai';
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approveAdditiveSnapshotFile({
+      runPath: source.run,
+      parentPath: source.parent,
+      approvedPath: source.approved,
+      decisionPath: source.decision,
+      approvedAt: nextApprovedAt,
+      nowMs: Date.parse('2026-08-09T09:00:00.000Z'),
+    });
+    assert.deepEqual(result, { status: 'no-additions', runId: '20260809-additive-unit-test' });
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
 
 test('no additions writes only a private no-change decision and leaves public bytes untouched', async () => {
   const source = paths();
