@@ -62,8 +62,22 @@ function shanghaiSourceYear(checkedAt: string): string {
   return shanghaiSourceDate(checkedAt).slice(0, 4);
 }
 
-function fixedDiscoveryArtifactContent(checkId: string): string {
-  return `<html><body>GitHub fixed discovery check: ${checkId}</body></html>`;
+function fixedDiscoveryArtifactUrl(checkId: string, checkedAt: string): string {
+  const year = shanghaiSourceYear(checkedAt);
+  switch (checkId) {
+    case 'shenyanpai-profile':
+      return 'https://github.com/shenyanpai';
+    case 'shenyanpai-summer-camp':
+      return `https://github.com/shenyanpai/awesome-summer-camp-${year}`;
+    case 'shenyanpai-pre-recommend':
+      return `https://github.com/shenyanpai/awesome-pre-recommend-${year}`;
+    default:
+      throw new Error(`fixture does not support fixed discovery check ${checkId}`);
+  }
+}
+
+function fixedDiscoveryArtifactContent(checkId: string, checkedAt = runScannedAt): string {
+  return `<html><body>GitHub fixed discovery check: ${checkId}; source year ${shanghaiSourceYear(checkedAt)}</body></html>`;
 }
 
 function percentEncodeLeadingAscii(value: string): string {
@@ -93,23 +107,12 @@ function fullwidthAscii(value: string): string {
 }
 
 function fixedDiscoveryArtifactFixtures(checkedAt: string) {
-  const year = shanghaiSourceYear(checkedAt);
-  const checks = [
-    {
-      checkId: 'shenyanpai-profile',
-      url: 'https://github.com/shenyanpai',
-    },
-    {
-      checkId: 'shenyanpai-summer-camp',
-      url: `https://github.com/shenyanpai/awesome-summer-camp-${year}`,
-    },
-    {
-      checkId: 'shenyanpai-pre-recommend',
-      url: `https://github.com/shenyanpai/awesome-pre-recommend-${year}`,
-    },
-  ];
+  const checks = fixedDiscoveryCheckIds.map((checkId) => ({
+    checkId,
+    url: fixedDiscoveryArtifactUrl(checkId, checkedAt),
+  }));
   return checks.map(({ checkId, url }) => {
-    const content = fixedDiscoveryArtifactContent(checkId);
+    const content = fixedDiscoveryArtifactContent(checkId, checkedAt);
     const artifactSha256 = sha256(content);
     return {
       check: {
@@ -132,12 +135,23 @@ function fixedDiscoveryArtifactFixtures(checkedAt: string) {
   });
 }
 
-function fixedDiscoveryArtifactContents(): Map<string, string> {
+function fixedDiscoveryArtifactContents(checkedAt = runScannedAt): Map<string, string> {
   return new Map(fixedDiscoveryCheckIds.map((checkId) => {
-    const content = fixedDiscoveryArtifactContent(checkId);
+    const content = fixedDiscoveryArtifactContent(checkId, checkedAt);
     return [sha256(content), content];
   }));
 }
+
+test('derives year-dependent fixed discovery artifact hashes from the Shanghai run time', () => {
+  const year2026 = fixedDiscoveryArtifactFixtures(runScannedAt);
+  const year2027 = fixedDiscoveryArtifactFixtures('2026-12-31T16:00:00.000Z');
+  const summer2026 = year2026.find((item) => item.check.checkId === 'shenyanpai-summer-camp');
+  const summer2027 = year2027.find((item) => item.check.checkId === 'shenyanpai-summer-camp');
+  assert.ok(summer2026);
+  assert.ok(summer2027);
+  assert.equal(summer2027.check.url, 'https://github.com/shenyanpai/awesome-summer-camp-2027');
+  assert.notEqual(summer2027.artifact.sha256, summer2026.artifact.sha256);
+});
 
 const registryText = readFileSync(
   join(repositoryRoot, 'scripts/source/universities.json'),
@@ -179,6 +193,7 @@ function coverageScopes(
   artifactSha256: string,
   entryUrl: string,
   rotationDate = '2026-08-09',
+  checkedAt = runScannedAt,
 ): AdditiveApprovalRun['scopes'] {
   const registrySchools = [...new Set(registry.map((item) => registrySchoolName(item.name)))];
   const registrySet = new Set(registrySchools);
@@ -198,7 +213,7 @@ function coverageScopes(
       queue: 'sentinel' as const,
       parentScopeId: null,
       entryUrl,
-      checkedAt: runScannedAt,
+      checkedAt,
       result: 'no-new-clue' as const,
       reason: null,
       childScopeIds: [],
@@ -210,7 +225,7 @@ function coverageScopes(
       queue: 'registry-rotation' as const,
       parentScopeId: null,
       entryUrl,
-      checkedAt: runScannedAt,
+      checkedAt,
       result: 'no-new-clue' as const,
       reason: null,
       childScopeIds: [],
@@ -297,6 +312,7 @@ function artifactTextFor(additions: PublicSnapshot['opportunities']): string {
 function evidenceFor(
   opportunity: PublicSnapshot['opportunities'][number],
   artifactSha256: string,
+  checkedAt = runScannedAt,
 ) {
   const values: Record<string, unknown> = {
     name: opportunity.name,
@@ -320,7 +336,7 @@ function evidenceFor(
     artifactSha256,
     locator: 'article > main',
     method: 'html',
-    checkedAt: runScannedAt,
+    checkedAt,
     quote: sourceQuoteFor(opportunity, field),
   }));
 }
@@ -329,17 +345,19 @@ function additiveRun(
   parent: PublicSnapshot,
   parentText: string,
   additions: PublicSnapshot['opportunities'],
+  finishedAt = runScannedAt,
 ): AdditiveApprovalRun {
   const artifactSha256 = sha256(artifactTextFor(additions));
-  const fixedDiscoveryArtifacts = fixedDiscoveryArtifactFixtures(runScannedAt);
+  const fixedDiscoveryArtifacts = fixedDiscoveryArtifactFixtures(finishedAt);
   const entryUrl = additions[0]?.website ?? 'https://cs-new.example.edu.cn/admissions/summer-camp';
   const school = additions[0]?.name ?? parent.opportunities[0].name;
+  const rotationDate = shanghaiSourceDate(finishedAt);
   return {
     schemaVersion: 3,
     runId: '20260809-additive-unit-test',
     mode: 'incremental',
-    startedAt: runScannedAt,
-    finishedAt: runScannedAt,
+    startedAt: finishedAt,
+    finishedAt,
     parent: {
       url: 'https://ddl.meta-mind.cn/data/current.json',
       sha256: sha256(parentText),
@@ -349,20 +367,20 @@ function additiveRun(
     },
     coverage: {
       schemaVersion: 1,
-      rotationDate: '2026-08-09',
+      rotationDate,
       registrySha256: sha256(registryText),
       sentinelsSha256: sha256(sentinelsText),
     },
     fixedDiscoveryChecks: fixedDiscoveryArtifacts.map((item) => item.check),
     scopes: [
-      ...coverageScopes(parent, artifactSha256, entryUrl),
+      ...coverageScopes(parent, artifactSha256, entryUrl, rotationDate, finishedAt),
       ...(additions.length === 0 ? [] : [{
         scopeId: 'scope-root',
         school,
         queue: 'fresh-signal' as const,
         parentScopeId: null,
         entryUrl,
-        checkedAt: runScannedAt,
+        checkedAt: finishedAt,
         result: 'new-clue' as const,
         reason: null,
         childScopeIds: [],
@@ -375,7 +393,7 @@ function additiveRun(
         sha256: artifactSha256,
         url: entryUrl,
         contentType: 'text/html',
-        fetchedAt: runScannedAt,
+        fetchedAt: finishedAt,
         extractedTextArtifactSha256: null,
       },
       ...fixedDiscoveryArtifacts.map((item) => item.artifact),
@@ -387,7 +405,7 @@ function additiveRun(
         scopeId: 'scope-root',
         officialUrl: opportunity.website,
         artifactSha256,
-        fieldEvidence: evidenceFor(opportunity, artifactSha256),
+        fieldEvidence: evidenceFor(opportunity, artifactSha256, finishedAt),
       },
     })),
   };
@@ -410,7 +428,7 @@ function materializeRunArtifacts(
   run: AdditiveApprovalRun,
   contents: ReadonlyMap<string, string | Uint8Array> = new Map(),
 ): void {
-  const fixedArtifactContents = fixedDiscoveryArtifactContents();
+  const fixedArtifactContents = fixedDiscoveryArtifactContents(run.finishedAt);
   for (const artifact of run.artifacts) {
     if (fixedArtifactContents.has(artifact.sha256)) {
       artifact.fetchedAt = run.finishedAt;
@@ -966,13 +984,8 @@ test('derives the fixed source repository year from finishedAt in Asia/Shanghai'
   const parent = sealedParent();
   const parentText = writeJson(source.parent, parent);
   writeFileSync(source.approved, parentText, 'utf8');
-  const run = additiveRun(parent, parentText, []);
   const boundary = '2026-12-31T16:00:00.000Z';
-  run.startedAt = boundary;
-  run.finishedAt = boundary;
-  for (const scope of run.scopes) scope.checkedAt = boundary;
-  for (const artifact of run.artifacts) artifact.fetchedAt = boundary;
-  for (const check of run.fixedDiscoveryChecks) check.checkedAt = boundary;
+  const run = additiveRun(parent, parentText, [], boundary);
   fixedDiscoveryCheck(run, 'shenyanpai-summer-camp').url =
     'https://github.com/shenyanpai/awesome-summer-camp-2026';
   materializeRunArtifacts(source, run);
@@ -1365,6 +1378,15 @@ test('rejects case-equivalent fixed artifact SHA-256 provenance before a decisio
           .toUpperCase();
         addition.discoverySources[0].label =
           `\\x${artifactSha256.charCodeAt(0).toString(16).padStart(2, '0')}${artifactSha256.slice(1)}`;
+      },
+    },
+    {
+      name: 'percent-encoded uppercase fixed artifact SHA-256 in a discovery source label',
+      expose: (addition, run) => {
+        addition.discoverySources[0].label = percentEncodeLeadingAscii(fixedDiscoveryCheck(
+          run,
+          'shenyanpai-profile',
+        ).artifactSha256!.toUpperCase());
       },
     },
   ];
@@ -3320,20 +3342,8 @@ test('daily additive approval has a dedicated narrow CLI instead of the legacy r
   const parent = sealedParent();
   const parentText = writeJson(source.parent, parent);
   writeFileSync(source.approved, parentText, 'utf8');
-  const run = additiveRun(parent, parentText, []);
   const currentRunTime = new Date().toISOString();
-  run.startedAt = currentRunTime;
-  run.finishedAt = currentRunTime;
-  run.coverage.rotationDate = shanghaiSourceDate(currentRunTime);
-  run.scopes = coverageScopes(
-    parent,
-    run.artifacts[0].sha256,
-    run.artifacts[0].url,
-    run.coverage.rotationDate,
-  );
-  for (const scope of run.scopes) scope.checkedAt = currentRunTime;
-  for (const check of run.fixedDiscoveryChecks) check.checkedAt = currentRunTime;
-  for (const artifact of run.artifacts) artifact.fetchedAt = currentRunTime;
+  const run = additiveRun(parent, parentText, [], currentRunTime);
   materializeRunArtifacts(source, run);
   writeJson(source.run, run);
 
