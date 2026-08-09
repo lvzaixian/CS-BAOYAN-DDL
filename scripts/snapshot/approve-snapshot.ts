@@ -1096,6 +1096,49 @@ function assertAdditivePublicProvenance(
   }
 }
 
+const additiveUmbrellaInstituteSubstrings = [
+  'whole-school',
+  'wholeschool',
+  '全校',
+  '全院系',
+  '各学院',
+  '各院系',
+  '校级',
+  '招生系统',
+  '报名系统',
+  '系统级',
+] as const;
+
+function normalizeAdditiveInstituteLabel(value: string): string {
+  return value.normalize('NFKC').replace(/\s+/gu, '').toLowerCase();
+}
+
+function assertAdditiveCollegeGranularity(opportunity: PublicOpportunity): void {
+  const projectIdParts = opportunity.projectId.split('|');
+  if (projectIdParts.length !== 4 || projectIdParts.some((part) => part.trim() === '')) {
+    throw new Error(
+      `addition ${quoted(opportunity.projectId)} projectId must use cycle|name|institute|project/round`,
+    );
+  }
+  const [, projectIdName, projectIdInstitute] = projectIdParts;
+  if (projectIdName !== opportunity.name) {
+    throw new Error(
+      `addition ${quoted(opportunity.projectId)} projectId name segment must exactly match opportunity name`,
+    );
+  }
+  if (projectIdInstitute !== opportunity.institute) {
+    throw new Error(
+      `addition ${quoted(opportunity.projectId)} projectId institute segment must exactly match opportunity institute`,
+    );
+  }
+  const normalizedInstitute = normalizeAdditiveInstituteLabel(opportunity.institute);
+  if (additiveUmbrellaInstituteSubstrings.some((label) => normalizedInstitute.includes(label))) {
+    throw new Error(
+      `addition ${quoted(opportunity.projectId)} institute must name a concrete college-level unit`,
+    );
+  }
+}
+
 function additiveRotationDateSlot(rotationDate: string): number {
   const [yearText, monthText, dayText] = rotationDate.split('-');
   const epochDay = Math.floor(
@@ -2353,6 +2396,9 @@ export async function approveAdditiveSnapshotFile(
   const additionsErrors = validateCandidate(additionsCandidate, finishedAtMs);
   if (additionsErrors.length > 0) {
     throw new Error(`additions validation failed:\n${additionsErrors.join('\n')}`);
+  }
+  for (const addition of additions) {
+    assertAdditiveCollegeGranularity(addition);
   }
   for (const { opportunity, evidence } of run.additions) {
     assertAdditiveEvidence(run, opportunity, evidence, artifactMaterials);

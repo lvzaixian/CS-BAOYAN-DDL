@@ -1601,6 +1601,143 @@ test('does not revalidate or rewrite historical parent provenance values', async
   }
 });
 
+test('leaves a historical umbrella parent row untouched', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const historical = parent.opportunities[0];
+  const [cycle, name, , projectRound] = historical.projectId.split('|');
+  historical.institute = '全校';
+  historical.projectId = `${cycle}|${name}|${historical.institute}|${projectRound}`;
+  parent.dataHash = canonicalDataHash(parent);
+  parent.snapshotId = deriveSnapshotId(parent.approvedAt, parent.dataHash);
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const run = additiveRun(parent, parentText, []);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.deepEqual(result, { status: 'no-additions', runId: '20260809-additive-unit-test' });
+    assert.equal(readFileSync(source.approved, 'utf8'), parentText);
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('rejects normalized umbrella or system institute labels before a decision or public write', async (t) => {
+  const cases = [
+    { name: 'whole-school English label', institute: 'ｗｈｏｌｅ－ｓｃｈｏｏｌ' },
+    { name: 'whole-school Chinese label', institute: '全　校' },
+    { name: 'all-departments label', institute: '全　院　系' },
+    { name: 'each-college label', institute: '各　学院' },
+    { name: 'each-department label', institute: '各 院 系' },
+    { name: 'school-level portal label', institute: '校　级　入　口' },
+    { name: 'university-level portal label', institute: '学 校 级 入 口' },
+    { name: 'admissions-system label', institute: '招　生　系　统' },
+    { name: 'registration-system label', institute: '报 名 系 统' },
+    { name: 'system-level label', institute: '系　统　级' },
+  ];
+
+  for (const { name, institute } of cases) {
+    await t.test(name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      addition.institute = institute;
+      addition.projectId = `2027|${addition.name}|${addition.institute}|夏令营`;
+      const run = additiveRun(parent, parentText, [addition]);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(
+          source,
+          parentText,
+          () => approve(source),
+          /addition .* institute must name a concrete college-level unit/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('rejects additive projectIds that are malformed or disagree with public identity fields before a decision or public write', async (t) => {
+  const cases: Array<{
+    name: string;
+    projectId: (addition: PublicSnapshot['opportunities'][number]) => string;
+    expected: RegExp;
+  }> = [
+    {
+      name: 'missing project-or-round segment',
+      projectId: (addition) => `2027|${addition.name}|${addition.institute}`,
+      expected: /projectId: expected four non-empty parts/i,
+    },
+    {
+      name: 'extra projectId segment',
+      projectId: (addition) => `2027|${addition.name}|${addition.institute}|夏令营|第一轮`,
+      expected: /projectId: expected four non-empty parts/i,
+    },
+    {
+      name: 'school segment mismatches the public name',
+      projectId: (addition) => `2027|另一所大学|${addition.institute}|夏令营`,
+      expected: /addition .* projectId name segment must exactly match opportunity name/i,
+    },
+    {
+      name: 'institute segment mismatches the public institute',
+      projectId: (addition) => `2027|${addition.name}|软件学院|夏令营`,
+      expected: /addition .* projectId institute segment must exactly match opportunity institute/i,
+    },
+  ];
+
+  for (const { name, projectId, expected } of cases) {
+    await t.test(name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      addition.projectId = projectId(addition);
+      const run = additiveRun(parent, parentText, [addition]);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(source, parentText, () => approve(source), expected);
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('accepts a concrete college addition with harmless ordinary checked blocked text', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  addition.description = `${addition.project}\nchecked blocked`;
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.equal(result.status, 'ready');
+    const approved = JSON.parse(readFileSync(source.approved, 'utf8')) as PublicSnapshot;
+    const approvedAddition = approved.opportunities.find((opportunity) =>
+      opportunity.projectId === addition.projectId);
+    assert.equal(approvedAddition?.description, addition.description);
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
 test('rejects a decision path that could overwrite an additive input', async () => {
   const source = paths();
   const parent = sealedParent();
@@ -1911,9 +2048,9 @@ test('uses Unicode code-point ordering for equal-priority additive rows', async 
   const parentText = writeJson(source.parent, parent);
   writeFileSync(source.approved, parentText, 'utf8');
   const northern = additionFor(parent);
-  northern.projectId = '2027|北|计算机学院|夏令营-A';
+  northern.projectId = '2027|新增测试大学|计算机学院|北夏令营-A';
   const upper = additionFor(parent);
-  upper.projectId = '2027|上|计算机学院|夏令营-B';
+  upper.projectId = '2027|新增测试大学|计算机学院|上夏令营-B';
   const run = additiveRun(parent, parentText, [northern, upper]);
   materializeRunArtifacts(source, run);
   writeJson(source.run, run);
