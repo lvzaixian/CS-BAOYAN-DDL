@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-08-05T18:02:27.299Z",
+  "scanAt": "2026-08-09T17:11:10.911Z",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -11,10 +11,10 @@
     }
   ],
   "counts": {
-    "confirmedOpen": 113,
+    "confirmedOpen": 115,
     "confirmedUnknownDeadline": 10,
     "pendingExcluded": 441,
-    "expired": 167
+    "expired": 169
   },
   "opportunities": [
     {
@@ -2272,6 +2272,56 @@
       }
     },
     {
+      "projectId": "2027|南京大学|集成电路学院|接收推荐免试研究生预报名",
+      "feedId": "camp2027",
+      "name": "南京大学",
+      "institute": "集成电路学院",
+      "project": "南京大学集成电路学院2027年接收推荐免试研究生预报名通知",
+      "eventType": "接收推荐免试研究生预报名",
+      "description": "集成电路学院预报名：必须通过南大推免系统预报名成功后，方可获得遴选、复试资格。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-01T17:00:00+08:00",
+      "deadlineOriginal": "南京大学集成电路学院开放系统报名开始时间：2026年8月3日12:00，报名截止时间：2026年9月1日17:00。",
+      "deadlineEpochMs": 1788253200000,
+      "website": "https://ic.nju.edu.cn/d4/5f/c59160a840799/page.htm",
+      "tags": [
+        "推免",
+        "预报名",
+        "集成电路"
+      ],
+      "verifiedAt": "2026-08-09T17:11:10.911Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "集成电路学院官方通知",
+          "url": "https://ic.nju.edu.cn/d4/5f/c59160a840799/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "我院将于9月中旬组织面试"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "具体面试时间和地点以邮件通知为准"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "请根据系统提示：（1）填报个人信息（按要求上传照片）；（2）上传材料；（3）填报志愿；（4）提交申请（提交前请再次检查，确认各项信息准确无误）；（5）导出和打印申请材料。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "直博生需获得意向导师初步同意后方可报名，请提前准备两名报考学科专业领域内的教授（或相当职称的专家）的书面推荐意见（专家推荐信模板详见附件），复试环节须提交推荐信原件；"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "具体面试时间和地点以邮件通知为准"
+      }
+    },
+    {
       "projectId": "2027|南开大学|软件学院|推免预报名",
       "feedId": "camp2027",
       "name": "南开大学",
@@ -4063,6 +4113,57 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：材料复杂度：中；材料清单：思想政治素质和品德考核表、本科成绩单、外语水平证明、获奖证书/已发表论文等其他证明材料"
+      }
+    },
+    {
+      "projectId": "2027|南京航空航天大学|计算机科学与技术学院/软件学院|接收推荐免试研究生预报名",
+      "feedId": "camp2027",
+      "name": "南京航空航天大学",
+      "institute": "计算机科学与技术学院/软件学院",
+      "project": "2027年接收推荐免试研究生预报名通知",
+      "eventType": "接收推荐免试研究生预报名",
+      "description": "学院预报名：在系统填写信息并上传电子材料；综合考核以面试为主，具体安排另行通知。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-14T23:59:00+08:00",
+      "deadlineOriginal": "研究生报考服务系统开放时间为即日起至2026年9月14日23:59。",
+      "deadlineEpochMs": 1789401540000,
+      "website": "https://cs.nuaa.edu.cn/2026/0726/c10851a407213/page.htm",
+      "tags": [
+        "推免",
+        "预报名",
+        "计算机",
+        "软件"
+      ],
+      "verifiedAt": "2026-08-09T17:11:10.911Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "计算机科学与技术学院/软件学院官方通知",
+          "url": "https://cs.nuaa.edu.cn/2026/0726/c10851a407213/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "具体考核时间、相关工作要求与安排将通过学院官网另行通知"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "具体考核时间、相关工作要求与安排将通过学院官网另行通知"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "请将上述全部申请材料电子版按编号顺序合并为一个PDF"
+      },
+      "recommendation": {
+        "status": "not-applicable",
+        "summary": "提前选择导师，优先推荐高水平指导教师，大四阶段提前进入导师科研团队。"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "具体考核时间、相关工作要求与安排将通过学院官网另行通知"
       }
     },
     {
@@ -6041,6 +6142,56 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：材料复杂度：中；材料清单：在线申请并按通知提交成绩、排名、英语与科研获奖等材料；材料清单：材料复杂度：中；材料清单：在线申请并按通知提交成绩、排名、英语与科研获奖等材料"
+      }
+    },
+    {
+      "projectId": "2027|中南大学|人工智能学院|暑期招生宣讲开放日",
+      "feedId": "camp2027",
+      "name": "中南大学",
+      "institute": "人工智能学院",
+      "project": "中南大学人工智能学院关于举办2026年暑期招生宣讲开放日的通知",
+      "eventType": "暑期招生宣讲开放日",
+      "description": "人工智能学院面向2027届优秀本科生的线上招生宣讲开放日，覆盖智能科学与技术、电子信息。",
+      "verificationStatus": "expired",
+      "deadline": "2026-07-11T23:59:00+08:00",
+      "deadlineOriginal": "报名时间：2026年7月7日—7月11日。",
+      "deadlineEpochMs": 1783785540000,
+      "website": "https://ai.csu.edu.cn/info/1020/1259.htm",
+      "tags": [
+        "开放日",
+        "人工智能",
+        "电子信息"
+      ],
+      "verifiedAt": "2026-08-09T17:11:10.911Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "人工智能学院官方通知",
+          "url": "https://ai.csu.edu.cn/info/1020/1259.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "online",
+        "time": {
+          "status": "confirmed",
+          "summary": "举办时间：2026年8月10日。"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "举办方式：线上举办。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "取得报名资格的学生请于7月16日前将以下材料打包成压缩文件，并以“申请编号-姓名”命名后发送"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "（八）本科就读学校专家（副教授及其以上职称）推荐表。"
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "活动期间，请注意保证安全问题，如人身、财产、交通安全等，必须遵守中南大学的相关规定，按照统一的安排参加各项活动。"
       }
     },
     {
@@ -8893,6 +9044,57 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：材料复杂度：历史公开快照未记录；材料清单：材料复杂度：中；材料清单：材料复杂度：历史公开快照未记录；材料清单：材料复杂度：中"
+      }
+    },
+    {
+      "projectId": "2027|南方科技大学|自动化与智能制造学院|全国优秀大学生暑期交流营",
+      "feedId": "camp2027",
+      "name": "南方科技大学",
+      "institute": "自动化与智能制造学院",
+      "project": "南科大自动化与智能制造学院2026年全国优秀大学生暑期交流营报名通知",
+      "eventType": "全国优秀大学生暑期交流营",
+      "description": "面向自动化、机器人、智能制造、人工智能等方向的学院夏令营；活动以课题组交流为单位。",
+      "verificationStatus": "expired",
+      "deadline": "2026-06-30T23:59:00+08:00",
+      "deadlineOriginal": "网上报名截止日期：2026年6月30日23:59",
+      "deadlineEpochMs": 1782835140000,
+      "website": "https://aim.sustech.edu.cn/Article-detail-id-927-typeid-7.html",
+      "tags": [
+        "夏令营",
+        "人工智能",
+        "自动化",
+        "智能制造"
+      ],
+      "verifiedAt": "2026-08-09T17:11:10.911Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "自动化与智能制造学院官方通知",
+          "url": "https://aim.sustech.edu.cn/Article-detail-id-927-typeid-7.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "hybrid",
+        "time": {
+          "status": "confirmed",
+          "summary": "活动时间：2026年7-8月（具体时间另行通知）"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "活动形式：以课题组为单位，进行交流活动。导师与学生双向自由沟通，可直接与心仪导师一对一交流，充分展示学术潜力与研究方向。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "报名所需证明材料（以下所有材料均需提供PDF版本）：（1）身份证正反面扫描件；（2）学生证扫描件（学生证封面、个人信息页和学期注册页）；（3）包含所修全部课程的正式成绩单（院系或教务处加盖公章）；成绩单上需标注所在专业的成绩排名；（4）个人陈述（1000字以内，内容应包括：学术背景、既往研究工作、攻读研究生阶段的学习与研究计划、毕业后的就业目标等）；（5）其他能够体现本人学习及科研能力的证明材料（其他体现个人学术水平、综合能力的证明材料，包括但不限于英语水平证书、论文首页及奖状证书等）；（6）交流营报名申请表（网上报名生成的表格自行下载打印，本人手写签名后扫描上传）；（7）个人简历（中英文，各1页内）。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "需填报不超过3个意向报考导师并上传证明材料。"
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "各课题组将为异地学校学生提供部分差旅补贴（深圳地区高校学生原则上不提供）。具体报销规定请以各课题组为准。"
       }
     },
     {
@@ -13358,8 +13560,8 @@
       }
     }
   ],
-  "snapshotId": "2026-08-05T18:07:13.000Z-6373b98c2d35",
-  "approvedAt": "2026-08-05T18:07:13Z",
-  "previousSnapshotId": "2026-08-05T17:08:47.000Z-a6bc660db11e",
-  "dataHash": "6373b98c2d35f184b0312cff02334473673bc28f4e2728ecfa638b91caa59276"
+  "snapshotId": "2026-08-09T17:11:46.643Z-90d6bc475641",
+  "approvedAt": "2026-08-09T17:11:46.643Z",
+  "previousSnapshotId": "2026-08-05T18:07:13.000Z-6373b98c2d35",
+  "dataHash": "90d6bc4756410220a04f9718cd4648f236bf3a0f83311d4b5e986ee7c6bfe372"
 }

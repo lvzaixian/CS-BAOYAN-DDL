@@ -179,8 +179,17 @@ export interface AdditiveCoveragePlan {
   sentinelsSha256: string;
 }
 
+export interface AdditiveFixedDiscoveryCheck {
+  checkId: string;
+  url: string;
+  checkedAt: string;
+  result: 'checked' | 'blocked';
+  artifactSha256: string | null;
+  reason: string | null;
+}
+
 export interface AdditiveApprovalRun {
-  schemaVersion: 2;
+  schemaVersion: 3;
   runId: string;
   mode: 'incremental' | 'sweep';
   startedAt: string;
@@ -193,6 +202,7 @@ export interface AdditiveApprovalRun {
     privateParentCandidateUsed: false;
   };
   coverage: AdditiveCoveragePlan;
+  fixedDiscoveryChecks: AdditiveFixedDiscoveryCheck[];
   scopes: AdditiveDiscoveryScope[];
   artifacts: AdditiveApprovalArtifact[];
   additions: Array<{
@@ -468,6 +478,45 @@ function coverageAt(object: JsonObject, path: string): AdditiveCoveragePlan {
   };
 }
 
+function fixedDiscoveryChecksAt(
+  object: JsonObject,
+  path: string,
+): AdditiveFixedDiscoveryCheck[] {
+  if (!Array.isArray(object.fixedDiscoveryChecks)) {
+    throw new Error(`${path}.fixedDiscoveryChecks must be an array`);
+  }
+  return object.fixedDiscoveryChecks.map((value, index) => {
+    const checkPath = `${path}.fixedDiscoveryChecks[${index}]`;
+    const check = objectAt(value, checkPath);
+    exactKeys(check, checkPath, [
+      'checkId',
+      'url',
+      'checkedAt',
+      'result',
+      'artifactSha256',
+      'reason',
+    ]);
+    const artifactSha256 = check.artifactSha256;
+    if (artifactSha256 !== null && typeof artifactSha256 !== 'string') {
+      throw new Error(`${checkPath}.artifactSha256 must be a SHA-256 string or null`);
+    }
+    const reason = check.reason;
+    if (reason !== null && typeof reason !== 'string') {
+      throw new Error(`${checkPath}.reason must be a string or null`);
+    }
+    return {
+      checkId: stringAt(check, 'checkId', checkPath),
+      url: stringAt(check, 'url', checkPath),
+      checkedAt: timestampAt(check, 'checkedAt', checkPath),
+      result: stringAt(check, 'result', checkPath) as AdditiveFixedDiscoveryCheck['result'],
+      artifactSha256: artifactSha256 === null
+        ? null
+        : sha256At(check, 'artifactSha256', checkPath),
+      reason,
+    };
+  });
+}
+
 function parseAdditiveRun(value: unknown): AdditiveApprovalRun {
   const object = objectAt(value, 'discovery run');
   exactKeys(object, 'discovery run', [
@@ -478,12 +527,13 @@ function parseAdditiveRun(value: unknown): AdditiveApprovalRun {
     'finishedAt',
     'parent',
     'coverage',
+    'fixedDiscoveryChecks',
     'scopes',
     'artifacts',
     'additions',
   ]);
-  if (object.schemaVersion !== 2) {
-    throw new Error('discovery run.schemaVersion must equal 2');
+  if (object.schemaVersion !== 3) {
+    throw new Error('discovery run.schemaVersion must equal 3');
   }
   const runId = stringAt(object, 'runId', 'discovery run');
   if (!/^[A-Za-z0-9][A-Za-z0-9._-]{2,127}$/u.test(runId)) {
@@ -522,6 +572,7 @@ function parseAdditiveRun(value: unknown): AdditiveApprovalRun {
     privateParentCandidateUsed: false,
   };
   const coverage = coverageAt(object, 'discovery run');
+  const fixedDiscoveryChecks = fixedDiscoveryChecksAt(object, 'discovery run');
 
   if (!Array.isArray(object.scopes)) throw new Error('discovery run.scopes must be an array');
   const scopes = object.scopes.map((value, index) => {
@@ -629,13 +680,14 @@ function parseAdditiveRun(value: unknown): AdditiveApprovalRun {
   });
 
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     runId,
     mode,
     startedAt,
     finishedAt,
     parent,
     coverage,
+    fixedDiscoveryChecks,
     scopes,
     artifacts,
     additions,
@@ -814,6 +866,396 @@ function beijingCalendarDate(timestamp: string): string {
     throw new Error('could not derive Beijing coverage date');
   }
   return `${year}-${month}-${day}`;
+}
+
+const additiveFixedDiscoveryCheckIds = [
+  'shenyanpai-profile',
+  'shenyanpai-summer-camp',
+  'shenyanpai-pre-recommend',
+] as const;
+
+function expectedAdditiveFixedDiscoveryUrl(checkId: string, finishedAt: string): string {
+  const year = beijingCalendarDate(finishedAt).slice(0, 4);
+  switch (checkId) {
+    case 'shenyanpai-profile':
+      return 'https://github.com/shenyanpai';
+    case 'shenyanpai-summer-camp':
+      return `https://github.com/shenyanpai/awesome-summer-camp-${year}`;
+    case 'shenyanpai-pre-recommend':
+      return `https://github.com/shenyanpai/awesome-pre-recommend-${year}`;
+    default:
+      throw new Error(`unsupported fixed discovery check ${quoted(checkId)}`);
+  }
+}
+
+function assertAdditiveFixedDiscoveryChecks(
+  run: AdditiveApprovalRun,
+  artifactMaterials: ReadonlyMap<string, AdditiveArtifactMaterial>,
+): void {
+  if (run.fixedDiscoveryChecks.length !== additiveFixedDiscoveryCheckIds.length) {
+    throw new Error('fixed discovery checks must contain exactly three required check IDs');
+  }
+  const checks = new Map<string, AdditiveFixedDiscoveryCheck>();
+  for (const check of run.fixedDiscoveryChecks) {
+    if (!(additiveFixedDiscoveryCheckIds as readonly string[]).includes(check.checkId)) {
+      throw new Error(`fixed discovery check ${quoted(check.checkId)} is unexpected`);
+    }
+    if (checks.has(check.checkId)) {
+      throw new Error(`fixed discovery check ${quoted(check.checkId)} is duplicated`);
+    }
+    checks.set(check.checkId, check);
+  }
+
+  const startedAtMs = Date.parse(run.startedAt);
+  const finishedAtMs = Date.parse(run.finishedAt);
+  const checkedArtifactSha256s = new Set<string>();
+  for (const checkId of additiveFixedDiscoveryCheckIds) {
+    const check = checks.get(checkId);
+    if (check === undefined) {
+      throw new Error(`fixed discovery check ${quoted(checkId)} is missing`);
+    }
+    const expectedUrl = expectedAdditiveFixedDiscoveryUrl(check.checkId, run.finishedAt);
+    const checkUrl = normalizeComparableUrl(
+      check.url,
+      `fixed discovery check ${quoted(check.checkId)} URL`,
+    );
+    if (checkUrl !== expectedUrl) {
+      throw new Error(
+        `fixed discovery check ${quoted(check.checkId)} URL must match ${quoted(expectedUrl)}`,
+      );
+    }
+    const checkedAtMs = Date.parse(check.checkedAt);
+    if (checkedAtMs < startedAtMs || checkedAtMs > finishedAtMs) {
+      throw new Error(
+        `fixed discovery check ${quoted(check.checkId)} was checked outside the run window`,
+      );
+    }
+    if (check.result === 'checked') {
+      if (check.artifactSha256 === null) {
+        throw new Error(
+          `fixed discovery check ${quoted(check.checkId)} with result checked must reference an artifact`,
+        );
+      }
+      if (check.reason !== null) {
+        throw new Error(
+          `fixed discovery check ${quoted(check.checkId)} with result checked must have a null reason`,
+        );
+      }
+      if (checkedArtifactSha256s.has(check.artifactSha256)) {
+        throw new Error(
+          `fixed discovery checks with result checked must not reuse an artifact SHA-256`,
+        );
+      }
+      const material = artifactMaterials.get(check.artifactSha256);
+      if (material === undefined) {
+        throw new Error(
+          `fixed discovery check ${quoted(check.checkId)} references a missing artifact`,
+        );
+      }
+      const artifactUrl = normalizeComparableUrl(
+        material.artifact.url,
+        `fixed discovery check ${quoted(check.checkId)} artifact URL`,
+      );
+      if (artifactUrl !== expectedUrl) {
+        throw new Error(
+          `fixed discovery check ${quoted(check.checkId)} artifact URL must match ${quoted(expectedUrl)}`,
+        );
+      }
+      if (material.text === null || material.text.trim() === '') {
+        throw new Error(
+          `fixed discovery check ${quoted(check.checkId)} must bind a non-empty readable UTF-8 text artifact`,
+        );
+      }
+      checkedArtifactSha256s.add(check.artifactSha256);
+      continue;
+    }
+    if (check.result === 'blocked') {
+      if (check.artifactSha256 !== null) {
+        throw new Error(
+          `fixed discovery check ${quoted(check.checkId)} with result blocked must not reference an artifact`,
+        );
+      }
+      if (check.reason === null || check.reason.trim() === '') {
+        throw new Error(
+          `fixed discovery check ${quoted(check.checkId)} with result blocked must retain a non-empty reason`,
+        );
+      }
+      continue;
+    }
+    throw new Error(`fixed discovery check ${quoted(check.checkId)} has an unsupported result`);
+  }
+}
+
+const additiveGitHubDiscoveryTextPattern = /github\.com|raw\.githubusercontent\.com/iu;
+const additiveProvenanceDecodeDepth = 4;
+const additivePercentByteRunPattern = /(?:%[0-9A-Fa-f]{2})+/gu;
+const additiveIdnaEquivalentDotPattern = /[\u3002\uFF0E\uFF61]/gu;
+const additiveUnicodeEscapePattern = /(\\+)u(?:([0-9A-Fa-f]{4})|\{([0-9A-Fa-f]{1,6})\})/gu;
+const additiveJavaScriptHexEscapePattern = /(\\+)x([0-9A-Fa-f]{2})/gu;
+const additiveSha256TokenPattern = /[a-f0-9]{64}/giu;
+
+function additiveFixedDiscoveryPrivateValues(
+  run: AdditiveApprovalRun,
+  artifactMaterials: ReadonlyMap<string, AdditiveArtifactMaterial>,
+): ReadonlySet<string> {
+  const values = new Set<string>();
+  for (const check of run.fixedDiscoveryChecks) {
+    values.add(check.checkId);
+    values.add(expectedAdditiveFixedDiscoveryUrl(check.checkId, run.finishedAt));
+    if (check.artifactSha256 !== null) {
+      values.add(check.artifactSha256);
+      const material = artifactMaterials.get(check.artifactSha256);
+      if (material === undefined || material.text === null) {
+        throw new Error(
+          `fixed discovery check ${quoted(check.checkId)} must bind a readable UTF-8 text artifact`,
+        );
+      }
+      // Empty text has no bytes to disclose; matching it would make every serialized addition fail.
+      if (material.text !== '') values.add(material.text);
+    }
+    if (check.reason !== null) values.add(check.reason);
+  }
+  return values;
+}
+
+function serializedAdditiveString(value: string): string {
+  return JSON.stringify(value).slice(1, -1);
+}
+
+function additiveFixedDiscoveryArtifactSha256Values(
+  run: AdditiveApprovalRun,
+): ReadonlySet<string> {
+  const sha256Values = new Set<string>();
+  for (const check of run.fixedDiscoveryChecks) {
+    // `parseAdditiveRun` validates and lowercases this digest. Deliberately do
+    // not include SHA-shaped check IDs, text, or reasons in canonical matching.
+    if (check.artifactSha256 !== null) sha256Values.add(check.artifactSha256);
+  }
+  return sha256Values;
+}
+
+function candidateContainsFixedDiscoverySha256(
+  candidate: string,
+  fixedDiscoverySha256Values: ReadonlySet<string>,
+): boolean {
+  for (const match of candidate.matchAll(additiveSha256TokenPattern)) {
+    if (fixedDiscoverySha256Values.has(match[0].toLowerCase())) return true;
+  }
+  return false;
+}
+
+function decodeAdditivePercentByteRuns(value: string): string {
+  return value.replace(additivePercentByteRunPattern, (percentBytes) => {
+    try {
+      return decodeURIComponent(percentBytes);
+    } catch {
+      return percentBytes;
+    }
+  });
+}
+
+function decodeAdditiveSerializedEscape(
+  escape: string,
+  slashRun: string,
+  decodedValue: string,
+): string {
+  if (slashRun.length <= 2) return decodedValue;
+  // A serialized public string may contain an additional escaped-backslash
+  // layer before a valid JavaScript escape. Consume exactly one such layer per
+  // bounded inspection round so it cannot evade the depth limit.
+  return `${slashRun.slice(0, -2)}${escape.slice(slashRun.length)}`;
+}
+
+function decodeAdditiveUnicodeEscapes(value: string): string {
+  return value.replace(additiveUnicodeEscapePattern, (escape, slashRun, fixedWidth, braced) => {
+    const codePoint = Number.parseInt(fixedWidth ?? braced, 16);
+    return codePoint <= 0x10ffff
+      ? decodeAdditiveSerializedEscape(escape, slashRun, String.fromCodePoint(codePoint))
+      : escape;
+  });
+}
+
+function decodeAdditiveSerializedJavaScriptEscapesOnce(value: string): string {
+  return decodeAdditiveUnicodeEscapes(value.replace(
+    additiveJavaScriptHexEscapePattern,
+    (escape, slashRun, hex) => decodeAdditiveSerializedEscape(
+      escape,
+      slashRun,
+      String.fromCodePoint(Number.parseInt(hex, 16)),
+    ),
+  ));
+}
+
+function normalizeAdditiveProvenanceText(value: string): string {
+  return value.normalize('NFKC').replace(additiveIdnaEquivalentDotPattern, '.');
+}
+
+type AdditiveProvenanceTransformKind = 'percent' | 'javascript';
+
+interface AdditiveProvenanceCandidateTransform {
+  kind: AdditiveProvenanceTransformKind;
+  value: string;
+}
+
+function additiveProvenanceCandidateTransforms(
+  value: string,
+): readonly AdditiveProvenanceCandidateTransform[] {
+  const transforms: AdditiveProvenanceCandidateTransform[] = [];
+  const percentDecoded = decodeAdditivePercentByteRuns(value);
+  if (percentDecoded !== value) transforms.push({ kind: 'percent', value: percentDecoded });
+  const javascriptDecoded = decodeAdditiveSerializedJavaScriptEscapesOnce(value);
+  if (javascriptDecoded !== value) transforms.push({ kind: 'javascript', value: javascriptDecoded });
+  return transforms;
+}
+
+interface AdditiveProvenanceCandidates {
+  candidates: readonly string[];
+  nestedPercentEncoding: boolean;
+  nestedJavaScriptEscapeEncoding: boolean;
+}
+
+function additiveHostDetectionCandidates(serializedContent: string): AdditiveProvenanceCandidates {
+  const candidates = new Set<string>([serializedContent]);
+  // NFKC/IDNA normalization is an idempotent inspection canonicalization, not
+  // an encoding layer. Canonicalize every newly derived state before applying
+  // the bounded percent/JavaScript frontier so transform order cannot hide it.
+  const initialCandidate = normalizeAdditiveProvenanceText(serializedContent);
+  candidates.add(initialCandidate);
+  const canonicalCandidates = new Set<string>([initialCandidate]);
+  let frontier = new Set<string>([initialCandidate]);
+  for (let depth = 0; depth < additiveProvenanceDecodeDepth; depth += 1) {
+    const nextFrontier = new Set<string>();
+    for (const candidate of frontier) {
+      for (const transform of additiveProvenanceCandidateTransforms(candidate)) {
+        candidates.add(transform.value);
+        const normalized = normalizeAdditiveProvenanceText(transform.value);
+        candidates.add(normalized);
+        if (canonicalCandidates.has(normalized)) continue;
+        canonicalCandidates.add(normalized);
+        nextFrontier.add(normalized);
+      }
+    }
+    if (nextFrontier.size === 0) {
+      return {
+        candidates: [...candidates],
+        nestedPercentEncoding: false,
+        nestedJavaScriptEscapeEncoding: false,
+      };
+    }
+    frontier = nextFrontier;
+  }
+
+  let nestedPercentEncoding = false;
+  let nestedJavaScriptEscapeEncoding = false;
+  for (const candidate of frontier) {
+    for (const transform of additiveProvenanceCandidateTransforms(candidate)) {
+      if (transform.kind === 'percent') nestedPercentEncoding = true;
+      if (transform.kind === 'javascript') nestedJavaScriptEscapeEncoding = true;
+    }
+  }
+  return {
+    candidates: [...candidates],
+    nestedPercentEncoding,
+    nestedJavaScriptEscapeEncoding,
+  };
+}
+
+function assertAdditivePublicProvenance(
+  opportunity: PublicOpportunity,
+  fixedDiscoveryPrivateValues: ReadonlySet<string>,
+  fixedDiscoveryArtifactSha256Values: ReadonlySet<string>,
+): void {
+  const serializedOpportunity = JSON.stringify(opportunity);
+  const provenanceCandidates = additiveHostDetectionCandidates(serializedOpportunity);
+  const { candidates } = provenanceCandidates;
+  if (
+    candidates.some((candidate) => additiveGitHubDiscoveryTextPattern.test(candidate))
+    || [...fixedDiscoveryPrivateValues].some((value) =>
+      candidates.some((candidate) =>
+        candidate.includes(value) || candidate.includes(serializedAdditiveString(value))))
+    || candidates.some((candidate) =>
+      candidateContainsFixedDiscoverySha256(candidate, fixedDiscoveryArtifactSha256Values))
+  ) {
+    throw new Error(
+      `addition ${quoted(opportunity.projectId)} must not expose fixed discovery provenance`,
+    );
+  }
+  if (provenanceCandidates.nestedPercentEncoding) {
+    throw new Error(
+      `addition ${quoted(opportunity.projectId)} nested percent encoding exceeds supported depth`,
+    );
+  }
+  if (provenanceCandidates.nestedJavaScriptEscapeEncoding) {
+    throw new Error(
+      `addition ${quoted(opportunity.projectId)} nested JavaScript escape encoding exceeds supported depth`,
+    );
+  }
+}
+
+const additiveUmbrellaInstituteSkeletons = [
+  'wholeschool',
+  '全校',
+  '全院系',
+  '各学院',
+  '各院系',
+  '校级',
+  '招生系统',
+  '报名系统',
+  '系统级',
+  '研究生招生办公室',
+  '研究生招生办',
+  '研究生招生处',
+  '研招办',
+  '研招处',
+  '招生办公室',
+  '招生办',
+  '招生处',
+] as const;
+const additiveInstituteFormatControlPattern = /\p{Cf}/u;
+const additiveInstituteSkeletonSeparatorPattern = /[\p{White_Space}\p{P}\p{S}\p{M}]+/gu;
+const additiveGenericGraduateSchoolSkeleton = '研究生院';
+
+function additiveInstituteLabelSkeleton(value: string): string {
+  return value
+    .normalize('NFKD')
+    .replace(additiveInstituteSkeletonSeparatorPattern, '')
+    .toLowerCase();
+}
+
+function assertAdditiveCollegeGranularity(opportunity: PublicOpportunity): void {
+  const projectIdParts = opportunity.projectId.split('|');
+  if (projectIdParts.length !== 4 || projectIdParts.some((part) => part.trim() === '')) {
+    throw new Error(
+      `addition ${quoted(opportunity.projectId)} projectId must use cycle|name|institute|project/round`,
+    );
+  }
+  const [, projectIdName, projectIdInstitute] = projectIdParts;
+  if (projectIdName !== opportunity.name) {
+    throw new Error(
+      `addition ${quoted(opportunity.projectId)} projectId name segment must exactly match opportunity name`,
+    );
+  }
+  if (projectIdInstitute !== opportunity.institute) {
+    throw new Error(
+      `addition ${quoted(opportunity.projectId)} projectId institute segment must exactly match opportunity institute`,
+    );
+  }
+  if (additiveInstituteFormatControlPattern.test(opportunity.institute)) {
+    throw new Error(
+      `addition ${quoted(opportunity.projectId)} institute must not contain Unicode format controls`,
+    );
+  }
+  const instituteSkeleton = additiveInstituteLabelSkeleton(opportunity.institute);
+  const isUnqualifiedGraduateSchool = instituteSkeleton === additiveGenericGraduateSchoolSkeleton
+    || instituteSkeleton === `${additiveInstituteLabelSkeleton(opportunity.name)}${additiveGenericGraduateSchoolSkeleton}`;
+  if (
+    isUnqualifiedGraduateSchool
+    || additiveUmbrellaInstituteSkeletons.some((label) => instituteSkeleton.includes(label))
+  ) {
+    throw new Error(
+      `addition ${quoted(opportunity.projectId)} institute must name a concrete college-level unit`,
+    );
+  }
 }
 
 function additiveRotationDateSlot(rotationDate: string): number {
@@ -1224,6 +1666,23 @@ function additiveFieldQuoteSourceValue(
   }
 }
 
+function isAdditiveGitHubDiscoveryHost(hostname: string): boolean {
+  return hostname === 'github.com'
+    || hostname.endsWith('.github.com')
+    || hostname === 'raw.githubusercontent.com';
+}
+
+function assertAdditivePublicDiscoverySources(opportunity: PublicOpportunity): void {
+  for (const source of opportunity.discoverySources) {
+    const sourceUrl = normalizeComparableUrl(source.url, 'addition discovery source URL');
+    if (isAdditiveGitHubDiscoveryHost(new URL(sourceUrl).hostname)) {
+      throw new Error(
+        `addition ${quoted(opportunity.projectId)} must not expose a GitHub discovery source`,
+      );
+    }
+  }
+}
+
 function assertAdditiveEvidence(
   run: AdditiveApprovalRun,
   opportunity: PublicOpportunity,
@@ -1251,6 +1710,7 @@ function assertAdditiveEvidence(
   )) {
     throw new Error(`addition ${quoted(opportunity.projectId)} officialUrl must match opportunity website`);
   }
+  assertAdditivePublicDiscoverySources(opportunity);
   const officialSources = opportunity.discoverySources
     .filter((source) => source.kind === 'official')
     .map((source) => assertAdditiveInstitutionalOfficialUrl(
@@ -1989,6 +2449,9 @@ export async function approveAdditiveSnapshotFile(
   assertScopeManifest(run);
   await assertAdditiveDecisionDoesNotCollideWithArtifacts(decisionPath, runDirectory, run);
   const artifactMaterials = await readAndVerifyAdditiveArtifacts(runPath, run);
+  assertAdditiveFixedDiscoveryChecks(run, artifactMaterials);
+  const fixedDiscoveryPrivateValues = additiveFixedDiscoveryPrivateValues(run, artifactMaterials);
+  const fixedDiscoveryArtifactSha256Values = additiveFixedDiscoveryArtifactSha256Values(run);
   const finishedAtMs = Date.parse(run.finishedAt);
   if (finishedAtMs > nowMs) throw new Error('additive discovery run finishedAt is in the future');
   if (nowMs - finishedAtMs > additiveRunMaximumAgeMs) {
@@ -2054,8 +2517,18 @@ export async function approveAdditiveSnapshotFile(
   if (additionsErrors.length > 0) {
     throw new Error(`additions validation failed:\n${additionsErrors.join('\n')}`);
   }
+  for (const addition of additions) {
+    assertAdditiveCollegeGranularity(addition);
+  }
   for (const { opportunity, evidence } of run.additions) {
     assertAdditiveEvidence(run, opportunity, evidence, artifactMaterials);
+  }
+  for (const addition of additions) {
+    assertAdditivePublicProvenance(
+      addition,
+      fixedDiscoveryPrivateValues,
+      fixedDiscoveryArtifactSha256Values,
+    );
   }
 
   const candidate = buildAdditiveCandidate(parent, additions, run.finishedAt);

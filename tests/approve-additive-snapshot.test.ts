@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import {
   mkdirSync,
   mkdtempSync,
+  existsSync,
   readFileSync,
   rmSync,
   linkSync,
@@ -31,10 +32,126 @@ const nextApprovedAt = '2026-08-09T08:35:00.000Z';
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 const defaultArtifactText = '<html><body>官方招生通知原文</body></html>';
+const fixedDiscoveryCheckIds = [
+  'shenyanpai-profile',
+  'shenyanpai-summer-camp',
+  'shenyanpai-pre-recommend',
+] as const;
 
 function sha256(value: string | Uint8Array): string {
   return createHash('sha256').update(value).digest('hex');
 }
+
+function shanghaiSourceDate(checkedAt: string): string {
+  const values = new Map(new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Shanghai',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date(checkedAt)).map((part) => [part.type, part.value]));
+  const year = values.get('year');
+  const month = values.get('month');
+  const day = values.get('day');
+  if (year === undefined || month === undefined || day === undefined) {
+    throw new Error('fixture could not derive the Shanghai source date');
+  }
+  return `${year}-${month}-${day}`;
+}
+
+function shanghaiSourceYear(checkedAt: string): string {
+  return shanghaiSourceDate(checkedAt).slice(0, 4);
+}
+
+function fixedDiscoveryArtifactUrl(checkId: string, checkedAt: string): string {
+  const year = shanghaiSourceYear(checkedAt);
+  switch (checkId) {
+    case 'shenyanpai-profile':
+      return 'https://github.com/shenyanpai';
+    case 'shenyanpai-summer-camp':
+      return `https://github.com/shenyanpai/awesome-summer-camp-${year}`;
+    case 'shenyanpai-pre-recommend':
+      return `https://github.com/shenyanpai/awesome-pre-recommend-${year}`;
+    default:
+      throw new Error(`fixture does not support fixed discovery check ${checkId}`);
+  }
+}
+
+function fixedDiscoveryArtifactContent(checkId: string, checkedAt = runScannedAt): string {
+  return `<html><body>GitHub fixed discovery check: ${checkId}; source year ${shanghaiSourceYear(checkedAt)}</body></html>`;
+}
+
+function percentEncodeLeadingAscii(value: string): string {
+  const codePoint = value.codePointAt(0);
+  if (codePoint === undefined || codePoint < 0x21 || codePoint > 0x7e) {
+    throw new Error('fixture expected a printable ASCII leading character');
+  }
+  return `%${codePoint.toString(16).padStart(2, '0').toUpperCase()}${value.slice(1)}`;
+}
+
+function doublePercentEncodeLeadingAscii(value: string): string {
+  const once = percentEncodeLeadingAscii(value);
+  return `%25${once.slice(1)}`;
+}
+
+function nfkcLeadingAsciiVariant(value: string): string {
+  const codePoint = value.codePointAt(0);
+  if (codePoint === undefined || codePoint < 0x21 || codePoint > 0x7e) {
+    throw new Error('fixture expected a printable ASCII leading character');
+  }
+  return `${String.fromCodePoint(codePoint + 0xfee0)}${value.slice(1)}`;
+}
+
+function fullwidthAscii(value: string): string {
+  return value.replace(/[!-~]/gu, (character) =>
+    String.fromCodePoint(character.codePointAt(0)! + 0xfee0));
+}
+
+function fixedDiscoveryArtifactFixtures(checkedAt: string) {
+  const checks = fixedDiscoveryCheckIds.map((checkId) => ({
+    checkId,
+    url: fixedDiscoveryArtifactUrl(checkId, checkedAt),
+  }));
+  return checks.map(({ checkId, url }) => {
+    const content = fixedDiscoveryArtifactContent(checkId, checkedAt);
+    const artifactSha256 = sha256(content);
+    return {
+      check: {
+        checkId,
+        url,
+        checkedAt,
+        result: 'checked' as const,
+        artifactSha256,
+        reason: null,
+      },
+      artifact: {
+        path: `artifacts/fixed-discovery-${checkId}.html`,
+        sha256: artifactSha256,
+        url,
+        contentType: 'text/html',
+        fetchedAt: checkedAt,
+        extractedTextArtifactSha256: null,
+      },
+    };
+  });
+}
+
+function fixedDiscoveryArtifactContents(checkedAt = runScannedAt): Map<string, string> {
+  return new Map(fixedDiscoveryCheckIds.map((checkId) => {
+    const content = fixedDiscoveryArtifactContent(checkId, checkedAt);
+    return [sha256(content), content];
+  }));
+}
+
+test('derives year-dependent fixed discovery artifact hashes from the Shanghai run time', () => {
+  const year2026 = fixedDiscoveryArtifactFixtures(runScannedAt);
+  const year2027 = fixedDiscoveryArtifactFixtures('2026-12-31T16:00:00.000Z');
+  const summer2026 = year2026.find((item) => item.check.checkId === 'shenyanpai-summer-camp');
+  const summer2027 = year2027.find((item) => item.check.checkId === 'shenyanpai-summer-camp');
+  assert.ok(summer2026);
+  assert.ok(summer2027);
+  assert.equal(summer2027.check.url, 'https://github.com/shenyanpai/awesome-summer-camp-2027');
+  assert.notEqual(summer2027.artifact.sha256, summer2026.artifact.sha256);
+});
 
 const registryText = readFileSync(
   join(repositoryRoot, 'scripts/source/universities.json'),
@@ -75,12 +192,14 @@ function coverageScopes(
   parent: PublicSnapshot,
   artifactSha256: string,
   entryUrl: string,
+  rotationDate = '2026-08-09',
+  checkedAt = runScannedAt,
 ): AdditiveApprovalRun['scopes'] {
   const registrySchools = [...new Set(registry.map((item) => registrySchoolName(item.name)))];
   const registrySet = new Set(registrySchools);
   const parentExtras = [...new Set(parent.opportunities.map((opportunity) => opportunity.name))]
     .filter((school) => !registrySet.has(school));
-  const rotationSlot = rotationDateSlot('2026-08-09');
+  const rotationSlot = rotationDateSlot(rotationDate);
   const sentinelSchools = [...new Set(sentinels.institutions.map((item) => item.school))]
     .sort(codePointCompare);
   const rotationSchools = [...new Set([...registrySchools, ...parentExtras])]
@@ -94,7 +213,7 @@ function coverageScopes(
       queue: 'sentinel' as const,
       parentScopeId: null,
       entryUrl,
-      checkedAt: runScannedAt,
+      checkedAt,
       result: 'no-new-clue' as const,
       reason: null,
       childScopeIds: [],
@@ -106,7 +225,7 @@ function coverageScopes(
       queue: 'registry-rotation' as const,
       parentScopeId: null,
       entryUrl,
-      checkedAt: runScannedAt,
+      checkedAt,
       result: 'no-new-clue' as const,
       reason: null,
       childScopeIds: [],
@@ -193,6 +312,7 @@ function artifactTextFor(additions: PublicSnapshot['opportunities']): string {
 function evidenceFor(
   opportunity: PublicSnapshot['opportunities'][number],
   artifactSha256: string,
+  checkedAt = runScannedAt,
 ) {
   const values: Record<string, unknown> = {
     name: opportunity.name,
@@ -216,7 +336,7 @@ function evidenceFor(
     artifactSha256,
     locator: 'article > main',
     method: 'html',
-    checkedAt: runScannedAt,
+    checkedAt,
     quote: sourceQuoteFor(opportunity, field),
   }));
 }
@@ -225,16 +345,19 @@ function additiveRun(
   parent: PublicSnapshot,
   parentText: string,
   additions: PublicSnapshot['opportunities'],
+  finishedAt = runScannedAt,
 ): AdditiveApprovalRun {
   const artifactSha256 = sha256(artifactTextFor(additions));
+  const fixedDiscoveryArtifacts = fixedDiscoveryArtifactFixtures(finishedAt);
   const entryUrl = additions[0]?.website ?? 'https://cs-new.example.edu.cn/admissions/summer-camp';
   const school = additions[0]?.name ?? parent.opportunities[0].name;
+  const rotationDate = shanghaiSourceDate(finishedAt);
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     runId: '20260809-additive-unit-test',
     mode: 'incremental',
-    startedAt: runScannedAt,
-    finishedAt: runScannedAt,
+    startedAt: finishedAt,
+    finishedAt,
     parent: {
       url: 'https://ddl.meta-mind.cn/data/current.json',
       sha256: sha256(parentText),
@@ -244,19 +367,20 @@ function additiveRun(
     },
     coverage: {
       schemaVersion: 1,
-      rotationDate: '2026-08-09',
+      rotationDate,
       registrySha256: sha256(registryText),
       sentinelsSha256: sha256(sentinelsText),
     },
+    fixedDiscoveryChecks: fixedDiscoveryArtifacts.map((item) => item.check),
     scopes: [
-      ...coverageScopes(parent, artifactSha256, entryUrl),
+      ...coverageScopes(parent, artifactSha256, entryUrl, rotationDate, finishedAt),
       ...(additions.length === 0 ? [] : [{
         scopeId: 'scope-root',
         school,
         queue: 'fresh-signal' as const,
         parentScopeId: null,
         entryUrl,
-        checkedAt: runScannedAt,
+        checkedAt: finishedAt,
         result: 'new-clue' as const,
         reason: null,
         childScopeIds: [],
@@ -269,9 +393,10 @@ function additiveRun(
         sha256: artifactSha256,
         url: entryUrl,
         contentType: 'text/html',
-        fetchedAt: runScannedAt,
+        fetchedAt: finishedAt,
         extractedTextArtifactSha256: null,
       },
+      ...fixedDiscoveryArtifacts.map((item) => item.artifact),
     ],
     additions: additions.map((opportunity) => ({
       opportunity,
@@ -280,7 +405,7 @@ function additiveRun(
         scopeId: 'scope-root',
         officialUrl: opportunity.website,
         artifactSha256,
-        fieldEvidence: evidenceFor(opportunity, artifactSha256),
+        fieldEvidence: evidenceFor(opportunity, artifactSha256, finishedAt),
       },
     })),
   };
@@ -303,15 +428,103 @@ function materializeRunArtifacts(
   run: AdditiveApprovalRun,
   contents: ReadonlyMap<string, string | Uint8Array> = new Map(),
 ): void {
+  const fixedArtifactContents = fixedDiscoveryArtifactContents(run.finishedAt);
   for (const artifact of run.artifacts) {
+    if (fixedArtifactContents.has(artifact.sha256)) {
+      artifact.fetchedAt = run.finishedAt;
+    }
     const artifactPath = resolve(source.root, artifact.path);
     mkdirSync(dirname(artifactPath), { recursive: true });
     writeFileSync(
       artifactPath,
-      contents.get(artifact.path) ?? artifactTextFor(run.additions.map((addition) => addition.opportunity)),
+      contents.get(artifact.path)
+        ?? fixedArtifactContents.get(artifact.sha256)
+        ?? artifactTextFor(run.additions.map((addition) => addition.opportunity)),
     );
   }
 }
+
+function fixedDiscoveryCheck(
+  run: AdditiveApprovalRun,
+  checkId: typeof fixedDiscoveryCheckIds[number],
+) {
+  const check = run.fixedDiscoveryChecks.find((candidate) => candidate.checkId === checkId);
+  if (check === undefined) throw new Error(`fixture must include ${checkId}`);
+  return check;
+}
+
+function fixedDiscoveryArtifact(run: AdditiveApprovalRun, artifactSha256: string) {
+  const artifact = run.artifacts.find((candidate) => candidate.sha256 === artifactSha256);
+  if (artifact === undefined) throw new Error('fixture must include the fixed discovery artifact');
+  return artifact;
+}
+
+function blockFixedDiscoveryCheck(
+  run: AdditiveApprovalRun,
+  checkId: typeof fixedDiscoveryCheckIds[number],
+): void {
+  const check = fixedDiscoveryCheck(run, checkId);
+  if (check.artifactSha256 === null) throw new Error('fixture fixed discovery check must be checked');
+  const artifactSha256 = check.artifactSha256;
+  check.result = 'blocked';
+  check.artifactSha256 = null;
+  check.reason = 'network timeout while reading the fixed discovery source';
+  run.artifacts = run.artifacts.filter((artifact) => artifact.sha256 !== artifactSha256);
+}
+
+function fixedDiscoveryArtifacts(run: AdditiveApprovalRun) {
+  const sha256s = new Set(
+    run.fixedDiscoveryChecks
+      .map((check) => check.artifactSha256)
+      .filter((artifactSha256): artifactSha256 is string => artifactSha256 !== null),
+  );
+  return run.artifacts.filter((artifact) => sha256s.has(artifact.sha256));
+}
+
+async function assertRejectedBeforeApproval(
+  source: ReturnType<typeof paths>,
+  parentText: string,
+  operation: () => Promise<unknown>,
+  expected: RegExp,
+): Promise<void> {
+  await assert.rejects(operation, expected);
+  assert.equal(readFileSync(source.approved, 'utf8'), parentText);
+  assert.equal(existsSync(source.decision), false);
+}
+
+function approve(source: ReturnType<typeof paths>) {
+  return approveAdditiveSnapshotFile({
+    runPath: source.run,
+    parentPath: source.parent,
+    approvedPath: source.approved,
+    decisionPath: source.decision,
+    approvedAt: nextApprovedAt,
+    nowMs: Date.parse('2026-08-09T09:00:00.000Z'),
+  });
+}
+
+test('rejects a fixed discovery URL mutation before writing a private decision', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const run = additiveRun(parent, parentText, []);
+  const profile = fixedDiscoveryCheck(run, 'shenyanpai-profile');
+  profile.url = 'https://github.com/not-shenyanpai';
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    await assertRejectedBeforeApproval(
+      source,
+      parentText,
+      () => approve(source),
+      /fixed discovery check.*URL must match/i,
+    );
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
 
 test('no additions writes only a private no-change decision and leaves public bytes untouched', async () => {
   const source = paths();
@@ -346,6 +559,1913 @@ test('no additions writes only a private no-change decision and leaves public by
     assert.equal(decision.coverage.rotationDate, '2026-08-09');
     assert.equal(decision.coverage.registryTargetCount, 310);
     assert.equal(decision.coverage.parentExtraTargetCount, 1);
+    assert.deepEqual(
+      run.fixedDiscoveryChecks.map((check) => check.checkId).sort(),
+      [...fixedDiscoveryCheckIds].sort(),
+    );
+    assert.equal(
+      new Set(run.fixedDiscoveryChecks.map((check) => check.artifactSha256)).size,
+      fixedDiscoveryCheckIds.length,
+    );
+    for (const check of run.fixedDiscoveryChecks) {
+      assert.notEqual(check.artifactSha256, null);
+      const artifact = run.artifacts.find((candidate) => candidate.sha256 === check.artifactSha256);
+      assert.notEqual(artifact, undefined);
+      assert.equal(artifact!.url, check.url);
+    }
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('requires exactly the three fixed Shenyanpai discovery check IDs before a decision', async (t) => {
+  const cases: Array<{
+    name: string;
+    mutate: (run: AdditiveApprovalRun) => void;
+    expected: RegExp;
+  }> = [
+    {
+      name: 'v2 schema',
+      mutate: (run) => { (run as unknown as { schemaVersion: number }).schemaVersion = 2; },
+      expected: /schemaVersion must equal 3/i,
+    },
+    {
+      name: 'missing fixedDiscoveryChecks',
+      mutate: (run) => {
+        delete (run as unknown as { fixedDiscoveryChecks?: unknown }).fixedDiscoveryChecks;
+      },
+      expected: /fixedDiscoveryChecks.*required/i,
+    },
+    {
+      name: 'missing required ID',
+      mutate: (run) => { run.fixedDiscoveryChecks.pop(); },
+      expected: /fixed discovery checks.*exactly/i,
+    },
+    {
+      name: 'duplicate ID',
+      mutate: (run) => {
+        fixedDiscoveryCheck(run, 'shenyanpai-summer-camp').checkId = 'shenyanpai-profile';
+      },
+      expected: /fixed discovery check.*duplicated/i,
+    },
+    {
+      name: 'unexpected ID',
+      mutate: (run) => {
+        fixedDiscoveryCheck(run, 'shenyanpai-summer-camp').checkId = 'other-source';
+      },
+      expected: /fixed discovery check.*unexpected/i,
+    },
+    {
+      name: 'missing required field',
+      mutate: (run) => {
+        delete (fixedDiscoveryCheck(run, 'shenyanpai-profile') as unknown as { url?: unknown }).url;
+      },
+      expected: /fixedDiscoveryChecks.*url.*required/i,
+    },
+    {
+      name: 'invalid timestamp',
+      mutate: (run) => { fixedDiscoveryCheck(run, 'shenyanpai-profile').checkedAt = 'not-a-timestamp'; },
+      expected: /fixedDiscoveryChecks.*checkedAt.*valid ISO timestamp/i,
+    },
+    {
+      name: 'invalid SHA-256',
+      mutate: (run) => { fixedDiscoveryCheck(run, 'shenyanpai-profile').artifactSha256 = 'not-a-sha'; },
+      expected: /fixedDiscoveryChecks.*artifactSha256.*SHA-256/i,
+    },
+    {
+      name: 'non-string artifactSha256',
+      mutate: (run) => {
+        (fixedDiscoveryCheck(run, 'shenyanpai-profile') as unknown as { artifactSha256: unknown }).artifactSha256 = 1;
+      },
+      expected: /fixedDiscoveryChecks.*artifactSha256.*string or null/i,
+    },
+    {
+      name: 'non-string reason',
+      mutate: (run) => {
+        (fixedDiscoveryCheck(run, 'shenyanpai-profile') as unknown as { reason: unknown }).reason = 1;
+      },
+      expected: /fixedDiscoveryChecks.*reason.*string or null/i,
+    },
+  ];
+
+  for (const item of cases) {
+    await t.test(item.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const run = additiveRun(parent, parentText, []);
+      item.mutate(run);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(source, parentText, () => approve(source), item.expected);
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('rejects a fixed discovery check URL with the wrong owner, repository, year, or query', async (t) => {
+  const cases: Array<{
+    name: string;
+    mutate: (run: AdditiveApprovalRun) => void;
+  }> = [
+    {
+      name: 'owner',
+      mutate: (run) => {
+        fixedDiscoveryCheck(run, 'shenyanpai-summer-camp').url =
+          'https://github.com/other/awesome-summer-camp-2026';
+      },
+    },
+    {
+      name: 'repository',
+      mutate: (run) => {
+        fixedDiscoveryCheck(run, 'shenyanpai-summer-camp').url =
+          'https://github.com/shenyanpai/not-the-summer-camp-2026';
+      },
+    },
+    {
+      name: 'year',
+      mutate: (run) => {
+        fixedDiscoveryCheck(run, 'shenyanpai-pre-recommend').url =
+          'https://github.com/shenyanpai/awesome-pre-recommend-2025';
+      },
+    },
+    {
+      name: 'query',
+      mutate: (run) => {
+        fixedDiscoveryCheck(run, 'shenyanpai-pre-recommend').url += '?spoof=1';
+      },
+    },
+  ];
+
+  for (const item of cases) {
+    await t.test(item.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const run = additiveRun(parent, parentText, []);
+      item.mutate(run);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(
+          source,
+          parentText,
+          () => approve(source),
+          /fixed discovery check.*URL must match/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('enforces checked and blocked fixed discovery check coupling before a decision', async (t) => {
+  const cases: Array<{
+    name: string;
+    mutate: (run: AdditiveApprovalRun) => void;
+    expected: RegExp;
+  }> = [
+    {
+      name: 'checked without an artifact',
+      mutate: (run) => { fixedDiscoveryCheck(run, 'shenyanpai-profile').artifactSha256 = null; },
+      expected: /fixed discovery check.*checked.*artifact/i,
+    },
+    {
+      name: 'checked with a reason',
+      mutate: (run) => { fixedDiscoveryCheck(run, 'shenyanpai-profile').reason = 'unexpected'; },
+      expected: /fixed discovery check.*checked.*reason/i,
+    },
+    {
+      name: 'blocked with an artifact',
+      mutate: (run) => {
+        const check = fixedDiscoveryCheck(run, 'shenyanpai-profile');
+        check.result = 'blocked';
+        check.reason = 'timeout';
+      },
+      expected: /fixed discovery check.*blocked.*artifact/i,
+    },
+    {
+      name: 'blocked without a reason',
+      mutate: (run) => {
+        const check = fixedDiscoveryCheck(run, 'shenyanpai-profile');
+        check.result = 'blocked';
+        check.artifactSha256 = null;
+      },
+      expected: /fixed discovery check.*blocked.*reason/i,
+    },
+    {
+      name: 'blocked with a blank reason',
+      mutate: (run) => {
+        const check = fixedDiscoveryCheck(run, 'shenyanpai-profile');
+        check.result = 'blocked';
+        check.artifactSha256 = null;
+        check.reason = '  ';
+      },
+      expected: /fixed discovery check.*blocked.*reason/i,
+    },
+    {
+      name: 'unsupported result',
+      mutate: (run) => {
+        (fixedDiscoveryCheck(run, 'shenyanpai-profile') as unknown as { result: string }).result = 'skipped';
+      },
+      expected: /fixed discovery check.*unsupported result/i,
+    },
+  ];
+
+  for (const item of cases) {
+    await t.test(item.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const run = additiveRun(parent, parentText, []);
+      item.mutate(run);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(source, parentText, () => approve(source), item.expected);
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('requires every checked fixed discovery check to bind a unique verified text artifact', async (t) => {
+  const cases: Array<{
+    name: string;
+    prepare: (source: ReturnType<typeof paths>, run: AdditiveApprovalRun) => ReadonlyMap<string, string | Uint8Array> | undefined;
+    afterMaterialize?: (source: ReturnType<typeof paths>, run: AdditiveApprovalRun) => void;
+    expected: RegExp;
+  }> = [
+    {
+      name: 'missing manifest artifact',
+      prepare: (_source, run) => {
+        fixedDiscoveryCheck(run, 'shenyanpai-profile').artifactSha256 = sha256('missing fixed artifact');
+        return undefined;
+      },
+      expected: /fixed discovery check.*(?:artifact.*missing|missing artifact)/i,
+    },
+    {
+      name: 'wrong artifact URL',
+      prepare: (_source, run) => {
+        const check = fixedDiscoveryCheck(run, 'shenyanpai-profile');
+        fixedDiscoveryArtifact(run, check.artifactSha256!).url = 'https://github.com/shenyanpai/other';
+        return undefined;
+      },
+      expected: /fixed discovery check.*artifact URL must match/i,
+    },
+    {
+      name: 'binary artifact',
+      prepare: (_source, run) => {
+        const check = fixedDiscoveryCheck(run, 'shenyanpai-profile');
+        const artifact = fixedDiscoveryArtifact(run, check.artifactSha256!);
+        const bytes = Buffer.from('%PDF-1.7\nfixed discovery binary artifact\n', 'utf8');
+        const artifactSha256 = sha256(bytes);
+        check.artifactSha256 = artifactSha256;
+        artifact.sha256 = artifactSha256;
+        artifact.contentType = 'application/pdf';
+        return new Map([[artifact.path, bytes]]);
+      },
+      expected: /fixed discovery check.*readable UTF-8 text/i,
+    },
+    {
+      name: 'empty text artifact',
+      prepare: (_source, run) => {
+        const check = fixedDiscoveryCheck(run, 'shenyanpai-profile');
+        const artifact = fixedDiscoveryArtifact(run, check.artifactSha256!);
+        const text = '';
+        const artifactSha256 = sha256(text);
+        check.artifactSha256 = artifactSha256;
+        artifact.sha256 = artifactSha256;
+        return new Map([[artifact.path, text]]);
+      },
+      expected: /fixed discovery check.*non-empty readable UTF-8 text/i,
+    },
+    {
+      name: 'whitespace-only text artifact',
+      prepare: (_source, run) => {
+        const check = fixedDiscoveryCheck(run, 'shenyanpai-profile');
+        const artifact = fixedDiscoveryArtifact(run, check.artifactSha256!);
+        const text = ' \n\t ';
+        const artifactSha256 = sha256(text);
+        check.artifactSha256 = artifactSha256;
+        artifact.sha256 = artifactSha256;
+        return new Map([[artifact.path, text]]);
+      },
+      expected: /fixed discovery check.*non-empty readable UTF-8 text/i,
+    },
+    {
+      name: 'checked before the run',
+      prepare: (_source, run) => {
+        fixedDiscoveryCheck(run, 'shenyanpai-profile').checkedAt = '2026-08-09T08:29:59.999Z';
+        return undefined;
+      },
+      expected: /fixed discovery check.*outside the run window/i,
+    },
+    {
+      name: 'checked after the run',
+      prepare: (_source, run) => {
+        fixedDiscoveryCheck(run, 'shenyanpai-profile').checkedAt = '2026-08-09T08:30:00.001Z';
+        return undefined;
+      },
+      expected: /fixed discovery check.*outside the run window/i,
+    },
+    {
+      name: 'shared checked artifact SHA-256',
+      prepare: (_source, run) => {
+        fixedDiscoveryCheck(run, 'shenyanpai-summer-camp').artifactSha256 =
+          fixedDiscoveryCheck(run, 'shenyanpai-profile').artifactSha256;
+        return undefined;
+      },
+      expected: /fixed discovery check.*reuse.*SHA-256/i,
+    },
+    {
+      name: 'missing fixed artifact file',
+      prepare: () => undefined,
+      afterMaterialize: (source, run) => {
+        const check = fixedDiscoveryCheck(run, 'shenyanpai-profile');
+        rmSync(join(source.root, fixedDiscoveryArtifact(run, check.artifactSha256!).path));
+      },
+      expected: /ENOENT|additive artifact/i,
+    },
+    {
+      name: 'tampered fixed artifact file',
+      prepare: () => undefined,
+      afterMaterialize: (source, run) => {
+        const check = fixedDiscoveryCheck(run, 'shenyanpai-profile');
+        writeFileSync(
+          join(source.root, fixedDiscoveryArtifact(run, check.artifactSha256!).path),
+          'tampered fixed discovery artifact',
+          'utf8',
+        );
+      },
+      expected: /additive artifact.*SHA-256|additive artifact.*digest/i,
+    },
+  ];
+
+  for (const item of cases) {
+    await t.test(item.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const run = additiveRun(parent, parentText, []);
+      const contents = item.prepare(source, run);
+      materializeRunArtifacts(source, run, contents);
+      item.afterMaterialize?.(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(source, parentText, () => approve(source), item.expected);
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('allows each fixed discovery check to be blocked without blocking an official addition', async (t) => {
+  for (const checkId of fixedDiscoveryCheckIds) {
+    await t.test(checkId, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const run = additiveRun(parent, parentText, [additionFor(parent)]);
+      blockFixedDiscoveryCheck(run, checkId);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        const result = await approve(source);
+        assert.equal(result.status, 'ready');
+        const decision = JSON.parse(readFileSync(source.decision, 'utf8')) as Record<string, unknown>;
+        assert.equal(decision.status, 'ready');
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('allows an all-blocked fixed discovery run to record a normal no-additions decision', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const run = additiveRun(parent, parentText, []);
+  for (const checkId of fixedDiscoveryCheckIds) blockFixedDiscoveryCheck(run, checkId);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.deepEqual(result, { status: 'no-additions', runId: '20260809-additive-unit-test' });
+    assert.equal(readFileSync(source.approved, 'utf8'), parentText);
+    const decision = JSON.parse(readFileSync(source.decision, 'utf8')) as Record<string, unknown>;
+    assert.equal(decision.status, 'no-additions');
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('derives the fixed source repository year from finishedAt in Asia/Shanghai', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const boundary = '2026-12-31T16:00:00.000Z';
+  const run = additiveRun(parent, parentText, [], boundary);
+  fixedDiscoveryCheck(run, 'shenyanpai-summer-camp').url =
+    'https://github.com/shenyanpai/awesome-summer-camp-2026';
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    await assertRejectedBeforeApproval(
+      source,
+      parentText,
+      () => approveAdditiveSnapshotFile({
+        runPath: source.run,
+        parentPath: source.parent,
+        approvedPath: source.approved,
+        decisionPath: source.decision,
+        approvedAt: boundary,
+        nowMs: Date.parse('2027-01-01T00:00:00.001Z'),
+      }),
+      /fixed discovery check.*awesome-summer-camp-2027/i,
+    );
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('keeps direct GitHub URLs out of every additive public evidence route', async (t) => {
+  const cases: Array<{
+    name: string;
+    prepareAddition?: (addition: PublicSnapshot['opportunities'][number]) => void;
+    prepareRun?: (
+      run: AdditiveApprovalRun,
+      addition: PublicSnapshot['opportunities'][number],
+    ) => ReadonlyMap<string, string | Uint8Array> | undefined;
+    expected: RegExp;
+  }> = [
+    {
+      name: 'officialUrl',
+      prepareRun: (run) => {
+        run.additions[0].evidence.officialUrl = 'https://github.com/shenyanpai';
+        return undefined;
+      },
+      expected: /officialUrl.*institutional official host|officialUrl.*approved official platform/i,
+    },
+    {
+      name: 'website',
+      prepareAddition: (addition) => {
+        addition.website = 'https://github.com/shenyanpai';
+        addition.discoverySources[0].url = addition.website;
+      },
+      expected: /denied discovery host.*official website|denied discovery host.*official source/i,
+    },
+    {
+      name: 'primary artifact URL',
+      prepareRun: (run, addition) => {
+        run.artifacts[0].url = 'https://github.com/shenyanpai';
+        const text = `${artifactTextFor([addition])}\nseparate official scope artifact`;
+        const artifactSha256 = sha256(text);
+        const path = 'artifacts/official-scope.html';
+        run.artifacts.push({
+          path,
+          sha256: artifactSha256,
+          url: addition.website,
+          contentType: 'text/html',
+          fetchedAt: runScannedAt,
+          extractedTextArtifactSha256: null,
+        });
+        for (const scope of run.scopes) scope.artifactSha256 = artifactSha256;
+        return new Map([[path, text]]);
+      },
+      expected: /primary artifact.*officialUrl/i,
+    },
+    {
+      name: 'field evidence source and artifact URL',
+      prepareRun: (run, addition) => {
+        const text = `${artifactTextFor([addition])}\nseparate GitHub field artifact`;
+        const artifactSha256 = sha256(text);
+        const path = 'artifacts/github-field.html';
+        const url = 'https://github.com/shenyanpai';
+        run.artifacts.push({
+          path,
+          sha256: artifactSha256,
+          url,
+          contentType: 'text/html',
+          fetchedAt: runScannedAt,
+          extractedTextArtifactSha256: null,
+        });
+        run.additions[0].evidence.fieldEvidence[0].artifactSha256 = artifactSha256;
+        run.additions[0].evidence.fieldEvidence[0].sourceUrl = url;
+        return new Map([[path, text]]);
+      },
+      expected: /field evidence sourceUrl.*institutional official host|field evidence sourceUrl.*approved official platform/i,
+    },
+  ];
+
+  for (const item of cases) {
+    await t.test(item.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      item.prepareAddition?.(addition);
+      const run = additiveRun(parent, parentText, [addition]);
+      const contents = item.prepareRun?.(run, addition);
+      materializeRunArtifacts(source, run, contents);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(source, parentText, () => approve(source), item.expected);
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('rejects every GitHub host from additive other-discovery sources before a decision', async (t) => {
+  const urls = [
+    'https://github.com/shenyanpai',
+    'https://gist.github.com/example',
+    'https://raw.githubusercontent.com/shenyanpai/example/main/README.md',
+  ];
+  for (const url of urls) {
+    await t.test(url, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      addition.discoverySources.push({
+        kind: 'other-discovery',
+        label: 'Shenyanpai discovery clue',
+        url,
+      });
+      const run = additiveRun(parent, parentText, [addition]);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(
+          source,
+          parentText,
+          () => approve(source),
+          /must not expose a GitHub discovery source/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('rejects fixed discovery provenance from every serialized additive public field', async (t) => {
+  const fields: Array<{
+    name: string;
+    expose: (addition: PublicSnapshot['opportunities'][number], value: string) => void;
+  }> = [
+    {
+      name: 'description',
+      expose: (addition, value) => { addition.description = `${addition.description}\n${value}`; },
+    },
+    {
+      name: 'tags',
+      expose: (addition, value) => { addition.tags = [...addition.tags, value]; },
+    },
+    {
+      name: 'projectId',
+      expose: (addition, value) => {
+        addition.projectId = `2027|新增测试大学|计算机学院|${value}`;
+      },
+    },
+    {
+      name: 'discoverySources label',
+      expose: (addition, value) => { addition.discoverySources[0].label = value; },
+    },
+  ];
+  const provenanceValues: Array<{
+    name: string;
+    prepare: (run: AdditiveApprovalRun) => string;
+  }> = [
+    {
+      name: 'GitHub subdomain URL',
+      prepare: () => 'https://gist.github.com/shenyanpai/notice',
+    },
+    {
+      name: 'raw GitHub URL',
+      prepare: () => 'https://raw.githubusercontent.com/shenyanpai/notice/main/README.md',
+    },
+    {
+      name: 'percent-encoded GitHub URL',
+      prepare: () => 'https://github%2Ecom/shenyanpai/notice',
+    },
+    {
+      name: 'percent-encoded raw GitHub URL',
+      prepare: () => 'https://raw%2Egithubusercontent%2Ecom/shenyanpai/notice/main/README.md',
+    },
+    {
+      name: 'double-encoded GitHub URL',
+      prepare: () => 'https://github%252Ecom/shenyanpai/notice',
+    },
+    {
+      name: 'double-encoded raw GitHub URL',
+      prepare: () => 'https://raw%252Egithubusercontent%252Ecom/shenyanpai/notice/main/README.md',
+    },
+    {
+      name: 'NFKC-normalized GitHub URL',
+      prepare: () => 'https://github\uFF0Ecom/shenyanpai/notice',
+    },
+    {
+      name: 'ideographic-dot GitHub URL',
+      prepare: () => 'https://github\u3002com/shenyanpai/notice',
+    },
+    {
+      name: 'ideographic-dot raw GitHub URL',
+      prepare: () => 'https://raw\u3002githubusercontent\u3002com/shenyanpai/notice/main/README.md',
+    },
+    {
+      name: 'percent-encoded ideographic-dot GitHub URL',
+      prepare: () => 'https://github%E3%80%82com/shenyanpai/notice',
+    },
+    {
+      name: 'percent-encoded ideographic-dot raw GitHub URL',
+      prepare: () => 'https://raw%E3%80%82githubusercontent%E3%80%82com/shenyanpai/notice/main/README.md',
+    },
+    {
+      name: 'halfwidth-dot GitHub URL',
+      prepare: () => 'https://github\uFF61com/shenyanpai/notice',
+    },
+    {
+      name: 'halfwidth-dot raw GitHub URL',
+      prepare: () => 'https://raw\uFF61githubusercontent\uFF61com/shenyanpai/notice/main/README.md',
+    },
+    {
+      name: 'percent-encoded halfwidth-dot GitHub URL',
+      prepare: () => 'https://github%EF%BD%A1com/shenyanpai/notice',
+    },
+    {
+      name: 'percent-encoded halfwidth-dot raw GitHub URL',
+      prepare: () => 'https://raw%EF%BD%A1githubusercontent%EF%BD%A1com/shenyanpai/notice/main/README.md',
+    },
+    {
+      name: 'percent-encoded Unicode-separator GitHub URL',
+      prepare: () => 'https://github%EF%BC%8Ecom/shenyanpai/notice',
+    },
+    {
+      name: 'percent-encoded Unicode-separator raw GitHub URL',
+      prepare: () => 'https://raw%EF%BC%8Egithubusercontent%EF%BC%8Ecom/shenyanpai/notice/main/README.md',
+    },
+    {
+      name: 'double-encoded Unicode-separator GitHub URL',
+      prepare: () => 'https://github%25EF%25BC%258Ecom/shenyanpai/notice',
+    },
+    {
+      name: 'double-encoded Unicode-separator raw GitHub URL',
+      prepare: () => 'https://raw%25EF%25BC%258Egithubusercontent%25EF%25BC%258Ecom/shenyanpai/notice/main/README.md',
+    },
+    {
+      name: 'fixed check ID',
+      prepare: (run) => fixedDiscoveryCheck(run, 'shenyanpai-profile').checkId,
+    },
+    {
+      name: 'fixed canonical URL',
+      prepare: (run) => fixedDiscoveryCheck(run, 'shenyanpai-profile').url,
+    },
+    {
+      name: 'fixed artifact SHA-256',
+      prepare: (run) => fixedDiscoveryCheck(run, 'shenyanpai-profile').artifactSha256!,
+    },
+    {
+      name: 'fixed artifact text',
+      prepare: () => fixedDiscoveryArtifactContent('shenyanpai-profile'),
+    },
+    {
+      name: 'blocked fixed-check reason',
+      prepare: (run) => {
+        blockFixedDiscoveryCheck(run, 'shenyanpai-pre-recommend');
+        return fixedDiscoveryCheck(run, 'shenyanpai-pre-recommend').reason!;
+      },
+    },
+  ];
+  const encodedFixedPrivateFragments: Array<{
+    name: string;
+    prepare: (run: AdditiveApprovalRun) => string;
+  }> = [
+    {
+      name: 'fixed check ID',
+      prepare: (run: AdditiveApprovalRun) => fixedDiscoveryCheck(run, 'shenyanpai-profile').checkId,
+    },
+    {
+      name: 'fixed canonical URL',
+      prepare: (run: AdditiveApprovalRun) => fixedDiscoveryCheck(run, 'shenyanpai-profile').url,
+    },
+    {
+      name: 'fixed artifact SHA-256',
+      prepare: (run: AdditiveApprovalRun) => fixedDiscoveryCheck(run, 'shenyanpai-profile').artifactSha256!,
+    },
+    {
+      name: 'blocked fixed-check reason',
+      prepare: (run: AdditiveApprovalRun) => {
+        blockFixedDiscoveryCheck(run, 'shenyanpai-pre-recommend');
+        return fixedDiscoveryCheck(run, 'shenyanpai-pre-recommend').reason!;
+      },
+    },
+  ];
+  const encodedFixedPrivateFragmentForms = [
+    { name: 'percent-encoded', encode: percentEncodeLeadingAscii },
+    { name: 'double-encoded', encode: doublePercentEncodeLeadingAscii },
+    { name: 'NFKC', encode: nfkcLeadingAsciiVariant },
+  ];
+  provenanceValues.push(...encodedFixedPrivateFragments.flatMap((fragment) =>
+    encodedFixedPrivateFragmentForms.map((form) => ({
+      name: `${form.name} ${fragment.name}`,
+      prepare: (run: AdditiveApprovalRun) => form.encode(fragment.prepare(run)),
+    }))));
+  provenanceValues.push(
+    {
+      name: 'percent-encoded fixed artifact text',
+      prepare: () => fixedDiscoveryArtifactContent('shenyanpai-profile')
+        .replace('shenyanpai-profile', 'shenyanpai%2Dprofile'),
+    },
+    {
+      name: 'double-encoded fixed artifact text',
+      prepare: () => fixedDiscoveryArtifactContent('shenyanpai-profile')
+        .replace('shenyanpai-profile', 'shenyanpai%252Dprofile'),
+    },
+    {
+      name: 'NFKC fixed artifact text',
+      prepare: () => fixedDiscoveryArtifactContent('shenyanpai-profile')
+        .replace('shenyanpai-profile', 'shenyanpai\uFF0Dprofile'),
+    },
+  );
+
+  for (const field of fields) {
+    for (const provenance of provenanceValues) {
+      await t.test(`${field.name}: ${provenance.name}`, async () => {
+        const source = paths();
+        const parent = sealedParent();
+        const parentText = writeJson(source.parent, parent);
+        writeFileSync(source.approved, parentText, 'utf8');
+        const addition = additionFor(parent);
+        const run = additiveRun(parent, parentText, [addition]);
+        field.expose(addition, provenance.prepare(run));
+        materializeRunArtifacts(source, run);
+        writeJson(source.run, run);
+
+        try {
+          await assertRejectedBeforeApproval(
+            source,
+            parentText,
+            () => approve(source),
+            /addition .* must not expose fixed discovery provenance/i,
+          );
+        } finally {
+          rmSync(source.root, { recursive: true, force: true });
+        }
+      });
+    }
+  }
+});
+
+test('rejects case-equivalent fixed artifact SHA-256 provenance before a decision or public write', async (t) => {
+  const cases: Array<{
+    name: string;
+    expose: (
+      addition: PublicSnapshot['opportunities'][number],
+      run: AdditiveApprovalRun,
+    ) => void;
+  }> = [
+    {
+      name: 'uppercase fixed artifact SHA-256 in a serialized discovery source label',
+      expose: (addition, run) => {
+        addition.discoverySources[0].label = fixedDiscoveryCheck(
+          run,
+          'shenyanpai-profile',
+        ).artifactSha256!.toUpperCase();
+      },
+    },
+    {
+      name: 'fullwidth uppercase fixed artifact SHA-256 in a NFKC-normalized discovery source label',
+      expose: (addition, run) => {
+        addition.discoverySources[0].label = fullwidthAscii(fixedDiscoveryCheck(
+          run,
+          'shenyanpai-profile',
+        ).artifactSha256!.toUpperCase());
+      },
+    },
+    {
+      name: 'uppercase fixed artifact SHA-256 revealed by a JavaScript hex escape',
+      expose: (addition, run) => {
+        const artifactSha256 = fixedDiscoveryCheck(run, 'shenyanpai-profile').artifactSha256!
+          .toUpperCase();
+        addition.discoverySources[0].label =
+          `\\x${artifactSha256.charCodeAt(0).toString(16).padStart(2, '0')}${artifactSha256.slice(1)}`;
+      },
+    },
+    {
+      name: 'percent-encoded uppercase fixed artifact SHA-256 in a discovery source label',
+      expose: (addition, run) => {
+        addition.discoverySources[0].label = percentEncodeLeadingAscii(fixedDiscoveryCheck(
+          run,
+          'shenyanpai-profile',
+        ).artifactSha256!.toUpperCase());
+      },
+    },
+  ];
+
+  for (const entry of cases) {
+    await t.test(entry.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      const run = additiveRun(parent, parentText, [addition]);
+      entry.expose(addition, run);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(
+          source,
+          parentText,
+          () => approve(source),
+          /addition .* must not expose fixed discovery provenance/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('allows unrelated SHA text and case-variant fixed text without rewriting public output', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  const run = additiveRun(parent, parentText, [addition]);
+  blockFixedDiscoveryCheck(run, 'shenyanpai-pre-recommend');
+  fixedDiscoveryCheck(run, 'shenyanpai-pre-recommend').reason = 'a'.repeat(64);
+  const checkIdCaseVariant = fixedDiscoveryCheck(run, 'shenyanpai-profile').checkId.toUpperCase();
+  const reasonCaseVariant = fixedDiscoveryCheck(run, 'shenyanpai-pre-recommend').reason!.toUpperCase();
+  const artifactTextCaseVariant = fixedDiscoveryArtifactContent('shenyanpai-profile').toUpperCase();
+  const unrelatedUppercaseSha256 = 'B'.repeat(64);
+  addition.description = [
+    addition.description,
+    checkIdCaseVariant,
+    reasonCaseVariant,
+    artifactTextCaseVariant,
+    unrelatedUppercaseSha256,
+  ].join('\n');
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.equal(result.status, 'ready');
+    const approved = JSON.parse(readFileSync(source.approved, 'utf8')) as PublicSnapshot;
+    const approvedAddition = approved.opportunities.find((opportunity) =>
+      opportunity.projectId === addition.projectId);
+    assert.ok(approvedAddition);
+    assert.ok(approvedAddition.description.includes(checkIdCaseVariant));
+    assert.ok(approvedAddition.description.includes(reasonCaseVariant));
+    assert.ok(approvedAddition.description.includes(artifactTextCaseVariant));
+    assert.ok(approvedAddition.description.includes(unrelatedUppercaseSha256));
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('rejects literal Unicode escape provenance before a decision or public write', async (t) => {
+  const cases: Array<{
+    name: string;
+    expose: (addition: PublicSnapshot['opportunities'][number]) => void;
+  }> = [
+    {
+      name: 'GitHub host through a JSON Unicode escape',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github\\u002ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'raw GitHub host through JSON Unicode escapes',
+      expose: (addition) => {
+        addition.description = `${addition.description}\nhttps://raw\\u002egithubusercontent\\u002ecom/shenyanpai/notice/main/README.md`;
+      },
+    },
+    {
+      name: 'fixed private check ID through a JSON Unicode escape',
+      expose: (addition) => {
+        addition.discoverySources[0].label = 'shenyanpai\\u002dprofile';
+      },
+    },
+    {
+      name: 'GitHub host through a braced JavaScript Unicode escape',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github\\u{2e}com/shenyanpai/notice'];
+      },
+    },
+  ];
+
+  for (const entry of cases) {
+    await t.test(entry.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      entry.expose(addition);
+      const run = additiveRun(parent, parentText, [addition]);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        assert.equal(JSON.stringify(addition).includes('\\\\u'), true);
+        await assertRejectedBeforeApproval(
+          source,
+          parentText,
+          () => approve(source),
+          /addition .* must not expose fixed discovery provenance/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('allows ordinary additive text while inspecting Unicode escape provenance', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  const harmlessLiteralUnicodeEscape = '普通官方说明文本\\u4e2d';
+  addition.description = `${addition.description}\n${harmlessLiteralUnicodeEscape}`;
+  addition.tags = [...addition.tags, 'ordinary-public-note'];
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.equal(result.status, 'ready');
+    const approved = JSON.parse(readFileSync(source.approved, 'utf8')) as PublicSnapshot;
+    const approvedAddition = approved.opportunities.find((opportunity) =>
+      opportunity.projectId === addition.projectId);
+    assert.ok(approvedAddition);
+    assert.ok(approvedAddition.tags.includes('ordinary-public-note'));
+    assert.ok(approvedAddition.description.includes(harmlessLiteralUnicodeEscape));
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('rejects literal JavaScript hex escape provenance before a decision or public write', async (t) => {
+  const cases: Array<{
+    name: string;
+    expose: (
+      addition: PublicSnapshot['opportunities'][number],
+      run: AdditiveApprovalRun,
+    ) => void;
+  }> = [
+    {
+      name: 'GitHub host in tags',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github\\x2ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'raw GitHub host in description',
+      expose: (addition) => {
+        addition.description = `${addition.description}\nhttps://raw\\x2egithubusercontent\\x2ecom/shenyanpai/notice/main/README.md`;
+      },
+    },
+    {
+      name: 'fixed private check ID in project ID',
+      expose: (addition) => {
+        addition.projectId = '2027|新增测试大学|计算机学院|shenyanpai\\x2dprofile';
+      },
+    },
+    {
+      name: 'fixed private artifact SHA-256 in discovery source label',
+      expose: (addition, run) => {
+        const artifactSha256 = fixedDiscoveryCheck(run, 'shenyanpai-profile').artifactSha256!;
+        addition.discoverySources[0].label = `\\x${artifactSha256.charCodeAt(0).toString(16)}${artifactSha256.slice(1)}`;
+      },
+    },
+  ];
+
+  for (const entry of cases) {
+    await t.test(entry.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      const run = additiveRun(parent, parentText, [addition]);
+      entry.expose(addition, run);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        assert.equal(JSON.stringify(addition).includes('\\\\x'), true);
+        await assertRejectedBeforeApproval(
+          source,
+          parentText,
+          () => approve(source),
+          /addition .* must not expose fixed discovery provenance/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('rejects double-backslash JavaScript escape provenance before a decision or public write', async (t) => {
+  const cases: Array<{
+    name: string;
+    expose: (
+      addition: PublicSnapshot['opportunities'][number],
+      run: AdditiveApprovalRun,
+    ) => void;
+  }> = [
+    {
+      name: 'GitHub host in tags',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github\\\\x2ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'raw GitHub host through a double-backslash Unicode-to-hex chain in description',
+      expose: (addition) => {
+        addition.description = `${addition.description}\nhttps://raw\\\\u005cx2egithubusercontent\\\\u005cx2ecom/shenyanpai/notice/main/README.md`;
+      },
+    },
+    {
+      name: 'fixed private check ID in project ID',
+      expose: (addition) => {
+        addition.projectId = '2027|新增测试大学|计算机学院|shenyanpai\\\\x2dprofile';
+      },
+    },
+    {
+      name: 'fixed private artifact SHA-256 in discovery source label',
+      expose: (addition, run) => {
+        const artifactSha256 = fixedDiscoveryCheck(run, 'shenyanpai-profile').artifactSha256!;
+        addition.discoverySources[0].label =
+          `\\\\x${artifactSha256.charCodeAt(0).toString(16).padStart(2, '0')}${artifactSha256.slice(1)}`;
+      },
+    },
+    {
+      name: 'fixed private artifact text in tags',
+      expose: (addition) => {
+        addition.tags = [
+          ...addition.tags,
+          fixedDiscoveryArtifactContent('shenyanpai-profile')
+            .replace('shenyanpai-profile', 'shenyanpai\\\\x2dprofile'),
+        ];
+      },
+    },
+    {
+      name: 'blocked fixed-check reason in discovery source label',
+      expose: (addition, run) => {
+        blockFixedDiscoveryCheck(run, 'shenyanpai-pre-recommend');
+        const reason = fixedDiscoveryCheck(run, 'shenyanpai-pre-recommend').reason!;
+        addition.discoverySources[0].label = reason.replace(/^n/u, '\\\\x6e');
+      },
+    },
+    {
+      name: 'GitHub host after percent-decoding two backslashes',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github%5C%5Cx2ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'fixed private check ID after nested percent-decoding two backslashes',
+      expose: (addition) => {
+        addition.projectId = '2027|新增测试大学|计算机学院|shenyanpai%255C%255Cx2dprofile';
+      },
+    },
+  ];
+
+  for (const entry of cases) {
+    await t.test(entry.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      const run = additiveRun(parent, parentText, [addition]);
+      entry.expose(addition, run);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(
+          source,
+          parentText,
+          () => approve(source),
+          /addition .* must not expose fixed discovery provenance/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('rejects fullwidth-backslash JavaScript escape provenance before a decision or public write', async (t) => {
+  const cases: Array<{
+    name: string;
+    expose: (
+      addition: PublicSnapshot['opportunities'][number],
+      run: AdditiveApprovalRun,
+    ) => void;
+  }> = [
+    {
+      name: 'GitHub host after direct NFKC backslash normalization',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github\uFF3Cx2ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'raw GitHub host after direct NFKC Unicode-to-hex normalization',
+      expose: (addition) => {
+        addition.description = `${addition.description}\nhttps://raw\uFF3Cu005cx2egithubusercontent\uFF3Cu005cx2ecom/shenyanpai/notice/main/README.md`;
+      },
+    },
+    {
+      name: 'GitHub host after JavaScript Unicode decoding emits a fullwidth backslash',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github\\uFF3Cx2ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'GitHub host after JavaScript hex decoding emits a percent-encoded dot',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github\\x252ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'GitHub host after percent-decoding a fullwidth backslash',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github%EF%BC%BCx2ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'raw GitHub host after nested percent-decoding a fullwidth backslash',
+      expose: (addition) => {
+        addition.description = `${addition.description}\nhttps://raw%25EF%25BC%25BCx2egithubusercontent%25EF%25BC%25BCx2ecom/shenyanpai/notice/main/README.md`;
+      },
+    },
+    {
+      name: 'fixed private check ID after direct NFKC backslash normalization',
+      expose: (addition) => {
+        addition.projectId = '2027|新增测试大学|计算机学院|shenyanpai\uFF3Cx2dprofile';
+      },
+    },
+    {
+      name: 'fixed private artifact SHA-256 after percent-decoding a fullwidth backslash',
+      expose: (addition, run) => {
+        const artifactSha256 = fixedDiscoveryCheck(run, 'shenyanpai-profile').artifactSha256!;
+        addition.discoverySources[0].label =
+          `%EF%BC%BCx${artifactSha256.charCodeAt(0).toString(16).padStart(2, '0')}${artifactSha256.slice(1)}`;
+      },
+    },
+    {
+      name: 'fixed private artifact text after nested percent-decoding a fullwidth backslash',
+      expose: (addition) => {
+        addition.tags = [
+          ...addition.tags,
+          fixedDiscoveryArtifactContent('shenyanpai-profile')
+            .replace('shenyanpai-profile', 'shenyanpai%25EF%25BC%25BCx2dprofile'),
+        ];
+      },
+    },
+    {
+      name: 'blocked fixed-check reason after direct NFKC backslash normalization',
+      expose: (addition, run) => {
+        blockFixedDiscoveryCheck(run, 'shenyanpai-pre-recommend');
+        const reason = fixedDiscoveryCheck(run, 'shenyanpai-pre-recommend').reason!;
+        addition.discoverySources[0].label = reason.replace(/^n/u, '\uFF3Cx6e');
+      },
+    },
+  ];
+
+  for (const entry of cases) {
+    await t.test(entry.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      const run = additiveRun(parent, parentText, [addition]);
+      entry.expose(addition, run);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(
+          source,
+          parentText,
+          () => approve(source),
+          /addition .* must not expose fixed discovery provenance/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('rejects immediately composed JavaScript escape provenance before a decision or public write', async (t) => {
+  const cases: Array<{
+    name: string;
+    expose: (addition: PublicSnapshot['opportunities'][number]) => void;
+  }> = [
+    {
+      name: 'GitHub host through a Unicode-to-hex chain in tags',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github\\u005cx2ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'raw GitHub host through a percent-to-Unicode-to-hex chain in description',
+      expose: (addition) => {
+        addition.description = `${addition.description}\nhttps://raw%5Cu005cx2egithubusercontent%5Cu005cx2ecom/shenyanpai/notice/main/README.md`;
+      },
+    },
+    {
+      name: 'fixed private check ID through a nested percent-to-Unicode-to-hex chain in project ID',
+      expose: (addition) => {
+        addition.projectId = '2027|新增测试大学|计算机学院|shenyanpai%255Cu005cx2dprofile';
+      },
+    },
+  ];
+
+  for (const entry of cases) {
+    await t.test(entry.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      entry.expose(addition);
+      const run = additiveRun(parent, parentText, [addition]);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(
+          source,
+          parentText,
+          () => approve(source),
+          /addition .* must not expose fixed discovery provenance/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('rejects JavaScript escape chains nested beyond four inspection rounds', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  addition.tags = [
+    ...addition.tags,
+    'https://github\\u005cu005cu005cu005cx2ecom/shenyanpai/notice',
+  ];
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    await assertRejectedBeforeApproval(
+      source,
+      parentText,
+      () => approve(source),
+      /nested JavaScript escape encoding exceeds supported depth/i,
+    );
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('rejects escaped-backslash JavaScript escape chains nested beyond four inspection rounds', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  addition.tags = [
+    ...addition.tags,
+    `https://github${'\\'.repeat(5)}x2ecom/shenyanpai/notice`,
+  ];
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    await assertRejectedBeforeApproval(
+      source,
+      parentText,
+      () => approve(source),
+      /nested JavaScript escape encoding exceeds supported depth/i,
+    );
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('fails closed when a fullwidth-backslash provenance chain needs a fifth bounded decoding round', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  addition.tags = [
+    ...addition.tags,
+    'https://github%252525EF%252525BC%252525BCx2ecom/shenyanpai/notice',
+  ];
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    await assertRejectedBeforeApproval(
+      source,
+      parentText,
+      () => approve(source),
+      /nested JavaScript escape encoding exceeds supported depth/i,
+    );
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('allows ordinary additive text while inspecting JavaScript hex escape provenance', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  const harmlessLiteralJavaScriptHexEscape = '普通官方说明文本\\x41';
+  addition.description = `${addition.description}\n${harmlessLiteralJavaScriptHexEscape}`;
+  addition.tags = [...addition.tags, 'ordinary-public-note'];
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.equal(result.status, 'ready');
+    const approved = JSON.parse(readFileSync(source.approved, 'utf8')) as PublicSnapshot;
+    const approvedAddition = approved.opportunities.find((opportunity) =>
+      opportunity.projectId === addition.projectId);
+    assert.ok(approvedAddition);
+    assert.ok(approvedAddition.tags.includes('ordinary-public-note'));
+    assert.ok(approvedAddition.description.includes(harmlessLiteralJavaScriptHexEscape));
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('allows harmless or malformed double-backslash escape text without rewriting public output', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  const harmlessDoubleBackslashEscape = '普通官方说明文本\\\\x41';
+  const malformedDoubleBackslashEscape = '普通官方说明文本\\\\xGG';
+  const harmlessFullwidthBackslashEscape = '普通官方说明文本\uFF3Cx41';
+  const malformedFullwidthBackslashEscape = '普通官方说明文本\uFF3CxGG';
+  addition.description = [
+    addition.description,
+    harmlessDoubleBackslashEscape,
+    malformedDoubleBackslashEscape,
+    harmlessFullwidthBackslashEscape,
+    malformedFullwidthBackslashEscape,
+  ].join('\n');
+  addition.tags = [...addition.tags, 'ordinary-public-note'];
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.equal(result.status, 'ready');
+    const approved = JSON.parse(readFileSync(source.approved, 'utf8')) as PublicSnapshot;
+    const approvedAddition = approved.opportunities.find((opportunity) =>
+      opportunity.projectId === addition.projectId);
+    assert.ok(approvedAddition);
+    assert.ok(approvedAddition.tags.includes('ordinary-public-note'));
+    assert.ok(approvedAddition.description.includes(harmlessDoubleBackslashEscape));
+    assert.ok(approvedAddition.description.includes(malformedDoubleBackslashEscape));
+    assert.ok(approvedAddition.description.includes(harmlessFullwidthBackslashEscape));
+    assert.ok(approvedAddition.description.includes(malformedFullwidthBackslashEscape));
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('allows harmless composed JavaScript escape text without rewriting public output', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  const harmlessLiteralCompositeEscape = '普通官方说明文本\\u005cx41';
+  addition.description = `${addition.description}\n${harmlessLiteralCompositeEscape}`;
+  addition.tags = [...addition.tags, 'ordinary-public-note'];
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.equal(result.status, 'ready');
+    const approved = JSON.parse(readFileSync(source.approved, 'utf8')) as PublicSnapshot;
+    const approvedAddition = approved.opportunities.find((opportunity) =>
+      opportunity.projectId === addition.projectId);
+    assert.ok(approvedAddition);
+    assert.ok(approvedAddition.tags.includes('ordinary-public-note'));
+    assert.ok(approvedAddition.description.includes(harmlessLiteralCompositeEscape));
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('rejects encoded GitHub provenance despite malformed percent text in another public field', async (t) => {
+  const cases: Array<{
+    name: string;
+    expose: (addition: PublicSnapshot['opportunities'][number]) => void;
+  }> = [
+    {
+      name: 'GitHub tag after malformed description',
+      expose: (addition) => {
+        addition.description = `${addition.description}\nhttps://example.invalid/%ZZ`;
+        addition.tags = [...addition.tags, 'https://github%2Ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'raw GitHub source label after malformed tag',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'malformed percent token: %ZZ'];
+        addition.discoverySources[0].label =
+          'https://raw%2Egithubusercontent%2Ecom/shenyanpai/notice/main/README.md';
+      },
+    },
+    {
+      name: 'raw GitHub source label after invalid UTF-8 tag',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'invalid UTF-8 percent bytes: %FF'];
+        addition.discoverySources[0].label =
+          'https://raw%2Egithubusercontent%2Ecom/shenyanpai/notice/main/README.md';
+      },
+    },
+  ];
+
+  for (const entry of cases) {
+    await t.test(entry.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      entry.expose(addition);
+      const run = additiveRun(parent, parentText, [addition]);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(
+          source,
+          parentText,
+          () => approve(source),
+          /addition .* must not expose fixed discovery provenance/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('inspects additive provenance percent decoding through four rounds', async (t) => {
+  await t.test('rejects an encoded GitHub host revealed on the fourth round', async () => {
+    const source = paths();
+    const parent = sealedParent();
+    const parentText = writeJson(source.parent, parent);
+    writeFileSync(source.approved, parentText, 'utf8');
+    const addition = additionFor(parent);
+    addition.tags = [...addition.tags, 'https://github%2525252Ecom/shenyanpai/notice'];
+    const run = additiveRun(parent, parentText, [addition]);
+    materializeRunArtifacts(source, run);
+    writeJson(source.run, run);
+
+    try {
+      await assertRejectedBeforeApproval(
+        source,
+        parentText,
+        () => approve(source),
+        /addition .* must not expose fixed discovery provenance/i,
+      );
+    } finally {
+      rmSync(source.root, { recursive: true, force: true });
+    }
+  });
+
+});
+
+test('rejects additive provenance nested beyond four percent-decoding rounds', async (t) => {
+  const cases: Array<{
+    name: string;
+    expose: (addition: PublicSnapshot['opportunities'][number]) => void;
+  }> = [
+    {
+      name: 'GitHub host',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github%252525252Ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'raw GitHub host',
+      expose: (addition) => {
+        addition.discoverySources[0].label =
+          'https://raw%252525252Egithubusercontent%252525252Ecom/shenyanpai/notice/main/README.md';
+      },
+    },
+    {
+      name: 'fixed private check ID',
+      expose: (addition) => {
+        addition.projectId = '2027|新增测试大学|计算机学院|shenyanpai%252525252Dprofile';
+      },
+    },
+  ];
+
+  for (const entry of cases) {
+    await t.test(entry.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      entry.expose(addition);
+      const run = additiveRun(parent, parentText, [addition]);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(
+          source,
+          parentText,
+          () => approve(source),
+          /nested percent encoding exceeds supported depth/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('does not throw while inspecting malformed percent-encoded additive text', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  addition.description = `${addition.description}\nhttps://example.invalid/%ZZ`;
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.equal(result.status, 'ready');
+    const approved = JSON.parse(readFileSync(source.approved, 'utf8')) as PublicSnapshot;
+    const approvedAddition = approved.opportunities.find((opportunity) =>
+      opportunity.projectId === addition.projectId);
+    assert.ok(approvedAddition);
+    assert.match(approvedAddition.description, /https:\/\/example\.invalid\/%ZZ/u);
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('does not revalidate or rewrite historical parent provenance values', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const historical = parent.opportunities[0];
+  const fixedText = fixedDiscoveryArtifactContent('shenyanpai-profile');
+  const fixedSha256 = sha256(fixedText);
+  const blockedReason = 'network timeout while reading the fixed discovery source';
+  const [cycle, school, institute] = historical.projectId.split('|');
+  historical.description = [
+    historical.description,
+    'https://gist.github.com/shenyanpai/historical-notice',
+    'https://github.com/shenyanpai',
+    'https://github\uFF3Cx2ecom/shenyanpai/historical-notice',
+    'https://github\\\\x2ecom/shenyanpai/historical-notice',
+    'https://github\\u005cx2ecom/shenyanpai/historical-notice',
+    'https://raw.githubusercontent.com/shenyanpai/historical/main/notice.html',
+    'https://raw%25EF%25BC%25BCx2egithubusercontent%25EF%25BC%25BCx2ecom/shenyanpai/historical/main/notice.html',
+    'https://raw\\\\u005cx2egithubusercontent\\\\u005cx2ecom/shenyanpai/historical/main/notice.html',
+    'https://raw%5Cu005cx2egithubusercontent%5Cu005cx2ecom/shenyanpai/historical/main/notice.html',
+    'https://github%2Ecom/shenyanpai/historical-notice',
+    'https://raw%252Egithubusercontent%252Ecom/shenyanpai/historical/main/notice.html',
+    'https://github%EF%BC%8Ecom/shenyanpai/historical-notice',
+    'https://raw%25EF%25BC%258Egithubusercontent%25EF%25BC%258Ecom/shenyanpai/historical/main/notice.html',
+    fixedText,
+    percentEncodeLeadingAscii(fixedText),
+    percentEncodeLeadingAscii('https://github.com/shenyanpai'),
+  ].join('\n');
+  historical.tags = [
+    ...historical.tags,
+    fixedSha256,
+    fixedSha256.toUpperCase(),
+    fullwidthAscii(fixedSha256.toUpperCase()),
+    percentEncodeLeadingAscii(fixedSha256),
+  ];
+  historical.projectId = `${cycle}|${school}|${institute}|${percentEncodeLeadingAscii('shenyanpai-profile')}`;
+  historical.discoverySources[0].label = percentEncodeLeadingAscii(blockedReason);
+  parent.dataHash = canonicalDataHash(parent);
+  parent.snapshotId = deriveSnapshotId(parent.approvedAt, parent.dataHash);
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const run = additiveRun(parent, parentText, []);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.deepEqual(result, { status: 'no-additions', runId: '20260809-additive-unit-test' });
+    assert.equal(readFileSync(source.approved, 'utf8'), parentText);
+    const decision = JSON.parse(readFileSync(source.decision, 'utf8')) as Record<string, unknown>;
+    assert.equal(decision.status, 'no-additions');
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('leaves historical umbrella parent rows untouched', async (t) => {
+  for (const institute of ['全校', '研究生院']) {
+    await t.test(institute, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const historical = parent.opportunities[0];
+      const [cycle, name, , projectRound] = historical.projectId.split('|');
+      historical.institute = institute;
+      historical.projectId = `${cycle}|${name}|${historical.institute}|${projectRound}`;
+      parent.dataHash = canonicalDataHash(parent);
+      parent.snapshotId = deriveSnapshotId(parent.approvedAt, parent.dataHash);
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const run = additiveRun(parent, parentText, []);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        const result = await approve(source);
+        assert.deepEqual(result, { status: 'no-additions', runId: '20260809-additive-unit-test' });
+        assert.equal(readFileSync(source.approved, 'utf8'), parentText);
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('rejects normalized umbrella, admissions-office, or generic graduate-school institute labels before a decision or public write', async (t) => {
+  const cases = [
+    { name: 'whole-school English label', institute: 'ｗｈｏｌｅ－ｓｃｈｏｏｌ' },
+    { name: 'whole-school Chinese label', institute: '全　校' },
+    { name: 'all-departments label', institute: '全　院　系' },
+    { name: 'each-college label', institute: '各　学院' },
+    { name: 'each-department label', institute: '各 院 系' },
+    { name: 'school-level portal label', institute: '校　级　入　口' },
+    { name: 'university-level portal label', institute: '学 校 级 入 口' },
+    { name: 'admissions-system label', institute: '招　生　系　统' },
+    { name: 'registration-system label', institute: '报 名 系 统' },
+    { name: 'system-level label', institute: '系　统　级' },
+    { name: 'plain graduate-school label', institute: '研究生院' },
+    { name: 'school-named generic graduate-school label', institute: '新增测试大学·研究生院' },
+    { name: 'graduate admissions-office label', institute: '研究生 招生·办公室' },
+    { name: 'admissions-office label', institute: '招 生 办 公 室' },
+    { name: 'graduate admissions-office short label', institute: '研究生招生办' },
+    { name: 'graduate admissions short label', institute: '研招办' },
+    { name: 'admissions-office short label', institute: '招生办' },
+    { name: 'graduate admissions division label', institute: '研究生招生处' },
+    { name: 'graduate admissions division short label', institute: '研招处' },
+    { name: 'admissions division label', institute: '招生处' },
+  ];
+
+  for (const { name, institute } of cases) {
+    await t.test(name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      addition.institute = institute;
+      addition.projectId = `2027|${addition.name}|${addition.institute}|夏令营`;
+      const run = additiveRun(parent, parentText, [addition]);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(
+          source,
+          parentText,
+          () => approve(source),
+          /addition .* institute must name a concrete college-level unit/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('rejects format-control and typographic-dash umbrella institute labels before a decision or public write', async (t) => {
+  const cases: Array<{ name: string; institute: string; expected: RegExp }> = [
+    {
+      name: 'zero-width space within admissions-system label',
+      institute: '招生\u200b系统',
+      expected: /institute must not contain Unicode format controls/i,
+    },
+    {
+      name: 'zero-width space within whole-school label',
+      institute: 'whole\u200b-school',
+      expected: /institute must not contain Unicode format controls/i,
+    },
+    {
+      name: 'en dash within whole-school label',
+      institute: 'whole–school',
+      expected: /addition .* institute must name a concrete college-level unit/i,
+    },
+    {
+      name: 'hyphen bullet within whole-school label',
+      institute: 'whole⁃school',
+      expected: /addition .* institute must name a concrete college-level unit/i,
+    },
+    {
+      name: 'double oblique hyphen within whole-school label',
+      institute: 'whole⸗school',
+      expected: /addition .* institute must name a concrete college-level unit/i,
+    },
+    {
+      name: 'symbol within whole-school label',
+      institute: 'whole★school',
+      expected: /addition .* institute must name a concrete college-level unit/i,
+    },
+    {
+      name: 'combining mark within whole-school label',
+      institute: 'whole\u20ddschool',
+      expected: /addition .* institute must name a concrete college-level unit/i,
+    },
+  ];
+
+  for (const { name, institute, expected } of cases) {
+    await t.test(name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      addition.institute = institute;
+      addition.projectId = `2027|${addition.name}|${addition.institute}|夏令营`;
+      const run = additiveRun(parent, parentText, [addition]);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(source, parentText, () => approve(source), expected);
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('rejects additive projectIds that are malformed or disagree with public identity fields before a decision or public write', async (t) => {
+  const cases: Array<{
+    name: string;
+    projectId: (addition: PublicSnapshot['opportunities'][number]) => string;
+    expected: RegExp;
+  }> = [
+    {
+      name: 'missing project-or-round segment',
+      projectId: (addition) => `2027|${addition.name}|${addition.institute}`,
+      expected: /projectId: expected four non-empty parts/i,
+    },
+    {
+      name: 'extra projectId segment',
+      projectId: (addition) => `2027|${addition.name}|${addition.institute}|夏令营|第一轮`,
+      expected: /projectId: expected four non-empty parts/i,
+    },
+    {
+      name: 'school segment mismatches the public name',
+      projectId: (addition) => `2027|另一所大学|${addition.institute}|夏令营`,
+      expected: /addition .* projectId name segment must exactly match opportunity name/i,
+    },
+    {
+      name: 'institute segment mismatches the public institute',
+      projectId: (addition) => `2027|${addition.name}|软件学院|夏令营`,
+      expected: /addition .* projectId institute segment must exactly match opportunity institute/i,
+    },
+  ];
+
+  for (const { name, projectId, expected } of cases) {
+    await t.test(name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      addition.projectId = projectId(addition);
+      const run = additiveRun(parent, parentText, [addition]);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(source, parentText, () => approve(source), expected);
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('accepts a concrete college addition with harmless ordinary checked blocked text', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  addition.description = `${addition.project}\nchecked blocked`;
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.equal(result.status, 'ready');
+    const approved = JSON.parse(readFileSync(source.approved, 'utf8')) as PublicSnapshot;
+    const approvedAddition = approved.opportunities.find((opportunity) =>
+      opportunity.projectId === addition.projectId);
+    assert.equal(approvedAddition?.description, addition.description);
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('accepts a qualified independent graduate-school addition without rewriting its identity', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  addition.institute = '新增测试大学深圳国际研究生院';
+  addition.projectId = `2027|${addition.name}|${addition.institute}|夏令营`;
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.equal(result.status, 'ready');
+    const approved = JSON.parse(readFileSync(source.approved, 'utf8')) as PublicSnapshot;
+    const approvedAddition = approved.opportunities.find((opportunity) =>
+      opportunity.projectId === addition.projectId);
+    assert.equal(approvedAddition?.institute, addition.institute);
+    assert.equal(approvedAddition?.projectId, addition.projectId);
   } finally {
     rmSync(source.root, { recursive: true, force: true });
   }
@@ -618,6 +2738,10 @@ test('adds only field-evidenced new rows while retaining an elapsed parent row b
   writeFileSync(source.approved, parentText, 'utf8');
   const addition = additionFor(parent);
   const run = additiveRun(parent, parentText, [addition]);
+  assert.equal(
+    new Set(run.fixedDiscoveryChecks.map((check) => check.artifactSha256)).size,
+    fixedDiscoveryCheckIds.length,
+  );
   materializeRunArtifacts(source, run);
   writeJson(source.run, run);
 
@@ -657,9 +2781,9 @@ test('uses Unicode code-point ordering for equal-priority additive rows', async 
   const parentText = writeJson(source.parent, parent);
   writeFileSync(source.approved, parentText, 'utf8');
   const northern = additionFor(parent);
-  northern.projectId = '2027|北|计算机学院|夏令营-A';
+  northern.projectId = '2027|新增测试大学|计算机学院|北夏令营-A';
   const upper = additionFor(parent);
-  upper.projectId = '2027|上|计算机学院|夏令营-B';
+  upper.projectId = '2027|新增测试大学|计算机学院|上夏令营-B';
   const run = additiveRun(parent, parentText, [northern, upper]);
   materializeRunArtifacts(source, run);
   writeJson(source.run, run);
@@ -951,6 +3075,7 @@ test('requires a plausible institutional primary source to identify the same sch
   const fieldText = artifactTextFor([addition]);
   const fieldSha256 = sha256(fieldText);
   const fieldUrl = 'https://child.example.edu.cn/attachment';
+  const fixedArtifacts = fixedDiscoveryArtifacts(run);
   run.artifacts = [
     {
       path: 'artifacts/primary.html',
@@ -968,6 +3093,7 @@ test('requires a plausible institutional primary source to identify the same sch
       fetchedAt: runScannedAt,
       extractedTextArtifactSha256: null,
     },
+    ...fixedArtifacts,
   ];
   for (const scope of run.scopes) scope.artifactSha256 = primarySha256;
   run.additions[0].evidence.artifactSha256 = primarySha256;
@@ -1041,6 +3167,7 @@ test('accepts a PDF quote only through its declared, file-backed extracted text 
   const extractedText = artifactTextFor([addition]);
   const pdfSha256 = sha256(pdfBytes);
   const extractedTextSha256 = sha256(extractedText);
+  const fixedArtifacts = fixedDiscoveryArtifacts(run);
   run.artifacts = [
     {
       path: 'artifacts/official.pdf',
@@ -1058,8 +3185,9 @@ test('accepts a PDF quote only through its declared, file-backed extracted text 
       fetchedAt: runScannedAt,
       extractedTextArtifactSha256: null,
     },
+    ...fixedArtifacts,
   ];
-  run.scopes.find((scope) => scope.scopeId === 'scope-root')!.artifactSha256 = pdfSha256;
+  for (const scope of run.scopes) scope.artifactSha256 = pdfSha256;
   run.additions[0].evidence.artifactSha256 = pdfSha256;
   for (const fieldEvidence of run.additions[0].evidence.fieldEvidence) {
     fieldEvidence.artifactSha256 = pdfSha256;
@@ -1096,6 +3224,7 @@ test('rejects a binary primary artifact that is not explicitly bound to the text
   const pdfSha256 = sha256(pdfBytes);
   const extractedText = artifactTextFor([addition]);
   const extractedTextSha256 = sha256(extractedText);
+  const fixedArtifacts = fixedDiscoveryArtifacts(run);
   run.artifacts = [
     {
       path: 'artifacts/official.pdf',
@@ -1113,8 +3242,9 @@ test('rejects a binary primary artifact that is not explicitly bound to the text
       fetchedAt: runScannedAt,
       extractedTextArtifactSha256: null,
     },
+    ...fixedArtifacts,
   ];
-  run.scopes.find((scope) => scope.scopeId === 'scope-root')!.artifactSha256 = pdfSha256;
+  for (const scope of run.scopes) scope.artifactSha256 = pdfSha256;
   run.additions[0].evidence.artifactSha256 = pdfSha256;
   for (const fieldEvidence of run.additions[0].evidence.fieldEvidence) {
     fieldEvidence.artifactSha256 = extractedTextSha256;
@@ -1212,12 +3342,8 @@ test('daily additive approval has a dedicated narrow CLI instead of the legacy r
   const parent = sealedParent();
   const parentText = writeJson(source.parent, parent);
   writeFileSync(source.approved, parentText, 'utf8');
-  const run = additiveRun(parent, parentText, []);
   const currentRunTime = new Date().toISOString();
-  run.startedAt = currentRunTime;
-  run.finishedAt = currentRunTime;
-  for (const scope of run.scopes) scope.checkedAt = currentRunTime;
-  run.artifacts[0].fetchedAt = currentRunTime;
+  const run = additiveRun(parent, parentText, [], currentRunTime);
   materializeRunArtifacts(source, run);
   writeJson(source.run, run);
 
