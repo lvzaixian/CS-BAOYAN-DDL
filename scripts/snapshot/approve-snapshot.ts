@@ -1888,10 +1888,7 @@ export function approveCandidate(
   }
 
   if (current !== null) {
-    const currentReferenceTime = isValidIsoTimestamp(current.approvedAt)
-      ? Date.parse(current.approvedAt)
-      : 0;
-    const currentErrors = validateApprovedSnapshot(current, currentReferenceTime);
+    const currentErrors = validateApprovedSnapshotStructure(current);
     if (currentErrors.length > 0) {
       throw new Error(`Current snapshot validation failed:\n${currentErrors.join('\n')}`);
     }

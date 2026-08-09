@@ -198,6 +198,76 @@
       "cycle": "2027",
       "reason": "identity review：同一官方夏令营项目的届次与标题差异",
       "introducedRunId": "20260729-202750-full-944ba307"
+    },
+    {
+      "sourceProjectId": "2027|中国科学院云南天文台|七彩云南天文之旅|2026",
+      "canonicalProjectId": "2027|中国科学院云南天文台|中国科学院云南天文台|2026七彩云南天文之旅夏令营",
+      "cycle": "2027",
+      "reason": "同一官方夏令营的历史非单位标签，改为独立培养单位全称。",
+      "introducedRunId": "20260810-022253-college-history-maintenance"
+    },
+    {
+      "sourceProjectId": "2027|中国科学院云南天文台|全台（电子信息及计算机相邻专业）|2026七彩云南天文之旅夏令营",
+      "canonicalProjectId": "2027|中国科学院云南天文台|中国科学院云南天文台|2026七彩云南天文之旅夏令营",
+      "cycle": "2027",
+      "reason": "同一官方夏令营的全台伞形标签，改为独立培养单位全称。",
+      "introducedRunId": "20260810-022253-college-history-maintenance"
+    },
+    {
+      "sourceProjectId": "2027|中国科学院自动化研究所|全所|第一批推免面试",
+      "canonicalProjectId": "2027|中国科学院自动化研究所|中国科学院自动化研究所|2026年推免面试（第一批）",
+      "cycle": "2027",
+      "reason": "同一官方推免面试的全所伞形标签，改为独立培养单位全称。",
+      "introducedRunId": "20260810-022253-college-history-maintenance"
+    },
+    {
+      "sourceProjectId": "2027|中国科学院自动化研究所|推免面试第一批|2026",
+      "canonicalProjectId": "2027|中国科学院自动化研究所|中国科学院自动化研究所|2026年推免面试（第一批）",
+      "cycle": "2027",
+      "reason": "同一官方推免面试的活动名标签，改为独立培养单位全称。",
+      "introducedRunId": "20260810-022253-college-history-maintenance"
+    },
+    {
+      "sourceProjectId": "2027|中国科学院昆明动物研究所|全所（接受计算机相关专业）|2026大学生夏令营",
+      "canonicalProjectId": "2027|中国科学院昆明动物研究所|中国科学院昆明动物研究所|2026归巢卓越与优秀大学生夏令营",
+      "cycle": "2027",
+      "reason": "同一官方公告的全所伞形标签；公告将归巢卓越与优秀大学生夏令营作为两批次统一发布。",
+      "introducedRunId": "20260810-022253-college-history-maintenance"
+    },
+    {
+      "sourceProjectId": "2027|中国科学院昆明动物研究所|研究生教育处|2026归巢卓越与优秀大学生夏令营",
+      "canonicalProjectId": "2027|中国科学院昆明动物研究所|中国科学院昆明动物研究所|2026归巢卓越与优秀大学生夏令营",
+      "cycle": "2027",
+      "reason": "同一官方公告的招生管理部门标签，改为独立培养单位全称。",
+      "introducedRunId": "20260810-022253-college-history-maintenance"
+    },
+    {
+      "sourceProjectId": "2027|中国科学院新疆理化技术研究所|研究生教育|2026优秀大学生夏令营",
+      "canonicalProjectId": "2027|中国科学院新疆理化技术研究所|中国科学院新疆理化技术研究所|2026科创丝路大美新疆夏令营",
+      "cycle": "2027",
+      "reason": "同一官方公告的招生管理部门标签；正式活动名称为科创丝路·大美新疆大学生夏令营。",
+      "introducedRunId": "20260810-022253-college-history-maintenance"
+    },
+    {
+      "sourceProjectId": "2027|中国科学院新疆理化技术研究所|研究生部|2026科创丝路大美新疆夏令营",
+      "canonicalProjectId": "2027|中国科学院新疆理化技术研究所|中国科学院新疆理化技术研究所|2026科创丝路大美新疆夏令营",
+      "cycle": "2027",
+      "reason": "同一官方公告的招生管理部门标签，改为独立培养单位全称。",
+      "introducedRunId": "20260810-022253-college-history-maintenance"
+    },
+    {
+      "sourceProjectId": "2027|深圳河套学院|招生委员会|2027级直博夏令营",
+      "canonicalProjectId": "2027|深圳河套学院|深圳河套学院|2027级直博夏令营",
+      "cycle": "2027",
+      "reason": "同一官方直博夏令营的招生委员会标签，改为学院主体全称。",
+      "introducedRunId": "20260810-022253-college-history-maintenance"
+    },
+    {
+      "sourceProjectId": "2027|中国农业科学院深圳农业基因组研究所|研究生院|2026年优秀大学生开放日",
+      "canonicalProjectId": "2027|中国农业科学院|深圳农业基因组研究所|2026优秀大学生学术活动开放日",
+      "cycle": "2027",
+      "reason": "同一官方开放日的招生管理部门标签，合并至已存在的规范招生单位项目。",
+      "introducedRunId": "20260810-022253-college-history-maintenance"
     }
   ],
   "tombstones": [

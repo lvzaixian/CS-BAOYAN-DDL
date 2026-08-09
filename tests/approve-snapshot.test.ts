@@ -187,6 +187,22 @@ test('approveCandidate seals lineage and rejects invalid chronology or current h
   );
 });
 
+test('approveCandidate accepts a structurally valid historic parent with elapsed open status', () => {
+  const staleParent = approveCandidate(longLivedCandidate(), null, approvedAt);
+  const staleRow = staleParent.opportunities[0];
+  staleRow.deadline = '2026-07-15T08:00:00+08:00';
+  staleRow.deadlineOriginal = '2026年7月15日08:00';
+  staleRow.deadlineEpochMs = Date.parse(staleRow.deadline);
+  staleParent.dataHash = canonicalDataHash(staleParent);
+  staleParent.snapshotId = `${new Date(staleParent.approvedAt).toISOString()}-${staleParent.dataHash.slice(0, 12)}`;
+
+  assert.match(
+    validateSnapshot(staleParent, Date.parse(nextApprovedAt)).join('\n'),
+    /confirmed-open deadline must be in the future/i,
+  );
+  assert.doesNotThrow(() => approveCandidate(longLivedCandidate(), staleParent, nextApprovedAt));
+});
+
 test('validateApprovedSnapshot rejects publication and lineage tampering', () => {
   const approved = approveCandidate(candidate(), null, approvedAt);
   const tampered = structuredClone(approved);
