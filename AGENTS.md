@@ -47,7 +47,7 @@ pnpm run snapshot:approve-additive -- \
 - 每个新增项保留完全一致的官方发现 URL 和 primary artifact；`name`、`institute`、`project`、`eventType`、`website`、状态、截止、活动安排、材料、推荐和后勤字段均有可追溯的字段证据，字段值与公开数据逐项一致；
 - 每个字段证据都指向同轮普通 artifact，记录来源、定位、方法、原文和核验时间；artifact 的 `path` 必须相对本轮目录、逐段无符号链接，批准器会重读原始字节并复算 SHA-256。HTML/text 引文必须实际出现且包含该字段的来源值；PDF/Office 引文只能借由同 URL、同轮且哈希已核验的 `text/plain` 提取 artifact 显式绑定。ISO deadline 以 `deadlineOriginal` 原文支撑，website 由 exact source URL 绑定，verificationStatus 由项目原文与 deadline 证据共同派生。
 
-新增项为零时，批准器只在私有目录写 `release-decision.json`，返回 `no-additions`，不会改写 `current.json`、创建公开提交或触发部署。非空追加会先写私有 `eligible` 决定，只有公开原子写入成功后才把决定更新为 `ready`。任何父项减少/改写、重复身份、证据缺失、父本漂移或过期私有运行都会失败关闭；相关线索留在私有重试/隔离队列，不影响其它后续运行。
+新增项为零时，批准器只在私有目录写 `release-decision.json`，返回 `no-additions`，不会改写 `current.json`、创建公开提交或触发部署。非空追加会先写私有 `eligible` 决定，只有公开原子写入成功后才把决定更新为 `ready`。候选构造时，一条证据不足、冲突或身份不明的线索可留在私有重试/隔离队列，但不得进入 `additions`；一旦向批准器提供的任一 addition 无效，批准器必须失败关闭，不写任何 `release-decision.json`，也不改写 `current.json`。任何父项减少/改写、重复身份、证据缺失、父本漂移或过期私有运行同样失败关闭。
 
 `snapshot:validate` 验证已保存快照的 schema 和不可变完整性，不会用“今天已过截止”否定父快照中的历史状态。运行时的已过期分类由前端根据保存的截止时间派生；新追加项仍在本轮结束时接受严格日期校验。
 
@@ -59,7 +59,7 @@ pnpm run snapshot:approve-additive -- \
 
 ### 学院级条目拆分
 
-日常批准器的学院级机器门禁只遍历本轮 `additions`，在产生 `release-decision` 或改写 `current.json` 前运行。每条新增 `projectId` 必须恰有四个非空段 `招生周期|name|institute|项目/轮次`，其中 `name` 与 `institute` 段必须分别逐字匹配公开 `name` 与 `institute`。`institute` 含任意 Unicode `Cf` 格式控制字符会被拒绝；其余明确标签比较只使用检查副本：先作 NFKD、删除 Unicode `White_Space`、`Punctuation`、`Symbol` 与 `Mark`，再转小写。该 skeleton 含 `wholeschool`（含 `whole-school` 的符号变体）、全校、全院系、各学院/各院系、校级（包括学校级）、招生系统/报名系统/系统级、研究生招生办公室或招生办公室时会被拒绝。若 skeleton 恰为研究生院，或恰为 `${skeleton(name)}研究生院`，同样会被视为未限定的校级研究生院而拒绝；带额外单位限定词的候选（例如 `新增测试大学深圳国际研究生院`）不会因这一项本身被拒绝，但仍须满足完整官方证据与最小适用单位要求。这个检查副本不会规范化、改写或替代公开字段及其逐项精确字段证据。
+日常批准器的学院级机器门禁只遍历本轮 `additions`，在产生 `release-decision` 或改写 `current.json` 前运行。每条新增 `projectId` 必须恰有四个非空段 `招生周期|name|institute|项目/轮次`，其中 `name` 与 `institute` 段必须分别逐字匹配公开 `name` 与 `institute`。`institute` 含任意 Unicode `Cf` 格式控制字符会被拒绝；其余明确标签比较只使用检查副本：先作 NFKD、删除 Unicode `White_Space`、`Punctuation`、`Symbol` 与 `Mark`，再转小写。该 skeleton 含 `wholeschool`（含 `whole-school` 的符号变体）、全校、全院系、各学院/各院系、校级（包括学校级）、招生系统/报名系统/系统级，以及研究生招生办公室、研究生招生办、研究生招生处、研招办、研招处、招生办公室、招生办或招生处时会被拒绝。若 skeleton 恰为研究生院，或恰为 `${skeleton(name)}研究生院`，同样会被视为未限定的校级研究生院而拒绝；带额外单位限定词的候选（例如 `新增测试大学深圳国际研究生院`）不会因这一项本身被拒绝，但仍须满足完整官方证据与最小适用单位要求。这个检查副本不会规范化、改写或替代公开字段及其逐项精确字段证据。
 
 这是一个 additions-only 的明确标签与身份底线，不是能够从不透明官方来源推断下级可投单位、判定所有名称等价关系或证明 fan-out 完整性的语义分类器。扫描器仍须递归发现公告、报名系统、附件与子页中明确列出的单位；同一招生单位在报名系统、PDF 与学院页面出现名称变体时，规范 `institute` / `projectId` 单位名称以当年可读且最具体的官方报名来源为准；仅当官方证据可证明各变体确为同一单位时才视为同一单位，无法证明等价关系时保留在私有身份重试/隔离队列，不追加第二条公开行。不得臆造别名，也不得用此规则改写历史父项。当同一官方通知、PDF 或报名系统明确列出多个范围内且符合资格的单位时，递归展开，按单位各建一条独立去重的新增项；每一项都必须保留同一 `runId` 的官方证据，且证据明确支持该单位的申请资格。不得臆造或复制学院名单。无法识别具体适格单位时，线索只保留在私有重试队列，不发布任何全校/全院系通用行。学院、系、研究院、国际学院、联合培养单位或其他官方招生单位等任何候选 `institute`，仅当其本身是官方明确列出的最小适用招生单位、且未列出更下级的可申请单位时才可使用；独立研究生院或独立研究院也依同一标准。
 

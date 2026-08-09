@@ -4,7 +4,7 @@
 
 **Goal:** Require every future public admissions addition to represent one official, independently applicable college-level recruiting unit, and keep the bounded additions-only approver guard aligned with that policy.
 
-**Architecture:** `AGENTS.md` defines the non-negotiable daily rule and source/deep-scan behavior; `docs/operations/data-refresh.md` records the daily run/input contract; the design document records the implemented boundary and its limits. `7593f2a` added the additions-only identity/umbrella-label gate, `d88e3f8` hardened format-control handling, and `a2a3182` adopted an inspection-only punctuation/symbol skeleton plus office/unqualified-graduate-school checks. The policy stack and code preserve immutable historical parent/replay inputs; the gate is not a substitute for scanner fan-out or a semantic proof of complete unit coverage.
+**Architecture:** `AGENTS.md` defines the non-negotiable daily rule and source/deep-scan behavior; `docs/operations/data-refresh.md` records the daily run/input contract; the design document records the implemented boundary and its limits. `7593f2a` added the additions-only identity/umbrella-label gate, `d88e3f8` hardened format-control handling, and `a2a3182` adopted an inspection-only punctuation/symbol skeleton plus office/unqualified-graduate-school checks. The policy stack and code preserve immutable historical parent/replay inputs; the gate is not a substitute for scanner fan-out or a semantic proof of complete unit coverage. Candidate construction, rather than the approver, quarantines individual bad clues: any invalid supplied addition makes approval fail closed without a decision or public snapshot write.
 
 **Tech Stack:** Markdown policy documents; TypeScript additive approver; focused Node tests; public/diff validation.
 
@@ -101,11 +101,11 @@
 
 - [x] **Step 3: Add a bounded office/graduate-school semantic guard**
 
-  In `a2a3182`, compare an inspection-only `institute` skeleton (NFKD, remove Unicode `White_Space`/`Punctuation`/`Symbol`/`Mark`, lowercase). Reject configured umbrella/system and office labels plus only an exact unqualified graduate-school skeleton (`研究生院` or `${skeleton(name)}研究生院`); preserve qualified values such as `新增测试大学深圳国际研究生院` for normal evidence and identity validation. Public fields remain unmodified.
+  In `a2a3182`, compare an inspection-only `institute` skeleton (NFKD, remove Unicode `White_Space`/`Punctuation`/`Symbol`/`Mark`, lowercase). Reject configured umbrella/system labels and all office labels (`研究生招生办公室`、`研究生招生办`、`研究生招生处`、`研招办`、`研招处`、`招生办公室`、`招生办`、`招生处`) plus only an exact unqualified graduate-school skeleton (`研究生院` or `${skeleton(name)}研究生院`); preserve qualified values such as `新增测试大学深圳国际研究生院` for normal evidence and identity validation. Public fields remain unmodified.
 
 - [x] **Step 4: Add focused regression coverage**
 
-  Add cases for normalized umbrella/system/office labels, malformed or mismatched `projectId`, preservation of historical umbrella and graduate-school parents, a valid concrete-college addition, a qualified graduate-school addition, Unicode format controls, and punctuation/symbol/combining-mark variants. The completed milestone is focused code-and-test coverage, not a declaration that the full suite or release path has completed.
+  Add cases for normalized umbrella/system labels; both long office labels and all six short aliases; malformed or mismatched `projectId`; preservation of historical umbrella and graduate-school parents; a valid concrete-college addition; a qualified graduate-school addition; Unicode format controls; punctuation/symbol/combining-mark variants; and failure-closed rejection of any invalid supplied addition before either decision or public write. The completed milestone is focused code-and-test coverage, not a declaration that the full suite or release path has completed.
 
 ### Follow-on deliberately not claimed by this milestone
 
