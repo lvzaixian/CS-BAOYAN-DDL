@@ -990,8 +990,8 @@ const additiveGitHubDiscoveryTextPattern = /github\.com|raw\.githubusercontent\.
 const additiveProvenanceDecodeDepth = 4;
 const additivePercentByteRunPattern = /(?:%[0-9A-Fa-f]{2})+/gu;
 const additiveIdnaEquivalentDotPattern = /[\u3002\uFF0E\uFF61]/gu;
-const additiveUnicodeEscapePattern = /\\{1,2}u(?:([0-9A-Fa-f]{4})|\{([0-9A-Fa-f]{1,6})\})/gu;
-const additiveJavaScriptHexEscapePattern = /\\{1,2}x([0-9A-Fa-f]{2})/gu;
+const additiveUnicodeEscapePattern = /(\\+)u(?:([0-9A-Fa-f]{4})|\{([0-9A-Fa-f]{1,6})\})/gu;
+const additiveJavaScriptHexEscapePattern = /(\\+)x([0-9A-Fa-f]{2})/gu;
 
 function additiveFixedDiscoveryPrivateValues(
   run: AdditiveApprovalRun,
@@ -1031,17 +1031,35 @@ function decodeAdditivePercentByteRuns(value: string): string {
   });
 }
 
+function decodeAdditiveSerializedEscape(
+  escape: string,
+  slashRun: string,
+  decodedValue: string,
+): string {
+  if (slashRun.length <= 2) return decodedValue;
+  // A serialized public string may contain an additional escaped-backslash
+  // layer before a valid JavaScript escape. Consume exactly one such layer per
+  // bounded inspection round so it cannot evade the depth limit.
+  return `${slashRun.slice(0, -2)}${escape.slice(slashRun.length)}`;
+}
+
 function decodeAdditiveUnicodeEscapes(value: string): string {
-  return value.replace(additiveUnicodeEscapePattern, (escape, fixedWidth, braced) => {
+  return value.replace(additiveUnicodeEscapePattern, (escape, slashRun, fixedWidth, braced) => {
     const codePoint = Number.parseInt(fixedWidth ?? braced, 16);
-    return codePoint <= 0x10ffff ? String.fromCodePoint(codePoint) : escape;
+    return codePoint <= 0x10ffff
+      ? decodeAdditiveSerializedEscape(escape, slashRun, String.fromCodePoint(codePoint))
+      : escape;
   });
 }
 
 function decodeAdditiveSerializedJavaScriptEscapesOnce(value: string): string {
   return decodeAdditiveUnicodeEscapes(value.replace(
     additiveJavaScriptHexEscapePattern,
-    (_escape, hex) => String.fromCodePoint(Number.parseInt(hex, 16)),
+    (escape, slashRun, hex) => decodeAdditiveSerializedEscape(
+      escape,
+      slashRun,
+      String.fromCodePoint(Number.parseInt(hex, 16)),
+    ),
   ));
 }
 
