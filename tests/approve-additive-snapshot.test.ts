@@ -1060,6 +1060,131 @@ test('rejects every GitHub host from additive other-discovery sources before a d
   }
 });
 
+test('rejects fixed discovery provenance from every serialized additive public field', async (t) => {
+  const fields: Array<{
+    name: string;
+    expose: (addition: PublicSnapshot['opportunities'][number], value: string) => void;
+  }> = [
+    {
+      name: 'description',
+      expose: (addition, value) => { addition.description = `${addition.description}\n${value}`; },
+    },
+    {
+      name: 'tags',
+      expose: (addition, value) => { addition.tags = [...addition.tags, value]; },
+    },
+    {
+      name: 'projectId',
+      expose: (addition, value) => {
+        addition.projectId = `2027|新增测试大学|计算机学院|${value}`;
+      },
+    },
+    {
+      name: 'discoverySources label',
+      expose: (addition, value) => { addition.discoverySources[0].label = value; },
+    },
+  ];
+  const provenanceValues: Array<{
+    name: string;
+    prepare: (run: AdditiveApprovalRun) => string;
+  }> = [
+    {
+      name: 'GitHub subdomain URL',
+      prepare: () => 'https://gist.github.com/shenyanpai/notice',
+    },
+    {
+      name: 'raw GitHub URL',
+      prepare: () => 'https://raw.githubusercontent.com/shenyanpai/notice/main/README.md',
+    },
+    {
+      name: 'fixed check ID',
+      prepare: (run) => fixedDiscoveryCheck(run, 'shenyanpai-profile').checkId,
+    },
+    {
+      name: 'fixed canonical URL',
+      prepare: (run) => fixedDiscoveryCheck(run, 'shenyanpai-profile').url,
+    },
+    {
+      name: 'fixed artifact SHA-256',
+      prepare: (run) => fixedDiscoveryCheck(run, 'shenyanpai-profile').artifactSha256!,
+    },
+    {
+      name: 'fixed artifact text',
+      prepare: () => fixedDiscoveryArtifactContent('shenyanpai-profile'),
+    },
+    {
+      name: 'blocked fixed-check reason',
+      prepare: (run) => {
+        blockFixedDiscoveryCheck(run, 'shenyanpai-pre-recommend');
+        return fixedDiscoveryCheck(run, 'shenyanpai-pre-recommend').reason!;
+      },
+    },
+  ];
+
+  for (const field of fields) {
+    for (const provenance of provenanceValues) {
+      await t.test(`${field.name}: ${provenance.name}`, async () => {
+        const source = paths();
+        const parent = sealedParent();
+        const parentText = writeJson(source.parent, parent);
+        writeFileSync(source.approved, parentText, 'utf8');
+        const addition = additionFor(parent);
+        const run = additiveRun(parent, parentText, [addition]);
+        field.expose(addition, provenance.prepare(run));
+        materializeRunArtifacts(source, run);
+        writeJson(source.run, run);
+
+        try {
+          await assertRejectedBeforeApproval(
+            source,
+            parentText,
+            () => approve(source),
+            /addition .* must not expose fixed discovery provenance/i,
+          );
+        } finally {
+          rmSync(source.root, { recursive: true, force: true });
+        }
+      });
+    }
+  }
+});
+
+test('does not revalidate or rewrite historical parent provenance values', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const historical = parent.opportunities[0];
+  const fixedText = fixedDiscoveryArtifactContent('shenyanpai-profile');
+  const fixedSha256 = sha256(fixedText);
+  const [cycle, school, institute] = historical.projectId.split('|');
+  historical.description = [
+    historical.description,
+    'https://gist.github.com/shenyanpai/historical-notice',
+    'https://github.com/shenyanpai',
+    'https://raw.githubusercontent.com/shenyanpai/historical/main/notice.html',
+    fixedText,
+  ].join('\n');
+  historical.tags = [...historical.tags, fixedSha256];
+  historical.projectId = `${cycle}|${school}|${institute}|shenyanpai-profile`;
+  historical.discoverySources[0].label = 'network timeout while reading the fixed discovery source';
+  parent.dataHash = canonicalDataHash(parent);
+  parent.snapshotId = deriveSnapshotId(parent.approvedAt, parent.dataHash);
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const run = additiveRun(parent, parentText, []);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.deepEqual(result, { status: 'no-additions', runId: '20260809-additive-unit-test' });
+    assert.equal(readFileSync(source.approved, 'utf8'), parentText);
+    const decision = JSON.parse(readFileSync(source.decision, 'utf8')) as Record<string, unknown>;
+    assert.equal(decision.status, 'no-additions');
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
 test('rejects a decision path that could overwrite an additive input', async () => {
   const source = paths();
   const parent = sealedParent();

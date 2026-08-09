@@ -986,6 +986,52 @@ function assertAdditiveFixedDiscoveryChecks(
   }
 }
 
+const additiveGitHubDiscoveryTextPattern = /github\.com|raw\.githubusercontent\.com/iu;
+
+function additiveFixedDiscoveryPrivateValues(
+  run: AdditiveApprovalRun,
+  artifactMaterials: ReadonlyMap<string, AdditiveArtifactMaterial>,
+): ReadonlySet<string> {
+  const values = new Set<string>();
+  for (const check of run.fixedDiscoveryChecks) {
+    values.add(check.checkId);
+    values.add(expectedAdditiveFixedDiscoveryUrl(check.checkId, run.finishedAt));
+    if (check.artifactSha256 !== null) {
+      values.add(check.artifactSha256);
+      const material = artifactMaterials.get(check.artifactSha256);
+      if (material === undefined || material.text === null) {
+        throw new Error(
+          `fixed discovery check ${quoted(check.checkId)} must bind a readable UTF-8 text artifact`,
+        );
+      }
+      // Empty text has no bytes to disclose; matching it would make every serialized addition fail.
+      if (material.text !== '') values.add(material.text);
+    }
+    if (check.reason !== null) values.add(check.reason);
+  }
+  return values;
+}
+
+function serializedAdditiveString(value: string): string {
+  return JSON.stringify(value).slice(1, -1);
+}
+
+function assertAdditivePublicProvenance(
+  opportunity: PublicOpportunity,
+  fixedDiscoveryPrivateValues: ReadonlySet<string>,
+): void {
+  const serializedOpportunity = JSON.stringify(opportunity);
+  if (
+    additiveGitHubDiscoveryTextPattern.test(serializedOpportunity)
+    || [...fixedDiscoveryPrivateValues].some((value) =>
+      serializedOpportunity.includes(serializedAdditiveString(value)))
+  ) {
+    throw new Error(
+      `addition ${quoted(opportunity.projectId)} must not expose fixed discovery provenance`,
+    );
+  }
+}
+
 function additiveRotationDateSlot(rotationDate: string): number {
   const [yearText, monthText, dayText] = rotationDate.split('-');
   const epochDay = Math.floor(
@@ -2178,6 +2224,7 @@ export async function approveAdditiveSnapshotFile(
   await assertAdditiveDecisionDoesNotCollideWithArtifacts(decisionPath, runDirectory, run);
   const artifactMaterials = await readAndVerifyAdditiveArtifacts(runPath, run);
   assertAdditiveFixedDiscoveryChecks(run, artifactMaterials);
+  const fixedDiscoveryPrivateValues = additiveFixedDiscoveryPrivateValues(run, artifactMaterials);
   const finishedAtMs = Date.parse(run.finishedAt);
   if (finishedAtMs > nowMs) throw new Error('additive discovery run finishedAt is in the future');
   if (nowMs - finishedAtMs > additiveRunMaximumAgeMs) {
@@ -2245,6 +2292,9 @@ export async function approveAdditiveSnapshotFile(
   }
   for (const { opportunity, evidence } of run.additions) {
     assertAdditiveEvidence(run, opportunity, evidence, artifactMaterials);
+  }
+  for (const addition of additions) {
+    assertAdditivePublicProvenance(addition, fixedDiscoveryPrivateValues);
   }
 
   const candidate = buildAdditiveCandidate(parent, additions, run.finishedAt);
