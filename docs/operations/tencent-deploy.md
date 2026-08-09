@@ -4,7 +4,7 @@
 
 本仓库只提供部署工具，不代表腾讯云已配置完成。本次实现没有连接腾讯云、写入 GitHub Secrets、执行 bootstrap，也没有修改防火墙、`sshd`、DNS 或 TLS。
 
-仓库保留标准 HTTP 模板，并提供两份版本化的宝塔模板：`cs-baoyan-ddl-bt-http.conf` 只用于受控 HTTP 验收，`cs-baoyan-ddl-bt-tls.conf` 用于域名与证书路径获批后的最终 HTTPS 配置。TLS 与 public launch 仍是生产 stop gate（停止门）：完成域名、备案、证书路径和 TLS 终止方案验收前，production required reviewer 不应批准真实上线；模板存在不代表已经授权修改真实主机、DNS 或证书资产。
+仓库保留标准 HTTP 模板，并提供两份版本化的宝塔模板：`cs-baoyan-ddl-bt-http.conf` 只用于受控 HTTP 验收，`cs-baoyan-ddl-bt-tls.conf` 用于域名与证书路径就绪后的最终 HTTPS 配置。TLS 与 public launch 仍是一次性生产就绪门槛：在域名、备案、证书路径和 TLS 终止方案完成验证前，不得触发真实上线；模板存在不代表已经授权修改真实主机、DNS 或证书资产。日常数据发布不以人工 Environment reviewer 作为该门槛。
 
 ## 一次性服务器准备
 
@@ -41,7 +41,7 @@
    restrict,no-port-forwarding,no-agent-forwarding,no-X11-forwarding,no-pty ssh-ed25519 <PUBLIC_KEY> github-actions-cs-baoyan-ddl
    ```
 
-   工作流需要在限定目录内执行 `mkdir`、部署脚本和清理 staging，因此这里不配置一个会阻断这些命令的任意 forced command。该专用账号仍有通用命令能力；`restrict`、禁止转发/PTY 和无 sudo 只能缩小影响面，不能把账号视为只能运行单一部署命令。安全边界还依赖受保护 main、production approval、最小目录权限、脚本路径校验和服务器侧 `flock`。
+   工作流需要在限定目录内执行 `mkdir`、部署脚本和清理 staging，因此这里不配置一个会阻断这些命令的任意 forced command。该专用账号仍有通用命令能力；`restrict`、禁止转发/PTY 和无 sudo 只能缩小影响面，不能把账号视为只能运行单一部署命令。日常发布的可靠性依赖受保护 main、自动 artifact/snapshot 校验、脚本路径校验、服务器侧 `flock`、原子激活和 smoke，而不是人工 production approval。
 
 4. 以管理员身份审阅仓库中的 bootstrap 和 Nginx 模板。标准 Nginx 安装可继续使用默认模板；重复执行是幂等的：
 
@@ -411,7 +411,7 @@ fi
 printf '%s\n' 'reload signal command accepted/sent; master, worker, error-log, SELinux, Host/SNI routing gates passed'
 ```
 
-块打印的 BACKUP_CONFIG/BACKUP_CONFIG_SHA256 或 FIRST_INSTALL_MARKER/FIRST_INSTALL_MARKER_SHA256，以及同次打印的精确 NGINX_MAIN_CONFIG，是唯一恢复输入，必须保存到 root-only 变更记录。HTTP 验收不授权 DNS 或公网；最终 TLS 与 public launch 继续保持 stop gate，由 production reviewer 单独批准。Task 14 不读取发布内容；release.json、SPA、asset 和 release identity 只在 Task 16 activation 后检查。
+块打印的 BACKUP_CONFIG/BACKUP_CONFIG_SHA256 或 FIRST_INSTALL_MARKER/FIRST_INSTALL_MARKER_SHA256，以及同次打印的精确 NGINX_MAIN_CONFIG，是唯一恢复输入，必须保存到 root-only 变更记录。HTTP 验收不授权 DNS 或公网；最终 TLS 与 public launch 继续保持一次性 stop gate，并以已验证的配置、路由和证书状态证明，而非日常 production reviewer。Task 14 不读取发布内容；release.json、SPA、asset 和 release identity 只在 Task 16 activation 后检查。
 
 #### 已有配置中断恢复
 
@@ -556,9 +556,9 @@ TENCENT_KNOWN_HOSTS
 PUBLIC_BASE_URL
 ```
 
-`PUBLIC_BASE_URL` 必须是最终可访问站点的 HTTP 或 HTTPS 根 origin：不得带凭据、非根路径、query 或 fragment。HTTP 只可用于 TLS 完成前的受控验收；production approval 必须把 TLS stop gate 纳入批准条件。
+`PUBLIC_BASE_URL` 必须是最终可访问站点的 HTTP 或 HTTPS 根 origin：不得带凭据、非根路径、query 或 fragment。HTTP 只可用于 TLS 完成前的受控验收；自动部署前的就绪检查必须确认 TLS stop gate 已完成。
 
-production environment 应设置 required reviewer，并把 deployment branches 限制为受保护的 `main`。仓库 `main` 还应启用 branch protection：禁止 force push，要求名为 `CI` 的检查成功后才能合并。受保护 main 与 production approval 共同构成部署代码和 release artifact 的信任边界；required reviewer 不是对任意仓库内容的安全背书，批准前仍应核对目标 SHA、artifact 来源与 TLS stop gate。
+`production` 和 `production-approval` Environment 的目标配置是不设置 required reviewer，并把 deployment branches 限制为受保护的 `main`。仓库 `main` 仍启用 branch protection：禁止 force push，要求名为 `CI` 的检查成功后才能合并。受保护 main、自动 snapshot/artifact 校验、TLS 就绪状态、原子激活和 smoke 共同构成部署代码和 release artifact 的信任边界。本手册不能证明 GitHub 中的当前 Environment 设置；必须在一次性配置时实际核验。
 
 ## 发布行为
 
@@ -567,13 +567,14 @@ production environment 应设置 required reviewer，并把 deployment branches 
 - 本仓库 `main` push 触发且成功结束的 `CI` workflow run；
 - 从 `refs/heads/main` 发起的手动 dispatch。
 
-工作流分成三个 job，其中生产部署使用全新 runner：
+当前 workflow 分成四个 job，其中生产部署使用全新 runner：
 
 - `prepare` 没有 environment 或 secrets；它 checkout 对应完整 SHA，依次完成安装、全部 unit tests、快照验证、Svelte 检查、生产构建和公开边界检查。它只上传 archive、archive checksum 和 identity metadata，build artifact 不包含任何部署脚本。
-- `package-control-plane` 没有 environment 或 secrets；它只做固定 SHA 的 pinned checkout，用系统命令复制固定的三个部署脚本、生成 SHA-256 manifest 并上传 control-plane artifact。该 job 不安装 package、不运行 test/build，也不执行任何仓库脚本。
-- `deploy` 同时依赖前两个 job，只有二者成功后才进入 `production` environment；required reviewer 批准后，它在新 runner 分别下载两个明确 artifact 并严格核对文件清单。三个脚本必须全部来自 control-plane artifact，且其 SHA-256 必须与 manifest 逐项一致；该 job 不 checkout 仓库、不安装依赖、不执行 package script 或构建。两个 artifact 下载并校验完成、目标仍确认为最新 main 后才写入 SSH 私钥。
+- `production_gate` 依赖 `prepare`，绑定 `production-approval` Environment，但不读取 secrets。它下载 build artifact，自动校验 release metadata、release SHA 与 snapshot freshness；目标配置中该 Environment 不设人工 reviewer。
+- `package-control-plane` 依赖 `production_gate`，没有 environment 或 secrets；它只做固定 SHA 的 pinned checkout，用系统命令复制固定的三个部署脚本、生成 SHA-256 manifest 并上传 control-plane artifact。该 job 不安装 package、不运行 test/build，也不执行任何仓库脚本。
+- `deploy` 依赖 `prepare` 与 `package-control-plane`，只有依赖链全部成功后才进入 `production` Environment；它在新 runner 分别下载两个明确 artifact 并严格核对文件清单。三个脚本必须全部来自 control-plane artifact，且其 SHA-256 必须与 manifest 逐项一致；该 job 不 checkout 仓库、不安装依赖、不执行 package script 或构建。两个 artifact 下载并校验完成、目标仍确认为最新 main 后才写入 SSH 私钥。
 
-部署前会查询远端 `refs/heads/main`，并在 archive 上传完成、activation 紧邻之前再次查询；若 `RELEASE_SHA` 已不是最新 main，旧 CI 即使晚完成也会被拒绝。activation 后立即再次核验 main 是否漂移；发现漂移时该步骤失败并触发现有补偿回滚。两个 artifact 都来自受保护 main，但这不取代 production approval；受保护 main 与 production approval 共同定义部署代码和 release artifact 的信任边界。
+部署前会查询远端 `refs/heads/main`，并在 archive 上传完成、activation 紧邻之前再次查询；若 `RELEASE_SHA` 已不是最新 main，旧 CI 即使晚完成也会被拒绝。activation 后立即再次核验 main 是否漂移；发现漂移时该步骤失败并触发现有补偿回滚。两个 artifact 都来自受保护 main；受保护 main、自动 artifact 校验、主线 SHA 复核、原子激活和 smoke 共同定义部署代码和 release artifact 的信任边界。
 
 仍存在短暂服务窗口：从远端 `current` 原子切换到 activation 后 main 复核完成之前，旧 SHA 可能已经对外可见；漂移发生在复核刚完成之后，也只能由后续部署或监控收敛。workflow 无法原子绑定 GitHub main 与远端 `current` 符号链接，因此 post-activation 复核和补偿回滚只能缩小窗口，不能把残余窗口表述为零；runner 丢失或主机不可达时仍需按持久 transaction 手工 reconcile。
 
@@ -599,15 +600,16 @@ production environment 应设置 required reviewer，并把 deployment branches 
 
 ## 上线前检查
 
-- `production` required reviewer 和 main deployment branch 已配置。
-- main branch protection 要求完整 `CI`。
-- 五个 secrets 和 `PUBLIC_BASE_URL` 已放在 production environment，而不是写入仓库。
-- `TENCENT_KNOWN_HOSTS` 已通过带外渠道核验；没有使用 `ssh-keyscan`。
-- 专用部署用户没有 sudo，authorized_keys 已禁止转发和 PTY。
-- 专用部署用户的 primary group 名称与用户名相同。
-- 已确认用户批准的 `SELECTED_DOMAIN`、Host 拒绝、HTTP 受控验收、宝塔 Nginx 二进制和 vhost 目标路径。
-- 域名、备案、精确证书路径、TLS 与 public launch stop gate 已分别通过 production reviewer 确认。
-- 首次真实发布须由用户批准；本手册本身不授权连接或修改腾讯云。
+以下是一次性配置后的**待核验清单**，不表示这些外部状态已经存在：
+
+- 核验 `production` 与 `production-approval` 均无 required reviewer，且 main deployment branch 已配置。
+- 核验 main branch protection 要求完整 `CI`。
+- 核验五个 secrets 和 `PUBLIC_BASE_URL` 位于 production Environment，而非仓库内容；不读取或打印其值。
+- 核验 `TENCENT_KNOWN_HOSTS` 已通过带外渠道确认，且没有使用 `ssh-keyscan`。
+- 核验专用部署用户没有 sudo，authorized_keys 已禁止转发和 PTY，且 primary group 名称与用户名相同。
+- 核验用户已批准的 `SELECTED_DOMAIN`、Host 拒绝、HTTP 受控验收、宝塔 Nginx 二进制和 vhost 目标路径。
+- 核验域名、备案、精确证书路径、TLS 与 public launch stop gate 均有可复查的配置/路由验证记录。
+- 首次真实发布和主机基础设施变更仍须得到用户明确授权；完成一次性就绪验证后，日常追加式数据发布无需人工批准。本手册本身不授权连接或修改腾讯云。
 
 真实发布成功后，可以从当前 release 读取三元身份并再次执行外部 smoke：
 
