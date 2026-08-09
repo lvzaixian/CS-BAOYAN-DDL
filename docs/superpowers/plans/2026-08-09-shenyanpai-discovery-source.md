@@ -8,6 +8,8 @@
 
 **Tech Stack:** TypeScript、Node.js `node:test`、现有 snapshot approval CLI、Markdown、canonical Codex skill。
 
+**执行状态（2026-08-09）：** Task 1 与 Task 2 已完成并已提交；Task 3 的项目文档部分完成，canonical scan skill 的四个说明文件正由独立 owner 同步。Task 4 的完整集成验证、范围审计与最终交付尚未完成，不能据此宣称全功能已验证。
+
 ---
 
 ## 文件结构与责任
@@ -15,8 +17,8 @@
 - `scripts/snapshot/approve-snapshot.ts`：日常 v3 run 类型/解析、固定深研派检查验证、对新增公开 `discoverySources` 的 GitHub 拒绝；不得触碰 `approveSnapshotFile`、ScanBundle/replay parser 或 legacy release 函数。
 - `tests/approve-additive-snapshot.test.ts`：构造私有 v3 fixture，持久化三份不同 GitHub text artifact，并回归固定检查、`blocked`、公开来源泄漏和原有追加性行为。
 - `AGENTS.md`、`docs/operations/data-refresh.md`、`README.md`：让项目操作契约、v3 示例和面向贡献者的发现源说明与批准器一致。
-- `/Users/maxwellbrooks/.codex/skills/scan-cs-admissions-events/SKILL.md`、`references/research-protocol.md`、`references/aggregator-protocol.md`、`references/coverage-run-contract.md`：让扫描器生成 v3 私有检查并把深研派固定为线索源；不改 `workbook-contract.md`、脚本或历史 v2 validator。
-- `/Users/maxwellbrooks/.codex/skills/scan-cs-admissions-events/agents/openai.yaml`：只验证元数据仍与未改 frontmatter 一致；没有 frontmatter 漂移时不改。
+- `$CODEX_HOME/skills/scan-cs-admissions-events/SKILL.md`、`references/research-protocol.md`、`references/aggregator-protocol.md`、`references/coverage-run-contract.md`：让扫描器生成 v3 私有检查并把深研派固定为线索源；不改 `workbook-contract.md`、脚本或历史 v2 validator。
+- `$CODEX_HOME/skills/scan-cs-admissions-events/agents/openai.yaml`：只验证元数据仍与未改 frontmatter 一致；没有 frontmatter 漂移时不改。
 
 ### Task 1: 使日常私有 fixture 先失败于 v3 契约
 
@@ -25,7 +27,7 @@
 - Modify: `scripts/snapshot/approve-snapshot.ts:150-642`
 - Test: `tests/approve-additive-snapshot.test.ts`
 
-- [ ] **Step 1: 在测试文件中声明三条稳定的深研派检查定义与不同 artifact 内容。**
+- [x] **Step 1: 在测试文件中声明三条稳定的深研派检查定义与不同 artifact 内容。**
 
   在 `runScannedAt` 常量后加入如下 helper；它让每个 `checked` 条目都有不同 SHA，且 URL 年份由测试 run 日期的北京时间年份生成：
 
@@ -82,7 +84,7 @@
   writeFileSync(artifactPath, contents.get(artifact.path) ?? defaultContent);
   ```
 
-- [ ] **Step 2: 运行聚焦测试，确认当前 v2 parser 失败。**
+- [x] **Step 2: 运行聚焦测试，确认当前 v2 parser 失败。**
 
   Run:
 
@@ -92,7 +94,7 @@
 
   Expected: FAIL，错误包含 `discovery run.schemaVersion must equal 2`；不得修改 `data/approved/current.json`。
 
-- [ ] **Step 3: 定义 v3 私有类型和严格 parser。**
+- [x] **Step 3: 定义 v3 私有类型和严格 parser。**
 
   在 `AdditiveApprovalRun` 前新增：
 
@@ -133,7 +135,7 @@
 
   在 `parseAdditiveRun()` 的顶层 `exactKeys()` 中把 `fixedDiscoveryChecks` 放在 `coverage` 与 `scopes` 之间，并把 schema 判定改为 `3`。新增 `parseAdditiveFixedDiscoveryChecks()`：数组中每个元素严格只允许 `checkId,url,checkedAt,result,artifactSha256,reason`，并以 `timestampAt()` / `sha256At()` 解析；`artifactSha256` 与 `reason` 只能为 `string | null`。在 return 中返回该字段。此步骤只做形状/类型解析，不允许把 source-specific URL 逻辑分散到 parser。
 
-- [ ] **Step 4: 运行聚焦测试，确认现有行为恢复。**
+- [x] **Step 4: 运行聚焦测试，确认现有行为恢复。**
 
   Run:
 
@@ -143,7 +145,7 @@
 
   Expected: PASS；旧测试现在均以 v3 fixture 通过，但还没有覆盖固定检查的负例。
 
-- [ ] **Step 5: 提交 v3 结构迁移。**
+- [x] **Step 5: 提交 v3 结构迁移。**
 
   ```bash
   git add scripts/snapshot/approve-snapshot.ts tests/approve-additive-snapshot.test.ts
@@ -157,7 +159,7 @@
 - Modify: `tests/approve-additive-snapshot.test.ts:316-1219`
 - Test: `tests/approve-additive-snapshot.test.ts`
 
-- [ ] **Step 1: 写出固定检查与公开边界的失败测试。**
+- [x] **Step 1: 写出固定检查与公开边界的失败测试。**
 
   先在测试文件中导入 `existsSync`，再加入这个 reusable assertion；所有 pre-decision gate 都用它，因此明确证明不会写 private decision 或 public snapshot：
 
@@ -201,9 +203,9 @@
 
   添加 `blocked` 正例：逐项将 profile、summer-camp、pre-recommend 设为 `{ result: 'blocked', artifactSha256: null, reason: 'network timeout' }`，从 manifest 删除对应 artifact，并保持一个有完整官方 evidence 的 addition；每个 subtest 都断言 `ready`。再添加 all-blocked/no-additions case，断言 `no-additions` 且 parent bytes 原样保留。
 
-  最后添加 GitHub public-boundary matrix：先证明 `https://github.com/shenyanpai` 不能成为 `officialUrl`、public website、primary artifact URL 或 field-evidence source/artifact URL；再在已有合法官方 source/evidence 的 addition 上，分别放入 `https://github.com/shenyanpai`、`https://gist.github.com/example` 和 `https://raw.githubusercontent.com/shenyanpai/example/main/README.md` 作为 `kind: 'other-discovery'` URL。前四类由既有官方 host gate 拒绝；后三类必须由新 gate 在 write 前因 `/must not expose a GitHub discovery source/i` 被拒绝。
+  最后添加 GitHub/public-provenance matrix：先证明 `https://github.com/shenyanpai` 不能成为 `officialUrl`、public website、primary artifact URL 或 field-evidence source/artifact URL；再在已有合法官方 source/evidence 的 addition 上，分别放入 `https://github.com/shenyanpai`、`https://gist.github.com/example` 和 `https://raw.githubusercontent.com/shenyanpai/example/main/README.md` 作为 `kind: 'other-discovery'` URL。前四类由既有官方 host gate 拒绝；后三类必须由新 gate 在 write 前拒绝。另对完整 JSON-serialized `opportunity` 的非 source 字段（如 `description`、`tags`、`projectId`、source label）注入 GitHub/raw URL、固定 check ID、URL、artifact SHA、artifact text 或 blocked 原因，并验证它们也会在 decision/public write 前失败。
 
-- [ ] **Step 2: 运行新增测试，确认它们因缺少固定检查 gate 与 all-source GitHub gate 而失败。**
+- [x] **Step 2: 运行新增测试，确认它们因缺少固定检查 gate 与 all-source GitHub gate 而失败。**
 
   Run:
 
@@ -213,7 +215,7 @@
 
   Expected: FAIL；当前实现会让 `wrong owner`、`query URL`、`blocked` coupling、checked artifact binding 和 `other-discovery` GitHub cases 意外通过。
 
-- [ ] **Step 3: 实现单一固定检查断言。**
+- [x] **Step 3: 实现单一固定检查断言。**
 
   在 `assertAdditiveCoverage()` 前新增固定定义与函数：
 
@@ -235,7 +237,7 @@
   }
   ```
 
-  实现 `assertAdditiveFixedDiscoveryChecks(run, artifactMaterials)`，严格要求 `run.fixedDiscoveryChecks.length === 3`、所有 ID 唯一且恰好为上述集合，`checkedAt` 在 run window 内。对于 `checked`，要求 `reason === null`、有 SHA、artifact material 存在、artifact 的规范化 URL 等于对应 expected URL、`material.text !== null`，并用 `Set` 拒绝多个 checked check 复用同一 SHA。对于 `blocked`，要求 `artifactSha256 === null` 且 `reason.trim() !== ''`。任何其它 result 抛出确定错误；错误字符串必须包含 `fixed discovery check`，便于测试稳定匹配。
+  实现 `assertAdditiveFixedDiscoveryChecks(run, artifactMaterials)`，严格要求 `run.fixedDiscoveryChecks.length === 3`、所有 ID 唯一且恰好为上述集合，`checkedAt` 在 run window 内。对于 `checked`，要求 `reason === null`、有 SHA、artifact material 存在、artifact 的规范化 URL 等于对应 expected URL、`material.text?.trim()` 非空，并用 `Set` 拒绝多个 checked check 复用同一 SHA。对于 `blocked`，要求 `artifactSha256 === null` 且 `reason.trim() !== ''`。任何其它 result 抛出确定错误；错误字符串必须包含 `fixed discovery check`，便于测试稳定匹配。
 
   在 `approveAdditiveSnapshotFile()` 中保持既有顺序，并在：
 
@@ -251,9 +253,9 @@
 
   这必须发生在 `finishedAt`/父本/coverage checks 及 `if (additions.length === 0)` 之前。
 
-- [ ] **Step 4: 实现新增项的全来源 GitHub 拒绝。**
+- [x] **Step 4: 实现新增项的全来源 GitHub 与私有 provenance 拒绝。**
 
-  在 `assertAdditiveEvidence()` 的 official-source filter 前加入：
+  在 `assertAdditiveEvidence()` 的 official-source filter 前加入 discovery-source URL host 检查；随后在批准阶段对每个 `opportunity` 的完整 JSON 序列化结果执行私有 provenance 检查。它必须拒绝 GitHub/raw URL（含 GitHub 子域、编码/规范化变体）以及可识别固定检查的 URL、artifact SHA、artifact text、`checkId` 和 blocked 具体原因，无论这些值出现在公开对象的哪个字段；普通孤立的 `checked`/`blocked` 文本不构成 fixed-check provenance。固定检查记录及其状态只能留在私有 run/decision。不要改 `src/lib/snapshot-validation.ts`，从而不重新解释历史 parent 行。
 
   ```ts
   function isAdditiveGitHubHost(hostname: string): boolean {
@@ -272,9 +274,9 @@
   }
   ```
 
-  调用 `assertAdditivePublicDiscoverySources(opportunity)` 后再执行现有 official-source 精确匹配。不要改 `src/lib/snapshot-validation.ts`，从而不重新解释历史 parent 行。
+  调用 `assertAdditivePublicDiscoverySources(opportunity)` 后再执行现有 official-source 精确匹配；序列化 provenance gate 仅适用于 additions。
 
-- [ ] **Step 5: 运行聚焦测试，确认正反路径通过。**
+- [x] **Step 5: 运行聚焦测试，确认正反路径通过。**
 
   Run:
 
@@ -284,28 +286,28 @@
 
   Expected: PASS；`blocked` source check 不阻断独立官方 addition，所有 malformed/source-leak cases 均在 decision 或 public write 前失败。
 
-- [ ] **Step 6: 提交固定 source gate。**
+- [x] **Step 6: 提交固定 source gate。**
 
   ```bash
   git add scripts/snapshot/approve-snapshot.ts tests/approve-additive-snapshot.test.ts
   git commit -m "feat: gate additive runs on shenyanpai discovery checks"
   ```
 
-### Task 3: 同步项目运行说明与 canonical scan skill
+### Task 3: 同步项目运行说明与 canonical scan skill（项目文档完成；skill 同步进行中）
 
 **Files:**
 - Modify: `AGENTS.md:17-45`
 - Modify: `docs/operations/data-refresh.md:31-105`
 - Modify: `README.md:1-12`
-- Modify: `/Users/maxwellbrooks/.codex/skills/scan-cs-admissions-events/SKILL.md`
-- Modify: `/Users/maxwellbrooks/.codex/skills/scan-cs-admissions-events/references/research-protocol.md`
-- Modify: `/Users/maxwellbrooks/.codex/skills/scan-cs-admissions-events/references/aggregator-protocol.md`
-- Modify: `/Users/maxwellbrooks/.codex/skills/scan-cs-admissions-events/references/coverage-run-contract.md`
-- Verify only: `/Users/maxwellbrooks/.codex/skills/scan-cs-admissions-events/agents/openai.yaml`
+- Modify: `$CODEX_HOME/skills/scan-cs-admissions-events/SKILL.md`
+- Modify: `$CODEX_HOME/skills/scan-cs-admissions-events/references/research-protocol.md`
+- Modify: `$CODEX_HOME/skills/scan-cs-admissions-events/references/aggregator-protocol.md`
+- Modify: `$CODEX_HOME/skills/scan-cs-admissions-events/references/coverage-run-contract.md`
+- Verify only: `$CODEX_HOME/skills/scan-cs-admissions-events/agents/openai.yaml`
 
-- [ ] **Step 1: 更新项目文档到准确的 v3 运行契约。**
+- [x] **Step 1: 更新项目文档到准确的 v3 运行契约。**
 
-  在 `AGENTS.md` 与 `data-refresh.md` 中将 `schemaVersion: 2` 改为 `3`，列出三个 `fixedDiscoveryChecks` 的精确 URL 模板、`checked`/`blocked` 的 artifact/reason 语义，以及“缺失或冒充拒绝、访问受阻不阻断独立 addition”的差异。明确 GitHub URL 不得出现在新增项目的任意公开 `discoverySources`，包括 `other-discovery`；这条只适用于 additions，父项保持不变。
+  在 `AGENTS.md` 与 `data-refresh.md` 中将日常运行 `schemaVersion: 2` 改为 `3`，列出三个 `fixedDiscoveryChecks` 的精确 URL 模板、`checked`/`blocked` 的 artifact/reason 语义，以及“缺失或冒充拒绝、访问受阻不阻断独立 addition/no-additions”的差异。明确 GitHub/raw 以及固定检查 provenance 均不得出现在新增项目的任意序列化公开字段，且所有 `discoverySources` 变体（包括 `other-discovery`）都受限；这条只适用于 additions，父项保持不变。
 
   在 `README.md` 的发现源句子改为：
 
@@ -313,7 +315,7 @@
 本版本将保研通知网、CS-BAOYAN、BoardCaster 和深研派 GitHub 通知合集作为发现源，并回到院校官网、官方报名系统、官方公众号或官方附件核验后再发布。
 ```
 
-- [ ] **Step 2: 更新 canonical skill 的四个运行说明文件。**
+- [ ] **Step 2: 更新 canonical skill 的四个运行说明文件（进行中，由独立 owner 负责）。**
 
   在 `SKILL.md` 和 `research-protocol.md` 将每日“三家聚合站”改为四家，新增深研派 profile + `awesome-summer-camp-<YYYY>` + `awesome-pre-recommend-<YYYY>` 的固定检查。要求先保存私有 text/HTML artifact 与 SHA，然后从合集链接回源官方页面并做学院级 fan-out；禁止将 GitHub URL 用作 `officialUrl`、字段证据或公开 discovery source。
 
@@ -326,20 +328,20 @@
   Run:
 
   ```bash
-  python3 /Users/maxwellbrooks/.codex/skills/.system/skill-creator/scripts/quick_validate.py /Users/maxwellbrooks/.codex/skills/scan-cs-admissions-events
-  rg -n 'schemaVersion: 2|三家聚合|GitHub.*官方|officialUrl.*github' AGENTS.md docs/operations/data-refresh.md README.md /Users/maxwellbrooks/.codex/skills/scan-cs-admissions-events
+  python3 "$CODEX_HOME/skills/.system/skill-creator/scripts/quick_validate.py" "$CODEX_HOME/skills/scan-cs-admissions-events"
+  rg -n 'schemaVersion: 2|三家聚合|GitHub.*官方|officialUrl.*github' AGENTS.md docs/operations/data-refresh.md README.md "$CODEX_HOME/skills/scan-cs-admissions-events"
   ```
 
   Expected: `quick_validate.py` reports success. Remaining `ScanBundle v2` wording only appears in explicit legacy/replay boundary prose; no daily v2 instruction or GitHub-as-official wording remains.
 
-- [ ] **Step 4: 提交项目文档；保留全局 skills 仓库的其他用户改动。**
+- [x] **Step 4: 提交项目文档；保留全局 skills 仓库的其他用户改动。**
 
   ```bash
   git add AGENTS.md docs/operations/data-refresh.md README.md
   git commit -m "docs: add shenyanpai discovery source contract"
   ```
 
-  不在 `/Users/maxwellbrooks/.codex/skills` 仓库执行全量暂存、重置、清理或提交；只保留本次四个 skill 文件的定向编辑与 validator 证据。
+  不在 `$CODEX_HOME/skills` 仓库执行全量暂存、重置、清理或提交；只保留本次四个 skill 文件的定向编辑与 validator 证据。
 
 ### Task 4: 完整验证、范围审计与交付
 
@@ -347,7 +349,7 @@
 - Verify: `scripts/snapshot/approve-snapshot.ts`
 - Verify: `tests/approve-additive-snapshot.test.ts`
 - Verify: `AGENTS.md`, `docs/operations/data-refresh.md`, `README.md`
-- Verify: `/Users/maxwellbrooks/.codex/skills/scan-cs-admissions-events/{SKILL.md,references/*.md}`
+- Verify: `$CODEX_HOME/skills/scan-cs-admissions-events/{SKILL.md,references/*.md}`
 
 - [ ] **Step 1: 运行批准器、类型和完整单元回归。**
 

@@ -26,7 +26,17 @@ pnpm run snapshot:approve-additive -- \
   --sentinels scripts/source/priority-sentinels.json
 ```
 
-`discovery-run.json` 是私有的 `schemaVersion: 2` 运行文件，必须包含唯一 `runId`、`incremental` 或 `sweep` 模式、开始/结束时间、从 `https://ddl.meta-mind.cn/data/current.json` 新鲜下载的父快照原始 SHA-256、父 `snapshotId`/`dataHash`、scope 图、普通官方 artifact 清单、候选新增项和字段证据。它还必须带有 `coverage`：`{schemaVersion: 1, rotationDate, registrySha256, sentinelsSha256}`。两个 SHA-256 是本轮冻结的注册表和哨兵配置原始字节哈希；`rotationDate` 必须等于 `finishedAt` 的北京时间日期。私有候选、旧运行产物和工作簿不能充当父本。
+`discovery-run.json` 是私有的 `schemaVersion: 3` 日常运行文件，必须包含唯一 `runId`、`incremental` 或 `sweep` 模式、开始/结束时间、从 `https://ddl.meta-mind.cn/data/current.json` 新鲜下载的父快照原始 SHA-256、父 `snapshotId`/`dataHash`、scope 图、普通官方 artifact 清单、候选新增项和字段证据。它还必须带有 `coverage`：`{schemaVersion: 1, rotationDate, registrySha256, sentinelsSha256}`。两个 SHA-256 是本轮冻结的注册表和哨兵配置原始字节哈希；`rotationDate` 必须等于 `finishedAt` 的北京时间日期。私有候选、旧运行产物和工作簿不能充当父本。
+
+每日 v3 run 还必须带有 `fixedDiscoveryChecks`，并且**恰好**包含以下三项私有深研派发现检查：
+
+- `shenyanpai-profile`：`https://github.com/shenyanpai`；
+- `shenyanpai-summer-camp`：`https://github.com/shenyanpai/awesome-summer-camp-<YYYY>`；
+- `shenyanpai-pre-recommend`：`https://github.com/shenyanpai/awesome-pre-recommend-<YYYY>`。
+
+`<YYYY>` 由 `finishedAt` 的 Asia/Shanghai 日历年导出。每项严格包含 `checkId`、`url`、`checkedAt`、`result`、`artifactSha256`、`reason`。`checked` 必须绑定同一规范化 URL 的本轮、已逐字节复算 SHA-256 的非空可读 UTF-8 text/HTML artifact，且 `reason` 为 `null`；`blocked` 必须没有 artifact（`artifactSha256: null`）且保留非空具体原因。`checkedAt` 必须落在本轮时间窗内，多个 `checked` 项不得复用 SHA。三项均须存在并通过形状、URL、时间、artifact/原因验证，批准器才会继续，**包括零新增 run**。`blocked` 仍计为该固定入口已经尝试，不阻断由独立同校官方证据支持的新增，也允许产生私有 `no-additions` 决定。
+
+日常批准器只接受 v3。旧私有 v2 输入仅属于历史 `ScanBundle`/replay 或经授权维护链路，不能绕过每日固定检查进入日常追加。
 
 批准器在一次操作中确认：
 
@@ -43,7 +53,7 @@ pnpm run snapshot:approve-additive -- \
 
 ## 来源与深扫描
 
-学校研究生院、学院、研究院、官方报名系统、官方公众号和官方附件是事实来源。批准器只接受机构/政府域名或固定官方平台的 URL，且 primary artifact 必须明确写出对应学校；保研通知网、CS-BAOYAN DDL、BoardCaster 等仅用于发现线索，不能单独支撑公开字段。这是对可信扫描器的可自动核验来源类别约束，并不是 DNS 归属证明；发现器仍须如实选择同校官方入口。
+学校研究生院、学院、研究院、官方报名系统、官方公众号和官方附件是事实来源。批准器只接受机构/政府域名或固定官方平台的 URL，且 primary artifact 必须明确写出对应学校；保研通知网、CS-BAOYAN DDL、BoardCaster 与深研派 GitHub 通知合集等仅用于发现线索，不能单独支撑公开字段。这是对可信扫描器的可自动核验来源类别约束，并不是 DNS 归属证明；发现器仍须如实选择同校官方入口。
 
 对每个候选官方入口执行有去重和深度上限的遍历：保存最终 URL、抓取时间、Content-Type、字节数和 SHA-256；发现并继续读取学院子页、系统链接、PDF、Office 文件、图片、下载/预览链接。扫描件或图片需要 OCR 或可读页检查。应优先抽取系统字段和当年学院附件中的报名动作、所有截止、时间/形式/地点、材料、推荐、住宿、餐食、交通、报销和资格限制；未公布与未能读取必须如实区分，不能用聚合摘要补写官方事实。
 
@@ -56,6 +66,8 @@ pnpm run snapshot:approve-additive -- \
 ## 私有与公开边界
 
 私有目录可以保存运行文件、原始 artifact、字段卡、失败原因和重试队列；它们不得被提交。不得提交个人投递信息、联系方式、评分、私有路径、原始官方文件、凭据、主机地址或任何 Secret 值。
+
+深研派的 GitHub / `raw.githubusercontent.com` 内容仅可用于私有发现。新增项的公开 `opportunity` 序列化后，任何字段都不得包含 GitHub/raw URL，或可识别任一固定检查的 provenance：其 URL、artifact SHA、artifact text、`checkId` 或 `blocked` 的具体原因；这涵盖所有 `discoverySources` 变体（含 `other-discovery`），而非只限制 `kind: official`。普通孤立的 `checked`/`blocked` 文本不是固定检查 provenance。同校官方 `officialUrl`、primary artifact、字段证据和学院级 fan-out 仍是新增项的独立硬门槛。该公开泄漏拒绝只审查 additions，不回写或重新判定历史父项。
 
 公开提交只可包含经批准的公开快照及必要的公开代码/文档；日常批准不得顺带引入私有文件。批准器使用锁和原子替换，失败时旧快照必须仍可读取。
 

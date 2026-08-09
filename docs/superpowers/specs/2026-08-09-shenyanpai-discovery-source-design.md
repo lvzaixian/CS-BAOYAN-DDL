@@ -1,7 +1,7 @@
 # 深研派 GitHub 通知合集：日常发现源设计
 
 **日期：** 2026-08-09
-**状态：** 已确认设计，待实现计划
+**状态：** 日常 v3 门禁与项目文档已实现；全量集成验证仍待 Task 4 完成
 **范围：** 日常追加发布路径、运行说明和 `scan-cs-admissions-events` skill；不改历史 replay 路径或公开快照 schema。
 
 ## 目标
@@ -18,7 +18,7 @@
 ## 非目标
 
 - 不把 GitHub 或 `raw.githubusercontent.com` 加入官方来源、官方平台或公开证据白名单。
-- 不把深研派 URL、抓取原文、artifact SHA 或私有检查结果写入公开 `current.json`、`release.json` 或公开 `discoverySources`。
+- 不把深研派 URL、抓取原文、artifact bytes/text/SHA、可识别固定检查的 ID/URL 或 `blocked` 具体原因写入公开 `current.json`、`release.json`，或新增项的任意序列化公开字段；`discoverySources` 的任何变体都不例外。普通孤立的 `checked`/`blocked` 字词不是固定检查 provenance。
 - 不修改 `ScanBundle v2`、`scan-release-contract.ts`、`build-scan-release.ts`、`snapshot:approve` 或其他历史维护/replay 契约。
 - 不把“固定来源已检查”表述为全国绝对无遗漏；它只证明本轮尝试了这一额外发现面。
 
@@ -40,7 +40,7 @@
 
 ### 私有运行文件 v3
 
-`AdditiveApprovalRun` 从私有 `schemaVersion: 2` 升为 `schemaVersion: 3`，顶层新增 `fixedDiscoveryChecks`。旧 v2 run 不再能走日常批准器，避免旧文件绕过新的每日检查；日常 run 最多只有 24 小时有效，重新执行扫描的迁移成本有限。
+`AdditiveApprovalRun` 从私有 `schemaVersion: 2` 升为 `schemaVersion: 3`，顶层新增 `fixedDiscoveryChecks`。旧 v2 run 不再能走日常批准器，避免旧文件绕过新的每日检查；它们只保留给历史 `ScanBundle`/replay 或经授权维护路径。日常 run 最多只有 24 小时有效，重新执行扫描的迁移成本有限。
 
 每项检查采用如下严格结构：
 
@@ -55,11 +55,11 @@
 }
 ```
 
-- `checked`：`artifactSha256` 必填，`reason` 必须为 `null`。它必须指向本 run 的普通、已读验证 artifact；artifact URL 与该固定 URL 规范化后完全一致，内容是可读 UTF-8 文本/HTML，且 bytes/SHA-256 已被批准器复算。每个状态为 `checked` 的项各自绑定不同的 artifact 条目和 SHA-256，符合现有 artifact manifest 的全局唯一 SHA 约束。
-- `blocked`：`artifactSha256` 必须为 `null`，`reason` 必填，说明登录、验证码、网络、解析或页面不可读等具体原因。
+- `checked`：`artifactSha256` 必填，`reason` 必须为 `null`。它必须指向本 run 的普通、已读验证 artifact；artifact URL 与该固定 URL 规范化后完全一致，内容是非空可读 UTF-8 text/HTML，且 bytes/SHA-256 已被批准器复算。每个状态为 `checked` 的项各自绑定不同的 artifact 条目和 SHA-256，符合现有 artifact manifest 的全局唯一 SHA 约束。
+- `blocked`：`artifactSha256` 必须为 `null`，`reason` 必须为非空具体原因，说明登录、验证码、网络、解析或页面不可读等情况。它计为该固定入口已经尝试，不会阻断另一个由同校官方 evidence 支持的 addition，也不会阻断 `no-additions` 私有决定。
 - `checkedAt` 必须位于 `[startedAt, finishedAt]`。三个 `checkId` 不得重复、缺失或增加额外值。
 
-错误 URL、错误组织/仓库、缺少检查、无 artifact 的 `checked`、artifact URL 不一致、超出运行窗口和不安全 artifact 都是结构性失败：不生成 private decision，不修改公开快照。页面读取受阻是正常的 `blocked`：它计为本轮已尝试，不阻塞由独立同校官方证据支持的新增项，也不把 `no-additions` 变成失败。
+错误 URL、错误组织/仓库、缺少检查、无 artifact 的 `checked`、artifact URL 不一致、超出运行窗口和不安全 artifact 都是结构性失败：不生成 private decision，不修改公开快照。所有三项都必须在 artifact 复算后、任何批准（包括 `no-additions`）前通过；页面读取受阻是正常的 `blocked`，不把 `no-additions` 变成失败。
 
 ### 批准顺序
 
@@ -75,7 +75,7 @@
 
 ### 公私边界
 
-深研派的 GitHub artifact 只服务 `fixedDiscoveryChecks`。它不能被 `addition.evidence.officialUrl`、primary artifact、字段证据 URL、`opportunity.website` 或 `kind: official` 的发现来源引用。批准器还必须在每个**新增项**上检查全部 `opportunity.discoverySources[].url`：`github.com` 与 `raw.githubusercontent.com` 均被拒绝，不因 `kind: other-discovery` 而例外。这个拒绝只作用于 additions，不重新审判、删除或改写历史父项。现有机构/政府域名与批准官方平台门禁继续拒绝 GitHub 作为公开事实来源；本次不扩展任何 host allowlist。
+深研派的 GitHub artifact 只服务 `fixedDiscoveryChecks`。它不能被 `addition.evidence.officialUrl`、primary artifact、字段证据 URL 或 `opportunity.website` 引用。批准器把每个**新增项**的完整公开 `opportunity` 序列化后检查：任一 `github.com` 子域或 `raw.githubusercontent.com` URL，以及可识别任一固定检查的 provenance（其 URL、artifact SHA、artifact text、`checkId` 或 `blocked` 的具体原因），都不能出现在任何公开字段中。这覆盖所有 `discoverySources` URL/label/kind 变体（含 `other-discovery`），而非只检查 `kind: official`；普通孤立的 `checked`/`blocked` 文本不会被当作 provenance。固定检查记录及其状态永远只在私有 run/decision 中保存。这个拒绝只作用于 additions，不重新审判、删除或改写历史父项。现有机构/政府域名与批准官方平台门禁继续拒绝 GitHub 作为公开事实来源；本次不扩展任何 host allowlist。
 
 扫描器可以使用深研派页面中的链接找到官方页面，但只能在回源并完成学院级拆分后生成候选。例如，一条汇总校级通知仍须展开其中每个明确可投的学院/招生单位；未能证明具体单位时保留私有线索，不发布“全校招生”行。
 
