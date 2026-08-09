@@ -71,9 +71,8 @@ const releaseIdentity = {
   snapshotId: approvedSnapshot.snapshotId,
   dataHash: approvedSnapshot.dataHash,
 };
-const approvedAtMs = Date.parse(String(approvedSnapshot.approvedAt));
-const nowMs = Math.ceil(approvedAtMs / 1_000) * 1_000 + 1_000;
 const dayMs = 24 * 60 * 60 * 1000;
+const nowMs = Date.parse('2030-01-01T00:00:00Z');
 
 test('monitor workflow is scheduled, manually runnable, read-only, and isolated from production credentials', () => {
   const workflow = source(workflowPath);
@@ -92,10 +91,9 @@ test('monitor workflow is scheduled, manually runnable, read-only, and isolated 
     workflow,
     /PUBLIC_BASE_URL:\s*\$\{\{\s*vars\.PUBLIC_BASE_URL\s*\}\}/,
   );
-  assert.match(workflow, /WARN_SNAPSHOT_AGE_HOURS:\s*['"]24['"]/);
-  assert.match(workflow, /MAX_SNAPSHOT_AGE_HOURS:\s*['"]72['"]/);
-  assert.doesNotMatch(workflow, /vars\.WARN_SNAPSHOT_AGE_HOURS/);
-  assert.doesNotMatch(workflow, /vars\.MAX_SNAPSHOT_AGE_HOURS/);
+  assert.doesNotMatch(workflow, /WARN_SNAPSHOT_AGE_HOURS/);
+  assert.doesNotMatch(workflow, /MAX_SNAPSHOT_AGE_HOURS/);
+  assert.doesNotMatch(workflow, /Snapshot warning age|Snapshot hard-failure age/i);
   const jobEnv = workflow.match(/\n    env:\n([\s\S]*?)\n    steps:/)?.[1] ?? '';
   assert.notEqual(jobEnv, '', 'monitor job must define its non-secret environment');
   assert.doesNotMatch(
@@ -114,11 +112,15 @@ test('monitor workflow is scheduled, manually runnable, read-only, and isolated 
   );
 });
 
-test('monitor implementation reuses repository snapshot integrity and freshness logic', () => {
+test('monitor implementation reuses repository snapshot integrity without a stored-age policy', () => {
   const monitor = source(monitorPath);
   assert.notEqual(monitor, '', 'scripts/monitor-public.mjs must exist');
   assert.match(monitor, /src\/lib\/snapshot-integrity\.js/);
-  assert.match(monitor, /snapshot\/check-freshness\.js/);
+  assert.doesNotMatch(monitor, /snapshot\/check-freshness\.js/);
+  assert.doesNotMatch(
+    monitor,
+    /parseMaxSnapshotAgeHours|assertSnapshotFreshness|warnSnapshotAgeHours|maxSnapshotAgeHours|WARN_SNAPSHOT_AGE_HOURS|MAX_SNAPSHOT_AGE_HOURS/,
+  );
   assert.match(monitor, /\/data\/current\.json/);
   assert.match(monitor, /\/data\/release\.json/);
   assert.doesNotMatch(monitor, /readRegularJsonFile|approvedPath|globalThis\.fetch|dependencies\.fetch/);
@@ -177,7 +179,6 @@ test('rejects private or loopback DNS answers before HTTP requests', async () =>
         {
           publicBaseUrl: 'https://admissions.example',
           expectedSha,
-          maxSnapshotAgeHours: '24',
           nowMs,
         },
         {
@@ -297,57 +298,6 @@ test('release metadata has exactly the three strict identity fields', async (t) 
     { ...releaseIdentity, releaseSha: 'b'.repeat(40) },
     approvedSnapshot,
   ));
-});
-
-test('snapshot age input and timestamps fail closed at exact boundaries', async (t) => {
-  const parseMaxSnapshotAgeHours = exported('parseMaxSnapshotAgeHours');
-  const assertSnapshotFreshness = exported('assertSnapshotFreshness');
-  assert.equal(parseMaxSnapshotAgeHours(undefined), dayMs);
-  assert.equal(parseMaxSnapshotAgeHours('0.5'), dayMs / 48);
-
-  for (const invalid of ['', '0', '-1', ' 24', '24 ', '01', '1e2', 'NaN', 'Infinity']) {
-    await t.test(`invalid threshold ${JSON.stringify(invalid)}`, () => {
-      assert.throws(() => parseMaxSnapshotAgeHours(invalid), /maximum snapshot age|positive decimal|safe/i);
-    });
-  }
-
-  const boundaryNow = Date.parse('2026-07-17T12:00:00Z');
-  const maxAgeMs = 24 * dayMs;
-  const timestamps = (scanAtMs: number, approvedAtMs: number) => ({
-    scanAt: new Date(scanAtMs).toISOString(),
-    approvedAt: new Date(approvedAtMs).toISOString(),
-  });
-  assert.doesNotThrow(() => {
-    assertSnapshotFreshness(
-      timestamps(boundaryNow - maxAgeMs, boundaryNow - maxAgeMs),
-      boundaryNow,
-      maxAgeMs,
-    );
-  });
-  assert.throws(
-    () => assertSnapshotFreshness(
-      timestamps(boundaryNow - maxAgeMs - 1, boundaryNow - maxAgeMs),
-      boundaryNow,
-      maxAgeMs,
-    ),
-    /scanAt.*older/i,
-  );
-  assert.throws(
-    () => assertSnapshotFreshness(
-      timestamps(boundaryNow + 1, boundaryNow + 2),
-      boundaryNow,
-      maxAgeMs,
-    ),
-    /future/i,
-  );
-  assert.throws(
-    () => assertSnapshotFreshness(
-      timestamps(boundaryNow - 1, boundaryNow - 2),
-      boundaryNow,
-      maxAgeMs,
-    ),
-    /approvedAt.*before.*scanAt/i,
-  );
 });
 
 test('certificate SAN and remaining full-day boundary are strict', () => {
@@ -480,8 +430,6 @@ test('normal monitor path binds public HTTPS checks to one validated address and
     {
       publicBaseUrl: 'https://admissions.example',
       expectedSha,
-      warnSnapshotAgeHours: '24',
-      maxSnapshotAgeHours: '24',
       approvedPath: '/must-not-be-read/local-approved.json',
       nowMs,
     },
@@ -539,30 +487,26 @@ test('normal monitor path binds public HTTPS checks to one validated address and
   assert.equal(result.origin, 'https://admissions.example');
   assert.equal(result.certificateDaysRemaining, 30);
   assert.deepEqual(result.warnings, []);
+  assert.equal(Object.hasOwn(result, 'warnSnapshotAgeHours'), false);
+  assert.equal(Object.hasOwn(result, 'maxSnapshotAgeHours'), false);
 });
 
-test('remote current integrity, freshness, schema, and release identity fail closed', async (t) => {
+test('remote current integrity, schema, and release identity fail closed without timestamp-age gating', async (t) => {
   const monitorPublicRelease = exported('monitorPublicRelease');
   const runMonitor = async ({
     currentText = JSON.stringify(approvedSnapshot),
     currentStatus = 200,
     release = releaseIdentity,
     checkedAt = nowMs,
-    warnAgeHours = '24',
-    maxAgeHours = '24',
   }: {
     currentText?: string;
     currentStatus?: number;
     release?: Record<string, unknown>;
     checkedAt?: number;
-    warnAgeHours?: string;
-    maxAgeHours?: string;
   }) => monitorPublicRelease(
     {
       publicBaseUrl: 'https://admissions.example',
       expectedSha,
-      warnSnapshotAgeHours: warnAgeHours,
-      maxSnapshotAgeHours: maxAgeHours,
       nowMs: checkedAt,
     },
     {
@@ -614,43 +558,15 @@ test('remote current integrity, freshness, schema, and release identity fail clo
       /duplicate.*key/i,
     );
   });
-  await t.test('stale remote current', async () => {
-    await assert.rejects(
-      runMonitor({ warnAgeHours: '0.00005', maxAgeHours: '0.0001' }),
-      /freshness.*older/i,
-    );
-  });
-  await t.test('daily cadence breach warns before the 72-hour hard limit', async () => {
+  await t.test('a historic but integrity-valid remote current succeeds long after its serialized timestamps', async () => {
     const checkedAt = Math.max(
       Date.parse(String(approvedSnapshot.scanAt)),
       Date.parse(String(approvedSnapshot.approvedAt)),
-    ) + 25 * 60 * 60 * 1_000;
+    ) + 365 * dayMs;
 
-    const result = await runMonitor({
-      checkedAt,
-      warnAgeHours: '24',
-      maxAgeHours: '72',
-    });
-
-    assert.match(result.warnings.join('\n'), /snapshot.*24.*hour/i);
-  });
-  await t.test('deadline passage does not invalidate an otherwise fresh approved snapshot', async () => {
-    const opportunities = approvedSnapshot.opportunities as Array<Record<string, unknown>>;
-    const firstDeadlineMs = Math.min(
-      ...opportunities
-        .filter((row) => row.verificationStatus === 'confirmed-open')
-        .map((row) => Number(row.deadlineEpochMs)),
-    );
-    const scanAtMs = Date.parse(String(approvedSnapshot.scanAt));
-    const freshnessHours = String(Math.ceil((firstDeadlineMs - scanAtMs) / (60 * 60 * 1_000)) + 1);
-
-    await assert.doesNotReject(
-      runMonitor({
-        checkedAt: firstDeadlineMs,
-        warnAgeHours: freshnessHours,
-        maxAgeHours: freshnessHours,
-      }),
-    );
+    const result = await runMonitor({ checkedAt });
+    assert.deepEqual(result.release, releaseIdentity);
+    assert.deepEqual(result.warnings, []);
   });
 
   await t.test('a healthy deployed release differing from main warns without claiming ancestry', async () => {
@@ -661,17 +577,15 @@ test('remote current integrity, freshness, schema, and release identity fail clo
     assert.doesNotMatch(result.warnings.join('\n'), /behind main/i);
   });
 
-  await t.test('warning-band freshness never weakens release identity failures', async () => {
+  await t.test('historical snapshot age never weakens release identity failures', async () => {
     const checkedAt = Math.max(
       Date.parse(String(approvedSnapshot.scanAt)),
       Date.parse(String(approvedSnapshot.approvedAt)),
-    ) + 25 * 60 * 60 * 1_000;
+    ) + 365 * dayMs;
 
     await assert.rejects(
       runMonitor({
         checkedAt,
-        warnAgeHours: '24',
-        maxAgeHours: '72',
         release: { ...releaseIdentity, dataHash: 'b'.repeat(64) },
       }),
       /dataHash.*current snapshot/i,
@@ -705,7 +619,6 @@ test('homepage and data response streams fail closed without recording response 
   const config = {
     publicBaseUrl: 'https://admissions.example',
     expectedSha,
-    maxSnapshotAgeHours: '24',
     nowMs,
   };
 

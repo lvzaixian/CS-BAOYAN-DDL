@@ -469,6 +469,7 @@ function validateOpportunity(
   schemaVersion: 1 | 2,
   knownFeedIds: Set<string>,
   nowMs: number,
+  enforceTemporalStatus: boolean,
   errors: string[],
 ): OpportunityOrderValue {
   const path = `snapshot.opportunities[${index}]`;
@@ -564,7 +565,7 @@ function validateOpportunity(
       if (deadlineEpochMs !== normalizedEpoch) {
         errors.push(`${path}.deadlineEpochMs: must match the normalized deadline timestamp`);
       }
-      if (Number.isFinite(nowMs) && deadlineEpochMs <= nowMs) {
+      if (enforceTemporalStatus && Number.isFinite(nowMs) && deadlineEpochMs <= nowMs) {
         errors.push(`${path}: confirmed-open deadline must be in the future`);
       }
     }
@@ -582,7 +583,7 @@ function validateOpportunity(
       if (deadlineEpochMs !== normalizedEpoch) {
         errors.push(`${path}.deadlineEpochMs: must match the normalized deadline timestamp`);
       }
-      if (Number.isFinite(nowMs) && deadlineEpochMs > nowMs) {
+      if (enforceTemporalStatus && Number.isFinite(nowMs) && deadlineEpochMs > nowMs) {
         errors.push(`${path}: expired rows cannot carry a future active deadline`);
       }
     }
@@ -601,6 +602,10 @@ function validatePublicProjectId(
   const parts = opportunity.projectId.split('|');
   if (parts.length !== 4 || parts.some((part) => part.trim() === '')) {
     errors.push(`${opportunity.path}.projectId: expected four non-empty parts`);
+    return;
+  }
+  if (parts.some((part) => part !== part.trim() || part !== part.normalize('NFC'))) {
+    errors.push(`${opportunity.path}.projectId: parts must be trimmed and NFC-normalized`);
     return;
   }
   if (!/^[0-9]{4}$/.test(parts[0])) {
@@ -660,7 +665,12 @@ function validateOrdering(values: OpportunityOrderValue[], errors: string[]): vo
   }
 }
 
-function validateInput(input: unknown, approved: boolean, nowMs: number): string[] {
+function validateInput(
+  input: unknown,
+  approved: boolean,
+  nowMs: number,
+  enforceTemporalStatus = true,
+): string[] {
   const errors: string[] = [];
   if (!Number.isFinite(nowMs)) {
     errors.push('nowMs: expected a finite number');
@@ -728,6 +738,7 @@ function validateInput(input: unknown, approved: boolean, nowMs: number): string
             schemaVersion,
             knownFeedIds,
             nowMs,
+            enforceTemporalStatus,
             errors,
           ),
         );
@@ -807,9 +818,34 @@ export function validateCandidate(input: unknown, nowMs = Date.now()): string[] 
   }
 }
 
+/**
+ * Validates the serialized shape of a candidate without reclassifying retained
+ * historical records from their deadline against a later publication time.
+ * Fresh additions must still use `validateCandidate` at their own scan time.
+ */
+export function validateCandidateStructure(input: unknown): string[] {
+  try {
+    return validateInput(input, false, 0, false);
+  } catch {
+    return ['snapshot: malformed input could not be validated'];
+  }
+}
+
 export function validateSnapshot(input: unknown, nowMs = Date.now()): string[] {
   try {
     return validateInput(input, true, nowMs);
+  } catch {
+    return ['snapshot: malformed input could not be validated'];
+  }
+}
+
+/**
+ * Validates a stored public snapshot's schema and integrity-relevant shape
+ * without treating elapsed parent deadlines as a reason to mutate history.
+ */
+export function validateSnapshotStructure(input: unknown): string[] {
+  try {
+    return validateInput(input, true, 0, false);
   } catch {
     return ['snapshot: malformed input could not be validated'];
   }

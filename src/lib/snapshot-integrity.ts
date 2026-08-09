@@ -8,7 +8,10 @@ import type {
   ReadablePublicSnapshot,
   SnapshotCandidate,
 } from './snapshot-types.js';
-import { validateSnapshot } from './snapshot-validation.js';
+import {
+  validateSnapshot,
+  validateSnapshotStructure,
+} from './snapshot-validation.js';
 
 type JsonObject = Record<string, unknown>;
 
@@ -117,8 +120,11 @@ function isRepositorySnapshotId(value: string): boolean {
   return match !== null && isValidIsoTimestamp(match[1]);
 }
 
-export function validateApprovedSnapshot(input: unknown, nowMs = Date.now()): string[] {
-  const errors = validateSnapshot(input, nowMs);
+function validateApprovedSnapshotWith(
+  input: unknown,
+  validationErrors: string[],
+): string[] {
+  const errors = validationErrors;
   if (!isObject(input)) return errors;
 
   let recomputedHash: string;
@@ -148,16 +154,24 @@ export function validateApprovedSnapshot(input: unknown, nowMs = Date.now()): st
   return errors;
 }
 
+export function validateApprovedSnapshot(input: unknown, nowMs = Date.now()): string[] {
+  return validateApprovedSnapshotWith(input, validateSnapshot(input, nowMs));
+}
+
+/**
+ * Checks a retained public snapshot without re-evaluating serialized parent
+ * statuses against the time of a later addition. UI expiry remains derived
+ * from the stored deadline, while fresh additions are validated separately.
+ */
+export function validateApprovedSnapshotStructure(input: unknown): string[] {
+  return validateApprovedSnapshotWith(input, validateSnapshotStructure(input));
+}
+
 export function validateStoredApprovedSnapshot(
   input: unknown,
-  fallbackNowMs = Date.now(),
+  _fallbackNowMs = Date.now(),
 ): string[] {
-  const referenceTimeMs = isObject(input)
-    && typeof input.approvedAt === 'string'
-    && isValidIsoTimestamp(input.approvedAt)
-    ? Date.parse(input.approvedAt)
-    : fallbackNowMs;
-  return validateApprovedSnapshot(input, referenceTimeMs);
+  return validateApprovedSnapshotStructure(input);
 }
 
 async function readRegularText(
