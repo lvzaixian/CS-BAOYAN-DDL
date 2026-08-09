@@ -36,6 +36,60 @@ function sha256(value: string | Uint8Array): string {
   return createHash('sha256').update(value).digest('hex');
 }
 
+function shanghaiSourceYear(checkedAt: string): string {
+  const year = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Shanghai',
+    year: 'numeric',
+  }).formatToParts(new Date(checkedAt)).find((part) => part.type === 'year')?.value;
+  if (year === undefined) throw new Error('fixture could not derive the Shanghai source year');
+  return year;
+}
+
+function fixedDiscoveryArtifactContent(checkId: string, url: string): string {
+  return `<html><body>GitHub fixed discovery check: ${checkId}\n${url}</body></html>`;
+}
+
+function fixedDiscoveryArtifactFixtures(checkedAt: string) {
+  const year = shanghaiSourceYear(checkedAt);
+  const checks = [
+    {
+      checkId: 'shenyanpai-profile',
+      url: 'https://github.com/shenyanpai',
+    },
+    {
+      checkId: 'shenyanpai-summer-camp',
+      url: `https://github.com/shenyanpai/awesome-summer-camp-${year}`,
+    },
+    {
+      checkId: 'shenyanpai-pre-recommend',
+      url: `https://github.com/shenyanpai/awesome-pre-recommend-${year}`,
+    },
+  ];
+  return checks.map(({ checkId, url }) => {
+    const content = fixedDiscoveryArtifactContent(checkId, url);
+    const artifactSha256 = sha256(content);
+    return {
+      check: {
+        checkId,
+        url,
+        checkedAt,
+        result: 'checked' as const,
+        artifactSha256,
+        reason: null,
+      },
+      artifact: {
+        path: `artifacts/fixed-discovery-${checkId}.html`,
+        sha256: artifactSha256,
+        url,
+        contentType: 'text/html',
+        fetchedAt: checkedAt,
+        extractedTextArtifactSha256: null,
+      },
+      content,
+    };
+  });
+}
+
 const registryText = readFileSync(
   join(repositoryRoot, 'scripts/source/universities.json'),
   'utf8',
@@ -227,10 +281,11 @@ function additiveRun(
   additions: PublicSnapshot['opportunities'],
 ): AdditiveApprovalRun {
   const artifactSha256 = sha256(artifactTextFor(additions));
+  const fixedDiscoveryArtifacts = fixedDiscoveryArtifactFixtures(runScannedAt);
   const entryUrl = additions[0]?.website ?? 'https://cs-new.example.edu.cn/admissions/summer-camp';
   const school = additions[0]?.name ?? parent.opportunities[0].name;
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     runId: '20260809-additive-unit-test',
     mode: 'incremental',
     startedAt: runScannedAt,
@@ -248,6 +303,7 @@ function additiveRun(
       registrySha256: sha256(registryText),
       sentinelsSha256: sha256(sentinelsText),
     },
+    fixedDiscoveryChecks: fixedDiscoveryArtifacts.map((item) => item.check),
     scopes: [
       ...coverageScopes(parent, artifactSha256, entryUrl),
       ...(additions.length === 0 ? [] : [{
@@ -272,6 +328,7 @@ function additiveRun(
         fetchedAt: runScannedAt,
         extractedTextArtifactSha256: null,
       },
+      ...fixedDiscoveryArtifacts.map((item) => item.artifact),
     ],
     additions: additions.map((opportunity) => ({
       opportunity,
@@ -303,12 +360,25 @@ function materializeRunArtifacts(
   run: AdditiveApprovalRun,
   contents: ReadonlyMap<string, string | Uint8Array> = new Map(),
 ): void {
+  const fixedArtifactContents = new Map(
+    run.fixedDiscoveryChecks
+      .filter((check) => check.artifactSha256 !== null)
+      .map((check) => [
+        check.artifactSha256!,
+        fixedDiscoveryArtifactContent(check.checkId, check.url),
+      ]),
+  );
   for (const artifact of run.artifacts) {
+    if (fixedArtifactContents.has(artifact.sha256)) {
+      artifact.fetchedAt = run.finishedAt;
+    }
     const artifactPath = resolve(source.root, artifact.path);
     mkdirSync(dirname(artifactPath), { recursive: true });
     writeFileSync(
       artifactPath,
-      contents.get(artifact.path) ?? artifactTextFor(run.additions.map((addition) => addition.opportunity)),
+      contents.get(artifact.path)
+        ?? fixedArtifactContents.get(artifact.sha256)
+        ?? artifactTextFor(run.additions.map((addition) => addition.opportunity)),
     );
   }
 }

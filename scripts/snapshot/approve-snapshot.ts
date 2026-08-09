@@ -179,8 +179,17 @@ export interface AdditiveCoveragePlan {
   sentinelsSha256: string;
 }
 
+export interface AdditiveFixedDiscoveryCheck {
+  checkId: string;
+  url: string;
+  checkedAt: string;
+  result: 'checked' | 'blocked';
+  artifactSha256: string | null;
+  reason: string | null;
+}
+
 export interface AdditiveApprovalRun {
-  schemaVersion: 2;
+  schemaVersion: 3;
   runId: string;
   mode: 'incremental' | 'sweep';
   startedAt: string;
@@ -193,6 +202,7 @@ export interface AdditiveApprovalRun {
     privateParentCandidateUsed: false;
   };
   coverage: AdditiveCoveragePlan;
+  fixedDiscoveryChecks: AdditiveFixedDiscoveryCheck[];
   scopes: AdditiveDiscoveryScope[];
   artifacts: AdditiveApprovalArtifact[];
   additions: Array<{
@@ -468,6 +478,45 @@ function coverageAt(object: JsonObject, path: string): AdditiveCoveragePlan {
   };
 }
 
+function fixedDiscoveryChecksAt(
+  object: JsonObject,
+  path: string,
+): AdditiveFixedDiscoveryCheck[] {
+  if (!Array.isArray(object.fixedDiscoveryChecks)) {
+    throw new Error(`${path}.fixedDiscoveryChecks must be an array`);
+  }
+  return object.fixedDiscoveryChecks.map((value, index) => {
+    const checkPath = `${path}.fixedDiscoveryChecks[${index}]`;
+    const check = objectAt(value, checkPath);
+    exactKeys(check, checkPath, [
+      'checkId',
+      'url',
+      'checkedAt',
+      'result',
+      'artifactSha256',
+      'reason',
+    ]);
+    const artifactSha256 = check.artifactSha256;
+    if (artifactSha256 !== null && typeof artifactSha256 !== 'string') {
+      throw new Error(`${checkPath}.artifactSha256 must be a SHA-256 string or null`);
+    }
+    const reason = check.reason;
+    if (reason !== null && typeof reason !== 'string') {
+      throw new Error(`${checkPath}.reason must be a string or null`);
+    }
+    return {
+      checkId: stringAt(check, 'checkId', checkPath),
+      url: stringAt(check, 'url', checkPath),
+      checkedAt: timestampAt(check, 'checkedAt', checkPath),
+      result: stringAt(check, 'result', checkPath) as AdditiveFixedDiscoveryCheck['result'],
+      artifactSha256: artifactSha256 === null
+        ? null
+        : sha256At(check, 'artifactSha256', checkPath),
+      reason,
+    };
+  });
+}
+
 function parseAdditiveRun(value: unknown): AdditiveApprovalRun {
   const object = objectAt(value, 'discovery run');
   exactKeys(object, 'discovery run', [
@@ -478,12 +527,13 @@ function parseAdditiveRun(value: unknown): AdditiveApprovalRun {
     'finishedAt',
     'parent',
     'coverage',
+    'fixedDiscoveryChecks',
     'scopes',
     'artifacts',
     'additions',
   ]);
-  if (object.schemaVersion !== 2) {
-    throw new Error('discovery run.schemaVersion must equal 2');
+  if (object.schemaVersion !== 3) {
+    throw new Error('discovery run.schemaVersion must equal 3');
   }
   const runId = stringAt(object, 'runId', 'discovery run');
   if (!/^[A-Za-z0-9][A-Za-z0-9._-]{2,127}$/u.test(runId)) {
@@ -522,6 +572,7 @@ function parseAdditiveRun(value: unknown): AdditiveApprovalRun {
     privateParentCandidateUsed: false,
   };
   const coverage = coverageAt(object, 'discovery run');
+  const fixedDiscoveryChecks = fixedDiscoveryChecksAt(object, 'discovery run');
 
   if (!Array.isArray(object.scopes)) throw new Error('discovery run.scopes must be an array');
   const scopes = object.scopes.map((value, index) => {
@@ -629,13 +680,14 @@ function parseAdditiveRun(value: unknown): AdditiveApprovalRun {
   });
 
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     runId,
     mode,
     startedAt,
     finishedAt,
     parent,
     coverage,
+    fixedDiscoveryChecks,
     scopes,
     artifacts,
     additions,
