@@ -1601,31 +1601,35 @@ test('does not revalidate or rewrite historical parent provenance values', async
   }
 });
 
-test('leaves a historical umbrella parent row untouched', async () => {
-  const source = paths();
-  const parent = sealedParent();
-  const historical = parent.opportunities[0];
-  const [cycle, name, , projectRound] = historical.projectId.split('|');
-  historical.institute = '全校';
-  historical.projectId = `${cycle}|${name}|${historical.institute}|${projectRound}`;
-  parent.dataHash = canonicalDataHash(parent);
-  parent.snapshotId = deriveSnapshotId(parent.approvedAt, parent.dataHash);
-  const parentText = writeJson(source.parent, parent);
-  writeFileSync(source.approved, parentText, 'utf8');
-  const run = additiveRun(parent, parentText, []);
-  materializeRunArtifacts(source, run);
-  writeJson(source.run, run);
+test('leaves historical umbrella parent rows untouched', async (t) => {
+  for (const institute of ['全校', '研究生院']) {
+    await t.test(institute, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const historical = parent.opportunities[0];
+      const [cycle, name, , projectRound] = historical.projectId.split('|');
+      historical.institute = institute;
+      historical.projectId = `${cycle}|${name}|${historical.institute}|${projectRound}`;
+      parent.dataHash = canonicalDataHash(parent);
+      parent.snapshotId = deriveSnapshotId(parent.approvedAt, parent.dataHash);
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const run = additiveRun(parent, parentText, []);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
 
-  try {
-    const result = await approve(source);
-    assert.deepEqual(result, { status: 'no-additions', runId: '20260809-additive-unit-test' });
-    assert.equal(readFileSync(source.approved, 'utf8'), parentText);
-  } finally {
-    rmSync(source.root, { recursive: true, force: true });
+      try {
+        const result = await approve(source);
+        assert.deepEqual(result, { status: 'no-additions', runId: '20260809-additive-unit-test' });
+        assert.equal(readFileSync(source.approved, 'utf8'), parentText);
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
   }
 });
 
-test('rejects normalized umbrella or system institute labels before a decision or public write', async (t) => {
+test('rejects normalized umbrella, admissions-office, or generic graduate-school institute labels before a decision or public write', async (t) => {
   const cases = [
     { name: 'whole-school English label', institute: 'ｗｈｏｌｅ－ｓｃｈｏｏｌ' },
     { name: 'whole-school Chinese label', institute: '全　校' },
@@ -1637,6 +1641,10 @@ test('rejects normalized umbrella or system institute labels before a decision o
     { name: 'admissions-system label', institute: '招　生　系　统' },
     { name: 'registration-system label', institute: '报 名 系 统' },
     { name: 'system-level label', institute: '系　统　级' },
+    { name: 'plain graduate-school label', institute: '研究生院' },
+    { name: 'school-named generic graduate-school label', institute: '新增测试大学·研究生院' },
+    { name: 'graduate admissions-office label', institute: '研究生 招生·办公室' },
+    { name: 'admissions-office label', institute: '招 生 办 公 室' },
   ];
 
   for (const { name, institute } of cases) {
@@ -1681,6 +1689,26 @@ test('rejects format-control and typographic-dash umbrella institute labels befo
     {
       name: 'en dash within whole-school label',
       institute: 'whole–school',
+      expected: /addition .* institute must name a concrete college-level unit/i,
+    },
+    {
+      name: 'hyphen bullet within whole-school label',
+      institute: 'whole⁃school',
+      expected: /addition .* institute must name a concrete college-level unit/i,
+    },
+    {
+      name: 'double oblique hyphen within whole-school label',
+      institute: 'whole⸗school',
+      expected: /addition .* institute must name a concrete college-level unit/i,
+    },
+    {
+      name: 'symbol within whole-school label',
+      institute: 'whole★school',
+      expected: /addition .* institute must name a concrete college-level unit/i,
+    },
+    {
+      name: 'combining mark within whole-school label',
+      institute: 'whole\u20ddschool',
       expected: /addition .* institute must name a concrete college-level unit/i,
     },
   ];
@@ -1774,6 +1802,31 @@ test('accepts a concrete college addition with harmless ordinary checked blocked
     const approvedAddition = approved.opportunities.find((opportunity) =>
       opportunity.projectId === addition.projectId);
     assert.equal(approvedAddition?.description, addition.description);
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('accepts a qualified independent graduate-school addition without rewriting its identity', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  addition.institute = '新增测试大学深圳国际研究生院';
+  addition.projectId = `2027|${addition.name}|${addition.institute}|夏令营`;
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.equal(result.status, 'ready');
+    const approved = JSON.parse(readFileSync(source.approved, 'utf8')) as PublicSnapshot;
+    const approvedAddition = approved.opportunities.find((opportunity) =>
+      opportunity.projectId === addition.projectId);
+    assert.equal(approvedAddition?.institute, addition.institute);
+    assert.equal(approvedAddition?.projectId, addition.projectId);
   } finally {
     rmSync(source.root, { recursive: true, force: true });
   }

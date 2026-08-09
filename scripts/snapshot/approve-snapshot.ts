@@ -1096,8 +1096,7 @@ function assertAdditivePublicProvenance(
   }
 }
 
-const additiveUmbrellaInstituteSubstrings = [
-  'whole-school',
+const additiveUmbrellaInstituteSkeletons = [
   'wholeschool',
   '全校',
   '全院系',
@@ -1107,15 +1106,17 @@ const additiveUmbrellaInstituteSubstrings = [
   '招生系统',
   '报名系统',
   '系统级',
+  '研究生招生办公室',
+  '招生办公室',
 ] as const;
 const additiveInstituteFormatControlPattern = /\p{Cf}/u;
-const additiveWholeSchoolDashSeparatorPattern = /[\u2010-\u2015\u2212]/gu;
+const additiveInstituteSkeletonSeparatorPattern = /[\p{White_Space}\p{P}\p{S}\p{M}]+/gu;
+const additiveGenericGraduateSchoolSkeleton = '研究生院';
 
-function normalizeAdditiveInstituteLabel(value: string): string {
+function additiveInstituteLabelSkeleton(value: string): string {
   return value
-    .normalize('NFKC')
-    .replace(additiveWholeSchoolDashSeparatorPattern, '-')
-    .replace(/\s+/gu, '')
+    .normalize('NFKD')
+    .replace(additiveInstituteSkeletonSeparatorPattern, '')
     .toLowerCase();
 }
 
@@ -1142,8 +1143,13 @@ function assertAdditiveCollegeGranularity(opportunity: PublicOpportunity): void 
       `addition ${quoted(opportunity.projectId)} institute must not contain Unicode format controls`,
     );
   }
-  const normalizedInstitute = normalizeAdditiveInstituteLabel(opportunity.institute);
-  if (additiveUmbrellaInstituteSubstrings.some((label) => normalizedInstitute.includes(label))) {
+  const instituteSkeleton = additiveInstituteLabelSkeleton(opportunity.institute);
+  const isUnqualifiedGraduateSchool = instituteSkeleton === additiveGenericGraduateSchoolSkeleton
+    || instituteSkeleton === `${additiveInstituteLabelSkeleton(opportunity.name)}${additiveGenericGraduateSchoolSkeleton}`;
+  if (
+    isUnqualifiedGraduateSchool
+    || additiveUmbrellaInstituteSkeletons.some((label) => instituteSkeleton.includes(label))
+  ) {
     throw new Error(
       `addition ${quoted(opportunity.projectId)} institute must name a concrete college-level unit`,
     );
