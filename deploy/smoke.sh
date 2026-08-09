@@ -522,7 +522,7 @@ def validate_feed(value, index):
     return feed_id, cycle
 
 
-def validate_opportunity(value, index, schema_version, known_feeds, feed_cycles, now_ms):
+def validate_opportunity(value, index, schema_version, known_feeds, feed_cycles):
     label = f"snapshot.opportunities[{index}]"
     required = OPPORTUNITY_KEYS_V1 | ({"eventArrangement"} if schema_version == 2 else set())
     opportunity = shape(value, required, {"province"}, label)
@@ -569,16 +569,12 @@ def validate_opportunity(value, index, schema_version, known_feeds, feed_cycles,
     if status == "confirmed-open":
         if deadline_ms is None or deadline_epoch is None or deadline_epoch != deadline_ms:
             invalid(f"{label}: confirmed-open deadline fields are invalid")
-        if deadline_epoch <= now_ms:
-            invalid(f"{label}: confirmed-open deadline must be in the future")
     elif status == "confirmed-unknown-deadline":
         if deadline is not None or deadline_epoch is not None:
             invalid(f"{label}: unknown deadline fields must be null")
     elif deadline is not None or deadline_epoch is not None:
         if deadline_ms is None or deadline_epoch is None or deadline_epoch != deadline_ms:
             invalid(f"{label}: expired deadline fields are invalid")
-        if deadline_epoch > now_ms:
-            invalid(f"{label}: expired deadline cannot be in the future")
     parts = project_id.split("|")
     if len(parts) != 4 or any(part.strip() == "" for part in parts):
         invalid(f"{label}.projectId: expected four non-empty parts")
@@ -641,7 +637,7 @@ try:
         invalid("snapshot.opportunities: expected an array")
     opportunities = [
         validate_opportunity(
-            row, index, schema_version, known_feeds, feed_cycles, approved_at_ms
+            row, index, schema_version, known_feeds, feed_cycles
         )
         for index, row in enumerate(snapshot["opportunities"])
     ]

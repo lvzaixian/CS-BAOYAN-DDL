@@ -1273,14 +1273,16 @@ test('smoke verifies all public data endpoints, title, asset, SPA fallback, and 
   assert.match(wrongIdentity.stderr, /smoke failed/i);
 });
 
-test('smoke validates stored opportunity status at snapshot approval time', async (t) => {
+test('smoke preserves stored lifecycle status instead of reinterpreting historical deadlines', async (t) => {
   const { deployRoot, fakeBin } = makeDeployRoot(t);
   const releaseSha = '6'.repeat(40);
   const release = join(deployRoot, 'releases', releaseSha);
   const snapshot = validSmokeSnapshot() as Record<string, any>;
   const approvedAt = snapshot.approvedAt;
   snapshot.opportunities[0].verificationStatus = 'confirmed-open';
-  snapshot.opportunities[0].deadline = '2026-07-16T23:59:00+08:00';
+  // A preserved parent record can cross its deadline after its original approval.
+  // Deployment must validate the stored snapshot, not reinterpret that historical state.
+  snapshot.opportunities[0].deadline = '2026-07-14T12:00:00+08:00';
   snapshot.opportunities[0].deadlineEpochMs = Date.parse(snapshot.opportunities[0].deadline);
   snapshot.counts.confirmedOpen = 1;
   snapshot.counts.confirmedUnknownDeadline = 0;
