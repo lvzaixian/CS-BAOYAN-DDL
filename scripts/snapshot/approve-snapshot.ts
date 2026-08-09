@@ -988,6 +988,8 @@ function assertAdditiveFixedDiscoveryChecks(
 
 const additiveGitHubDiscoveryTextPattern = /github\.com|raw\.githubusercontent\.com/iu;
 const additiveProvenanceDecodeDepth = 4;
+const additivePercentByteRunPattern = /(?:%[0-9A-Fa-f]{2})+/gu;
+const additiveIdnaEquivalentDotPattern = /[\u3002\uFF0E\uFF61]/gu;
 
 function additiveFixedDiscoveryPrivateValues(
   run: AdditiveApprovalRun,
@@ -1017,21 +1019,35 @@ function serializedAdditiveString(value: string): string {
   return JSON.stringify(value).slice(1, -1);
 }
 
+function decodeAdditivePercentByteRuns(value: string): string {
+  return value.replace(additivePercentByteRunPattern, (percentBytes) => {
+    try {
+      return decodeURIComponent(percentBytes);
+    } catch {
+      return percentBytes;
+    }
+  });
+}
+
+function normalizeAdditiveProvenanceText(value: string): string {
+  return value.normalize('NFKC').replace(additiveIdnaEquivalentDotPattern, '.');
+}
+
 function additiveHostDetectionCandidates(serializedContent: string): string[] {
   const candidates = new Set<string>([serializedContent]);
-  let current = serializedContent.normalize('NFKC');
-  candidates.add(current);
+  const addNormalizedCandidates = (value: string): string => {
+    const nfkc = value.normalize('NFKC');
+    candidates.add(nfkc);
+    const normalized = normalizeAdditiveProvenanceText(value);
+    candidates.add(normalized);
+    return normalized;
+  };
+  let current = addNormalizedCandidates(serializedContent);
   for (let depth = 0; depth < additiveProvenanceDecodeDepth; depth += 1) {
-    let decoded: string;
-    try {
-      decoded = decodeURIComponent(current);
-    } catch {
-      break;
-    }
+    const decoded = decodeAdditivePercentByteRuns(current);
     if (decoded === current) break;
     candidates.add(decoded);
-    current = decoded.normalize('NFKC');
-    candidates.add(current);
+    current = addNormalizedCandidates(decoded);
   }
   return [...candidates];
 }
@@ -1041,11 +1057,12 @@ function assertAdditivePublicProvenance(
   fixedDiscoveryPrivateValues: ReadonlySet<string>,
 ): void {
   const serializedOpportunity = JSON.stringify(opportunity);
+  const candidates = additiveHostDetectionCandidates(serializedOpportunity);
   if (
-    additiveHostDetectionCandidates(serializedOpportunity)
-      .some((candidate) => additiveGitHubDiscoveryTextPattern.test(candidate))
+    candidates.some((candidate) => additiveGitHubDiscoveryTextPattern.test(candidate))
     || [...fixedDiscoveryPrivateValues].some((value) =>
-      serializedOpportunity.includes(serializedAdditiveString(value)))
+      candidates.some((candidate) =>
+        candidate.includes(value) || candidate.includes(serializedAdditiveString(value))))
   ) {
     throw new Error(
       `addition ${quoted(opportunity.projectId)} must not expose fixed discovery provenance`,

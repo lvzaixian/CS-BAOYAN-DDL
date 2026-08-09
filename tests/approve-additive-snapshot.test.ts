@@ -55,6 +55,27 @@ function fixedDiscoveryArtifactContent(checkId: string): string {
   return `<html><body>GitHub fixed discovery check: ${checkId}</body></html>`;
 }
 
+function percentEncodeLeadingAscii(value: string): string {
+  const codePoint = value.codePointAt(0);
+  if (codePoint === undefined || codePoint < 0x21 || codePoint > 0x7e) {
+    throw new Error('fixture expected a printable ASCII leading character');
+  }
+  return `%${codePoint.toString(16).padStart(2, '0').toUpperCase()}${value.slice(1)}`;
+}
+
+function doublePercentEncodeLeadingAscii(value: string): string {
+  const once = percentEncodeLeadingAscii(value);
+  return `%25${once.slice(1)}`;
+}
+
+function nfkcLeadingAsciiVariant(value: string): string {
+  const codePoint = value.codePointAt(0);
+  if (codePoint === undefined || codePoint < 0x21 || codePoint > 0x7e) {
+    throw new Error('fixture expected a printable ASCII leading character');
+  }
+  return `${String.fromCodePoint(codePoint + 0xfee0)}${value.slice(1)}`;
+}
+
 function fixedDiscoveryArtifactFixtures(checkedAt: string) {
   const year = shanghaiSourceYear(checkedAt);
   const checks = [
@@ -1117,6 +1138,38 @@ test('rejects fixed discovery provenance from every serialized additive public f
       prepare: () => 'https://github\uFF0Ecom/shenyanpai/notice',
     },
     {
+      name: 'ideographic-dot GitHub URL',
+      prepare: () => 'https://github\u3002com/shenyanpai/notice',
+    },
+    {
+      name: 'ideographic-dot raw GitHub URL',
+      prepare: () => 'https://raw\u3002githubusercontent\u3002com/shenyanpai/notice/main/README.md',
+    },
+    {
+      name: 'percent-encoded ideographic-dot GitHub URL',
+      prepare: () => 'https://github%E3%80%82com/shenyanpai/notice',
+    },
+    {
+      name: 'percent-encoded ideographic-dot raw GitHub URL',
+      prepare: () => 'https://raw%E3%80%82githubusercontent%E3%80%82com/shenyanpai/notice/main/README.md',
+    },
+    {
+      name: 'halfwidth-dot GitHub URL',
+      prepare: () => 'https://github\uFF61com/shenyanpai/notice',
+    },
+    {
+      name: 'halfwidth-dot raw GitHub URL',
+      prepare: () => 'https://raw\uFF61githubusercontent\uFF61com/shenyanpai/notice/main/README.md',
+    },
+    {
+      name: 'percent-encoded halfwidth-dot GitHub URL',
+      prepare: () => 'https://github%EF%BD%A1com/shenyanpai/notice',
+    },
+    {
+      name: 'percent-encoded halfwidth-dot raw GitHub URL',
+      prepare: () => 'https://raw%EF%BD%A1githubusercontent%EF%BD%A1com/shenyanpai/notice/main/README.md',
+    },
+    {
       name: 'percent-encoded Unicode-separator GitHub URL',
       prepare: () => 'https://github%EF%BC%8Ecom/shenyanpai/notice',
     },
@@ -1156,6 +1209,57 @@ test('rejects fixed discovery provenance from every serialized additive public f
       },
     },
   ];
+  const encodedFixedPrivateFragments: Array<{
+    name: string;
+    prepare: (run: AdditiveApprovalRun) => string;
+  }> = [
+    {
+      name: 'fixed check ID',
+      prepare: (run: AdditiveApprovalRun) => fixedDiscoveryCheck(run, 'shenyanpai-profile').checkId,
+    },
+    {
+      name: 'fixed canonical URL',
+      prepare: (run: AdditiveApprovalRun) => fixedDiscoveryCheck(run, 'shenyanpai-profile').url,
+    },
+    {
+      name: 'fixed artifact SHA-256',
+      prepare: (run: AdditiveApprovalRun) => fixedDiscoveryCheck(run, 'shenyanpai-profile').artifactSha256!,
+    },
+    {
+      name: 'blocked fixed-check reason',
+      prepare: (run: AdditiveApprovalRun) => {
+        blockFixedDiscoveryCheck(run, 'shenyanpai-pre-recommend');
+        return fixedDiscoveryCheck(run, 'shenyanpai-pre-recommend').reason!;
+      },
+    },
+  ];
+  const encodedFixedPrivateFragmentForms = [
+    { name: 'percent-encoded', encode: percentEncodeLeadingAscii },
+    { name: 'double-encoded', encode: doublePercentEncodeLeadingAscii },
+    { name: 'NFKC', encode: nfkcLeadingAsciiVariant },
+  ];
+  provenanceValues.push(...encodedFixedPrivateFragments.flatMap((fragment) =>
+    encodedFixedPrivateFragmentForms.map((form) => ({
+      name: `${form.name} ${fragment.name}`,
+      prepare: (run: AdditiveApprovalRun) => form.encode(fragment.prepare(run)),
+    }))));
+  provenanceValues.push(
+    {
+      name: 'percent-encoded fixed artifact text',
+      prepare: () => fixedDiscoveryArtifactContent('shenyanpai-profile')
+        .replace('shenyanpai-profile', 'shenyanpai%2Dprofile'),
+    },
+    {
+      name: 'double-encoded fixed artifact text',
+      prepare: () => fixedDiscoveryArtifactContent('shenyanpai-profile')
+        .replace('shenyanpai-profile', 'shenyanpai%252Dprofile'),
+    },
+    {
+      name: 'NFKC fixed artifact text',
+      prepare: () => fixedDiscoveryArtifactContent('shenyanpai-profile')
+        .replace('shenyanpai-profile', 'shenyanpai\uFF0Dprofile'),
+    },
+  );
 
   for (const field of fields) {
     for (const provenance of provenanceValues) {
@@ -1185,6 +1289,112 @@ test('rejects fixed discovery provenance from every serialized additive public f
   }
 });
 
+test('rejects encoded GitHub provenance despite malformed percent text in another public field', async (t) => {
+  const cases: Array<{
+    name: string;
+    expose: (addition: PublicSnapshot['opportunities'][number]) => void;
+  }> = [
+    {
+      name: 'GitHub tag after malformed description',
+      expose: (addition) => {
+        addition.description = `${addition.description}\nhttps://example.invalid/%ZZ`;
+        addition.tags = [...addition.tags, 'https://github%2Ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'raw GitHub source label after malformed tag',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'malformed percent token: %ZZ'];
+        addition.discoverySources[0].label =
+          'https://raw%2Egithubusercontent%2Ecom/shenyanpai/notice/main/README.md';
+      },
+    },
+    {
+      name: 'raw GitHub source label after invalid UTF-8 tag',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'invalid UTF-8 percent bytes: %FF'];
+        addition.discoverySources[0].label =
+          'https://raw%2Egithubusercontent%2Ecom/shenyanpai/notice/main/README.md';
+      },
+    },
+  ];
+
+  for (const entry of cases) {
+    await t.test(entry.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      entry.expose(addition);
+      const run = additiveRun(parent, parentText, [addition]);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(
+          source,
+          parentText,
+          () => approve(source),
+          /addition .* must not expose fixed discovery provenance/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('bounds additive provenance percent decoding to four rounds', async (t) => {
+  await t.test('rejects an encoded GitHub host revealed on the fourth round', async () => {
+    const source = paths();
+    const parent = sealedParent();
+    const parentText = writeJson(source.parent, parent);
+    writeFileSync(source.approved, parentText, 'utf8');
+    const addition = additionFor(parent);
+    addition.tags = [...addition.tags, 'https://github%2525252Ecom/shenyanpai/notice'];
+    const run = additiveRun(parent, parentText, [addition]);
+    materializeRunArtifacts(source, run);
+    writeJson(source.run, run);
+
+    try {
+      await assertRejectedBeforeApproval(
+        source,
+        parentText,
+        () => approve(source),
+        /addition .* must not expose fixed discovery provenance/i,
+      );
+    } finally {
+      rmSync(source.root, { recursive: true, force: true });
+    }
+  });
+
+  await t.test('does not inspect a fifth percent-decoding round', async () => {
+    const source = paths();
+    const parent = sealedParent();
+    const parentText = writeJson(source.parent, parent);
+    writeFileSync(source.approved, parentText, 'utf8');
+    const addition = additionFor(parent);
+    const fifthRoundTag = 'https://github%252525252Ecom/shenyanpai/notice';
+    addition.tags = [...addition.tags, fifthRoundTag];
+    const run = additiveRun(parent, parentText, [addition]);
+    materializeRunArtifacts(source, run);
+    writeJson(source.run, run);
+
+    try {
+      const result = await approve(source);
+      assert.equal(result.status, 'ready');
+      const approved = JSON.parse(readFileSync(source.approved, 'utf8')) as PublicSnapshot;
+      const approvedAddition = approved.opportunities.find((opportunity) =>
+        opportunity.projectId === addition.projectId);
+      assert.ok(approvedAddition);
+      assert.ok(approvedAddition.tags.includes(fifthRoundTag));
+    } finally {
+      rmSync(source.root, { recursive: true, force: true });
+    }
+  });
+});
+
 test('does not throw while inspecting malformed percent-encoded additive text', async () => {
   const source = paths();
   const parent = sealedParent();
@@ -1199,6 +1409,11 @@ test('does not throw while inspecting malformed percent-encoded additive text', 
   try {
     const result = await approve(source);
     assert.equal(result.status, 'ready');
+    const approved = JSON.parse(readFileSync(source.approved, 'utf8')) as PublicSnapshot;
+    const approvedAddition = approved.opportunities.find((opportunity) =>
+      opportunity.projectId === addition.projectId);
+    assert.ok(approvedAddition);
+    assert.match(approvedAddition.description, /https:\/\/example\.invalid\/%ZZ/u);
   } finally {
     rmSync(source.root, { recursive: true, force: true });
   }
@@ -1210,6 +1425,7 @@ test('does not revalidate or rewrite historical parent provenance values', async
   const historical = parent.opportunities[0];
   const fixedText = fixedDiscoveryArtifactContent('shenyanpai-profile');
   const fixedSha256 = sha256(fixedText);
+  const blockedReason = 'network timeout while reading the fixed discovery source';
   const [cycle, school, institute] = historical.projectId.split('|');
   historical.description = [
     historical.description,
@@ -1221,10 +1437,12 @@ test('does not revalidate or rewrite historical parent provenance values', async
     'https://github%EF%BC%8Ecom/shenyanpai/historical-notice',
     'https://raw%25EF%25BC%258Egithubusercontent%25EF%25BC%258Ecom/shenyanpai/historical/main/notice.html',
     fixedText,
+    percentEncodeLeadingAscii(fixedText),
+    percentEncodeLeadingAscii('https://github.com/shenyanpai'),
   ].join('\n');
-  historical.tags = [...historical.tags, fixedSha256];
-  historical.projectId = `${cycle}|${school}|${institute}|shenyanpai-profile`;
-  historical.discoverySources[0].label = 'network timeout while reading the fixed discovery source';
+  historical.tags = [...historical.tags, fixedSha256, percentEncodeLeadingAscii(fixedSha256)];
+  historical.projectId = `${cycle}|${school}|${institute}|${percentEncodeLeadingAscii('shenyanpai-profile')}`;
+  historical.discoverySources[0].label = percentEncodeLeadingAscii(blockedReason);
   parent.dataHash = canonicalDataHash(parent);
   parent.snapshotId = deriveSnapshotId(parent.approvedAt, parent.dataHash);
   const parentText = writeJson(source.parent, parent);
