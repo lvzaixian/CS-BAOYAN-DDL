@@ -11,10 +11,8 @@ import {
   MAX_SNAPSHOT_JSON_BYTES,
   validateStoredApprovedSnapshot,
 } from '../src/lib/snapshot-integrity.js';
-import { checkSnapshotFreshness } from './snapshot/check-freshness.js';
 
-const hourMs = 60 * 60 * 1000;
-const dayMs = 24 * hourMs;
+const dayMs = 24 * 60 * 60 * 1000;
 const homepageByteLimit = 1024 * 1024;
 const releaseByteLimit = 16 * 1024;
 const requestTimeoutMs = 15_000;
@@ -281,28 +279,6 @@ export function assertPublicAddresses(addresses) {
   }
 }
 
-export function parseMaxSnapshotAgeHours(value) {
-  const text = value === undefined ? '24' : value;
-  if (
-    typeof text !== 'string'
-    || !/^(?:[1-9]\d*(?:\.\d+)?|0\.\d*[1-9]\d*)$/.test(text)
-  ) {
-    throw new Error('maximum snapshot age must be a positive decimal number of hours');
-  }
-  const maxAgeMs = Number(text) * hourMs;
-  if (!Number.isSafeInteger(maxAgeMs) || maxAgeMs <= 0) {
-    throw new Error('maximum snapshot age must resolve to positive safe integer milliseconds');
-  }
-  return maxAgeMs;
-}
-
-export function assertSnapshotFreshness(snapshot, nowMs, maxAgeMs) {
-  const errors = checkSnapshotFreshness(snapshot, nowMs, maxAgeMs);
-  if (errors.length > 0) {
-    throw new Error(`snapshot freshness failed: ${errors.join('; ')}`);
-  }
-}
-
 function assertReleaseSchema(value) {
   if (!isObject(value)) throw new Error('release schema must be a JSON object');
   const keys = Object.keys(value).sort();
@@ -533,18 +509,7 @@ function parseResponseDeadlineMs(value) {
 async function monitorPublicReleaseWithinDeadline(config, dependencies, signal) {
   const nowMs = config.nowMs ?? Date.now();
   const originUrl = await atStage('configuration', async () => parsePublicOrigin(config.publicBaseUrl));
-  const warnAgeMs = await atStage(
-    'configuration',
-    async () => parseMaxSnapshotAgeHours(config.warnSnapshotAgeHours),
-  );
-  const maxAgeMs = await atStage(
-    'configuration',
-    async () => parseMaxSnapshotAgeHours(config.maxSnapshotAgeHours),
-  );
   await atStage('configuration', async () => {
-    if (warnAgeMs > maxAgeMs) {
-      throw new Error('snapshot warning age must not exceed the maximum age');
-    }
     if (!/^[0-9a-f]{40}$/.test(config.expectedSha)) {
       throw new Error('expected GITHUB_SHA must be exactly 40 lowercase hexadecimal characters');
     }
@@ -631,14 +596,7 @@ async function monitorPublicReleaseWithinDeadline(config, dependencies, signal) 
   await atStage('snapshot-integrity', async () => {
     const errors = validateStoredApprovedSnapshot(approvedSnapshot, nowMs);
     if (errors.length > 0) throw new Error(errors.join('; '));
-    assertSnapshotFreshness(approvedSnapshot, nowMs, maxAgeMs);
   });
-  if (checkSnapshotFreshness(approvedSnapshot, nowMs, warnAgeMs).length > 0) {
-    warnings.push(
-      `Snapshot is older than the ${warnAgeMs / hourMs}-hour daily scan target `
-      + `but remains within the ${maxAgeMs / hourMs}-hour hard limit.`,
-    );
-  }
 
   const releaseResponse = await atStage(
     'release',
@@ -677,8 +635,6 @@ async function monitorPublicReleaseWithinDeadline(config, dependencies, signal) 
     release,
     certificateDaysRemaining,
     warnings,
-    warnSnapshotAgeHours: warnAgeMs / hourMs,
-    maxSnapshotAgeHours: maxAgeMs / hourMs,
   };
 }
 
@@ -723,8 +679,6 @@ async function runCli() {
     const result = await monitorPublicRelease({
       publicBaseUrl: process.env.PUBLIC_BASE_URL,
       expectedSha: process.env.GITHUB_SHA,
-      warnSnapshotAgeHours: process.env.WARN_SNAPSHOT_AGE_HOURS,
-      maxSnapshotAgeHours: process.env.MAX_SNAPSHOT_AGE_HOURS,
       minimumCertificateDays: Number(process.env.CERT_MIN_VALID_DAYS ?? '21'),
     });
     console.log(

@@ -16,6 +16,7 @@
     "snapshot:import": "tsx scripts/snapshot/import-scouting-data.ts",
     "snapshot:diff": "tsx scripts/snapshot/diff-snapshots.ts",
     "snapshot:approve": "tsx scripts/snapshot/approve-snapshot.ts",
+    "snapshot:approve-additive": "tsx scripts/snapshot/approve-additive-snapshot.ts",
     "snapshot:validate": "tsx scripts/snapshot/validate-current.ts",
     "snapshot:check-freshness": "tsx scripts/snapshot/check-freshness.ts",
     "scan:build-release": "tsx scripts/snapshot/build-scan-release.ts",

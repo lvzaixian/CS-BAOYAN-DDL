@@ -1,25 +1,83 @@
-# Timely CS Admissions DDL Working Agreement
+# CS DDL 追加式更新工作约定
 
-## Product Boundary
+## 目标与边界
 
-Preserve the upstream CS-BAOYAN-DDL interaction model. Improve freshness and evidence quality without adding accounts, comments, a database, or a public write API in v1.
+`ddl.meta-mind.cn` 是一个公开招生信息聚合站。日常更新的目标是持续发现并追加有官方证据的新项目；它不是逐条人工审批、全量重审或删除同步系统。
 
-## Source Authority
+日常更新遵循四项不可降级的规则：
 
-Aggregators are discovery sources only. A record may enter the actionable main list only when an official school, college, institute, official application system, official WeChat account, or official attachment supports it.
+1. 扫描先广后深：注册表、学院/研究院、报名系统、官方通知、附件和线索站共同发现；网页内链接、PDF、Office 附件、图片和内嵌预览必须递归展开并解析。
+2. 公共条目只增不减：在线快照是唯一父本。每天只追加父本中不存在的 canonical `projectId`，绝不因本轮未命中、WAF、附件不可读、字段变化或疑似关闭而改写、删除或降级父项。
+3. 过期由展示层派生：已保存的最早行动截止时间一过，前端把项目归为已过期；不为此扫描旧项目或回写其历史状态。
+4. 自动化优先：保留官方证据、去重、隐私、原子写入、CI、构建和公网 smoke；日常追加不要求 pending CAS、删除授权、工作簿、逐项人工复核或 Environment 人工批准。
 
-## Data Flow
+## 日常批准器
 
-`data/staging/candidate.json` is never deployable: it must pass candidate validation and carry no approval metadata. Only approved `data/approved/current.json` may be bundled into production. An approved `current.json` must pass `pnpm run snapshot:validate` and preserve `snapshotId`, `previousSnapshotId`, `scanAt`, `approvedAt`, and `dataHash`.
+唯一日常公开数据写入入口是：
 
-## Privacy
+```bash
+pnpm run snapshot:approve-additive -- \
+  --run /private/run/discovery-run.json \
+  --parent /private/run/public-parent.json \
+  --approved data/approved/current.json \
+  --decision /private/run/release-decision.json \
+  --registry scripts/source/universities.json \
+  --sentinels scripts/source/priority-sentinels.json
+```
 
-Never commit submitted-project lists, personal fit scores, contact details, target-folder paths, private evidence paths, credentials, or application status.
+`discovery-run.json` 是私有的 `schemaVersion: 2` 运行文件，必须包含唯一 `runId`、`incremental` 或 `sweep` 模式、开始/结束时间、从 `https://ddl.meta-mind.cn/data/current.json` 新鲜下载的父快照原始 SHA-256、父 `snapshotId`/`dataHash`、scope 图、普通官方 artifact 清单、候选新增项和字段证据。它还必须带有 `coverage`：`{schemaVersion: 1, rotationDate, registrySha256, sentinelsSha256}`。两个 SHA-256 是本轮冻结的注册表和哨兵配置原始字节哈希；`rotationDate` 必须等于 `finishedAt` 的北京时间日期。私有候选、旧运行产物和工作簿不能充当父本。
 
-## Release
+批准器在一次操作中确认：
 
-Production deploys are static and versioned. A failed scan, validation, build, upload, or smoke check must leave the previous release serving when one exists; a failed first release must remove its `current` link. Do not grant scanning agents production SSH keys.
+- 运行结束时间距批准时不超过 24 小时；本地 `--approved` 的原始字节仍等于冻结父本；
+- 重新读取 `--registry` 与 `--sentinels`，核对其原始字节哈希，并从父本、注册表和北京时间日期导出必查范围：每日所有重点哨兵和稳定七分之一的“注册表学校 + 父本额外机构”；`sweep` 必查整个并集。哨兵 root scope 可同时满足同校轮转，`blocked` 仅作为有原因的已尝试记录写入私有 decision；
+- 父快照 schema、完整性和身份成立；每条父项对象的字段和值被完全保留，只有新快照元数据、总计数和新增项会改变；
+- 新增项与父本及同轮新增项均无重复 `projectId`，并按运行结束时刻进行新增项校验；
+- 每个新增项保留完全一致的官方发现 URL 和 primary artifact；`name`、`institute`、`project`、`eventType`、`website`、状态、截止、活动安排、材料、推荐和后勤字段均有可追溯的字段证据，字段值与公开数据逐项一致；
+- 每个字段证据都指向同轮普通 artifact，记录来源、定位、方法、原文和核验时间；artifact 的 `path` 必须相对本轮目录、逐段无符号链接，批准器会重读原始字节并复算 SHA-256。HTML/text 引文必须实际出现且包含该字段的来源值；PDF/Office 引文只能借由同 URL、同轮且哈希已核验的 `text/plain` 提取 artifact 显式绑定。ISO deadline 以 `deadlineOriginal` 原文支撑，website 由 exact source URL 绑定，verificationStatus 由项目原文与 deadline 证据共同派生。
+
+新增项为零时，批准器只在私有目录写 `release-decision.json`，返回 `no-additions`，不会改写 `current.json`、创建公开提交或触发部署。非空追加会先写私有 `eligible` 决定，只有公开原子写入成功后才把决定更新为 `ready`。任何父项减少/改写、重复身份、证据缺失、父本漂移或过期私有运行都会失败关闭；相关线索留在私有重试/隔离队列，不影响其它后续运行。
+
+`snapshot:validate` 验证已保存快照的 schema 和不可变完整性，不会用“今天已过截止”否定父快照中的历史状态。运行时的已过期分类由前端根据保存的截止时间派生；新追加项仍在本轮结束时接受严格日期校验。
+
+## 来源与深扫描
+
+学校研究生院、学院、研究院、官方报名系统、官方公众号和官方附件是事实来源。批准器只接受机构/政府域名或固定官方平台的 URL，且 primary artifact 必须明确写出对应学校；保研通知网、CS-BAOYAN DDL、BoardCaster 等仅用于发现线索，不能单独支撑公开字段。这是对可信扫描器的可自动核验来源类别约束，并不是 DNS 归属证明；发现器仍须如实选择同校官方入口。
+
+对每个候选官方入口执行有去重和深度上限的遍历：保存最终 URL、抓取时间、Content-Type、字节数和 SHA-256；发现并继续读取学院子页、系统链接、PDF、Office 文件、图片、下载/预览链接。扫描件或图片需要 OCR 或可读页检查。应优先抽取系统字段和当年学院附件中的报名动作、所有截止、时间/形式/地点、材料、推荐、住宿、餐食、交通、报销和资格限制；未公布与未能读取必须如实区分，不能用聚合摘要补写官方事实。
+
+批准器每天强制处理全部重点哨兵和稳定七分之一的注册表/父本额外机构；`sweep` 强制处理完整并集。这个门禁证明本次 run 已尝试当天的确定范围，不能倒推某一天没有被调度。发现“无新增”不等于该校没有项目；WAF、登录、验证码、下载故障和身份冲突均只进入私有重试队列。
+
+## 私有与公开边界
+
+私有目录可以保存运行文件、原始 artifact、字段卡、失败原因和重试队列；它们不得被提交。不得提交个人投递信息、联系方式、评分、私有路径、原始官方文件、凭据、主机地址或任何 Secret 值。
+
+公开提交只可包含经批准的公开快照及必要的公开代码/文档；日常批准不得顺带引入私有文件。批准器使用锁和原子替换，失败时旧快照必须仍可读取。
+
+## 发布与旧链路
+
+通过批准器产生实际新增后，按受保护 `main` 的既有自动路径提交、CI、构建、部署和公网 smoke。正常日常更新不要求人工 PR 审阅；CI、不可变发布身份和公网 smoke 是发布门禁。部署保留 `production-approval` 与 `production` Environment 绑定、分支限制、Secret 隔离、原子激活和回滚。
+
+为实现无人值守，两个 GitHub Environment 的 `required_reviewers` 必须由仓库管理员一次性移除，同时保留各自的 Environment、分支限制和 `production` 的部署 Secrets。此项是外部 GitHub 配置，文档或代码修改不代表它已经完成；每次切换前必须只读核验其实际状态。
+
+`.github/workflows/deploy.yml` 只围绕不可变 `{releaseSha, snapshotId, dataHash, archiveSha}` 做 gate、SSH 前和 activation 前复核；它不再以公开快照时间戳年龄阻止代码/站点部署。公网 monitor 同样只检查可用性、TLS、公开 schema/完整性和 release identity。
+
+旧的 `scan:build-release`、`pending:commit` 和 `snapshot:approve` 仍保留给历史迁移、明确授权的修正/合并或删除维护，不能作为日常追加的替代入口。任何修正、合并、删除或身份迁移都必须单独建维护任务并取得用户明确授权。
+
+## 最低验证集
+
+数据批准后、提交前至少运行：
+
+```bash
+pnpm run snapshot:validate
+pnpm run check:public
+pnpm run test:unit
+pnpm run build
+git diff --check
+```
+
+上线后读取 `/data/current.json` 与 `/data/release.json`，核对 `snapshotId`、`dataHash`、新增项目和页面可见性。任何步骤失败时保留上一版本，记录可处理的私有诊断；不得手工拼接线上文件或把失败扫描伪装为无新增。
 
 ## Upstream
 
-Keep the MIT license and upstream attribution. Pull UI changes from `upstream` manually. Never restore the BoardCaster whole-file overwrite workflow or the upstream CNAME.
+保留 MIT 许可证与上游署名。UI 更新从 `upstream` 手动引入；不得恢复 BoardCaster 的整文件覆盖流程或上游 CNAME。

@@ -1793,13 +1793,20 @@ test('workflow isolates build output, package control plane, and production depl
   );
   assert.match(controlPlane, /persist-credentials:\s*false/);
   assert.doesNotMatch(controlPlane, /\b(?:pnpm|npm|yarn|bun)\b|setup-node|action-setup/);
-  assert.doesNotMatch(controlPlane, /(?:bash|sh|source|\.)\s+(?:\.\/)?deploy\//);
+  assert.doesNotMatch(
+    controlPlane,
+    /(?:^|\n)\s*(?:bash|sh|source)\s+(?:\.\/)?deploy\/|(?:^|\n)\s*\.\s+(?:\.\/)?deploy\//,
+  );
   assert.doesNotMatch(controlPlane, /pnpm run|npm run|node\s|tsx|vite|svelte-check/);
   assert.match(
     controlPlane,
-    /scripts=\(activate-release\.sh rollback-release\.sh smoke\.sh\)/,
+    /scripts=\(activate-release\.sh rollback-release\.sh smoke\.sh validate-release-metadata\.py\)/,
   );
-  assert.match(controlPlane, /source_path="deploy\/\$script"/);
+  assert.match(
+    controlPlane,
+    /source_paths=\(\s+deploy\/activate-release\.sh\s+deploy\/rollback-release\.sh\s+deploy\/smoke\.sh\s+scripts\/deploy\/validate-release-metadata\.py\s+\)/,
+  );
+  assert.match(controlPlane, /source_path="\$\{source_paths\[\$index\]\}"/);
   assert.match(controlPlane, /scripts\.sha256/);
   assert.match(
     controlPlane,

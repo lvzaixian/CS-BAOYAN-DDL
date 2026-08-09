@@ -2,6 +2,11 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
+import {
+  canonicalDataHash,
+  deriveSnapshotId,
+  validateStoredApprovedSnapshot,
+} from '../src/lib/snapshot-integrity.js';
 import { validateCandidate, validateSnapshot } from '../src/lib/snapshot-validation.js';
 
 const fixture = JSON.parse(
@@ -225,6 +230,19 @@ test('rejects an expired deadline epoch on a confirmed-open row', () => {
   snapshot.opportunities[0].deadlineEpochMs = Date.parse(snapshot.opportunities[0].deadline);
 
   assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /confirmed-open.*future/i);
+});
+
+test('stored history retains an elapsed confirmed-open parent when a later addition is approved', () => {
+  const snapshot = validSnapshot();
+  snapshot.approvedAt = '2026-08-09T08:35:00.000Z';
+  snapshot.dataHash = canonicalDataHash(snapshot);
+  snapshot.snapshotId = deriveSnapshotId(snapshot.approvedAt, snapshot.dataHash);
+
+  assert.match(
+    validateSnapshot(snapshot, Date.parse(snapshot.approvedAt)).join('\n'),
+    /confirmed-open.*future/i,
+  );
+  assert.deepEqual(validateStoredApprovedSnapshot(snapshot), []);
 });
 
 test('candidate rejects private values with their public field paths', async (t) => {
@@ -937,6 +955,20 @@ test('approved projectId must use four non-empty stable ID parts', async (t) => 
       snapshot.opportunities[0].projectId = projectId;
 
       assert.match(validateSnapshot(snapshot, nowMs).join('\n'), /projectId.*four non-empty parts/i);
+    });
+  }
+});
+
+test('projectId parts reject whitespace and Unicode-normalization aliases before deduplication', async (t) => {
+  for (const projectId of [
+    '2027|测试大学|计算机学院|夏令营 ',
+    '2027|测试大学 |计算机学院|夏令营',
+    '2027|e\u0301cole大学|计算机学院|夏令营',
+  ]) {
+    await t.test(projectId, () => {
+      const candidate = validCandidate();
+      candidate.opportunities[0].projectId = projectId;
+      assert.match(validateCandidate(candidate, nowMs).join('\n'), /projectId.*trimmed.*NFC/i);
     });
   }
 });

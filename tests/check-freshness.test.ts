@@ -20,7 +20,6 @@ import { checkSnapshotFreshness } from '../scripts/snapshot/check-freshness.js';
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const cliPath = resolve(repositoryRoot, 'scripts/snapshot/check-freshness.ts');
 const workflowPath = resolve(repositoryRoot, '.github/workflows/deploy.yml');
-const operationsPath = resolve(repositoryRoot, 'docs/operations/data-refresh.md');
 const packagePath = resolve(repositoryRoot, 'package.json');
 const nowMs = Date.parse('2026-07-16T12:00:00Z');
 const maxAgeMs = 6 * 60 * 60 * 1000;
@@ -299,7 +298,7 @@ test('CLI rejects malformed JSON and stale timestamps', async (t) => {
   }
 });
 
-test('workflow checks freshness at approval, before SSH, and immediately before activation', () => {
+test('deployment binds immutable release identity without a public snapshot-age gate', () => {
   const packageJson = JSON.parse(readFileSync(packagePath, 'utf8')) as {
     scripts?: Record<string, string>;
   };
@@ -324,15 +323,14 @@ test('workflow checks freshness at approval, before SSH, and immediately before 
   const prepare = workflow.slice(prepareStart, controlPlaneStart);
   const controlPlane = workflow.slice(controlPlaneStart, deployStart);
   const deploy = workflow.slice(deployStart);
+
   assert.match(
     prepare,
     /dist\/release\.json[\s\S]*JSON\.stringify\(\{ releaseSha, snapshotId, dataHash \}\)/,
   );
-  assert.match(prepare, /snapshotScanAt:\s*process\.env\.SNAPSHOT_SCAN_AT/);
-  assert.match(prepare, /snapshotApprovedAt:\s*process\.env\.SNAPSHOT_APPROVED_AT/);
   assert.match(
     productionGate,
-    /expected_keys = \{"releaseSha", "snapshotId", "dataHash", "archiveSha", "snapshotScanAt", "snapshotApprovedAt"\}/,
+    /expected_keys = \{"releaseSha", "snapshotId", "dataHash", "archiveSha"\}/,
   );
 
   assert.match(productionGate, /needs:\s*prepare/);
@@ -342,105 +340,77 @@ test('workflow checks freshness at approval, before SSH, and immediately before 
     /actions\/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093/,
   );
   assert.match(productionGate, /production-build-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/);
-  assert.match(productionGate, /MAX_AGE_SECONDS = 86400/);
-  assert.match(productionGate, /datetime\.now\(timezone\.utc\)/);
-  assert.match(productionGate, /snapshotScanAt/);
-  assert.match(productionGate, /snapshotApprovedAt/);
-  assert.match(productionGate, /approved_at < scan_at/);
-  assert.match(productionGate, /timestamp > now/);
-  assert.match(productionGate, /now - timestamp > max_age/);
+  assert.match(productionGate, /archiveSha/);
+  assert.match(productionGate, /release metadata SHA is invalid or does not match the workflow release/);
   assert.doesNotMatch(productionGate, /\$\{\{\s*secrets\./);
   assert.doesNotMatch(productionGate, /TENCENT_|HOME\/\.ssh|deploy_key|known_hosts|ssh-keygen/);
   assert.doesNotMatch(productionGate, /(?:^|\n)\s*(?:ssh|scp)\s/m);
 
   assert.match(controlPlane, /needs:\s*production_gate/);
+  assert.match(controlPlane, /scripts\/deploy\/validate-release-metadata\.py/);
+  assert.match(controlPlane, /validate-release-metadata\.py/);
+  assert.match(controlPlane, /sha256sum "\$\{scripts\[@\]\}" > scripts\.sha256/);
   assert.match(deploy, /needs:\s*\[prepare, package-control-plane\]/);
   assert.match(deploy, /environment:\s*production(?:\s|$)/);
+  assert.match(deploy, /sha256sum -c scripts\.sha256/);
 
   const artifactDownload = deploy.indexOf('- name: Download build artifact');
   const artifactValidation = deploy.indexOf(
     '- name: Validate build and control-plane artifacts and public origin',
   );
-  const deployFreshness = deploy.indexOf(
-    '- name: Revalidate release metadata and snapshot freshness before SSH setup',
+  const deployIdentity = deploy.indexOf(
+    '- name: Revalidate release metadata and immutable snapshot identity before SSH setup',
   );
   const sshSetup = deploy.indexOf('- name: Configure pinned SSH identity and host key');
   const upload = deploy.indexOf('- name: Upload release archive and deployment scripts');
-  const activationFreshness = deploy.indexOf(
-    '- name: Revalidate release metadata and snapshot freshness immediately before activation',
+  const activationIdentity = deploy.indexOf(
+    '- name: Revalidate release metadata and immutable snapshot identity immediately before activation',
   );
   const activation = deploy.indexOf('- name: Verify archive and activate release');
   const firstSecret = deploy.indexOf('${{ secrets.');
   assert.ok(
     artifactDownload >= 0
       && artifactDownload < artifactValidation
-      && artifactValidation < deployFreshness
-      && deployFreshness < sshSetup
+      && artifactValidation < deployIdentity
+      && deployIdentity < sshSetup
       && sshSetup < firstSecret,
-    'deploy must revalidate downloaded metadata before its first secret-backed SSH step',
+    'deploy must revalidate immutable metadata before its first secret-backed SSH step',
   );
   assert.ok(
     upload > sshSetup
-      && activationFreshness > upload
-      && activation > activationFreshness,
-    'deploy must revalidate snapshot freshness after upload and immediately before activation',
+      && activationIdentity > upload
+      && activation > activationIdentity,
+    'deploy must revalidate immutable metadata after upload and immediately before activation',
   );
 
-  const deployFreshnessStep = deploy.slice(deployFreshness, sshSetup);
+  const deployIdentityStep = deploy.slice(deployIdentity, sshSetup);
   assert.match(
-    deployFreshnessStep,
-    /expected_keys = \{"releaseSha", "snapshotId", "dataHash", "archiveSha", "snapshotScanAt", "snapshotApprovedAt"\}/,
+    deployIdentityStep,
+    /python3 "\$CONTROL_BUNDLE_DIR\/validate-release-metadata\.py" "\$metadata_path" "\$RELEASE_SHA"/,
   );
-  assert.match(
-    deployFreshnessStep,
-    /metadata\["releaseSha"\] != os\.environ\["RELEASE_SHA"\]/,
-  );
-  assert.match(deployFreshnessStep, /re\.fullmatch\(r"\[0-9a-f\]\{40\}"/);
-  assert.match(deployFreshnessStep, /MAX_AGE_SECONDS = 86400/);
-  assert.match(deployFreshnessStep, /datetime\.now\(timezone\.utc\)/);
-  assert.match(deployFreshnessStep, /approved_at < scan_at/);
-  assert.match(deployFreshnessStep, /timestamp > now/);
-  assert.match(deployFreshnessStep, /now - timestamp > max_age/);
-  assert.match(deployFreshnessStep, /set -euo pipefail/);
-  assert.doesNotMatch(deployFreshnessStep, /continue-on-error/);
+  assert.match(deployIdentityStep, /set -euo pipefail/);
+  assert.doesNotMatch(deployIdentityStep, /continue-on-error/);
 
-  const activationFreshnessStep = deploy.slice(activationFreshness, activation);
+  const activationIdentityStep = deploy.slice(activationIdentity, activation);
   assert.match(
-    activationFreshnessStep,
-    /expected_keys = \{"releaseSha", "snapshotId", "dataHash", "archiveSha", "snapshotScanAt", "snapshotApprovedAt"\}/,
+    activationIdentityStep,
+    /python3 "\$CONTROL_BUNDLE_DIR\/validate-release-metadata\.py" "\$metadata_path" "\$RELEASE_SHA"/,
   );
-  assert.match(
-    activationFreshnessStep,
-    /metadata\["releaseSha"\] != os\.environ\["RELEASE_SHA"\]/,
-  );
-  assert.match(activationFreshnessStep, /MAX_AGE_SECONDS = 86400/);
-  assert.match(activationFreshnessStep, /datetime\.now\(timezone\.utc\)/);
-  assert.match(activationFreshnessStep, /approved_at < scan_at/);
-  assert.match(activationFreshnessStep, /timestamp > now/);
-  assert.match(activationFreshnessStep, /now - timestamp > max_age/);
-  assert.match(activationFreshnessStep, /set -euo pipefail/);
-  assert.doesNotMatch(activationFreshnessStep, /continue-on-error/);
+  assert.match(activationIdentityStep, /set -euo pipefail/);
+  assert.doesNotMatch(activationIdentityStep, /continue-on-error/);
 
   const beforeSsh = deploy.slice(0, sshSetup);
   assert.doesNotMatch(beforeSsh, /\$\{\{\s*secrets\./);
   assert.doesNotMatch(beforeSsh, /HOME\/\.ssh|deploy_key|known_hosts|ssh-keygen/);
   assert.doesNotMatch(beforeSsh, /(?:^|\n)\s*(?:ssh|scp)\s/m);
-  assert.equal([...workflow.matchAll(/MAX_AGE_SECONDS = 86400/g)].length, 3);
-  assert.equal(
-    [...workflow.matchAll(/older than \{MAX_AGE_SECONDS\} seconds/g)].length,
-    3,
-  );
-  assert.doesNotMatch(workflow, /MAX_AGE_SECONDS = 21600|older than 21600 seconds/);
 
   const cleanupStart = deploy.indexOf('- name: Remove remote staging and local SSH material');
   assert.ok(cleanupStart >= 0);
   const cleanup = deploy.slice(cleanupStart);
   assert.match(cleanup, /if:\s*\$\{\{ always\(\) && steps\.ssh\.outcome != 'skipped' \}\}/);
-
-  const operations = readFileSync(operationsPath, 'utf8');
-  assert.match(operations, /三重检查/);
-  assert.match(operations, /production.*第二次人工批准[\s\S]*TOCTOU/);
-  assert.match(operations, /激活前[\s\S]*再次.*24 小时[\s\S]*(?:失败关闭|fail closed)/);
-  assert.equal([...operations.matchAll(/--max-age-hours 24/g)].length, 2);
-  assert.doesNotMatch(operations, /--max-age-hours 6(?:\D|$)/);
+  assert.doesNotMatch(workflow, /snapshotScanAt|snapshotApprovedAt/);
+  assert.doesNotMatch(
+    workflow,
+    /MAX_AGE_SECONDS|snapshot[-\s]?(?:freshness|age)|older than .*seconds/i,
+  );
 });
