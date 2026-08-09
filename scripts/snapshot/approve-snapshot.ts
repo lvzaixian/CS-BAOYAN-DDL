@@ -961,9 +961,9 @@ function assertAdditiveFixedDiscoveryChecks(
           `fixed discovery check ${quoted(check.checkId)} artifact URL must match ${quoted(expectedUrl)}`,
         );
       }
-      if (material.text === null) {
+      if (material.text === null || material.text.trim() === '') {
         throw new Error(
-          `fixed discovery check ${quoted(check.checkId)} must bind a readable UTF-8 text artifact`,
+          `fixed discovery check ${quoted(check.checkId)} must bind a non-empty readable UTF-8 text artifact`,
         );
       }
       checkedArtifactSha256s.add(check.artifactSha256);

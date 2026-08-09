@@ -804,6 +804,32 @@ test('requires every checked fixed discovery check to bind a unique verified tex
       expected: /fixed discovery check.*readable UTF-8 text/i,
     },
     {
+      name: 'empty text artifact',
+      prepare: (_source, run) => {
+        const check = fixedDiscoveryCheck(run, 'shenyanpai-profile');
+        const artifact = fixedDiscoveryArtifact(run, check.artifactSha256!);
+        const text = '';
+        const artifactSha256 = sha256(text);
+        check.artifactSha256 = artifactSha256;
+        artifact.sha256 = artifactSha256;
+        return new Map([[artifact.path, text]]);
+      },
+      expected: /fixed discovery check.*non-empty readable UTF-8 text/i,
+    },
+    {
+      name: 'whitespace-only text artifact',
+      prepare: (_source, run) => {
+        const check = fixedDiscoveryCheck(run, 'shenyanpai-profile');
+        const artifact = fixedDiscoveryArtifact(run, check.artifactSha256!);
+        const text = ' \n\t ';
+        const artifactSha256 = sha256(text);
+        check.artifactSha256 = artifactSha256;
+        artifact.sha256 = artifactSha256;
+        return new Map([[artifact.path, text]]);
+      },
+      expected: /fixed discovery check.*non-empty readable UTF-8 text/i,
+    },
+    {
       name: 'checked before the run',
       prepare: (_source, run) => {
         fixedDiscoveryCheck(run, 'shenyanpai-profile').checkedAt = '2026-08-09T08:29:59.999Z';
