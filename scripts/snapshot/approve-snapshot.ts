@@ -992,6 +992,7 @@ const additivePercentByteRunPattern = /(?:%[0-9A-Fa-f]{2})+/gu;
 const additiveIdnaEquivalentDotPattern = /[\u3002\uFF0E\uFF61]/gu;
 const additiveUnicodeEscapePattern = /(\\+)u(?:([0-9A-Fa-f]{4})|\{([0-9A-Fa-f]{1,6})\})/gu;
 const additiveJavaScriptHexEscapePattern = /(\\+)x([0-9A-Fa-f]{2})/gu;
+const additiveSha256TokenPattern = /[a-f0-9]{64}/giu;
 
 function additiveFixedDiscoveryPrivateValues(
   run: AdditiveApprovalRun,
@@ -1019,6 +1020,28 @@ function additiveFixedDiscoveryPrivateValues(
 
 function serializedAdditiveString(value: string): string {
   return JSON.stringify(value).slice(1, -1);
+}
+
+function additiveFixedDiscoveryArtifactSha256Values(
+  run: AdditiveApprovalRun,
+): ReadonlySet<string> {
+  const sha256Values = new Set<string>();
+  for (const check of run.fixedDiscoveryChecks) {
+    // `parseAdditiveRun` validates and lowercases this digest. Deliberately do
+    // not include SHA-shaped check IDs, text, or reasons in canonical matching.
+    if (check.artifactSha256 !== null) sha256Values.add(check.artifactSha256);
+  }
+  return sha256Values;
+}
+
+function candidateContainsFixedDiscoverySha256(
+  candidate: string,
+  fixedDiscoverySha256Values: ReadonlySet<string>,
+): boolean {
+  for (const match of candidate.matchAll(additiveSha256TokenPattern)) {
+    if (fixedDiscoverySha256Values.has(match[0].toLowerCase())) return true;
+  }
+  return false;
 }
 
 function decodeAdditivePercentByteRuns(value: string): string {
@@ -1140,6 +1163,7 @@ function additiveHostDetectionCandidates(serializedContent: string): AdditivePro
 function assertAdditivePublicProvenance(
   opportunity: PublicOpportunity,
   fixedDiscoveryPrivateValues: ReadonlySet<string>,
+  fixedDiscoveryArtifactSha256Values: ReadonlySet<string>,
 ): void {
   const serializedOpportunity = JSON.stringify(opportunity);
   const provenanceCandidates = additiveHostDetectionCandidates(serializedOpportunity);
@@ -1149,6 +1173,8 @@ function assertAdditivePublicProvenance(
     || [...fixedDiscoveryPrivateValues].some((value) =>
       candidates.some((candidate) =>
         candidate.includes(value) || candidate.includes(serializedAdditiveString(value))))
+    || candidates.some((candidate) =>
+      candidateContainsFixedDiscoverySha256(candidate, fixedDiscoveryArtifactSha256Values))
   ) {
     throw new Error(
       `addition ${quoted(opportunity.projectId)} must not expose fixed discovery provenance`,
@@ -2425,6 +2451,7 @@ export async function approveAdditiveSnapshotFile(
   const artifactMaterials = await readAndVerifyAdditiveArtifacts(runPath, run);
   assertAdditiveFixedDiscoveryChecks(run, artifactMaterials);
   const fixedDiscoveryPrivateValues = additiveFixedDiscoveryPrivateValues(run, artifactMaterials);
+  const fixedDiscoveryArtifactSha256Values = additiveFixedDiscoveryArtifactSha256Values(run);
   const finishedAtMs = Date.parse(run.finishedAt);
   if (finishedAtMs > nowMs) throw new Error('additive discovery run finishedAt is in the future');
   if (nowMs - finishedAtMs > additiveRunMaximumAgeMs) {
@@ -2497,7 +2524,11 @@ export async function approveAdditiveSnapshotFile(
     assertAdditiveEvidence(run, opportunity, evidence, artifactMaterials);
   }
   for (const addition of additions) {
-    assertAdditivePublicProvenance(addition, fixedDiscoveryPrivateValues);
+    assertAdditivePublicProvenance(
+      addition,
+      fixedDiscoveryPrivateValues,
+      fixedDiscoveryArtifactSha256Values,
+    );
   }
 
   const candidate = buildAdditiveCandidate(parent, additions, run.finishedAt);

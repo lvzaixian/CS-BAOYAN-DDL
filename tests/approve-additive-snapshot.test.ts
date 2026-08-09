@@ -42,13 +42,24 @@ function sha256(value: string | Uint8Array): string {
   return createHash('sha256').update(value).digest('hex');
 }
 
-function shanghaiSourceYear(checkedAt: string): string {
-  const year = new Intl.DateTimeFormat('en-US', {
+function shanghaiSourceDate(checkedAt: string): string {
+  const values = new Map(new Intl.DateTimeFormat('en-US', {
     timeZone: 'Asia/Shanghai',
     year: 'numeric',
-  }).formatToParts(new Date(checkedAt)).find((part) => part.type === 'year')?.value;
-  if (year === undefined) throw new Error('fixture could not derive the Shanghai source year');
-  return year;
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date(checkedAt)).map((part) => [part.type, part.value]));
+  const year = values.get('year');
+  const month = values.get('month');
+  const day = values.get('day');
+  if (year === undefined || month === undefined || day === undefined) {
+    throw new Error('fixture could not derive the Shanghai source date');
+  }
+  return `${year}-${month}-${day}`;
+}
+
+function shanghaiSourceYear(checkedAt: string): string {
+  return shanghaiSourceDate(checkedAt).slice(0, 4);
 }
 
 function fixedDiscoveryArtifactContent(checkId: string): string {
@@ -74,6 +85,11 @@ function nfkcLeadingAsciiVariant(value: string): string {
     throw new Error('fixture expected a printable ASCII leading character');
   }
   return `${String.fromCodePoint(codePoint + 0xfee0)}${value.slice(1)}`;
+}
+
+function fullwidthAscii(value: string): string {
+  return value.replace(/[!-~]/gu, (character) =>
+    String.fromCodePoint(character.codePointAt(0)! + 0xfee0));
 }
 
 function fixedDiscoveryArtifactFixtures(checkedAt: string) {
@@ -162,12 +178,13 @@ function coverageScopes(
   parent: PublicSnapshot,
   artifactSha256: string,
   entryUrl: string,
+  rotationDate = '2026-08-09',
 ): AdditiveApprovalRun['scopes'] {
   const registrySchools = [...new Set(registry.map((item) => registrySchoolName(item.name)))];
   const registrySet = new Set(registrySchools);
   const parentExtras = [...new Set(parent.opportunities.map((opportunity) => opportunity.name))]
     .filter((school) => !registrySet.has(school));
-  const rotationSlot = rotationDateSlot('2026-08-09');
+  const rotationSlot = rotationDateSlot(rotationDate);
   const sentinelSchools = [...new Set(sentinels.institutions.map((item) => item.school))]
     .sort(codePointCompare);
   const rotationSchools = [...new Set([...registrySchools, ...parentExtras])]
@@ -1315,6 +1332,108 @@ test('rejects fixed discovery provenance from every serialized additive public f
   }
 });
 
+test('rejects case-equivalent fixed artifact SHA-256 provenance before a decision or public write', async (t) => {
+  const cases: Array<{
+    name: string;
+    expose: (
+      addition: PublicSnapshot['opportunities'][number],
+      run: AdditiveApprovalRun,
+    ) => void;
+  }> = [
+    {
+      name: 'uppercase fixed artifact SHA-256 in a serialized discovery source label',
+      expose: (addition, run) => {
+        addition.discoverySources[0].label = fixedDiscoveryCheck(
+          run,
+          'shenyanpai-profile',
+        ).artifactSha256!.toUpperCase();
+      },
+    },
+    {
+      name: 'fullwidth uppercase fixed artifact SHA-256 in a NFKC-normalized discovery source label',
+      expose: (addition, run) => {
+        addition.discoverySources[0].label = fullwidthAscii(fixedDiscoveryCheck(
+          run,
+          'shenyanpai-profile',
+        ).artifactSha256!.toUpperCase());
+      },
+    },
+    {
+      name: 'uppercase fixed artifact SHA-256 revealed by a JavaScript hex escape',
+      expose: (addition, run) => {
+        const artifactSha256 = fixedDiscoveryCheck(run, 'shenyanpai-profile').artifactSha256!
+          .toUpperCase();
+        addition.discoverySources[0].label =
+          `\\x${artifactSha256.charCodeAt(0).toString(16).padStart(2, '0')}${artifactSha256.slice(1)}`;
+      },
+    },
+  ];
+
+  for (const entry of cases) {
+    await t.test(entry.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      const run = additiveRun(parent, parentText, [addition]);
+      entry.expose(addition, run);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(
+          source,
+          parentText,
+          () => approve(source),
+          /addition .* must not expose fixed discovery provenance/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('allows unrelated SHA text and case-variant fixed text without rewriting public output', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  const run = additiveRun(parent, parentText, [addition]);
+  blockFixedDiscoveryCheck(run, 'shenyanpai-pre-recommend');
+  fixedDiscoveryCheck(run, 'shenyanpai-pre-recommend').reason = 'a'.repeat(64);
+  const checkIdCaseVariant = fixedDiscoveryCheck(run, 'shenyanpai-profile').checkId.toUpperCase();
+  const reasonCaseVariant = fixedDiscoveryCheck(run, 'shenyanpai-pre-recommend').reason!.toUpperCase();
+  const artifactTextCaseVariant = fixedDiscoveryArtifactContent('shenyanpai-profile').toUpperCase();
+  const unrelatedUppercaseSha256 = 'B'.repeat(64);
+  addition.description = [
+    addition.description,
+    checkIdCaseVariant,
+    reasonCaseVariant,
+    artifactTextCaseVariant,
+    unrelatedUppercaseSha256,
+  ].join('\n');
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.equal(result.status, 'ready');
+    const approved = JSON.parse(readFileSync(source.approved, 'utf8')) as PublicSnapshot;
+    const approvedAddition = approved.opportunities.find((opportunity) =>
+      opportunity.projectId === addition.projectId);
+    assert.ok(approvedAddition);
+    assert.ok(approvedAddition.description.includes(checkIdCaseVariant));
+    assert.ok(approvedAddition.description.includes(reasonCaseVariant));
+    assert.ok(approvedAddition.description.includes(artifactTextCaseVariant));
+    assert.ok(approvedAddition.description.includes(unrelatedUppercaseSha256));
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
 test('rejects literal Unicode escape provenance before a decision or public write', async (t) => {
   const cases: Array<{
     name: string;
@@ -2065,7 +2184,13 @@ test('does not revalidate or rewrite historical parent provenance values', async
     percentEncodeLeadingAscii(fixedText),
     percentEncodeLeadingAscii('https://github.com/shenyanpai'),
   ].join('\n');
-  historical.tags = [...historical.tags, fixedSha256, percentEncodeLeadingAscii(fixedSha256)];
+  historical.tags = [
+    ...historical.tags,
+    fixedSha256,
+    fixedSha256.toUpperCase(),
+    fullwidthAscii(fixedSha256.toUpperCase()),
+    percentEncodeLeadingAscii(fixedSha256),
+  ];
   historical.projectId = `${cycle}|${school}|${institute}|${percentEncodeLeadingAscii('shenyanpai-profile')}`;
   historical.discoverySources[0].label = percentEncodeLeadingAscii(blockedReason);
   parent.dataHash = canonicalDataHash(parent);
@@ -3199,6 +3324,13 @@ test('daily additive approval has a dedicated narrow CLI instead of the legacy r
   const currentRunTime = new Date().toISOString();
   run.startedAt = currentRunTime;
   run.finishedAt = currentRunTime;
+  run.coverage.rotationDate = shanghaiSourceDate(currentRunTime);
+  run.scopes = coverageScopes(
+    parent,
+    run.artifacts[0].sha256,
+    run.artifacts[0].url,
+    run.coverage.rotationDate,
+  );
   for (const scope of run.scopes) scope.checkedAt = currentRunTime;
   for (const check of run.fixedDiscoveryChecks) check.checkedAt = currentRunTime;
   for (const artifact of run.artifacts) artifact.fetchedAt = currentRunTime;
