@@ -1018,9 +1018,9 @@ function serializedAdditiveString(value: string): string {
 }
 
 function additiveHostDetectionCandidates(serializedContent: string): string[] {
-  const candidates = [serializedContent];
+  const candidates = new Set<string>([serializedContent]);
   let current = serializedContent.normalize('NFKC');
-  if (current !== serializedContent) candidates.push(current);
+  candidates.add(current);
   for (let depth = 0; depth < additiveProvenanceDecodeDepth; depth += 1) {
     let decoded: string;
     try {
@@ -1029,10 +1029,11 @@ function additiveHostDetectionCandidates(serializedContent: string): string[] {
       break;
     }
     if (decoded === current) break;
-    candidates.push(decoded);
-    current = decoded;
+    candidates.add(decoded);
+    current = decoded.normalize('NFKC');
+    candidates.add(current);
   }
-  return candidates;
+  return [...candidates];
 }
 
 function assertAdditivePublicProvenance(

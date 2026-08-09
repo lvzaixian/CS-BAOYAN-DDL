@@ -1117,6 +1117,22 @@ test('rejects fixed discovery provenance from every serialized additive public f
       prepare: () => 'https://github\uFF0Ecom/shenyanpai/notice',
     },
     {
+      name: 'percent-encoded Unicode-separator GitHub URL',
+      prepare: () => 'https://github%EF%BC%8Ecom/shenyanpai/notice',
+    },
+    {
+      name: 'percent-encoded Unicode-separator raw GitHub URL',
+      prepare: () => 'https://raw%EF%BC%8Egithubusercontent%EF%BC%8Ecom/shenyanpai/notice/main/README.md',
+    },
+    {
+      name: 'double-encoded Unicode-separator GitHub URL',
+      prepare: () => 'https://github%25EF%25BC%258Ecom/shenyanpai/notice',
+    },
+    {
+      name: 'double-encoded Unicode-separator raw GitHub URL',
+      prepare: () => 'https://raw%25EF%25BC%258Egithubusercontent%25EF%25BC%258Ecom/shenyanpai/notice/main/README.md',
+    },
+    {
       name: 'fixed check ID',
       prepare: (run) => fixedDiscoveryCheck(run, 'shenyanpai-profile').checkId,
     },
@@ -1202,6 +1218,8 @@ test('does not revalidate or rewrite historical parent provenance values', async
     'https://raw.githubusercontent.com/shenyanpai/historical/main/notice.html',
     'https://github%2Ecom/shenyanpai/historical-notice',
     'https://raw%252Egithubusercontent%252Ecom/shenyanpai/historical/main/notice.html',
+    'https://github%EF%BC%8Ecom/shenyanpai/historical-notice',
+    'https://raw%25EF%25BC%258Egithubusercontent%25EF%25BC%258Ecom/shenyanpai/historical/main/notice.html',
     fixedText,
   ].join('\n');
   historical.tags = [...historical.tags, fixedSha256];
