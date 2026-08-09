@@ -1315,6 +1315,91 @@ test('rejects fixed discovery provenance from every serialized additive public f
   }
 });
 
+test('rejects literal Unicode escape provenance before a decision or public write', async (t) => {
+  const cases: Array<{
+    name: string;
+    expose: (addition: PublicSnapshot['opportunities'][number]) => void;
+  }> = [
+    {
+      name: 'GitHub host through a JSON Unicode escape',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github\\u002ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'raw GitHub host through JSON Unicode escapes',
+      expose: (addition) => {
+        addition.description = `${addition.description}\nhttps://raw\\u002egithubusercontent\\u002ecom/shenyanpai/notice/main/README.md`;
+      },
+    },
+    {
+      name: 'fixed private check ID through a JSON Unicode escape',
+      expose: (addition) => {
+        addition.discoverySources[0].label = 'shenyanpai\\u002dprofile';
+      },
+    },
+    {
+      name: 'GitHub host through a braced JavaScript Unicode escape',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github\\u{2e}com/shenyanpai/notice'];
+      },
+    },
+  ];
+
+  for (const entry of cases) {
+    await t.test(entry.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      entry.expose(addition);
+      const run = additiveRun(parent, parentText, [addition]);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        assert.equal(JSON.stringify(addition).includes('\\\\u'), true);
+        await assertRejectedBeforeApproval(
+          source,
+          parentText,
+          () => approve(source),
+          /addition .* must not expose fixed discovery provenance/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('allows ordinary additive text while inspecting Unicode escape provenance', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  const harmlessLiteralUnicodeEscape = '普通官方说明文本\\u4e2d';
+  addition.description = `${addition.description}\n${harmlessLiteralUnicodeEscape}`;
+  addition.tags = [...addition.tags, 'ordinary-public-note'];
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.equal(result.status, 'ready');
+    const approved = JSON.parse(readFileSync(source.approved, 'utf8')) as PublicSnapshot;
+    const approvedAddition = approved.opportunities.find((opportunity) =>
+      opportunity.projectId === addition.projectId);
+    assert.ok(approvedAddition);
+    assert.ok(approvedAddition.tags.includes('ordinary-public-note'));
+    assert.ok(approvedAddition.description.includes(harmlessLiteralUnicodeEscape));
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
 test('rejects encoded GitHub provenance despite malformed percent text in another public field', async (t) => {
   const cases: Array<{
     name: string;
