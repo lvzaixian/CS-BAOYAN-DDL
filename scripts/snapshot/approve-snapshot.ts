@@ -987,6 +987,7 @@ function assertAdditiveFixedDiscoveryChecks(
 }
 
 const additiveGitHubDiscoveryTextPattern = /github\.com|raw\.githubusercontent\.com/iu;
+const additiveProvenanceDecodeDepth = 4;
 
 function additiveFixedDiscoveryPrivateValues(
   run: AdditiveApprovalRun,
@@ -1016,13 +1017,32 @@ function serializedAdditiveString(value: string): string {
   return JSON.stringify(value).slice(1, -1);
 }
 
+function additiveHostDetectionCandidates(serializedContent: string): string[] {
+  const candidates = [serializedContent];
+  let current = serializedContent.normalize('NFKC');
+  if (current !== serializedContent) candidates.push(current);
+  for (let depth = 0; depth < additiveProvenanceDecodeDepth; depth += 1) {
+    let decoded: string;
+    try {
+      decoded = decodeURIComponent(current);
+    } catch {
+      break;
+    }
+    if (decoded === current) break;
+    candidates.push(decoded);
+    current = decoded;
+  }
+  return candidates;
+}
+
 function assertAdditivePublicProvenance(
   opportunity: PublicOpportunity,
   fixedDiscoveryPrivateValues: ReadonlySet<string>,
 ): void {
   const serializedOpportunity = JSON.stringify(opportunity);
   if (
-    additiveGitHubDiscoveryTextPattern.test(serializedOpportunity)
+    additiveHostDetectionCandidates(serializedOpportunity)
+      .some((candidate) => additiveGitHubDiscoveryTextPattern.test(candidate))
     || [...fixedDiscoveryPrivateValues].some((value) =>
       serializedOpportunity.includes(serializedAdditiveString(value)))
   ) {

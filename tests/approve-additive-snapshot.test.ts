@@ -1097,6 +1097,26 @@ test('rejects fixed discovery provenance from every serialized additive public f
       prepare: () => 'https://raw.githubusercontent.com/shenyanpai/notice/main/README.md',
     },
     {
+      name: 'percent-encoded GitHub URL',
+      prepare: () => 'https://github%2Ecom/shenyanpai/notice',
+    },
+    {
+      name: 'percent-encoded raw GitHub URL',
+      prepare: () => 'https://raw%2Egithubusercontent%2Ecom/shenyanpai/notice/main/README.md',
+    },
+    {
+      name: 'double-encoded GitHub URL',
+      prepare: () => 'https://github%252Ecom/shenyanpai/notice',
+    },
+    {
+      name: 'double-encoded raw GitHub URL',
+      prepare: () => 'https://raw%252Egithubusercontent%252Ecom/shenyanpai/notice/main/README.md',
+    },
+    {
+      name: 'NFKC-normalized GitHub URL',
+      prepare: () => 'https://github\uFF0Ecom/shenyanpai/notice',
+    },
+    {
       name: 'fixed check ID',
       prepare: (run) => fixedDiscoveryCheck(run, 'shenyanpai-profile').checkId,
     },
@@ -1149,6 +1169,25 @@ test('rejects fixed discovery provenance from every serialized additive public f
   }
 });
 
+test('does not throw while inspecting malformed percent-encoded additive text', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  addition.description = `${addition.description}\nhttps://example.invalid/%ZZ`;
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.equal(result.status, 'ready');
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
 test('does not revalidate or rewrite historical parent provenance values', async () => {
   const source = paths();
   const parent = sealedParent();
@@ -1161,6 +1200,8 @@ test('does not revalidate or rewrite historical parent provenance values', async
     'https://gist.github.com/shenyanpai/historical-notice',
     'https://github.com/shenyanpai',
     'https://raw.githubusercontent.com/shenyanpai/historical/main/notice.html',
+    'https://github%2Ecom/shenyanpai/historical-notice',
+    'https://raw%252Egithubusercontent%252Ecom/shenyanpai/historical/main/notice.html',
     fixedText,
   ].join('\n');
   historical.tags = [...historical.tags, fixedSha256];
