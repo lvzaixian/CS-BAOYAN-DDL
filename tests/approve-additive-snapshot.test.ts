@@ -1345,7 +1345,7 @@ test('rejects encoded GitHub provenance despite malformed percent text in anothe
   }
 });
 
-test('bounds additive provenance percent decoding to four rounds', async (t) => {
+test('inspects additive provenance percent decoding through four rounds', async (t) => {
   await t.test('rejects an encoded GitHub host revealed on the fourth round', async () => {
     const source = paths();
     const parent = sealedParent();
@@ -1369,30 +1369,58 @@ test('bounds additive provenance percent decoding to four rounds', async (t) => 
     }
   });
 
-  await t.test('does not inspect a fifth percent-decoding round', async () => {
-    const source = paths();
-    const parent = sealedParent();
-    const parentText = writeJson(source.parent, parent);
-    writeFileSync(source.approved, parentText, 'utf8');
-    const addition = additionFor(parent);
-    const fifthRoundTag = 'https://github%252525252Ecom/shenyanpai/notice';
-    addition.tags = [...addition.tags, fifthRoundTag];
-    const run = additiveRun(parent, parentText, [addition]);
-    materializeRunArtifacts(source, run);
-    writeJson(source.run, run);
+});
 
-    try {
-      const result = await approve(source);
-      assert.equal(result.status, 'ready');
-      const approved = JSON.parse(readFileSync(source.approved, 'utf8')) as PublicSnapshot;
-      const approvedAddition = approved.opportunities.find((opportunity) =>
-        opportunity.projectId === addition.projectId);
-      assert.ok(approvedAddition);
-      assert.ok(approvedAddition.tags.includes(fifthRoundTag));
-    } finally {
-      rmSync(source.root, { recursive: true, force: true });
-    }
-  });
+test('rejects additive provenance nested beyond four percent-decoding rounds', async (t) => {
+  const cases: Array<{
+    name: string;
+    expose: (addition: PublicSnapshot['opportunities'][number]) => void;
+  }> = [
+    {
+      name: 'GitHub host',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github%252525252Ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'raw GitHub host',
+      expose: (addition) => {
+        addition.discoverySources[0].label =
+          'https://raw%252525252Egithubusercontent%252525252Ecom/shenyanpai/notice/main/README.md';
+      },
+    },
+    {
+      name: 'fixed private check ID',
+      expose: (addition) => {
+        addition.projectId = '2027|新增测试大学|计算机学院|shenyanpai%252525252Dprofile';
+      },
+    },
+  ];
+
+  for (const entry of cases) {
+    await t.test(entry.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      entry.expose(addition);
+      const run = additiveRun(parent, parentText, [addition]);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(
+          source,
+          parentText,
+          () => approve(source),
+          /nested percent encoding exceeds supported depth/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
 });
 
 test('does not throw while inspecting malformed percent-encoded additive text', async () => {

@@ -1033,7 +1033,12 @@ function normalizeAdditiveProvenanceText(value: string): string {
   return value.normalize('NFKC').replace(additiveIdnaEquivalentDotPattern, '.');
 }
 
-function additiveHostDetectionCandidates(serializedContent: string): string[] {
+interface AdditiveProvenanceCandidates {
+  candidates: readonly string[];
+  nestedPercentEncoding: boolean;
+}
+
+function additiveHostDetectionCandidates(serializedContent: string): AdditiveProvenanceCandidates {
   const candidates = new Set<string>([serializedContent]);
   const addNormalizedCandidates = (value: string): string => {
     const nfkc = value.normalize('NFKC');
@@ -1045,11 +1050,16 @@ function additiveHostDetectionCandidates(serializedContent: string): string[] {
   let current = addNormalizedCandidates(serializedContent);
   for (let depth = 0; depth < additiveProvenanceDecodeDepth; depth += 1) {
     const decoded = decodeAdditivePercentByteRuns(current);
-    if (decoded === current) break;
+    if (decoded === current) {
+      return { candidates: [...candidates], nestedPercentEncoding: false };
+    }
     candidates.add(decoded);
     current = addNormalizedCandidates(decoded);
   }
-  return [...candidates];
+  return {
+    candidates: [...candidates],
+    nestedPercentEncoding: decodeAdditivePercentByteRuns(current) !== current,
+  };
 }
 
 function assertAdditivePublicProvenance(
@@ -1057,7 +1067,13 @@ function assertAdditivePublicProvenance(
   fixedDiscoveryPrivateValues: ReadonlySet<string>,
 ): void {
   const serializedOpportunity = JSON.stringify(opportunity);
-  const candidates = additiveHostDetectionCandidates(serializedOpportunity);
+  const provenanceCandidates = additiveHostDetectionCandidates(serializedOpportunity);
+  if (provenanceCandidates.nestedPercentEncoding) {
+    throw new Error(
+      `addition ${quoted(opportunity.projectId)} nested percent encoding exceeds supported depth`,
+    );
+  }
+  const { candidates } = provenanceCandidates;
   if (
     candidates.some((candidate) => additiveGitHubDiscoveryTextPattern.test(candidate))
     || [...fixedDiscoveryPrivateValues].some((value) =>
