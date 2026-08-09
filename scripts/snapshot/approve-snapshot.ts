@@ -1038,11 +1038,35 @@ function decodeAdditiveUnicodeEscapes(value: string): string {
   });
 }
 
-function decodeAdditiveSerializedJavaScriptEscapes(value: string): string {
+function decodeAdditiveSerializedJavaScriptEscapesOnce(value: string): string {
   return decodeAdditiveUnicodeEscapes(value.replace(
     additiveJavaScriptHexEscapePattern,
     (_escape, hex) => String.fromCodePoint(Number.parseInt(hex, 16)),
   ));
+}
+
+interface AdditiveJavaScriptEscapeExpansion {
+  values: readonly string[];
+  finalValue: string;
+  nestedEncoding: boolean;
+}
+
+function expandAdditiveSerializedJavaScriptEscapes(value: string): AdditiveJavaScriptEscapeExpansion {
+  const values = new Set<string>([value]);
+  let current = value;
+  for (let depth = 0; depth < additiveProvenanceDecodeDepth; depth += 1) {
+    const decoded = decodeAdditiveSerializedJavaScriptEscapesOnce(current);
+    if (decoded === current) {
+      return { values: [...values], finalValue: current, nestedEncoding: false };
+    }
+    values.add(decoded);
+    current = decoded;
+  }
+  return {
+    values: [...values],
+    finalValue: current,
+    nestedEncoding: decodeAdditiveSerializedJavaScriptEscapesOnce(current) !== current,
+  };
 }
 
 function normalizeAdditiveProvenanceText(value: string): string {
@@ -1052,24 +1076,32 @@ function normalizeAdditiveProvenanceText(value: string): string {
 interface AdditiveProvenanceCandidates {
   candidates: readonly string[];
   nestedPercentEncoding: boolean;
+  nestedJavaScriptEscapeEncoding: boolean;
 }
 
 function additiveHostDetectionCandidates(serializedContent: string): AdditiveProvenanceCandidates {
   const candidates = new Set<string>([serializedContent]);
+  let nestedJavaScriptEscapeEncoding = false;
   const addNormalizedCandidates = (value: string): string => {
-    const escapedDecoded = decodeAdditiveSerializedJavaScriptEscapes(value);
-    candidates.add(escapedDecoded);
-    const nfkc = escapedDecoded.normalize('NFKC');
-    candidates.add(nfkc);
-    const normalized = normalizeAdditiveProvenanceText(escapedDecoded);
-    candidates.add(normalized);
-    return normalized;
+    const expansion = expandAdditiveSerializedJavaScriptEscapes(value);
+    nestedJavaScriptEscapeEncoding ||= expansion.nestedEncoding;
+    for (const escapedValue of expansion.values) {
+      candidates.add(escapedValue);
+      const nfkc = escapedValue.normalize('NFKC');
+      candidates.add(nfkc);
+      candidates.add(normalizeAdditiveProvenanceText(escapedValue));
+    }
+    return normalizeAdditiveProvenanceText(expansion.finalValue);
   };
   let current = addNormalizedCandidates(serializedContent);
   for (let depth = 0; depth < additiveProvenanceDecodeDepth; depth += 1) {
     const decoded = decodeAdditivePercentByteRuns(current);
     if (decoded === current) {
-      return { candidates: [...candidates], nestedPercentEncoding: false };
+      return {
+        candidates: [...candidates],
+        nestedPercentEncoding: false,
+        nestedJavaScriptEscapeEncoding,
+      };
     }
     candidates.add(decoded);
     current = addNormalizedCandidates(decoded);
@@ -1077,6 +1109,7 @@ function additiveHostDetectionCandidates(serializedContent: string): AdditivePro
   return {
     candidates: [...candidates],
     nestedPercentEncoding: decodeAdditivePercentByteRuns(current) !== current,
+    nestedJavaScriptEscapeEncoding,
   };
 }
 
@@ -1089,6 +1122,11 @@ function assertAdditivePublicProvenance(
   if (provenanceCandidates.nestedPercentEncoding) {
     throw new Error(
       `addition ${quoted(opportunity.projectId)} nested percent encoding exceeds supported depth`,
+    );
+  }
+  if (provenanceCandidates.nestedJavaScriptEscapeEncoding) {
+    throw new Error(
+      `addition ${quoted(opportunity.projectId)} nested JavaScript escape encoding exceeds supported depth`,
     );
   }
   const { candidates } = provenanceCandidates;

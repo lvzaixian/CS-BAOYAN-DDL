@@ -1462,6 +1462,83 @@ test('rejects literal JavaScript hex escape provenance before a decision or publ
   }
 });
 
+test('rejects immediately composed JavaScript escape provenance before a decision or public write', async (t) => {
+  const cases: Array<{
+    name: string;
+    expose: (addition: PublicSnapshot['opportunities'][number]) => void;
+  }> = [
+    {
+      name: 'GitHub host through a Unicode-to-hex chain in tags',
+      expose: (addition) => {
+        addition.tags = [...addition.tags, 'https://github\\u005cx2ecom/shenyanpai/notice'];
+      },
+    },
+    {
+      name: 'raw GitHub host through a percent-to-Unicode-to-hex chain in description',
+      expose: (addition) => {
+        addition.description = `${addition.description}\nhttps://raw%5Cu005cx2egithubusercontent%5Cu005cx2ecom/shenyanpai/notice/main/README.md`;
+      },
+    },
+    {
+      name: 'fixed private check ID through a nested percent-to-Unicode-to-hex chain in project ID',
+      expose: (addition) => {
+        addition.projectId = '2027|新增测试大学|计算机学院|shenyanpai%255Cu005cx2dprofile';
+      },
+    },
+  ];
+
+  for (const entry of cases) {
+    await t.test(entry.name, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const addition = additionFor(parent);
+      entry.expose(addition);
+      const run = additiveRun(parent, parentText, [addition]);
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(
+          source,
+          parentText,
+          () => approve(source),
+          /addition .* must not expose fixed discovery provenance/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('rejects JavaScript escape chains nested beyond four inspection rounds', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  addition.tags = [
+    ...addition.tags,
+    'https://github\\u005cu005cu005cu005cx2ecom/shenyanpai/notice',
+  ];
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    await assertRejectedBeforeApproval(
+      source,
+      parentText,
+      () => approve(source),
+      /nested JavaScript escape encoding exceeds supported depth/i,
+    );
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
 test('allows ordinary additive text while inspecting JavaScript hex escape provenance', async () => {
   const source = paths();
   const parent = sealedParent();
@@ -1484,6 +1561,33 @@ test('allows ordinary additive text while inspecting JavaScript hex escape prove
     assert.ok(approvedAddition);
     assert.ok(approvedAddition.tags.includes('ordinary-public-note'));
     assert.ok(approvedAddition.description.includes(harmlessLiteralJavaScriptHexEscape));
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('allows harmless composed JavaScript escape text without rewriting public output', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  const harmlessLiteralCompositeEscape = '普通官方说明文本\\u005cx41';
+  addition.description = `${addition.description}\n${harmlessLiteralCompositeEscape}`;
+  addition.tags = [...addition.tags, 'ordinary-public-note'];
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.equal(result.status, 'ready');
+    const approved = JSON.parse(readFileSync(source.approved, 'utf8')) as PublicSnapshot;
+    const approvedAddition = approved.opportunities.find((opportunity) =>
+      opportunity.projectId === addition.projectId);
+    assert.ok(approvedAddition);
+    assert.ok(approvedAddition.tags.includes('ordinary-public-note'));
+    assert.ok(approvedAddition.description.includes(harmlessLiteralCompositeEscape));
   } finally {
     rmSync(source.root, { recursive: true, force: true });
   }
@@ -1659,7 +1763,9 @@ test('does not revalidate or rewrite historical parent provenance values', async
     historical.description,
     'https://gist.github.com/shenyanpai/historical-notice',
     'https://github.com/shenyanpai',
+    'https://github\\u005cx2ecom/shenyanpai/historical-notice',
     'https://raw.githubusercontent.com/shenyanpai/historical/main/notice.html',
+    'https://raw%5Cu005cx2egithubusercontent%5Cu005cx2ecom/shenyanpai/historical/main/notice.html',
     'https://github%2Ecom/shenyanpai/historical-notice',
     'https://raw%252Egithubusercontent%252Ecom/shenyanpai/historical/main/notice.html',
     'https://github%EF%BC%8Ecom/shenyanpai/historical-notice',
