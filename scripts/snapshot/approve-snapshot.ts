@@ -868,6 +868,124 @@ function beijingCalendarDate(timestamp: string): string {
   return `${year}-${month}-${day}`;
 }
 
+const additiveFixedDiscoveryCheckIds = [
+  'shenyanpai-profile',
+  'shenyanpai-summer-camp',
+  'shenyanpai-pre-recommend',
+] as const;
+
+function expectedAdditiveFixedDiscoveryUrl(checkId: string, finishedAt: string): string {
+  const year = beijingCalendarDate(finishedAt).slice(0, 4);
+  switch (checkId) {
+    case 'shenyanpai-profile':
+      return 'https://github.com/shenyanpai';
+    case 'shenyanpai-summer-camp':
+      return `https://github.com/shenyanpai/awesome-summer-camp-${year}`;
+    case 'shenyanpai-pre-recommend':
+      return `https://github.com/shenyanpai/awesome-pre-recommend-${year}`;
+    default:
+      throw new Error(`unsupported fixed discovery check ${quoted(checkId)}`);
+  }
+}
+
+function assertAdditiveFixedDiscoveryChecks(
+  run: AdditiveApprovalRun,
+  artifactMaterials: ReadonlyMap<string, AdditiveArtifactMaterial>,
+): void {
+  if (run.fixedDiscoveryChecks.length !== additiveFixedDiscoveryCheckIds.length) {
+    throw new Error('fixed discovery checks must contain exactly three required check IDs');
+  }
+  const checks = new Map<string, AdditiveFixedDiscoveryCheck>();
+  for (const check of run.fixedDiscoveryChecks) {
+    if (!(additiveFixedDiscoveryCheckIds as readonly string[]).includes(check.checkId)) {
+      throw new Error(`fixed discovery check ${quoted(check.checkId)} is unexpected`);
+    }
+    if (checks.has(check.checkId)) {
+      throw new Error(`fixed discovery check ${quoted(check.checkId)} is duplicated`);
+    }
+    checks.set(check.checkId, check);
+  }
+
+  const startedAtMs = Date.parse(run.startedAt);
+  const finishedAtMs = Date.parse(run.finishedAt);
+  const checkedArtifactSha256s = new Set<string>();
+  for (const checkId of additiveFixedDiscoveryCheckIds) {
+    const check = checks.get(checkId);
+    if (check === undefined) {
+      throw new Error(`fixed discovery check ${quoted(checkId)} is missing`);
+    }
+    const expectedUrl = expectedAdditiveFixedDiscoveryUrl(check.checkId, run.finishedAt);
+    const checkUrl = normalizeComparableUrl(
+      check.url,
+      `fixed discovery check ${quoted(check.checkId)} URL`,
+    );
+    if (checkUrl !== expectedUrl) {
+      throw new Error(
+        `fixed discovery check ${quoted(check.checkId)} URL must match ${quoted(expectedUrl)}`,
+      );
+    }
+    const checkedAtMs = Date.parse(check.checkedAt);
+    if (checkedAtMs < startedAtMs || checkedAtMs > finishedAtMs) {
+      throw new Error(
+        `fixed discovery check ${quoted(check.checkId)} was checked outside the run window`,
+      );
+    }
+    if (check.result === 'checked') {
+      if (check.artifactSha256 === null) {
+        throw new Error(
+          `fixed discovery check ${quoted(check.checkId)} with result checked must reference an artifact`,
+        );
+      }
+      if (check.reason !== null) {
+        throw new Error(
+          `fixed discovery check ${quoted(check.checkId)} with result checked must have a null reason`,
+        );
+      }
+      if (checkedArtifactSha256s.has(check.artifactSha256)) {
+        throw new Error(
+          `fixed discovery checks with result checked must not reuse an artifact SHA-256`,
+        );
+      }
+      const material = artifactMaterials.get(check.artifactSha256);
+      if (material === undefined) {
+        throw new Error(
+          `fixed discovery check ${quoted(check.checkId)} references a missing artifact`,
+        );
+      }
+      const artifactUrl = normalizeComparableUrl(
+        material.artifact.url,
+        `fixed discovery check ${quoted(check.checkId)} artifact URL`,
+      );
+      if (artifactUrl !== expectedUrl) {
+        throw new Error(
+          `fixed discovery check ${quoted(check.checkId)} artifact URL must match ${quoted(expectedUrl)}`,
+        );
+      }
+      if (material.text === null) {
+        throw new Error(
+          `fixed discovery check ${quoted(check.checkId)} must bind a readable UTF-8 text artifact`,
+        );
+      }
+      checkedArtifactSha256s.add(check.artifactSha256);
+      continue;
+    }
+    if (check.result === 'blocked') {
+      if (check.artifactSha256 !== null) {
+        throw new Error(
+          `fixed discovery check ${quoted(check.checkId)} with result blocked must not reference an artifact`,
+        );
+      }
+      if (check.reason === null || check.reason.trim() === '') {
+        throw new Error(
+          `fixed discovery check ${quoted(check.checkId)} with result blocked must retain a non-empty reason`,
+        );
+      }
+      continue;
+    }
+    throw new Error(`fixed discovery check ${quoted(check.checkId)} has an unsupported result`);
+  }
+}
+
 function additiveRotationDateSlot(rotationDate: string): number {
   const [yearText, monthText, dayText] = rotationDate.split('-');
   const epochDay = Math.floor(
@@ -1276,6 +1394,23 @@ function additiveFieldQuoteSourceValue(
   }
 }
 
+function isAdditiveGitHubDiscoveryHost(hostname: string): boolean {
+  return hostname === 'github.com'
+    || hostname.endsWith('.github.com')
+    || hostname === 'raw.githubusercontent.com';
+}
+
+function assertAdditivePublicDiscoverySources(opportunity: PublicOpportunity): void {
+  for (const source of opportunity.discoverySources) {
+    const sourceUrl = normalizeComparableUrl(source.url, 'addition discovery source URL');
+    if (isAdditiveGitHubDiscoveryHost(new URL(sourceUrl).hostname)) {
+      throw new Error(
+        `addition ${quoted(opportunity.projectId)} must not expose a GitHub discovery source`,
+      );
+    }
+  }
+}
+
 function assertAdditiveEvidence(
   run: AdditiveApprovalRun,
   opportunity: PublicOpportunity,
@@ -1303,6 +1438,7 @@ function assertAdditiveEvidence(
   )) {
     throw new Error(`addition ${quoted(opportunity.projectId)} officialUrl must match opportunity website`);
   }
+  assertAdditivePublicDiscoverySources(opportunity);
   const officialSources = opportunity.discoverySources
     .filter((source) => source.kind === 'official')
     .map((source) => assertAdditiveInstitutionalOfficialUrl(
@@ -2041,6 +2177,7 @@ export async function approveAdditiveSnapshotFile(
   assertScopeManifest(run);
   await assertAdditiveDecisionDoesNotCollideWithArtifacts(decisionPath, runDirectory, run);
   const artifactMaterials = await readAndVerifyAdditiveArtifacts(runPath, run);
+  assertAdditiveFixedDiscoveryChecks(run, artifactMaterials);
   const finishedAtMs = Date.parse(run.finishedAt);
   if (finishedAtMs > nowMs) throw new Error('additive discovery run finishedAt is in the future');
   if (nowMs - finishedAtMs > additiveRunMaximumAgeMs) {
