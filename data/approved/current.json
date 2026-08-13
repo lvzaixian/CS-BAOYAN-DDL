@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-08-09T18:51:06.349Z",
+  "scanAt": "2026-08-13T06:02:06.668Z",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -14,7 +14,7 @@
     "confirmedOpen": 102,
     "confirmedUnknownDeadline": 2,
     "pendingExcluded": 5,
-    "expired": 155
+    "expired": 156
   },
   "opportunities": [
     {
@@ -6839,6 +6839,56 @@
       }
     },
     {
+      "projectId": "2027|北京大学|计算机学院|2026优秀大学生夏令营",
+      "feedId": "camp2027",
+      "name": "北京大学",
+      "institute": "计算机学院",
+      "project": "北京大学计算机学院关于举办2026年优秀大学生夏令营的通知",
+      "eventType": "全国优秀大学生夏令营",
+      "description": "北京大学计算机学院面向计算机科学与技术学科优秀大学生举办夏令营，含学院介绍、专题讲座、实验室参观、师生座谈与专业知识技能测评。",
+      "verificationStatus": "expired",
+      "deadline": "2026-06-15T17:00:00+08:00",
+      "deadlineOriginal": "报名：2026年6月1日至6月15日下午17:00",
+      "deadlineEpochMs": 1781514000000,
+      "website": "https://cs.pku.edu.cn/info/1051/5810.htm",
+      "tags": [
+        "夏令营",
+        "计算机",
+        "推免"
+      ],
+      "verifiedAt": "2026-08-13T06:02:06.668Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "计算机学院官方夏令营通知",
+          "url": "https://cs.pku.edu.cn/info/1051/5810.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "2026年7月4日－7月7日"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "本次夏令营将于2026年7月4日至7日线下举行，活动地址为北京大学燕园校区。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "以上1-5项为必须项，6项由考生根据自身实际情况提交；须保证所有材料真实有效，若有虚假取消入营资格。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "入营营员还需提交纸质报名材料和专家推荐信2封，须在规定时间内快递寄达学院，具体信息将另行通知，请勿提前邮寄。"
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "本次夏令营不收取任何费用。入选营员的交通和住宿费自理，我院提供校外营员参加活动期间的用餐。"
+      }
+    },
+    {
       "projectId": "2027|北京大学|软件与微电子学院|2026夏令营",
       "feedId": "camp2027",
       "name": "北京大学",
@@ -11950,8 +12000,8 @@
       }
     }
   ],
-  "snapshotId": "2026-08-09T18:57:09.000Z-c5f604f64e2b",
-  "approvedAt": "2026-08-09T18:57:09.000Z",
-  "previousSnapshotId": "2026-08-09T17:11:46.643Z-90d6bc475641",
-  "dataHash": "c5f604f64e2b133ed87d67c9a3b933075f2fbd6fdb5680c1af397dc71177bf9b"
+  "snapshotId": "2026-08-13T06:02:15.000Z-de1d2f7678a6",
+  "approvedAt": "2026-08-13T06:02:15.000Z",
+  "previousSnapshotId": "2026-08-09T18:57:09.000Z-c5f604f64e2b",
+  "dataHash": "de1d2f7678a65fe622ce1aa50448ce4c8c7f9162b41846cb6e6ab6f70f4166c8"
 }
