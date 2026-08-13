@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-08-13T06:02:06.668Z",
+  "scanAt": "2026-08-13T09:11:56.751Z",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -12,7 +12,7 @@
   ],
   "counts": {
     "confirmedOpen": 102,
-    "confirmedUnknownDeadline": 2,
+    "confirmedUnknownDeadline": 3,
     "pendingExcluded": 5,
     "expired": 156
   },
@@ -4762,6 +4762,59 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：官方未明示；须按顺序合并为 1 个 PDF。；材料清单：个人简历；本人身份证和学生证复印件；成绩排名证明（盖章）；截至目前本科阶段成绩单（盖章）；英语四、六级或 TOEFL、GRE/GMAT 等英语证明；竞赛、论文、出版物或原创性工作成果等其他证明；《西安电子科技大学推免生报考诚信承诺书》（附件 1，须本人手写签名后扫描）。"
+      }
+    },
+    {
+      "projectId": "2027|重庆科技大学|计算机科学与工程学院（人工智能学院）|推免招生",
+      "feedId": "camp2027",
+      "name": "重庆科技大学",
+      "institute": "计算机科学与工程学院（人工智能学院）",
+      "project": "重庆科技大学2027年接收推荐免试攻读硕士学位研究生报考指南",
+      "eventType": "推免招生",
+      "description": "重庆科技大学研究生院2027年推免指南明确列出计算机科学与工程学院（人工智能学院）的智能科学与技术、计算机技术、人工智能和网络与信息安全方向；按国家规定时间通过推免服务系统填报志愿。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "国家规定时间内",
+      "deadlineEpochMs": null,
+      "website": "https://yjs.cqust.edu.cn/content.jsp?urltype=news.NewsContentUrl&wbnewsid=2997&wbtreeid=1014",
+      "tags": [
+        "推免",
+        "计算机",
+        "软件",
+        "人工智能",
+        "网络安全"
+      ],
+      "province": "重庆",
+      "verifiedAt": "2026-08-13T09:11:56.751Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "重庆科技大学研究生院2027年推免报考指南",
+          "url": "https://yjs.cqust.edu.cn/content.jsp?urltype=news.NewsContentUrl&wbnewsid=2997&wbtreeid=1014"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试时间预计为9月底至10月中旬，最终以学校正式通知为准"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": "由招生学院通知其复试具体安排"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "1.第二代身份证和学生证（身份证正反面，学生证学生信息和注册情况页）。\n\n2.本科学习成绩单，并加盖推荐学校教务处公章。\n\n3.其他有关材料（如大学英语四、六级考试成绩单，其他获奖证书、本人代表性学术论文、出版物或原创性科研工作成果、专家推荐信等）复印件。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "其他有关材料（如大学英语四、六级考试成绩单，其他获奖证书、本人代表性学术论文、出版物或原创性科研工作成果、专家推荐信等）复印件。"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "由招生学院通知其复试具体安排"
       }
     },
     {
@@ -12000,8 +12053,8 @@
       }
     }
   ],
-  "snapshotId": "2026-08-13T06:02:15.000Z-de1d2f7678a6",
-  "approvedAt": "2026-08-13T06:02:15.000Z",
-  "previousSnapshotId": "2026-08-09T18:57:09.000Z-c5f604f64e2b",
-  "dataHash": "de1d2f7678a65fe622ce1aa50448ce4c8c7f9162b41846cb6e6ab6f70f4166c8"
+  "snapshotId": "2026-08-13T09:16:34.000Z-9f5e9cd50456",
+  "approvedAt": "2026-08-13T09:16:34Z",
+  "previousSnapshotId": "2026-08-13T06:02:15.000Z-de1d2f7678a6",
+  "dataHash": "9f5e9cd504568160180f22774b1561230d1cc13ad62cd8ae489a553edd8fa078"
 }
