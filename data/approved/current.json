@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-08-13T09:11:56.751Z",
+  "scanAt": "2026-08-16T07:24:30.000Z",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -14,7 +14,7 @@
     "confirmedOpen": 102,
     "confirmedUnknownDeadline": 3,
     "pendingExcluded": 5,
-    "expired": 156
+    "expired": 158
   },
   "opportunities": [
     {
@@ -5512,6 +5512,56 @@
       }
     },
     {
+      "projectId": "2027|中国科学技术大学|计算机科学与技术学院|2026年暑期科学营",
+      "feedId": "camp2027",
+      "name": "中国科学技术大学",
+      "institute": "计算机科学与技术学院",
+      "project": "计算机科学与技术学院 2026年暑期科学营报名通知",
+      "eventType": "暑期科学营",
+      "description": "计算机科学与技术学院 2026年暑期科学营报名通知；面向2027届计算机类优秀本科生",
+      "verificationStatus": "expired",
+      "deadline": "2026-06-20T23:59:59+08:00",
+      "deadlineOriginal": "营员报名截止日期：2026年6月20日",
+      "deadlineEpochMs": 1781971199000,
+      "website": "https://cs.ustc.edu.cn/2026/0519/c22511a741173/page.htm",
+      "tags": [
+        "计算机",
+        "电子信息"
+      ],
+      "province": "安徽",
+      "verifiedAt": "2026-08-16T07:23:30.000Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://cs.ustc.edu.cn/2026/0519/c22511a741173/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "2026年7月13—17日"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "科学营活动举办形式为线下"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "暑期科学营期间提供伙食补贴和住宿"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "本营不要求提供推荐信"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "前两年半的成绩单（要有学校或院、系公章）和专业排名信息"
+      }
+    },
+    {
       "projectId": "2027|中国科学技术大学|软件学院|2026年逐梦软科科学营",
       "feedId": "camp2027",
       "name": "中国科学技术大学",
@@ -6199,6 +6249,57 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：材料复杂度：历史公开快照未记录；材料清单：材料复杂度：低；材料清单：国科大系统或问卷星填写申请；材料清单：材料复杂度：历史公开快照未记录；材料清单：材料复杂度：低；材料清单：国科大系统或问卷星填写申请"
+      }
+    },
+    {
+      "projectId": "2027|中国科学院脑科学与智能技术卓越创新中心|脑科学与智能技术卓越创新中心|2026暑期学校",
+      "feedId": "camp2027",
+      "name": "中国科学院脑科学与智能技术卓越创新中心",
+      "institute": "脑科学与智能技术卓越创新中心",
+      "project": "中国科学院脑科学与智能技术卓越创新中心暑期学校2026年通知",
+      "eventType": "暑期学校",
+      "description": "脑智卓越中心暑期学校2026年通知《认识、探索大脑的奥秘》；线下环节面向2027届本科毕业生",
+      "verificationStatus": "expired",
+      "deadline": "2026-06-25T23:59:59+08:00",
+      "deadlineOriginal": "申请报名时间：2026年3月27日 — 2026年6月25日",
+      "deadlineEpochMs": 1782403199000,
+      "website": "https://www.cebsit.cas.cn/yjs/tzgg/202603/t20260331_8179817.html",
+      "tags": [
+        "计算机",
+        "人工智能",
+        "交叉学科"
+      ],
+      "province": "上海",
+      "verifiedAt": "2026-08-16T07:23:30.000Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://www.cebsit.cas.cn/yjs/tzgg/202603/t20260331_8179817.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "hybrid",
+        "time": {
+          "status": "confirmed",
+          "summary": "2026年7月1日 - 7月3日（线上），7月6日- 7月10日（线下）"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线上线下相结合的方式"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "为入选线下学习的学员统一安排在沪期间的食宿"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "两名教师推荐信"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "请将推荐信（推荐信需要有推荐教师的签名）上传至申请表中指定位置"
       }
     },
     {
@@ -12053,8 +12154,8 @@
       }
     }
   ],
-  "snapshotId": "2026-08-13T09:16:34.000Z-9f5e9cd50456",
-  "approvedAt": "2026-08-13T09:16:34Z",
-  "previousSnapshotId": "2026-08-13T06:02:15.000Z-de1d2f7678a6",
-  "dataHash": "9f5e9cd504568160180f22774b1561230d1cc13ad62cd8ae489a553edd8fa078"
+  "snapshotId": "2026-08-16T07:26:00.000Z-592708e8b879",
+  "approvedAt": "2026-08-16T07:26:00.000Z",
+  "previousSnapshotId": "2026-08-13T09:16:34.000Z-9f5e9cd50456",
+  "dataHash": "592708e8b879b389b2b902182f6a89a21c3a9029c89cb3251bb324576ca610b9"
 }
