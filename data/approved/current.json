@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-08-23T08:02:00.000Z",
+  "scanAt": "2026-08-23T14:10:38.561Z",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -11,10 +11,10 @@
     }
   ],
   "counts": {
-    "confirmedOpen": 149,
-    "confirmedUnknownDeadline": 9,
+    "confirmedOpen": 157,
+    "confirmedUnknownDeadline": 18,
     "pendingExcluded": 5,
-    "expired": 170
+    "expired": 175
   },
   "opportunities": [
     {
@@ -1996,6 +1996,55 @@
       }
     },
     {
+      "projectId": "2027|中国农业科学院|农业信息研究所|2027年接收推荐免试研究生",
+      "feedId": "camp2027",
+      "name": "中国农业科学院",
+      "institute": "农业信息研究所",
+      "project": "中国农业科学院农业信息研究所2027年接收推荐免试研究生公告",
+      "eventType": "接收推荐免试研究生",
+      "description": "农业信息研究所接收2027推免，研究方向涉及机器学习、人工智能和云计算；专业含农业工程与信息技术。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-26T12:00:00+08:00",
+      "deadlineOriginal": "202\n6\n年\n8\n月\n26\n日\n12:00\n前",
+      "deadlineEpochMs": 1787716800000,
+      "website": "https://aii.caas.cn/yjspy/zsxx/3023e1309e3b4e29aaf9b38819ce4888.htm",
+      "tags": [
+        "推免",
+        "人工智能"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://aii.caas.cn/yjspy/zsxx/3023e1309e3b4e29aaf9b38819ce4888.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试时间预计\n9\n月\n上旬"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "按系统要求上传以下申请材料的扫描件电子版（\nZIP\n压缩包格式，大小不超过\n30M\n）"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|中国科学院自动化研究所|自动化研究所|2027年第二批推免面试",
       "feedId": "camp2027",
       "name": "中国科学院自动化研究所",
@@ -2361,6 +2410,104 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：材料复杂度：中；材料清单：通过学校推免生信息采集系统填报，并按学院通知准备成绩、排名、英语、科研和获奖证明。"
+      }
+    },
+    {
+      "projectId": "2027|广西大学|物理科学与工程技术学院|2027年接收推免生（含直博生）预报名",
+      "feedId": "camp2027",
+      "name": "广西大学",
+      "institute": "物理科学与工程技术学院",
+      "project": "广西大学2027年接收推免生（含直博生）预报名通知",
+      "eventType": "预报名",
+      "description": "物理科学与工程技术学院2027推免预报名，包含085403集成电路工程。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-30T23:59:59+08:00",
+      "deadlineOriginal": "预报名时间：2026年7月20日到8月30日。",
+      "deadlineEpochMs": 1788105599000,
+      "website": "https://yjsc.gxu.edu.cn/info/1021/4680.htm",
+      "tags": [
+        "推免",
+        "集成电路"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://yjsc.gxu.edu.cn/info/1021/4680.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|广西大学|电气工程学院|2027年接收推免生（含直博生）预报名",
+      "feedId": "camp2027",
+      "name": "广西大学",
+      "institute": "电气工程学院",
+      "project": "广西大学2027年接收推免生（含直博生）预报名通知",
+      "eventType": "预报名",
+      "description": "电气工程学院2027推免预报名，包含085406控制工程。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-30T23:59:59+08:00",
+      "deadlineOriginal": "预报名时间：2026年7月20日到8月30日。",
+      "deadlineEpochMs": 1788105599000,
+      "website": "https://yjsc.gxu.edu.cn/info/1021/4680.htm",
+      "tags": [
+        "推免",
+        "控制"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://yjsc.gxu.edu.cn/info/1021/4680.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
       }
     },
     {
@@ -3856,6 +4003,55 @@
       }
     },
     {
+      "projectId": "2027|南开大学|电子信息与光学工程学院|接收2027年推荐免试研究生（含直博生）预报名",
+      "feedId": "camp2027",
+      "name": "南开大学",
+      "institute": "电子信息与光学工程学院",
+      "project": "南开大学电子信息与光学工程学院接收2027年优秀应届本科毕业生免试攻读研究生（含直博生）预报名的通知",
+      "eventType": "网上预报名",
+      "description": "面向2027届推免预报名，覆盖新一代电子信息、通信、集成电路和光电信息等方向。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-04T23:59:59+08:00",
+      "deadlineOriginal": "即日起截止至2026年9月4日晚上24:00",
+      "deadlineEpochMs": 1788537599000,
+      "website": "https://ceo.nankai.edu.cn/info/1099/4648.htm",
+      "tags": [
+        "推免",
+        "电子信息"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://ceo.nankai.edu.cn/info/1099/4648.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "入选考核名单、面试考核时间待各专业确定后另行通知"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "以上材料须按次序扫描制成一个PDF文件"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "考生报名直博生项目，请在填写申请时在申请表中备注导师姓名，并需要两封专家推荐信，须亲笔签名，模版见附件1。"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|华东师范大学|计算机科学与技术学院|推免预报名",
       "feedId": "camp2027",
       "name": "华东师范大学",
@@ -3899,6 +4095,55 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：材料复杂度：待官方公布；材料清单：待官方公布"
+      }
+    },
+    {
+      "projectId": "2027|中国科学院上海硅酸盐研究所|中国科学院上海硅酸盐研究所|2027年推荐免试研究生招生",
+      "feedId": "camp2027",
+      "name": "中国科学院上海硅酸盐研究所",
+      "institute": "中国科学院上海硅酸盐研究所",
+      "project": "中国科学院上海硅酸盐研究所接收2027年推荐免试研究生招生简章",
+      "eventType": "推荐免试研究生",
+      "description": "上海硅酸盐研究所接收2027推免硕士/直博；推免硕士专业包含电子信息，属电子信息相邻项目。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-05T23:59:00+08:00",
+      "deadlineOriginal": "请将申请材料在2026年9月5日前",
+      "deadlineEpochMs": 1788623940000,
+      "website": "https://www.sic.cas.cn/yjsjy/zs/zsxx/202607/t20260730_8257183.html",
+      "tags": [
+        "推免",
+        "电子信息"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://www.sic.cas.cn/yjsjy/zs/zsxx/202607/t20260730_8257183.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核的时间、地点、方式由我所确定并通知考生，预计在2026年9月分批进行。"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "报名者应向我所提交如下材料（1-6为必须提供材料，7-9为自愿提供材料）"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "申请推荐免试攻读研究生专家推荐信；"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
       }
     },
     {
@@ -4086,6 +4331,55 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：材料复杂度：待官方公布；材料清单：待官方公布"
+      }
+    },
+    {
+      "projectId": "2027|大连理工大学|光电工程与仪器科学学院|2027年接收推荐免试研究生预报名",
+      "feedId": "camp2027",
+      "name": "大连理工大学",
+      "institute": "光电工程与仪器科学学院",
+      "project": "大连理工大学光电工程与仪器科学学院2027年接收推荐免试研究生预报名开放通知",
+      "eventType": "接收推荐免试研究生预报名",
+      "description": "光电工程与仪器科学学院2027推免预报名，含光电信息科学与工程等相邻信息类方向。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-07T12:00:00+08:00",
+      "deadlineOriginal": "我学院推免生系统预报名时间为：8月12日8:00-9月7日中午12:00",
+      "deadlineEpochMs": 1788753600000,
+      "website": "https://oeis.dlut.edu.cn/info/1045/9985.htm",
+      "tags": [
+        "推免",
+        "光电信息"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://oeis.dlut.edu.cn/info/1045/9985.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线下"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请者请将材料整理成PDF文件上传"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
       }
     },
     {
@@ -4733,6 +5027,55 @@
       "materials": {
         "status": "confirmed",
         "summary": "成绩单"
+      }
+    },
+    {
+      "projectId": "2027|哈尔滨工业大学（深圳）|集成电路学院|2027年接收优秀应届本科毕业生免试攻读研究生",
+      "feedId": "camp2027",
+      "name": "哈尔滨工业大学（深圳）",
+      "institute": "集成电路学院",
+      "project": "哈尔滨工业大学（深圳）集成电路学院 2027年接收优秀应届本科毕业生免试攻读研究生报名通知",
+      "eventType": "免试攻读研究生报名",
+      "description": "集成电路学院接收2027届推免硕士/直博，覆盖集成电路科学与工程和电子信息方向。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T23:59:00+08:00",
+      "deadlineOriginal": "报名截止时间：2026年9月10日",
+      "deadlineEpochMs": 1789055940000,
+      "website": "http://ic.hitsz.edu.cn/info/1032/2697.htm",
+      "tags": [
+        "推免",
+        "集成电路"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "http://ic.hitsz.edu.cn/info/1032/2697.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "面试时间、地点（以通知为准，具体面试时间至少提前两天通知）"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "复试考核形式：线下面试（面试地点：广东省深圳市南山区西丽大学城哈工大园区，具体教室另行通知）"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "全部申请材料按照以下①-⑧依次扫描制成一个PDF文件"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "申请直博的考生还需要提供报考学科相关领域的教授（或相当专业技术职称专家）的推荐信两封。"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
       }
     },
     {
@@ -5515,6 +5858,55 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：材料复杂度：中；材料清单：盖章成绩单与排名、英语水平、学术成果和荣誉奖励，按编号合并为一个PDF通过系统上传。"
+      }
+    },
+    {
+      "projectId": "2027|大连理工大学|电气工程学院|2027年接收推荐免试研究生预报名",
+      "feedId": "camp2027",
+      "name": "大连理工大学",
+      "institute": "电气工程学院",
+      "project": "大连理工大学电气工程学院接收2027年接收推荐免试研究生预报名通知",
+      "eventType": "接收推荐免试研究生预报名",
+      "description": "电气工程学院2027推免预报名，涵盖电气工程硕士与直博。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-14T08:00:00+08:00",
+      "deadlineOriginal": "报名时间：\n8\n月\n8\n日\n8:00-9\n月\n14\n日\n8:00\n。",
+      "deadlineEpochMs": 1789344000000,
+      "website": "https://ee.dlut.edu.cn/info/1834/24054.htm",
+      "tags": [
+        "推免",
+        "电气工程"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://ee.dlut.edu.cn/info/1834/24054.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "学院计划在\n9\n月中下旬组织进行面试"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "请将待上传的证明材料按以下顺序合并为\n一个为PDF\n文件，"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
       }
     },
     {
@@ -6939,6 +7331,104 @@
       }
     },
     {
+      "projectId": "2027|东北大学|计算机科学与工程学院|2027年学术尖峰01班专项直博",
+      "feedId": "camp2027",
+      "name": "东北大学",
+      "institute": "计算机科学与工程学院",
+      "project": "东北大学2027年接收优秀应届本科毕业生直接攻读博士研究生工作办法",
+      "eventType": "直接攻读博士研究生",
+      "description": "计算机科学与工程学院081200计算机科学与技术纳入东北大学2027年学术尖峰“01班”专项直博生招生专业目录。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "",
+      "deadlineEpochMs": null,
+      "website": "https://yz.neu.edu.cn/2026/0721/c5945a458216/pagem.htm",
+      "tags": [
+        "直博",
+        "计算机"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://yz.neu.edu.cn/2026/0721/c5945a458216/pagem.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "专家推荐书"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|东北大学|软件学院|2027年学术尖峰01班专项直博",
+      "feedId": "camp2027",
+      "name": "东北大学",
+      "institute": "软件学院",
+      "project": "东北大学2027年接收优秀应届本科毕业生直接攻读博士研究生工作办法",
+      "eventType": "直接攻读博士研究生",
+      "description": "软件学院083500软件工程纳入东北大学2027年学术尖峰“01班”专项直博生招生专业目录。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "",
+      "deadlineEpochMs": null,
+      "website": "https://yz.neu.edu.cn/2026/0721/c5945a458216/pagem.htm",
+      "tags": [
+        "直博",
+        "软件工程"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://yz.neu.edu.cn/2026/0721/c5945a458216/pagem.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "专家推荐书"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|东南大学|PALM实验室|2027年入学博士及推免硕士研究生",
       "feedId": "camp2027",
       "name": "东南大学",
@@ -6985,6 +7475,55 @@
       "materials": {
         "status": "confirmed",
         "summary": "[]"
+      }
+    },
+    {
+      "projectId": "2027|中国科学院云南天文台|中国科学院云南天文台|2027年接收推荐免试生",
+      "feedId": "camp2027",
+      "name": "中国科学院云南天文台",
+      "institute": "中国科学院云南天文台",
+      "project": "中国科学院云南天文台2027年接收推荐免试生通知",
+      "eventType": "接收推荐免试生",
+      "description": "云南天文台接收2027推免，明确欢迎人工智能、自动化、计算机、通信和电子信息等相关背景。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "",
+      "deadlineEpochMs": null,
+      "website": "https://ynao.cas.cn/yjsjy/jydt/zs/202608/t20260818_8261675.html",
+      "tags": [
+        "推免",
+        "交叉信息"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://ynao.cas.cn/yjsjy/jydt/zs/202608/t20260818_8261675.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "推荐免试申请者直接向云南天文台研究生部提交如下材料"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "专家推荐书（副教授职称以上专家填写）。"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
       }
     },
     {
@@ -7080,6 +7619,55 @@
       "materials": {
         "status": "confirmed",
         "summary": "成绩单"
+      }
+    },
+    {
+      "projectId": "2027|哈尔滨工业大学|仪器科学与工程学院|2027年接收优秀应届本科毕业生免试攻读研究生",
+      "feedId": "camp2027",
+      "name": "哈尔滨工业大学",
+      "institute": "仪器科学与工程学院",
+      "project": "哈尔滨工业大学仪器科学与工程学院 2027年接收优秀应届本科毕业生免试攻读研究生报名的通知",
+      "eventType": "免试攻读研究生报名",
+      "description": "仪器科学与工程学院2027推免报名，包含电子信息和智能科学与技术，并接收计算机、软件等相关背景。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "",
+      "deadlineEpochMs": null,
+      "website": "https://ise.hit.edu.cn/2026/0722/c16271a398085/page.htm",
+      "tags": [
+        "推免",
+        "电子信息"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://ise.hit.edu.cn/2026/0722/c16271a398085/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "面试时间将在审核通过后，根据报名情况适时安排。"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
       }
     },
     {
@@ -7270,6 +7858,153 @@
       }
     },
     {
+      "projectId": "2027|重庆科技大学|数理科学学院|推免招生",
+      "feedId": "camp2027",
+      "name": "重庆科技大学",
+      "institute": "数理科学学院",
+      "project": "重庆科技大学2027年接收推荐免试攻读硕士学位研究生报考指南",
+      "eventType": "推荐免试",
+      "description": "数理科学学院2027推免招生，包含大数据技术与工程（智能计算、工业大数据）。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "国家规定时间内",
+      "deadlineEpochMs": null,
+      "website": "https://yjs.cqust.edu.cn/content.jsp?urltype=news.NewsContentUrl&wbnewsid=2997&wbtreeid=1014",
+      "tags": [
+        "推免",
+        "大数据"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://yjs.cqust.edu.cn/content.jsp?urltype=news.NewsContentUrl&wbnewsid=2997&wbtreeid=1014"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试时间预计为9月底至10月中旬，最终以学校正式通知为准"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "第二代身份证和学生证（身份证正反面，学生证学生信息和注册情况页）"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "数理科学学院：电子信息硕士大数据技术与工程学费10000元/生·年，住宿费1200元/生·年。"
+      }
+    },
+    {
+      "projectId": "2027|重庆科技大学|机械与智能制造学院|推免招生",
+      "feedId": "camp2027",
+      "name": "重庆科技大学",
+      "institute": "机械与智能制造学院",
+      "project": "重庆科技大学2027年接收推荐免试攻读硕士学位研究生报考指南",
+      "eventType": "推荐免试",
+      "description": "机械与智能制造学院2027推免招生，包含智能科学与技术（智能制造与智能感知）。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "国家规定时间内",
+      "deadlineEpochMs": null,
+      "website": "https://yjs.cqust.edu.cn/content.jsp?urltype=news.NewsContentUrl&wbnewsid=2997&wbtreeid=1014",
+      "tags": [
+        "推免",
+        "智能制造"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://yjs.cqust.edu.cn/content.jsp?urltype=news.NewsContentUrl&wbnewsid=2997&wbtreeid=1014"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试时间预计为9月底至10月中旬，最终以学校正式通知为准"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "第二代身份证和学生证（身份证正反面，学生证学生信息和注册情况页）"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "机械与智能制造学院：机械硕士相关专业（含智能制造技术）学费10000元/生·年，住宿费1200元/生·年。"
+      }
+    },
+    {
+      "projectId": "2027|重庆科技大学|电子与电气工程学院|推免招生",
+      "feedId": "camp2027",
+      "name": "重庆科技大学",
+      "institute": "电子与电气工程学院",
+      "project": "重庆科技大学2027年接收推荐免试攻读硕士学位研究生报考指南",
+      "eventType": "推荐免试",
+      "description": "电子与电气工程学院2027推免招生，包含新一代电子信息技术和控制工程。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "国家规定时间内",
+      "deadlineEpochMs": null,
+      "website": "https://yjs.cqust.edu.cn/content.jsp?urltype=news.NewsContentUrl&wbnewsid=2997&wbtreeid=1014",
+      "tags": [
+        "推免",
+        "控制"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://yjs.cqust.edu.cn/content.jsp?urltype=news.NewsContentUrl&wbnewsid=2997&wbtreeid=1014"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试时间预计为9月底至10月中旬，最终以学校正式通知为准"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "第二代身份证和学生证（身份证正反面，学生证学生信息和注册情况页）"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "电子与电气工程学院：电子信息硕士相关专业（含新一代电子信息技术、控制工程）学费10000元/生·年，住宿费1200元/生·年。"
+      }
+    },
+    {
       "projectId": "2027|重庆科技大学|计算机科学与工程学院（人工智能学院）|推免招生",
       "feedId": "camp2027",
       "name": "重庆科技大学",
@@ -7320,6 +8055,104 @@
       "logistics": {
         "status": "not-published",
         "summary": "由招生学院通知其复试具体安排"
+      }
+    },
+    {
+      "projectId": "2027|重庆科技大学|重庆智能数学与自主智能研究院|推免招生",
+      "feedId": "camp2027",
+      "name": "重庆科技大学",
+      "institute": "重庆智能数学与自主智能研究院",
+      "project": "重庆科技大学2027年接收推荐免试攻读硕士学位研究生报考指南",
+      "eventType": "推荐免试",
+      "description": "重庆智能数学与自主智能研究院2027推免招生，包含智能科学与技术和大数据技术与工程。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "国家规定时间内",
+      "deadlineEpochMs": null,
+      "website": "https://yjs.cqust.edu.cn/content.jsp?urltype=news.NewsContentUrl&wbnewsid=2997&wbtreeid=1014",
+      "tags": [
+        "推免",
+        "人工智能"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://yjs.cqust.edu.cn/content.jsp?urltype=news.NewsContentUrl&wbnewsid=2997&wbtreeid=1014"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试时间预计为9月底至10月中旬，最终以学校正式通知为准"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "第二代身份证和学生证（身份证正反面，学生证学生信息和注册情况页）"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "重庆智能数学与自主智能研究院：智能科学与技术学费7000元/生·年；大数据技术与工程学费10000元/生·年；相关专业住宿费1200元/生·年。"
+      }
+    },
+    {
+      "projectId": "2027|长安大学|数据科学与人工智能研究院|2027年硕士研究生推免/报考咨询",
+      "feedId": "camp2027",
+      "name": "长安大学",
+      "institute": "数据科学与人工智能研究院",
+      "project": "长安大学数据科学与人工智能研究院2027年硕士研究生推免/报考咨询通知",
+      "eventType": "推免/报考咨询",
+      "description": "面向2027届开展推免/报考咨询，涉及计算机科学与技术、网络空间安全和电子信息。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "即日起",
+      "deadlineEpochMs": null,
+      "website": "https://dsai.chd.edu.cn/info/1040/1532.htm",
+      "tags": [
+        "推免",
+        "人工智能"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://dsai.chd.edu.cn/info/1040/1532.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "附件材料需将以下1-6项材料按照顺序整理成一个PDF文件（不超过10M）"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
       }
     },
     {
@@ -10063,6 +10896,55 @@
       }
     },
     {
+      "projectId": "2027|华中科技大学|人工智能与自动化学院（184）|2027级研究生招生线上宣讲活动",
+      "feedId": "camp2027",
+      "name": "华中科技大学",
+      "institute": "人工智能与自动化学院（184）",
+      "project": "华中科技大学人工智能与自动化学院（184）2027级研究生招生线上宣讲活动安排",
+      "eventType": "研究生招生线上宣讲会",
+      "description": "人工智能与自动化学院面向2027届的研究生招生线上宣讲活动；不是已核验的申请开放通知。",
+      "verificationStatus": "expired",
+      "deadline": null,
+      "deadlineOriginal": "人工智能与自动化学院拟定于7月8日（周三）8:30举办研究生招生线上宣讲会",
+      "deadlineEpochMs": null,
+      "website": "https://aia.hust.edu.cn/info/1177/11290.htm",
+      "tags": [
+        "宣讲",
+        "人工智能"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://aia.hust.edu.cn/info/1177/11290.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "online",
+        "time": {
+          "status": "confirmed",
+          "summary": "人工智能与自动化学院拟定于7月8日（周三）8:30举办研究生招生线上宣讲会"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "腾讯会议信息"
+        }
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|华中科技大学|网络空间安全学院|2026学术夏令营",
       "feedId": "camp2027",
       "name": "华中科技大学",
@@ -10152,6 +11034,55 @@
       "materials": {
         "status": "confirmed",
         "summary": "以上申请材料请扫描并合并成一个PDF文件，文件大小不超过5M"
+      }
+    },
+    {
+      "projectId": "2027|华中科技大学|集成电路学院|2026年研究生招生线上宣讲",
+      "feedId": "camp2027",
+      "name": "华中科技大学",
+      "institute": "集成电路学院",
+      "project": "华中科技大学集成电路学院2026年研究生招生线上宣讲通知",
+      "eventType": "研究生招生线上宣讲",
+      "description": "集成电路学院面向2027届毕业生的线上招生宣讲；不是已核验的申请开放通知。",
+      "verificationStatus": "expired",
+      "deadline": null,
+      "deadlineOriginal": "时间：2026年7月27日，9:00-16:00",
+      "deadlineEpochMs": null,
+      "website": "https://ic.hust.edu.cn/info/1242/5866.htm",
+      "tags": [
+        "宣讲",
+        "集成电路"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://ic.hust.edu.cn/info/1242/5866.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "online",
+        "time": {
+          "status": "confirmed",
+          "summary": "时间：2026年7月27日，9:00-16:00"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "形式：腾讯会议"
+        }
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
       }
     },
     {
@@ -10847,6 +11778,55 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：材料复杂度：历史公开快照未记录；材料清单：材料复杂度：中；材料清单：系统报名表、前五学期盖章成绩单、论文/获奖/英语证明、500字未来研究方向及科研计划，合并一个PDF邮件提交；材料清单：材料复杂度：历史公开快照未记录；材料清单：材料复杂度：中；材料清单：系统报名表、前五学期盖章成绩单、论文/获奖/英语证明、500字未来研究方向及科研计划，合并一个PDF邮件提交"
+      }
+    },
+    {
+      "projectId": "2027|吉林大学|电子科学与工程学院|2026年校园学术开放日",
+      "feedId": "camp2027",
+      "name": "吉林大学",
+      "institute": "电子科学与工程学院",
+      "project": "吉林大学电子科学与工程学院“2026年校园学术开放日”活动通知",
+      "eventType": "校园学术开放日",
+      "description": "电子科学与工程学院2026开放日面向2027届，涉及新一代电子信息技术和集成电路工程。",
+      "verificationStatus": "expired",
+      "deadline": "2026-06-18T23:59:00+08:00",
+      "deadlineOriginal": "即日\n——\n2026年6\n月\n18\n日\n，",
+      "deadlineEpochMs": 1781798340000,
+      "website": "https://ee.jlu.edu.cn/info/1273/9587.htm",
+      "tags": [
+        "开放日",
+        "集成电路"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://ee.jlu.edu.cn/info/1273/9587.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "2026年7月2日-7月4日"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "《报名表》"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
       }
     },
     {
@@ -11721,6 +12701,55 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：材料复杂度：高；材料清单：证件照、成绩单、外语证明、获奖/科研成果、诚信承诺书、学生证或学籍认证、排名证明、一页简历；材料清单：材料复杂度：高；材料清单：证件照、成绩单、外语证明、获奖/科研成果、诚信承诺书、学生证或学籍认证、排名证明、一页简历"
+      }
+    },
+    {
+      "projectId": "2027|大连海事大学|信息科学技术学院|2026年优秀大学生学术夏令营",
+      "feedId": "camp2027",
+      "name": "大连海事大学",
+      "institute": "信息科学技术学院",
+      "project": "信息科学技术学院关于开展2026年优秀大学生学术夏令营活动的通知",
+      "eventType": "优秀大学生学术夏令营活动",
+      "description": "信息科学技术学院2026夏令营面向2027届，覆盖计算机、软件、人工智能、大数据和网络与信息安全等方向。",
+      "verificationStatus": "expired",
+      "deadline": "2026-07-13T10:00:00+08:00",
+      "deadlineOriginal": "报名时间：即日起\n-7月13日早\n10\n：\n00。",
+      "deadlineEpochMs": 1783908000000,
+      "website": "https://ist.dlmu.edu.cn/info/1068/8788.htm",
+      "tags": [
+        "夏令营",
+        "计算机"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://ist.dlmu.edu.cn/info/1068/8788.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "2026年7月21-22日举办“信息学院2026年优秀大学生学术夏令营活动”"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线下"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "将以下报名材料，按照顺序形成一个PDF文件"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "活动期间，学校将统一为参加学术交流活动的同学提供住宿，\n同时依据相关标准对往返交通费予以定额补贴，"
       }
     },
     {
@@ -12739,6 +13768,55 @@
       "materials": {
         "status": "confirmed",
         "summary": "申请者需按要求提交完整材料"
+      }
+    },
+    {
+      "projectId": "2027|武汉大学|遥感信息工程学院|2026年优秀大学生校园开放日",
+      "feedId": "camp2027",
+      "name": "武汉大学",
+      "institute": "遥感信息工程学院",
+      "project": "遥感信息工程学院2026年优秀大学生校园开放日活动通知",
+      "eventType": "优秀大学生校园开放日",
+      "description": "遥感信息工程学院2026校园开放日面向2027届，包含计算机科学、电子信息等相关专业背景。",
+      "verificationStatus": "expired",
+      "deadline": "2026-07-07T23:59:59+08:00",
+      "deadlineOriginal": "报名截止时间：2026年7月7日24:00",
+      "deadlineEpochMs": 1783439999000,
+      "website": "https://rsgis.whu.edu.cn/info/1083/111610.htm",
+      "tags": [
+        "开放日",
+        "交叉信息"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://rsgis.whu.edu.cn/info/1083/111610.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "hybrid",
+        "time": {
+          "status": "confirmed",
+          "summary": "活动时间：2026年7月中旬"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "本次开放日活动采用线上线下相结合（线下为主、线上为辅）的方式举办"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "所有材料须按顺序整合为一个PDF文件提交"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "本次活动不收取任何费用，现场活动参与者的交通食宿费用均自理"
       }
     },
     {
@@ -15226,8 +16304,8 @@
       }
     }
   ],
-  "snapshotId": "2026-08-23T08:11:53.637Z-b0a475448e54",
-  "approvedAt": "2026-08-23T08:11:53.637Z",
-  "previousSnapshotId": "2026-08-23T07:01:29.472Z-12087bd80b91",
-  "dataHash": "b0a475448e5431146ec07e90c4c83e2e22e3c8ebf9211968485427d59615c7dc"
+  "snapshotId": "2026-08-23T14:10:52.270Z-0438da5316f5",
+  "approvedAt": "2026-08-23T14:10:52.270Z",
+  "previousSnapshotId": "2026-08-23T08:11:53.637Z-b0a475448e54",
+  "dataHash": "0438da5316f589e3ad398d04f28191f68f430796496997c1d3c2a721b170ca2e"
 }

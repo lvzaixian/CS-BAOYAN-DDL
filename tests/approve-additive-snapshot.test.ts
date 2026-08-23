@@ -3383,3 +3383,29 @@ test('daily additive approval has a dedicated narrow CLI instead of the legacy r
     rmSync(source.root, { recursive: true, force: true });
   }
 });
+
+test('accepts a China Agricultural Academy official caas.cn source', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  addition.website = 'https://aii.caas.cn/admissions/2027-tuimian';
+  addition.discoverySources[0].url = addition.website;
+  const run = additiveRun(parent, parentText, [addition]);
+  run.scopes.find((scope) => scope.scopeId === 'scope-root')!.entryUrl = addition.website;
+  run.artifacts[0].url = addition.website;
+  run.additions[0].evidence.officialUrl = addition.website;
+  for (const fieldEvidence of run.additions[0].evidence.fieldEvidence) {
+    fieldEvidence.sourceUrl = addition.website;
+  }
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.equal(result.status, 'ready');
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
