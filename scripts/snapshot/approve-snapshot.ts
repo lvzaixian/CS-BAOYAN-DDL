@@ -264,6 +264,7 @@ const additiveInstitutionalHostSuffixes = [
   '.edu.mo',
   '.edu.tw',
   '.cas.cn',
+  '.caas.cn',
   '.gov.cn',
 ] as const;
 const additiveOfficialPlatformHosts = new Set([
