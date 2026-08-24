@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-08-24T03:32:00.375Z",
+  "scanAt": "2026-08-24T04:15:51.825Z",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -11,7 +11,7 @@
     }
   ],
   "counts": {
-    "confirmedOpen": 159,
+    "confirmedOpen": 167,
     "confirmedUnknownDeadline": 16,
     "pendingExcluded": 5,
     "expired": 175
@@ -4705,6 +4705,56 @@
       }
     },
     {
+      "projectId": "2027|北京邮电大学|数学科学学院|接收推荐免试研究生",
+      "feedId": "camp2027",
+      "name": "北京邮电大学",
+      "institute": "数学科学学院",
+      "project": "2027年接收优秀应届本科毕业生免试攻读研究生",
+      "eventType": "推免生",
+      "description": "数学科学学院接收2027年推免硕博生；9月中下旬分批进行线下复试。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T17:00:00+08:00",
+      "deadlineOriginal": "2026年8月1日9：00至 9月10日17：00",
+      "deadlineEpochMs": 1789030800000,
+      "website": "https://math.bupt.edu.cn/info/1033/1664.htm",
+      "tags": [
+        "推免",
+        "数学",
+        "智能计算"
+      ],
+      "verifiedAt": "2026-08-24T04:15:51.825Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://math.bupt.edu.cn/info/1033/1664.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "2026年9月中 下 旬 分批次进行"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线下复试，考生需到北京邮电大学沙河校区参加现场面试"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "所有材料无需再邮寄纸质版报名材料"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "两名与申请学科相关的具有副高职（含）以上职称的 专家推荐书 各一份"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|北京邮电大学|电子工程学院|接收推荐免试研究生",
       "feedId": "camp2027",
       "name": "北京邮电大学",
@@ -5214,6 +5264,56 @@
       "materials": {
         "status": "confirmed",
         "summary": "申请人须提交的申请材料包括"
+      }
+    },
+    {
+      "projectId": "2027|中国科学院理化技术研究所|中国科学院理化技术研究所|接收2027年推荐免试生",
+      "feedId": "camp2027",
+      "name": "中国科学院理化技术研究所",
+      "institute": "中国科学院理化技术研究所",
+      "project": "接收2027年推荐免试生",
+      "eventType": "推荐免试生",
+      "description": "2027年推免分两批递交材料：第一批截至9月10日、第二批截至9月18日；专业目录含光电信息工程。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T23:59:59+08:00",
+      "deadlineOriginal": "第一批面试递交材料时间截至9月10日",
+      "deadlineEpochMs": 1789055999000,
+      "website": "https://ipc.cas.cn/yjsjy2019/zsxx/202608/t20260813_8260203.html",
+      "tags": [
+        "推免",
+        "光电信息",
+        "电子信息"
+      ],
+      "verifiedAt": "2026-08-24T04:15:51.825Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://ipc.cas.cn/yjsjy2019/zsxx/202608/t20260813_8260203.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "第一批面试时间：9月16日"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "采用线下面试形式"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "将报名材料按以下顺序扫描合并成一个PDF文档"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "《申请推荐免试攻读中国科学院大学研究生专家推荐书》"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
       }
     },
     {
@@ -6436,6 +6536,56 @@
       }
     },
     {
+      "projectId": "2027|中国科学院上海光学精密机械研究所|上海光机所|2027年接收推荐免试生",
+      "feedId": "camp2027",
+      "name": "中国科学院上海光学精密机械研究所",
+      "institute": "上海光机所",
+      "project": "2027年接收推荐免试生",
+      "eventType": "推荐免试生",
+      "description": "2027年推免生申请材料须在9月15日前提交；考核预计8—9月分批进行。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T23:59:59+08:00",
+      "deadlineOriginal": "申请者应在 202 6 年 9月 15 日前将申请材料电子版发送到指定邮箱。",
+      "deadlineEpochMs": 1789487999000,
+      "website": "https://siom.cas.cn/rcjy/zsxx/sszs/202607/t20260723_8254495.html",
+      "tags": [
+        "推免",
+        "光电",
+        "通信"
+      ],
+      "verifiedAt": "2026-08-24T04:15:51.825Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://siom.cas.cn/rcjy/zsxx/sszs/202607/t20260723_8254495.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "预计 在 8- 9月 份 分批进行，录满截至"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "考核的时间、方式由我所确定并 通过 email 通知考生"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "整理成一个 PDF文档"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|长安大学|数据科学与人工智能研究院|2027年硕士研究生推免/报考咨询",
       "feedId": "camp2027",
       "name": "长安大学",
@@ -6474,6 +6624,56 @@
       "materials": {
         "status": "confirmed",
         "summary": "附件材料需将以下1-6项材料按照顺序整理成一个PDF文件（不超过10M）"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|长安大学|能源与电气工程学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "长安大学",
+      "institute": "能源与电气工程学院",
+      "project": "2027年接收推荐免试研究生（含直博生）预报名",
+      "eventType": "推免生预报名",
+      "description": "面向2027届推免硕士和直博生；学院培养方向含综合能源微网优化控制，按电气/控制相邻范围收录。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T23:59:59+08:00",
+      "deadlineOriginal": "系统开放时间： 2026/7/27 0:00:00 - 2026/9/15 23:59:59",
+      "deadlineEpochMs": 1789487999000,
+      "website": "https://ndxy.chd.edu.cn/info/1068/3539.htm",
+      "tags": [
+        "推免",
+        "电气",
+        "控制"
+      ],
+      "verifiedAt": "2026-08-24T04:15:51.825Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://ndxy.chd.edu.cn/info/1068/3539.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "整理成一个PDF文件（不超过10M）"
       },
       "recommendation": {
         "status": "not-published",
@@ -6577,6 +6777,106 @@
       }
     },
     {
+      "projectId": "2027|中国科学院精密测量科学与技术创新研究院|中国科学院精密测量科学与技术创新研究院|接收2027年推荐免试研究生",
+      "feedId": "camp2027",
+      "name": "中国科学院精密测量科学与技术创新研究院",
+      "institute": "中国科学院精密测量科学与技术创新研究院",
+      "project": "2027年接收推荐免试研究生",
+      "eventType": "推荐免试研究生",
+      "description": "接收电子等相关专业2027届推免硕博生；系统报名截至9月16日，拟线上面试。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-16T23:59:59+08:00",
+      "deadlineOriginal": "即日起至2026年9月16日",
+      "deadlineEpochMs": 1789574399000,
+      "website": "https://apm.cas.cn/zs/202607/t20260728_8256315.html",
+      "tags": [
+        "推免",
+        "电子",
+        "精密测量"
+      ],
+      "verifiedAt": "2026-08-24T04:15:51.825Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://apm.cas.cn/zs/202607/t20260728_8256315.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "online",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "拟线上面试，具体安排另行通知"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "合并整理 为一个PDF文件"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "专家推荐书（由副教授或相当职称及以上专家推荐，无统一模板）"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|西安电子科技大学|光电工程学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "西安电子科技大学",
+      "institute": "光电工程学院",
+      "project": "2027年预推免研究生招生报名",
+      "eventType": "推免生预报名",
+      "description": "面向2027年推免硕士和直博生；预报名系统开放至9月17日，学院预计9月组织现场面试。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-17T23:59:59+08:00",
+      "deadlineOriginal": "光电工程学院2027年推免生预报名系统将于2026年7月31日至9月17日开放。",
+      "deadlineEpochMs": 1789660799000,
+      "website": "https://soe.xidian.edu.cn/info/1095/17675.htm",
+      "tags": [
+        "推免",
+        "光电",
+        "电子信息"
+      ],
+      "verifiedAt": "2026-08-24T04:15:51.825Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://soe.xidian.edu.cn/info/1095/17675.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "预计9月进行，具体安排另行通知"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "统一采取现场面试"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "各项材料务必按照下述顺序标注并整合为1个PDF"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|中国科学院长春光机所|中国科学院长春光机所|2027年招收推荐免试生",
       "feedId": "camp2027",
       "name": "中国科学院长春光机所",
@@ -6623,6 +6923,56 @@
       "materials": {
         "status": "confirmed",
         "summary": "申请材料"
+      }
+    },
+    {
+      "projectId": "2027|中国科学院上海技术物理研究所|中国科学院上海技术物理研究所|接收2027级推荐免试研究生",
+      "feedId": "camp2027",
+      "name": "中国科学院上海技术物理研究所",
+      "institute": "中国科学院上海技术物理研究所",
+      "project": "接收2027级推荐免试研究生",
+      "eventType": "推荐免试研究生",
+      "description": "接收2027级推免硕士和少量直博生；按光电信息工程等信息技术相邻范围收录。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-18T23:59:59+08:00",
+      "deadlineOriginal": "即日起至2026年9月18日（届时视具体报名情况和高校实际情况决定是否适当延长）",
+      "deadlineEpochMs": 1789747199000,
+      "website": "https://sitp.cas.cn/yjs/zsxx/ssszs/202607/t20260727_8255524.html",
+      "tags": [
+        "推免",
+        "光电",
+        "电子信息"
+      ],
+      "verifiedAt": "2026-08-24T04:15:51.825Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://sitp.cas.cn/yjs/zsxx/ssszs/202607/t20260727_8255524.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "将按照申请人提交时间先后分批次通知并安排面试"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "考核的时间、地点及考核方式通知"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "必须提供的材料"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "自愿提供的材料"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
       }
     },
     {
@@ -6911,6 +7261,57 @@
       "materials": {
         "status": "confirmed",
         "summary": "申请材料"
+      }
+    },
+    {
+      "projectId": "2027|中国科学院微小卫星创新研究院|中国科学院微小卫星创新研究院|2027年推荐免试生",
+      "feedId": "camp2027",
+      "name": "中国科学院微小卫星创新研究院",
+      "institute": "中国科学院微小卫星创新研究院",
+      "project": "2027年推荐免试生",
+      "eventType": "推荐免试生",
+      "description": "接收2027年直博、学硕和全日制专硕推免生，明确欢迎信息通信、计算机、控制、电子等相关专业。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-20T23:59:59+08:00",
+      "deadlineOriginal": "即日起至2026年9月20日截止（可视具体报名情况及高校实际情况适当延长）",
+      "deadlineEpochMs": 1789919999000,
+      "website": "https://microsate.cas.cn/yajsjy/zsjz/202607/t20260731_8257877.html",
+      "tags": [
+        "推免",
+        "计算机",
+        "信息通信",
+        "控制"
+      ],
+      "verifiedAt": "2026-08-24T04:15:51.825Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://microsate.cas.cn/yajsjy/zsjz/202607/t20260731_8257877.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "预计在9月中旬开始分批进行，录满截止"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "考核的时间、方式由卫星创新院确定并通过email通知考生"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "按以下顺序整理成一个PDF文档"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
       }
     },
     {
@@ -16304,8 +16705,8 @@
       }
     }
   ],
-  "snapshotId": "2026-08-24T03:32:00.375Z-d5f627a378e6",
-  "approvedAt": "2026-08-24T03:32:00.375Z",
-  "previousSnapshotId": "2026-08-23T14:10:52.270Z-0438da5316f5",
-  "dataHash": "d5f627a378e61253fce5e35cbbdcc274a0133e301da77dd94fc4e5ef202c99aa"
+  "snapshotId": "2026-08-24T04:16:00.830Z-6d74a5ead08a",
+  "approvedAt": "2026-08-24T04:16:00.830Z",
+  "previousSnapshotId": "2026-08-24T03:32:00.375Z-d5f627a378e6",
+  "dataHash": "6d74a5ead08aabc12c345f991f673a83847228a61a4e000b9cdda71fee95229c"
 }
