@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-08-23T14:10:38.561Z",
+  "scanAt": "2026-08-24T03:32:00.375Z",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -11,8 +11,8 @@
     }
   ],
   "counts": {
-    "confirmedOpen": 157,
-    "confirmedUnknownDeadline": 18,
+    "confirmedOpen": 159,
+    "confirmedUnknownDeadline": 16,
     "pendingExcluded": 5,
     "expired": 175
   },
@@ -6002,6 +6002,52 @@
       }
     },
     {
+      "projectId": "2027|西安电子科技大学|国家卓越工程师学院粤港澳大湾区基地|推免硕士研究生招生预报名",
+      "feedId": "camp2027",
+      "name": "西安电子科技大学",
+      "institute": "国家卓越工程师学院粤港澳大湾区基地",
+      "project": "国家卓越工程师学院粤港澳大湾区基地2027年推荐免试硕士研究生招生预报名通知",
+      "eventType": "推免预报名",
+      "description": "国家卓越工程师学院粤港澳大湾区基地2027年推荐免试硕士研究生招生预报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-14T12:00:00+08:00",
+      "deadlineOriginal": "粤港澳大湾区基地2027年推免生预报名系统开放时间：即日起至9月14日上午12:00。",
+      "deadlineEpochMs": 1789358400000,
+      "website": "https://www.gtarto.com/info/1009/45912.htm",
+      "tags": [],
+      "verifiedAt": "2026-08-09T18:40:00.000Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://www.gtarto.com/info/1009/45912.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": "未公布"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "复试以综合面试为主，包括英语口语与听力、专业知识与知识结构、科研能力与创新意识、综合素质等；官方未说明线上/线下或地点。"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：官方未见推荐信要求。；推荐信模板：官方未提供推荐信模板。"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：官方未明示；须按顺序合并为 1 个 PDF。；材料清单：个人简历；本人身份证和学生证复印件；成绩排名证明（盖章）；截至目前本科阶段成绩单（盖章）；英语四、六级或 TOEFL、GRE/GMAT 等英语证明；竞赛、论文、出版物或原创性工作成果等其他证明；《西安电子科技大学推免生报考诚信承诺书》（附件 1，须本人手写签名后扫描）。"
+      }
+    },
+    {
       "projectId": "2027|南京航空航天大学|计算机科学与技术学院/软件学院|接收推荐免试研究生预报名",
       "feedId": "camp2027",
       "name": "南京航空航天大学",
@@ -6387,6 +6433,55 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：材料复杂度：中等；材料清单：预报名系统信息及学部/导师要求的证明材料。"
+      }
+    },
+    {
+      "projectId": "2027|长安大学|数据科学与人工智能研究院|2027年硕士研究生推免/报考咨询",
+      "feedId": "camp2027",
+      "name": "长安大学",
+      "institute": "数据科学与人工智能研究院",
+      "project": "长安大学数据科学与人工智能研究院2027年硕士研究生推免/报考咨询通知",
+      "eventType": "推免/报考咨询",
+      "description": "面向2027届开展推免/报考咨询，涉及计算机科学与技术、网络空间安全和电子信息。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T23:59:59+08:00",
+      "deadlineOriginal": "系统开放时间：2026/7/27 0:00:00 - 2026/9/15 23:59:59",
+      "deadlineEpochMs": 1789487999000,
+      "website": "https://dsai.chd.edu.cn/info/1040/1532.htm",
+      "tags": [
+        "推免",
+        "人工智能"
+      ],
+      "verifiedAt": "2026-08-23T14:10:38.561Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://dsai.chd.edu.cn/info/1040/1532.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "附件材料需将以下1-6项材料按照顺序整理成一个PDF文件（不超过10M）"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
       }
     },
     {
@@ -7812,52 +7907,6 @@
       }
     },
     {
-      "projectId": "2027|西安电子科技大学|国家卓越工程师学院粤港澳大湾区基地|推免硕士研究生招生预报名",
-      "feedId": "camp2027",
-      "name": "西安电子科技大学",
-      "institute": "国家卓越工程师学院粤港澳大湾区基地",
-      "project": "国家卓越工程师学院粤港澳大湾区基地2027年推荐免试硕士研究生招生预报名通知",
-      "eventType": "推免预报名",
-      "description": "国家卓越工程师学院粤港澳大湾区基地2027年推荐免试硕士研究生招生预报名通知",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "粤港澳大湾区基地2027年推免生预报名系统开放时间：即日起至9月14日上午12:00。",
-      "deadlineEpochMs": null,
-      "website": "https://www.gtarto.com/info/1009/45912.htm",
-      "tags": [],
-      "verifiedAt": "2026-08-09T18:40:00.000Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://www.gtarto.com/info/1009/45912.htm"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": "未公布"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "复试以综合面试为主，包括英语口语与听力、专业知识与知识结构、科研能力与创新意识、综合素质等；官方未说明线上/线下或地点。"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：官方未见推荐信要求。；推荐信模板：官方未提供推荐信模板。"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：官方未明示；须按顺序合并为 1 个 PDF。；材料清单：个人简历；本人身份证和学生证复印件；成绩排名证明（盖章）；截至目前本科阶段成绩单（盖章）；英语四、六级或 TOEFL、GRE/GMAT 等英语证明；竞赛、论文、出版物或原创性工作成果等其他证明；《西安电子科技大学推免生报考诚信承诺书》（附件 1，须本人手写签名后扫描）。"
-      }
-    },
-    {
       "projectId": "2027|重庆科技大学|数理科学学院|推免招生",
       "feedId": "camp2027",
       "name": "重庆科技大学",
@@ -8104,55 +8153,6 @@
       "logistics": {
         "status": "confirmed",
         "summary": "重庆智能数学与自主智能研究院：智能科学与技术学费7000元/生·年；大数据技术与工程学费10000元/生·年；相关专业住宿费1200元/生·年。"
-      }
-    },
-    {
-      "projectId": "2027|长安大学|数据科学与人工智能研究院|2027年硕士研究生推免/报考咨询",
-      "feedId": "camp2027",
-      "name": "长安大学",
-      "institute": "数据科学与人工智能研究院",
-      "project": "长安大学数据科学与人工智能研究院2027年硕士研究生推免/报考咨询通知",
-      "eventType": "推免/报考咨询",
-      "description": "面向2027届开展推免/报考咨询，涉及计算机科学与技术、网络空间安全和电子信息。",
-      "verificationStatus": "confirmed-unknown-deadline",
-      "deadline": null,
-      "deadlineOriginal": "即日起",
-      "deadlineEpochMs": null,
-      "website": "https://dsai.chd.edu.cn/info/1040/1532.htm",
-      "tags": [
-        "推免",
-        "人工智能"
-      ],
-      "verifiedAt": "2026-08-23T14:10:38.561Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方通知",
-          "url": "https://dsai.chd.edu.cn/info/1040/1532.htm"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "not-published",
-          "summary": ""
-        },
-        "formatLocation": {
-          "status": "not-published",
-          "summary": ""
-        }
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "附件材料需将以下1-6项材料按照顺序整理成一个PDF文件（不超过10M）"
-      },
-      "recommendation": {
-        "status": "not-published",
-        "summary": ""
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": ""
       }
     },
     {
@@ -16304,8 +16304,8 @@
       }
     }
   ],
-  "snapshotId": "2026-08-23T14:10:52.270Z-0438da5316f5",
-  "approvedAt": "2026-08-23T14:10:52.270Z",
-  "previousSnapshotId": "2026-08-23T08:11:53.637Z-b0a475448e54",
-  "dataHash": "0438da5316f589e3ad398d04f28191f68f430796496997c1d3c2a721b170ca2e"
+  "snapshotId": "2026-08-24T03:32:00.375Z-d5f627a378e6",
+  "approvedAt": "2026-08-24T03:32:00.375Z",
+  "previousSnapshotId": "2026-08-23T14:10:52.270Z-0438da5316f5",
+  "dataHash": "d5f627a378e61253fce5e35cbbdcc274a0133e301da77dd94fc4e5ef202c99aa"
 }
