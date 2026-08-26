@@ -381,7 +381,15 @@ function deadlineOriginalSupportsNormalizedDate(original: string, deadline: stri
     String.raw`${escapedMonth}\s*(?:月|[-./])\s*${escapedDay}(?:日)?`,
     'u',
   );
-  return completeDate.test(original) || monthDay.test(original);
+  const englishMonth = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ][month - 1];
+  const englishDate = new RegExp(
+    String.raw`\b${englishMonth}\s+${escapedDay}(?:st|nd|rd|th)?\s*,?\s*${escapedYear}\b`,
+    'iu',
+  );
+  return completeDate.test(original) || monthDay.test(original) || englishDate.test(original);
 }
 
 function parseFieldEvidence(value: unknown, path: string): AdditiveFieldEvidence {
