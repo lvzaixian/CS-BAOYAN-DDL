@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-08-26T06:07:17.543Z",
+  "scanAt": "2026-08-26T06:21:57.398Z",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -12,9 +12,9 @@
   ],
   "counts": {
     "confirmedOpen": 189,
-    "confirmedUnknownDeadline": 24,
+    "confirmedUnknownDeadline": 30,
     "pendingExcluded": 5,
-    "expired": 206
+    "expired": 200
   },
   "opportunities": [
     {
@@ -2291,7 +2291,7 @@
         "计算机",
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.398Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -4168,7 +4168,7 @@
         "电子信息",
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.398Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -5631,7 +5631,7 @@
         "电子信息",
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.398Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -5727,7 +5727,7 @@
         "电子信息",
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.398Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -5776,7 +5776,7 @@
         "人工智能",
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.398Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -7153,7 +7153,7 @@
         "电子信息",
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.398Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -7299,7 +7299,7 @@
         "电子信息",
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.398Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -7640,7 +7640,7 @@
         "人工智能",
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -7690,7 +7690,7 @@
         "人工智能",
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -7740,7 +7740,7 @@
         "控制",
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -7790,7 +7790,7 @@
         "计算机",
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -7839,7 +7839,7 @@
         "计算机",
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.398Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -8560,7 +8560,7 @@
       "tags": [
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -9132,7 +9132,7 @@
       "tags": [
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -9180,7 +9180,7 @@
       "tags": [
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -9228,7 +9228,7 @@
       "tags": [
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -9276,7 +9276,7 @@
       "tags": [
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -9324,7 +9324,7 @@
       "tags": [
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -9707,7 +9707,7 @@
       "tags": [
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -9755,7 +9755,7 @@
       "tags": [
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -9772,6 +9772,153 @@
         "formatLocation": {
           "status": "not-published",
           "summary": ""
+        }
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|辽宁科技大学|机械工程与自动化学院|2027年招生直播宣讲会",
+      "feedId": "camp2027",
+      "name": "辽宁科技大学",
+      "institute": "机械工程与自动化学院",
+      "project": "2027年招生直播宣讲会",
+      "eventType": "招生直播宣讲会",
+      "description": "2027年招生直播宣讲会；官方通知已核验。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "",
+      "deadlineEpochMs": null,
+      "website": "https://www.ustl.edu.cn/yjszsw/info/1160/1343.htm",
+      "tags": [
+        "自动化",
+        "招生宣讲"
+      ],
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://www.ustl.edu.cn/yjszsw/info/1160/1343.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "online",
+        "time": {
+          "status": "confirmed",
+          "summary": "直播：8月6日16:00-17:00"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "直播"
+        }
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|辽宁科技大学|电子与信息工程学院|辽宁科技大学2027年研究生招生直播咨询会",
+      "feedId": "camp2027",
+      "name": "辽宁科技大学",
+      "institute": "电子与信息工程学院",
+      "project": "辽宁科技大学2027年研究生招生直播咨询会",
+      "eventType": "招生直播咨询会",
+      "description": "辽宁科技大学2027年研究生招生直播咨询会；官方通知已核验。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "",
+      "deadlineEpochMs": null,
+      "website": "https://www.ustl.edu.cn/yjszsw/info/1118/1338.htm",
+      "tags": [
+        "电子信息",
+        "招生宣讲"
+      ],
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://www.ustl.edu.cn/yjszsw/info/1118/1338.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "online",
+        "time": {
+          "status": "confirmed",
+          "summary": "时间：7月27日-8月09日"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "直播"
+        }
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|辽宁科技大学|计算机与软件工程学院|2027年研究生招生线上宣讲会",
+      "feedId": "camp2027",
+      "name": "辽宁科技大学",
+      "institute": "计算机与软件工程学院",
+      "project": "2027年研究生招生线上宣讲会",
+      "eventType": "招生线上宣讲会",
+      "description": "2027年研究生招生线上宣讲会；官方通知已核验。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "",
+      "deadlineEpochMs": null,
+      "website": "https://www.ustl.edu.cn/yjszsw/info/1160/1344.htm",
+      "tags": [
+        "计算机",
+        "招生宣讲"
+      ],
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://www.ustl.edu.cn/yjszsw/info/1160/1344.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "online",
+        "time": {
+          "status": "confirmed",
+          "summary": "直播时间：8月8日15:00-16:00"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线上"
         }
       },
       "materials": {
@@ -10037,6 +10184,153 @@
       }
     },
     {
+      "projectId": "2027|长春理工大学|人工智能学院|2027年硕士研究生招生线上宣讲会",
+      "feedId": "camp2027",
+      "name": "长春理工大学",
+      "institute": "人工智能学院",
+      "project": "2027年硕士研究生招生线上宣讲会",
+      "eventType": "招生线上宣讲会",
+      "description": "2027年硕士研究生招生线上宣讲会；官方通知已核验。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "",
+      "deadlineEpochMs": null,
+      "website": "https://yzb.cust.edu.cn/zsxx/0a0be91ec1eb497c8803489687c033b1.htm",
+      "tags": [
+        "人工智能",
+        "招生宣讲"
+      ],
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://yzb.cust.edu.cn/zsxx/0a0be91ec1eb497c8803489687c033b1.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "online",
+        "time": {
+          "status": "confirmed",
+          "summary": "直播时间：7月30日9:00-12:30"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线上"
+        }
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|长春理工大学|电子信息工程学院|2027年硕士研究生招生线上宣讲会",
+      "feedId": "camp2027",
+      "name": "长春理工大学",
+      "institute": "电子信息工程学院",
+      "project": "2027年硕士研究生招生线上宣讲会",
+      "eventType": "招生线上宣讲会",
+      "description": "2027年硕士研究生招生线上宣讲会；官方通知已核验。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "",
+      "deadlineEpochMs": null,
+      "website": "https://yzb.cust.edu.cn/zsxx/0a0be91ec1eb497c8803489687c033b1.htm",
+      "tags": [
+        "电子信息",
+        "招生宣讲"
+      ],
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://yzb.cust.edu.cn/zsxx/0a0be91ec1eb497c8803489687c033b1.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "online",
+        "time": {
+          "status": "confirmed",
+          "summary": "直播时间：7月30日9:00-12:30"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线上"
+        }
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|长春理工大学|计算机科学技术学院|2027年硕士研究生招生线上宣讲会",
+      "feedId": "camp2027",
+      "name": "长春理工大学",
+      "institute": "计算机科学技术学院",
+      "project": "2027年硕士研究生招生线上宣讲会",
+      "eventType": "招生线上宣讲会",
+      "description": "2027年硕士研究生招生线上宣讲会；官方通知已核验。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "",
+      "deadlineEpochMs": null,
+      "website": "https://yzb.cust.edu.cn/zsxx/0a0be91ec1eb497c8803489687c033b1.htm",
+      "tags": [
+        "计算机",
+        "招生宣讲"
+      ],
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方通知",
+          "url": "https://yzb.cust.edu.cn/zsxx/0a0be91ec1eb497c8803489687c033b1.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "online",
+        "time": {
+          "status": "confirmed",
+          "summary": "直播时间：7月30日9:00-12:30"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线上"
+        }
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|香港中文大学（深圳）|理工学院|2026-27学年春季研究型硕博招生",
       "feedId": "camp2027",
       "name": "香港中文大学（深圳）",
@@ -10091,15 +10385,15 @@
       "eventType": "Summer Camp",
       "description": "Summer Camp for Future PhD Applicants；官方通知已核验。",
       "verificationStatus": "expired",
-      "deadline": null,
+      "deadline": "2026-06-03T23:59:59+08:00",
       "deadlineOriginal": "June 3, 2026",
-      "deadlineEpochMs": null,
+      "deadlineEpochMs": 1780502399000,
       "website": "https://summercamp-funh.hkust-gz.edu.cn/",
       "tags": [
         "PhD Summer Camp",
         "Microelectronics"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -10194,7 +10488,7 @@
         "电子信息",
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.398Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -10614,7 +10908,7 @@
       "tags": [
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -10936,15 +11230,15 @@
       "eventType": "“网信安全”科学营",
       "description": "2026年第一届“网信安全”科学营报名通知；官方通知已核验。",
       "verificationStatus": "expired",
-      "deadline": null,
-      "deadlineOriginal": "",
-      "deadlineEpochMs": null,
+      "deadline": "2026-06-23T23:59:59+08:00",
+      "deadlineOriginal": "营员报名：2026年5月20日-6月23日。",
+      "deadlineEpochMs": 1782230399000,
       "website": "https://cybersec.ustc.edu.cn/2026/0520/c23826a741220/page.htm",
       "tags": [
         "网络安全",
         "科学营"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.398Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -14267,7 +14561,7 @@
         "具身智能",
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.398Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -16720,7 +17014,7 @@
         "计算机相关",
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -19065,153 +19359,6 @@
       }
     },
     {
-      "projectId": "2027|辽宁科技大学|机械工程与自动化学院|2027年招生直播宣讲会",
-      "feedId": "camp2027",
-      "name": "辽宁科技大学",
-      "institute": "机械工程与自动化学院",
-      "project": "2027年招生直播宣讲会",
-      "eventType": "招生直播宣讲会",
-      "description": "2027年招生直播宣讲会；官方通知已核验。",
-      "verificationStatus": "expired",
-      "deadline": null,
-      "deadlineOriginal": "",
-      "deadlineEpochMs": null,
-      "website": "https://www.ustl.edu.cn/yjszsw/info/1160/1343.htm",
-      "tags": [
-        "自动化",
-        "招生宣讲"
-      ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方通知",
-          "url": "https://www.ustl.edu.cn/yjszsw/info/1160/1343.htm"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "online",
-        "time": {
-          "status": "confirmed",
-          "summary": "直播：8月6日16:00-17:00"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "直播"
-        }
-      },
-      "materials": {
-        "status": "not-published",
-        "summary": ""
-      },
-      "recommendation": {
-        "status": "not-published",
-        "summary": ""
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": ""
-      }
-    },
-    {
-      "projectId": "2027|辽宁科技大学|电子与信息工程学院|辽宁科技大学2027年研究生招生直播咨询会",
-      "feedId": "camp2027",
-      "name": "辽宁科技大学",
-      "institute": "电子与信息工程学院",
-      "project": "辽宁科技大学2027年研究生招生直播咨询会",
-      "eventType": "招生直播咨询会",
-      "description": "辽宁科技大学2027年研究生招生直播咨询会；官方通知已核验。",
-      "verificationStatus": "expired",
-      "deadline": null,
-      "deadlineOriginal": "",
-      "deadlineEpochMs": null,
-      "website": "https://www.ustl.edu.cn/yjszsw/info/1118/1338.htm",
-      "tags": [
-        "电子信息",
-        "招生宣讲"
-      ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方通知",
-          "url": "https://www.ustl.edu.cn/yjszsw/info/1118/1338.htm"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "online",
-        "time": {
-          "status": "confirmed",
-          "summary": "时间：7月27日-8月09日"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "直播"
-        }
-      },
-      "materials": {
-        "status": "not-published",
-        "summary": ""
-      },
-      "recommendation": {
-        "status": "not-published",
-        "summary": ""
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": ""
-      }
-    },
-    {
-      "projectId": "2027|辽宁科技大学|计算机与软件工程学院|2027年研究生招生线上宣讲会",
-      "feedId": "camp2027",
-      "name": "辽宁科技大学",
-      "institute": "计算机与软件工程学院",
-      "project": "2027年研究生招生线上宣讲会",
-      "eventType": "招生线上宣讲会",
-      "description": "2027年研究生招生线上宣讲会；官方通知已核验。",
-      "verificationStatus": "expired",
-      "deadline": null,
-      "deadlineOriginal": "",
-      "deadlineEpochMs": null,
-      "website": "https://www.ustl.edu.cn/yjszsw/info/1160/1344.htm",
-      "tags": [
-        "计算机",
-        "招生宣讲"
-      ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方通知",
-          "url": "https://www.ustl.edu.cn/yjszsw/info/1160/1344.htm"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "online",
-        "time": {
-          "status": "confirmed",
-          "summary": "直播时间：8月8日15:00-16:00"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "线上"
-        }
-      },
-      "materials": {
-        "status": "not-published",
-        "summary": ""
-      },
-      "recommendation": {
-        "status": "not-published",
-        "summary": ""
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": ""
-      }
-    },
-    {
       "projectId": "2027|长安大学|信息工程学院|2027研究生招生宣讲活动",
       "feedId": "camp2027",
       "name": "长安大学",
@@ -19350,153 +19497,6 @@
       }
     },
     {
-      "projectId": "2027|长春理工大学|人工智能学院|2027年硕士研究生招生线上宣讲会",
-      "feedId": "camp2027",
-      "name": "长春理工大学",
-      "institute": "人工智能学院",
-      "project": "2027年硕士研究生招生线上宣讲会",
-      "eventType": "招生线上宣讲会",
-      "description": "2027年硕士研究生招生线上宣讲会；官方通知已核验。",
-      "verificationStatus": "expired",
-      "deadline": null,
-      "deadlineOriginal": "",
-      "deadlineEpochMs": null,
-      "website": "https://yzb.cust.edu.cn/zsxx/0a0be91ec1eb497c8803489687c033b1.htm",
-      "tags": [
-        "人工智能",
-        "招生宣讲"
-      ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方通知",
-          "url": "https://yzb.cust.edu.cn/zsxx/0a0be91ec1eb497c8803489687c033b1.htm"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "online",
-        "time": {
-          "status": "confirmed",
-          "summary": "直播时间：7月30日9:00-12:30"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "线上"
-        }
-      },
-      "materials": {
-        "status": "not-published",
-        "summary": ""
-      },
-      "recommendation": {
-        "status": "not-published",
-        "summary": ""
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": ""
-      }
-    },
-    {
-      "projectId": "2027|长春理工大学|电子信息工程学院|2027年硕士研究生招生线上宣讲会",
-      "feedId": "camp2027",
-      "name": "长春理工大学",
-      "institute": "电子信息工程学院",
-      "project": "2027年硕士研究生招生线上宣讲会",
-      "eventType": "招生线上宣讲会",
-      "description": "2027年硕士研究生招生线上宣讲会；官方通知已核验。",
-      "verificationStatus": "expired",
-      "deadline": null,
-      "deadlineOriginal": "",
-      "deadlineEpochMs": null,
-      "website": "https://yzb.cust.edu.cn/zsxx/0a0be91ec1eb497c8803489687c033b1.htm",
-      "tags": [
-        "电子信息",
-        "招生宣讲"
-      ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方通知",
-          "url": "https://yzb.cust.edu.cn/zsxx/0a0be91ec1eb497c8803489687c033b1.htm"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "online",
-        "time": {
-          "status": "confirmed",
-          "summary": "直播时间：7月30日9:00-12:30"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "线上"
-        }
-      },
-      "materials": {
-        "status": "not-published",
-        "summary": ""
-      },
-      "recommendation": {
-        "status": "not-published",
-        "summary": ""
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": ""
-      }
-    },
-    {
-      "projectId": "2027|长春理工大学|计算机科学技术学院|2027年硕士研究生招生线上宣讲会",
-      "feedId": "camp2027",
-      "name": "长春理工大学",
-      "institute": "计算机科学技术学院",
-      "project": "2027年硕士研究生招生线上宣讲会",
-      "eventType": "招生线上宣讲会",
-      "description": "2027年硕士研究生招生线上宣讲会；官方通知已核验。",
-      "verificationStatus": "expired",
-      "deadline": null,
-      "deadlineOriginal": "",
-      "deadlineEpochMs": null,
-      "website": "https://yzb.cust.edu.cn/zsxx/0a0be91ec1eb497c8803489687c033b1.htm",
-      "tags": [
-        "计算机",
-        "招生宣讲"
-      ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方通知",
-          "url": "https://yzb.cust.edu.cn/zsxx/0a0be91ec1eb497c8803489687c033b1.htm"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "online",
-        "time": {
-          "status": "confirmed",
-          "summary": "直播时间：7月30日9:00-12:30"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "线上"
-        }
-      },
-      "materials": {
-        "status": "not-published",
-        "summary": ""
-      },
-      "recommendation": {
-        "status": "not-published",
-        "summary": ""
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": ""
-      }
-    },
-    {
       "projectId": "2027|香港中文大学|计算机科学与工程学系|Early Admission Round 2",
       "feedId": "camp2027",
       "name": "香港中文大学",
@@ -19558,7 +19558,7 @@
       "tags": [
         "推免"
       ],
-      "verifiedAt": "2026-08-26T06:07:17.542Z",
+      "verifiedAt": "2026-08-26T06:21:57.397Z",
       "discoverySources": [
         {
           "kind": "official",
@@ -19729,8 +19729,8 @@
       }
     }
   ],
-  "snapshotId": "2026-08-26T06:07:17.873Z-3b5372b08380",
-  "approvedAt": "2026-08-26T06:07:17.873Z",
+  "snapshotId": "2026-08-26T06:21:57.909Z-6654f6b76de4",
+  "approvedAt": "2026-08-26T06:21:57.909Z",
   "previousSnapshotId": "2026-08-25T06:51:46.001Z-9d89922044eb",
-  "dataHash": "3b5372b0838002ce741555a1bab389880ac860efc3b013427c96d44ea93c9b05"
+  "dataHash": "6654f6b76de4ba7b4cf447eb1b49b2a93c2d10aa519b68ee18c2a0c2e18fe6ff"
 }

@@ -3156,6 +3156,34 @@ test('rejects a normalized deadline whose source quotation names a different cal
   }
 });
 
+test('accepts an English month-name deadline that matches the normalized date', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  addition.deadline = '2099-06-03T23:59:59+08:00';
+  addition.deadlineOriginal = 'June 3, 2099';
+  addition.deadlineEpochMs = Date.parse(addition.deadline);
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approveAdditiveSnapshotFile({
+      runPath: source.run,
+      parentPath: source.parent,
+      approvedPath: source.approved,
+      decisionPath: source.decision,
+      approvedAt: nextApprovedAt,
+      nowMs: Date.parse('2026-08-09T09:00:00.000Z'),
+    });
+    assert.equal(result.status, 'ready');
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
 test('accepts a PDF quote only through its declared, file-backed extracted text artifact', async () => {
   const source = paths();
   const parent = sealedParent();
