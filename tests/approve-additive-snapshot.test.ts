@@ -3061,6 +3061,32 @@ test('rejects an unrelated non-institutional host even when every self-declared 
   }
 });
 
+test('accepts an EdUHK official subdomain as an institutional source', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  addition.website = 'https://gs.eduhk.hk/prospective/rpg/';
+  addition.discoverySources[0].url = addition.website;
+  const run = additiveRun(parent, parentText, [addition]);
+  run.scopes.find((scope) => scope.scopeId === 'scope-root')!.entryUrl = addition.website;
+  run.artifacts[0].url = addition.website;
+  run.additions[0].evidence.officialUrl = addition.website;
+  for (const fieldEvidence of run.additions[0].evidence.fieldEvidence) {
+    fieldEvidence.sourceUrl = addition.website;
+  }
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approve(source);
+    assert.equal(result.status, 'ready');
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
 test('requires a plausible institutional primary source to identify the same school', async () => {
   const source = paths();
   const parent = sealedParent();
@@ -3164,6 +3190,101 @@ test('accepts an English month-name deadline that matches the normalized date', 
   const addition = additionFor(parent);
   addition.deadline = '2099-06-03T23:59:59+08:00';
   addition.deadlineOriginal = 'June 3, 2099';
+  addition.deadlineEpochMs = Date.parse(addition.deadline);
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approveAdditiveSnapshotFile({
+      runPath: source.run,
+      parentPath: source.parent,
+      approvedPath: source.approved,
+      decisionPath: source.decision,
+      approvedAt: nextApprovedAt,
+      nowMs: Date.parse('2026-08-09T09:00:00.000Z'),
+    });
+    assert.equal(result.status, 'ready');
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('accepts next-day normalization for an official Chinese 24:00 deadline', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  addition.deadline = '2099-08-29T00:00:00+08:00';
+  addition.deadlineOriginal = '报名截止时间：2099 年 8 月 28 日 24 点。';
+  addition.deadlineEpochMs = Date.parse(addition.deadline);
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approveAdditiveSnapshotFile({
+      runPath: source.run,
+      parentPath: source.parent,
+      approvedPath: source.approved,
+      decisionPath: source.decision,
+      approvedAt: nextApprovedAt,
+      nowMs: Date.parse('2026-08-09T09:00:00.000Z'),
+    });
+    assert.equal(result.status, 'ready');
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('accepts a field quotation whose only difference is extracted layout whitespace', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  const run = additiveRun(parent, parentText, [addition]);
+  const originalSha256 = run.artifacts[0].sha256;
+  const spacedProject = '2026 年新增测试大学优秀大学生夏令营';
+  const artifactText = `${artifactTextFor([addition])}\n${spacedProject}`;
+  const artifactSha256 = sha256(artifactText);
+  run.artifacts[0].sha256 = artifactSha256;
+  for (const scope of run.scopes) {
+    if (scope.artifactSha256 === originalSha256) scope.artifactSha256 = artifactSha256;
+  }
+  const evidence = run.additions[0].evidence;
+  evidence.artifactSha256 = artifactSha256;
+  for (const fieldEvidence of evidence.fieldEvidence) {
+    fieldEvidence.artifactSha256 = artifactSha256;
+    if (fieldEvidence.field === 'project') fieldEvidence.quote = spacedProject;
+  }
+  materializeRunArtifacts(source, run, new Map([['artifacts/official.html', artifactText]]));
+  writeJson(source.run, run);
+
+  try {
+    const result = await approveAdditiveSnapshotFile({
+      runPath: source.run,
+      parentPath: source.parent,
+      approvedPath: source.approved,
+      decisionPath: source.decision,
+      approvedAt: nextApprovedAt,
+      nowMs: Date.parse('2026-08-09T09:00:00.000Z'),
+    });
+    assert.equal(result.status, 'ready');
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('accepts a hyphenated day-first abbreviated English deadline that matches the normalized date', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  addition.deadline = '2099-12-01T23:59:59+08:00';
+  addition.deadlineOriginal = '1-Dec-2099';
   addition.deadlineEpochMs = Date.parse(addition.deadline);
   const run = additiveRun(parent, parentText, [addition]);
   materializeRunArtifacts(source, run);
