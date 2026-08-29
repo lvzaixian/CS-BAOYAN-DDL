@@ -262,6 +262,7 @@ const additiveInstitutionalHostSuffixes = [
   '.ac.cn',
   '.edu.hk',
   '.eduhk.hk',
+  '.hku.hk',
   '.edu.mo',
   '.edu.tw',
   '.cas.cn',

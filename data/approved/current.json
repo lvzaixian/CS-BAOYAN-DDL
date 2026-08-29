@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-08-27T12:49:27.229Z",
+  "scanAt": "2026-08-29T02:58:44.374Z",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -11,7 +11,7 @@
     }
   ],
   "counts": {
-    "confirmedOpen": 226,
+    "confirmedOpen": 242,
     "confirmedUnknownDeadline": 37,
     "pendingExcluded": 5,
     "expired": 200
@@ -2844,6 +2844,52 @@
       }
     },
     {
+      "projectId": "2027|南京大学|生物医学工程学院|南京大学生物医学工程学院 2027年接收推荐免试研究生预报名通知",
+      "feedId": "camp2027",
+      "name": "南京大学",
+      "institute": "生物医学工程学院",
+      "project": "南京大学生物医学工程学院 2027年接收推荐免试研究生预报名通知",
+      "eventType": "预报名",
+      "description": "南京大学生物医学工程学院 2027年接收推荐免试研究生预报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-08-31T17:00:00+08:00",
+      "deadlineOriginal": "学院预报名截止时间：2026年8月31日（星期一）17:00",
+      "deadlineEpochMs": 1788166800000,
+      "website": "https://bme.nju.edu.cn/xydt/xwdt/20260822/i413315.html",
+      "tags": [],
+      "verifiedAt": "2026-08-29T02:58:44.374Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://bme.nju.edu.cn/xydt/xwdt/20260822/i413315.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": ""
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|中国农业大学|信息与电气工程学院（校级通道）|推免预报名",
       "feedId": "camp2027",
       "name": "中国农业大学",
@@ -4233,6 +4279,98 @@
       }
     },
     {
+      "projectId": "2027|中国科学院计算技术研究所|计算技术研究所|中国科学院计算技术研究所接收2027年推荐免试研究生简章",
+      "feedId": "camp2027",
+      "name": "中国科学院计算技术研究所",
+      "institute": "计算技术研究所",
+      "project": "中国科学院计算技术研究所接收2027年推荐免试研究生简章",
+      "eventType": "推荐免试研究生",
+      "description": "中国科学院计算技术研究所接收2027年推荐免试研究生简章",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-03T00:00:00+08:00",
+      "deadlineOriginal": "申请截止时间：9月2日24：00。",
+      "deadlineEpochMs": 1788364800000,
+      "website": "https://ict.cas.cn/yjsjy/zsxx/sszs/202608/t20260828_8266523.html",
+      "tags": [],
+      "verifiedAt": "2026-08-29T02:58:44.374Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://ict.cas.cn/yjsjy/zsxx/sszs/202608/t20260828_8266523.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": ""
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|东北大学|信息科学与工程学院|信息科学与工程学院2027年推免预报名",
+      "feedId": "camp2027",
+      "name": "东北大学",
+      "institute": "信息科学与工程学院",
+      "project": "信息科学与工程学院2027年推免预报名",
+      "eventType": "推免预报名",
+      "description": "信息科学与工程学院2027年推免预报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-03T17:00:00+08:00",
+      "deadlineOriginal": "我院报名截止时间为2026年9月3日17点。",
+      "deadlineEpochMs": 1788426000000,
+      "website": "https://yjszs.neu.edu.cn/yjszs/plugins/zs/ytmxsd/entrance#/tmfwksdExemptionEntranceDetail?a=1784189360500001298&b=1784085098695001298",
+      "tags": [],
+      "verifiedAt": "2026-08-29T02:58:44.374Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yjszs.neu.edu.cn/yjszs/plugins/zs/ytmxsd/entrance#/tmfwksdExemptionEntranceDetail?a=1784189360500001298&b=1784085098695001298"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": ""
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|中国石油大学（北京）|人工智能学院|预报名",
       "feedId": "camp2027",
       "name": "中国石油大学（北京）",
@@ -4950,6 +5088,52 @@
       }
     },
     {
+      "projectId": "2027|哈尔滨工业大学|生命科学和医学学部|哈尔滨工业大学生命科学和医学学部2027年接收优秀应届本科毕业生免试攻读研究生报名通知",
+      "feedId": "camp2027",
+      "name": "哈尔滨工业大学",
+      "institute": "生命科学和医学学部",
+      "project": "哈尔滨工业大学生命科学和医学学部2027年接收优秀应届本科毕业生免试攻读研究生报名通知",
+      "eventType": "免试攻读研究生",
+      "description": "哈尔滨工业大学生命科学和医学学部2027年接收优秀应届本科毕业生免试攻读研究生报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-05T23:59:59+08:00",
+      "deadlineOriginal": "我院推免信息采集系统关闭时间为9月5日。",
+      "deadlineEpochMs": 1788623999000,
+      "website": "https://life.hit.edu.cn/_t780/2026/0730/c14576a398719/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-08-29T02:58:44.374Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://life.hit.edu.cn/_t780/2026/0730/c14576a398719/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": ""
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|哈尔滨工业大学|电子与信息工程学院|推免预报名",
       "feedId": "camp2027",
       "name": "哈尔滨工业大学",
@@ -5134,6 +5318,52 @@
       }
     },
     {
+      "projectId": "2027|中国科学院深圳先进技术研究院|中国科学院深圳先进技术研究院|中国科学院深圳先进技术研究院2027年工程硕博士联培专项招生简介",
+      "feedId": "camp2027",
+      "name": "中国科学院深圳先进技术研究院",
+      "institute": "中国科学院深圳先进技术研究院",
+      "project": "中国科学院深圳先进技术研究院2027年工程硕博士联培专项招生简介",
+      "eventType": "工程硕博士联培专项",
+      "description": "中国科学院深圳先进技术研究院2027年工程硕博士联培专项招生简介",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-07T12:00:00+08:00",
+      "deadlineOriginal": "即日起至2026年9月7日12:00（视国家推免生招收日程安排调整），申请人填写报名信息并按要求提供报考材料，报名链接/二维码如下：",
+      "deadlineEpochMs": 1788753600000,
+      "website": "https://www.siat.ac.cn/jyjx/zsxx/lhpy/202608/t20260828_8266436.html",
+      "tags": [],
+      "verifiedAt": "2026-08-29T02:58:44.374Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://www.siat.ac.cn/jyjx/zsxx/lhpy/202608/t20260828_8266436.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": ""
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|华东师范大学|软件工程学院（滴水湖国际软件学院）|推免预报名",
       "feedId": "camp2027",
       "name": "华东师范大学",
@@ -5275,6 +5505,52 @@
       }
     },
     {
+      "projectId": "2027|厦门大学|信息学院（特色化示范性软件学院）|信息学院（特色化示范性软件学院）关于2027年接收推荐免试研究生（含直博生）预报名的通知（第二批）",
+      "feedId": "camp2027",
+      "name": "厦门大学",
+      "institute": "信息学院（特色化示范性软件学院）",
+      "project": "信息学院（特色化示范性软件学院）关于2027年接收推荐免试研究生（含直博生）预报名的通知（第二批）",
+      "eventType": "预报名",
+      "description": "信息学院（特色化示范性软件学院）关于2027年接收推荐免试研究生（含直博生）预报名的通知（第二批）",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-08T00:00:00+08:00",
+      "deadlineOriginal": "9月1日00:00至9月7日24:00",
+      "deadlineEpochMs": 1788796800000,
+      "website": "https://informatics.xmu.edu.cn/info/1072/203131.htm",
+      "tags": [],
+      "verifiedAt": "2026-08-29T02:58:44.374Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://informatics.xmu.edu.cn/info/1072/203131.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": ""
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|大连理工大学|软件学院|推免预报名",
       "feedId": "camp2027",
       "name": "大连理工大学",
@@ -5364,6 +5640,52 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：材料复杂度：待官方公布；材料清单：待官方公布"
+      }
+    },
+    {
+      "projectId": "2027|东北大学|机器人科学与工程学院|机器人科学与工程学院2027年推免预报名",
+      "feedId": "camp2027",
+      "name": "东北大学",
+      "institute": "机器人科学与工程学院",
+      "project": "机器人科学与工程学院2027年推免预报名",
+      "eventType": "推免预报名",
+      "description": "机器人科学与工程学院2027年推免预报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-09T23:59:00+08:00",
+      "deadlineOriginal": "2026-09-09 23:59:00",
+      "deadlineEpochMs": 1788969540000,
+      "website": "https://yjszs.neu.edu.cn/yjszs/plugins/zs/ytmxsd/entrance#/tmfwksdExemptionEntranceDetail?a=1784277365465001298&b=1784085098695001298",
+      "tags": [],
+      "verifiedAt": "2026-08-29T02:58:44.374Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yjszs.neu.edu.cn/yjszs/plugins/zs/ytmxsd/entrance#/tmfwksdExemptionEntranceDetail?a=1784277365465001298&b=1784085098695001298"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": ""
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": ""
       }
     },
     {
@@ -6959,6 +7281,52 @@
       }
     },
     {
+      "projectId": "2027|华中师范大学|人工智能教育学部|华中师范大学2027年接收优秀应届本科毕业生免试攻读研究生预报名通知",
+      "feedId": "camp2027",
+      "name": "华中师范大学",
+      "institute": "人工智能教育学部",
+      "project": "华中师范大学2027年接收优秀应届本科毕业生免试攻读研究生预报名通知",
+      "eventType": "预报名",
+      "description": "华中师范大学2027年接收优秀应届本科毕业生免试攻读研究生预报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-11T18:00:00+08:00",
+      "deadlineOriginal": "申请人请于2026年9月3日8:00-9月11日18:00登录我校“推免生预报名”系统（网址：https://grd.ccnu.edu.cn/student/ytmlogin）进行预报名，并按要求提交申请材料；",
+      "deadlineEpochMs": 1789120800000,
+      "website": "https://gs.ccnu.edu.cn/info/1028/6893.htm",
+      "tags": [],
+      "verifiedAt": "2026-08-29T02:58:44.374Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://gs.ccnu.edu.cn/info/1028/6893.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": ""
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|The Education University of Hong Kong|Department of Mathematics and Information Technology|January 2027 Intake (Semester 2, 2026/27)",
       "feedId": "camp2027",
       "name": "The Education University of Hong Kong",
@@ -7140,6 +7508,52 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：材料复杂度：中；材料清单：个人简历及最高英语水平证明、系统打印申请表、加盖校级公章的前五学期成绩单、专业排名证明、获奖证书及代表性论文首页。"
+      }
+    },
+    {
+      "projectId": "2027|江西财经大学|虚拟现实（VR）现代产业学院|虚拟现实（VR）现代产业学院关于接收2027年“推免研究生”公告",
+      "feedId": "camp2027",
+      "name": "江西财经大学",
+      "institute": "虚拟现实（VR）现代产业学院",
+      "project": "虚拟现实（VR）现代产业学院关于接收2027年“推免研究生”公告",
+      "eventType": "推免研究生",
+      "description": "虚拟现实（VR）现代产业学院关于接收2027年“推免研究生”公告",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-12T23:59:59+08:00",
+      "deadlineOriginal": "预报名阶段，接受时间从即日起至9月12日止，请有意者尽早报名；",
+      "deadlineEpochMs": 1789228799000,
+      "website": "https://vr.jxufe.edu.cn/news-show-1515.html",
+      "tags": [],
+      "verifiedAt": "2026-08-29T02:58:44.374Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://vr.jxufe.edu.cn/news-show-1515.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": ""
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": ""
       }
     },
     {
@@ -7762,6 +8176,52 @@
       }
     },
     {
+      "projectId": "2027|中国科学院大学|密码学院|中国科学院大学密码学院 2027年接收推荐免试研究生报名通知（第二轮）",
+      "feedId": "camp2027",
+      "name": "中国科学院大学",
+      "institute": "密码学院",
+      "project": "中国科学院大学密码学院 2027年接收推荐免试研究生报名通知（第二轮）",
+      "eventType": "推荐免试研究生",
+      "description": "中国科学院大学密码学院 2027年接收推荐免试研究生报名通知（第二轮）",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-14T23:59:59+08:00",
+      "deadlineOriginal": "报名时间：即日起至2026年9月14日。",
+      "deadlineEpochMs": 1789401599000,
+      "website": "https://soc.ucas.ac.cn/index.php/zh/zsxxs/shzs/1598-202709",
+      "tags": [],
+      "verifiedAt": "2026-08-29T02:58:44.374Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://soc.ucas.ac.cn/index.php/zh/zsxxs/shzs/1598-202709"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": ""
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|天津大学|人工智能学院|关于天津大学2027年接收优秀应届本科毕业生免试攻读研究生预报名的通知",
       "feedId": "camp2027",
       "name": "天津大学",
@@ -8004,6 +8464,52 @@
       "materials": {
         "status": "confirmed",
         "summary": "相关材料扫描电子版在报名系统中提交"
+      }
+    },
+    {
+      "projectId": "2027|西安电子科技大学|空间科学与技术学院|空间科学与技术学院2027年推荐免试研究生招生预报名通知",
+      "feedId": "camp2027",
+      "name": "西安电子科技大学",
+      "institute": "空间科学与技术学院",
+      "project": "空间科学与技术学院2027年推荐免试研究生招生预报名通知",
+      "eventType": "推免生预报名",
+      "description": "空间科学与技术学院2027年推荐免试研究生招生预报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-14T23:59:59+08:00",
+      "deadlineOriginal": "学院2027年推免生预报名系统将于2026年7月27日至9月14日向考生开放。",
+      "deadlineEpochMs": 1789401599000,
+      "website": "https://sast.xidian.edu.cn/info/1014/20977.htm",
+      "tags": [],
+      "verifiedAt": "2026-08-29T02:58:44.374Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://sast.xidian.edu.cn/info/1014/20977.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": ""
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": ""
       }
     },
     {
@@ -10301,6 +10807,98 @@
       }
     },
     {
+      "projectId": "2027|The Chinese University of Hong Kong|Division of Computer Science and Engineering|MPhil-PhD in Computer Science and Engineering",
+      "feedId": "camp2027",
+      "name": "The Chinese University of Hong Kong",
+      "institute": "Division of Computer Science and Engineering",
+      "project": "MPhil-PhD in Computer Science and Engineering",
+      "eventType": "MPhil-PhD",
+      "description": "MPhil-PhD in Computer Science and Engineering",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-12-01T23:59:59+08:00",
+      "deadlineOriginal": "Main Round: 1 December 2026",
+      "deadlineEpochMs": 1796140799000,
+      "website": "https://www.gs.cuhk.edu.hk/programmes/engineering/mphil-phd-computer-science-and-engineering",
+      "tags": [],
+      "verifiedAt": "2026-08-29T02:58:44.374Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://www.gs.cuhk.edu.hk/programmes/engineering/mphil-phd-computer-science-and-engineering"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": ""
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|The Chinese University of Hong Kong|Division of Electronic Engineering|MPhil-PhD in Electronic Engineering",
+      "feedId": "camp2027",
+      "name": "The Chinese University of Hong Kong",
+      "institute": "Division of Electronic Engineering",
+      "project": "MPhil-PhD in Electronic Engineering",
+      "eventType": "MPhil-PhD",
+      "description": "MPhil-PhD in Electronic Engineering",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-12-01T23:59:59+08:00",
+      "deadlineOriginal": "Main Round: 1 December 2026",
+      "deadlineEpochMs": 1796140799000,
+      "website": "https://www.gs.cuhk.edu.hk/programmes/engineering/mphil-phd-electronic-engineering",
+      "tags": [],
+      "verifiedAt": "2026-08-29T02:58:44.374Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://www.gs.cuhk.edu.hk/programmes/engineering/mphil-phd-electronic-engineering"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": ""
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|The Chinese University of Hong Kong|Division of Information Engineering|MPhil-PhD In Information Engineering",
       "feedId": "camp2027",
       "name": "The Chinese University of Hong Kong",
@@ -10320,6 +10918,144 @@
           "kind": "official",
           "label": "官方链接",
           "url": "https://www.gs.cuhk.edu.hk/programmes/engineering/mphil-phd-information-engineering"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": ""
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|The Chinese University of Hong Kong|Division of Mechanical and Automation Engineering|MPhil-PhD in Mechanical and Automation Engineering",
+      "feedId": "camp2027",
+      "name": "The Chinese University of Hong Kong",
+      "institute": "Division of Mechanical and Automation Engineering",
+      "project": "MPhil-PhD in Mechanical and Automation Engineering",
+      "eventType": "MPhil-PhD",
+      "description": "MPhil-PhD in Mechanical and Automation Engineering",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-12-01T23:59:59+08:00",
+      "deadlineOriginal": "Main Round: 1 December 2026",
+      "deadlineEpochMs": 1796140799000,
+      "website": "https://www.gs.cuhk.edu.hk/programmes/engineering/mphil-phd-mechanical-and-automation-engineering",
+      "tags": [],
+      "verifiedAt": "2026-08-29T02:58:44.374Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://www.gs.cuhk.edu.hk/programmes/engineering/mphil-phd-mechanical-and-automation-engineering"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": ""
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|The University of Hong Kong|School of Computing and Data Science|main round",
+      "feedId": "camp2027",
+      "name": "The University of Hong Kong",
+      "institute": "School of Computing and Data Science",
+      "project": "main round",
+      "eventType": "Doctor of Philosophy (PhD) and Master of Philosophy (MPhil) programs",
+      "description": "main round",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-12-01T23:59:59+08:00",
+      "deadlineOriginal": "The main applications for the research degrees are invited in September 1, 2026 with the closing date of December 1, 2026.",
+      "deadlineEpochMs": 1796140799000,
+      "website": "https://www.cs.hku.hk/programmes/research-based/mphil-phd-admission/",
+      "tags": [],
+      "verifiedAt": "2026-08-29T02:58:44.374Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://www.cs.hku.hk/programmes/research-based/mphil-phd-admission/"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": ""
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|香港浸会大学|Department of Computer Science|Doctor of Philosophy / Master of Philosophy (Department of Computer Science)",
+      "feedId": "camp2027",
+      "name": "香港浸会大学",
+      "institute": "Department of Computer Science",
+      "project": "Doctor of Philosophy / Master of Philosophy (Department of Computer Science)",
+      "eventType": "Doctor of Philosophy / Master of Philosophy",
+      "description": "Doctor of Philosophy / Master of Philosophy (Department of Computer Science)",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-12-01T23:59:59+08:00",
+      "deadlineOriginal": "1 December 2026",
+      "deadlineEpochMs": 1796140799000,
+      "website": "https://gs.hkbu.edu.hk/sc/programmes/doctor-of-philosophy-master-of-philosophy-department-of-computer-science",
+      "tags": [],
+      "verifiedAt": "2026-08-29T02:58:44.374Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://gs.hkbu.edu.hk/sc/programmes/doctor-of-philosophy-master-of-philosophy-department-of-computer-science"
         }
       ],
       "eventArrangement": {
@@ -21753,8 +22489,8 @@
       }
     }
   ],
-  "snapshotId": "2026-08-27T12:49:37.000Z-5cdd6c6275b0",
-  "approvedAt": "2026-08-27T12:49:37Z",
-  "previousSnapshotId": "2026-08-26T06:21:57.909Z-6654f6b76de4",
-  "dataHash": "5cdd6c6275b03cc1f062049de09e88c294dc973332f2e089207ef8155949565b"
+  "snapshotId": "2026-08-29T02:58:49.726Z-a2a00ffc9644",
+  "approvedAt": "2026-08-29T02:58:49.726Z",
+  "previousSnapshotId": "2026-08-27T12:49:37.000Z-5cdd6c6275b0",
+  "dataHash": "a2a00ffc9644314df8b16d89ed60aeb1117118d4fea8e49e0c321ca8faabe251"
 }
