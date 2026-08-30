@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-08-29T03:45:11.943Z",
+  "scanAt": "2026-08-30T03:20:04.959Z",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -11,8 +11,8 @@
     }
   ],
   "counts": {
-    "confirmedOpen": 244,
-    "confirmedUnknownDeadline": 35,
+    "confirmedOpen": 251,
+    "confirmedUnknownDeadline": 37,
     "pendingExcluded": 5,
     "expired": 200
   },
@@ -5226,6 +5226,144 @@
       }
     },
     {
+      "projectId": "2027|中央财经大学|国家数据工程与安全学院（国家金融安全教育部工程研究中心）|国家数据工程与安全学院（国家金融安全教育部工程研究中心）关于2027年推免生（含直博生）接收相关事宜的补充说明",
+      "feedId": "camp2027",
+      "name": "中央财经大学",
+      "institute": "国家数据工程与安全学院（国家金融安全教育部工程研究中心）",
+      "project": "国家数据工程与安全学院（国家金融安全教育部工程研究中心）关于2027年推免生（含直博生）接收相关事宜的补充说明",
+      "eventType": "推免生（含直博生）",
+      "description": "国家数据工程与安全学院（国家金融安全教育部工程研究中心）关于2027年推免生（含直博生）接收相关事宜的补充说明",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-06T12:00:00+08:00",
+      "deadlineOriginal": "中央财经大学接收2027年推免生（含直博生）工作报名时间延长至9月6日中午12：00。",
+      "deadlineEpochMs": 1788667200000,
+      "website": "https://sndes.cufe.edu.cn/info/1017/1381.htm",
+      "tags": [],
+      "verifiedAt": "2026-08-30T03:20:04.959Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://sndes.cufe.edu.cn/info/1017/1381.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "学术学位项目推免生的选拔采取笔试、综合能力面试（含专业基础和潜力、英语能力）和成果宣讲（含交流、演示）相结合的方式。"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信：两位具有高级职称的专家出具的推荐信扫描件。"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "直博申请人除学校规定的报名材料外，还要提供下面材料："
+      }
+    },
+    {
+      "projectId": "2027|中央财经大学|国家金融安全与技术高级学院|国家金融安全与技术高级学院关于2027年推免生（含直博生）接收相关事宜的补充说明",
+      "feedId": "camp2027",
+      "name": "中央财经大学",
+      "institute": "国家金融安全与技术高级学院",
+      "project": "国家金融安全与技术高级学院关于2027年推免生（含直博生）接收相关事宜的补充说明",
+      "eventType": "推免生（含直博生）",
+      "description": "国家金融安全与技术高级学院关于2027年推免生（含直博生）接收相关事宜的补充说明",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-06T12:00:00+08:00",
+      "deadlineOriginal": "中央财经大学接收2027年推免生（含直博生）工作报名时间延长至9月6日中午12：00。",
+      "deadlineEpochMs": 1788667200000,
+      "website": "https://nafst.cufe.edu.cn/info/1021/1842.htm",
+      "tags": [],
+      "verifiedAt": "2026-08-30T03:20:04.959Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://nafst.cufe.edu.cn/info/1021/1842.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "学术学位项目推免生的选拔采取笔试、综合能力面试（含专业基础和潜力、英语能力）和成果宣讲（含交流、演示）相结合的方式。"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信：两位具有高级职称的专家出具的推荐信扫描件。"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "通过资格评定进入考核环节的直博申请人，除学校规定的资格审查材料外，还要提供下面材料："
+      }
+    },
+    {
+      "projectId": "2027|湖南大学|人工智能与机器人学院|湖南大学人工智能与机器人学院2027年接收推荐免试研究生（含直博生）预报名通知",
+      "feedId": "camp2027",
+      "name": "湖南大学",
+      "institute": "人工智能与机器人学院",
+      "project": "湖南大学人工智能与机器人学院2027年接收推荐免试研究生（含直博生）预报名通知",
+      "eventType": "预报名",
+      "description": "湖南大学人工智能与机器人学院2027年接收推荐免试研究生（含直博生）预报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-06T18:00:00+08:00",
+      "deadlineOriginal": "第一批预报名截止时间为9月6日下午18:00",
+      "deadlineEpochMs": 1788688800000,
+      "website": "https://robotics.hnu.edu.cn/info/1074/4168.htm",
+      "tags": [],
+      "verifiedAt": "2026-08-30T03:20:04.959Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://robotics.hnu.edu.cn/info/1074/4168.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "第一批预报名截止时间为9月6日下午18:00，学院将根据申请人提供的申请材料进行资格审查"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "两名报考专业领域内副教授（或相当职称）以上专家出具的加盖专家所在单位公章的推荐信（仅直博生提供）。"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请人将以下材料按照1-6项顺序整理成一个PDF文件（不超过10M），上传推免生报名信息采集系统。"
+      }
+    },
+    {
       "projectId": "2027|天津大学|网络安全学院|关于天津大学2027年接收优秀应届本科毕业生免试攻读研究生预报名的通知",
       "feedId": "camp2027",
       "name": "天津大学",
@@ -7373,6 +7511,52 @@
       }
     },
     {
+      "projectId": "2027|中国石油大学（北京）克拉玛依校区|机电工程学院|085406控制工程",
+      "feedId": "camp2027",
+      "name": "中国石油大学（北京）克拉玛依校区",
+      "institute": "机电工程学院",
+      "project": "085406控制工程",
+      "eventType": "预报名",
+      "description": "085406控制工程",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-11T23:59:59+08:00",
+      "deadlineOriginal": "即日起至9月11日。",
+      "deadlineEpochMs": 1789142399000,
+      "website": "https://www.cupk.edu.cn/jdxy/c/2026-08-01/537563.shtml",
+      "tags": [],
+      "verifiedAt": "2026-08-30T03:20:04.959Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://www.cupk.edu.cn/jdxy/c/2026-08-01/537563.shtml"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "具体考核时间和安排另行通知。"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "以上所有材料电子版通过我校研究生报考服务系统（http://gmss.cup.edu.cn/logon）上传"
+      }
+    },
+    {
       "projectId": "2027|天津大学|精密仪器与光电子工程学院|关于天津大学2027年接收优秀应届本科毕业生免试攻读研究生预报名的通知",
       "feedId": "camp2027",
       "name": "天津大学",
@@ -7554,6 +7738,52 @@
       "materials": {
         "status": "unverified",
         "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|中国科学院遗传与发育生物学研究所|中国科学院遗传与发育生物学研究所|中国科学院遗传与发育生物学研究所招收2027年推荐免试研究生招生公告",
+      "feedId": "camp2027",
+      "name": "中国科学院遗传与发育生物学研究所",
+      "institute": "中国科学院遗传与发育生物学研究所",
+      "project": "中国科学院遗传与发育生物学研究所招收2027年推荐免试研究生招生公告",
+      "eventType": "推荐免试研究生",
+      "description": "中国科学院遗传与发育生物学研究所招收2027年推荐免试研究生招生公告",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-13T17:00:00+08:00",
+      "deadlineOriginal": "申请报名时间：即日起至2026年9月13日 17:00。",
+      "deadlineEpochMs": 1789290000000,
+      "website": "https://genetics.cas.cn/edu/zsxx/xlytms/202608/t20260824_8264815.html",
+      "tags": [],
+      "verifiedAt": "2026-08-30T03:20:04.959Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://genetics.cas.cn/edu/zsxx/xlytms/202608/t20260824_8264815.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "具体考核方式和时间将邮件通知本人；未入选者不再另行通知。"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请者提交电子材料（以下材料合并为一个PDF文件）："
       }
     },
     {
@@ -8605,6 +8835,52 @@
       }
     },
     {
+      "projectId": "2027|中国科学院沈阳自动化研究所|中国科学院沈阳自动化研究所|2027年接收推荐免试研究生预通知",
+      "feedId": "camp2027",
+      "name": "中国科学院沈阳自动化研究所",
+      "institute": "中国科学院沈阳自动化研究所",
+      "project": "2027年中国科学院沈阳自动化研究所接收推荐免试研究生的预通知",
+      "eventType": "推荐免试研究生",
+      "description": "2027年中国科学院沈阳自动化研究所接收推荐免试研究生的预通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T17:00:00+08:00",
+      "deadlineOriginal": "预推免报名截止时间：2026年9月15日17:00（报名二维码指向的公开报名系统字段；通知正文另称“不设置截止时间”，以更具体的系统字段为准）。",
+      "deadlineEpochMs": 1789462800000,
+      "website": "https://sia.cas.cn/zpjy/yjsjy/zs/zsgg/202608/t20260826_8265512.html",
+      "tags": [],
+      "verifiedAt": "2026-08-27T12:49:27.229Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://sia.cas.cn/zpjy/yjsjy/zs/zsgg/202608/t20260826_8265512.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": ""
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|合肥工业大学|微电子学院|2027年接收推荐免试研究生预报名",
       "feedId": "camp2027",
       "name": "合肥工业大学",
@@ -8786,52 +9062,6 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：材料复杂度：中等；材料清单：预报名系统信息、诚信承诺书及学院/导师要求的相关证明材料。"
-      }
-    },
-    {
-      "projectId": "2027|中国科学院沈阳自动化研究所|中国科学院沈阳自动化研究所|2027年接收推荐免试研究生预通知",
-      "feedId": "camp2027",
-      "name": "中国科学院沈阳自动化研究所",
-      "institute": "中国科学院沈阳自动化研究所",
-      "project": "2027年中国科学院沈阳自动化研究所接收推荐免试研究生的预通知",
-      "eventType": "推荐免试研究生",
-      "description": "2027年中国科学院沈阳自动化研究所接收推荐免试研究生的预通知",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-09-15T17:00:00+08:00",
-      "deadlineOriginal": "预推免报名截止时间：2026年9月15日17:00（报名二维码指向的公开报名系统字段；通知正文另称“不设置截止时间”，以更具体的系统字段为准）。",
-      "deadlineEpochMs": 1789462800000,
-      "website": "https://sia.cas.cn/zpjy/yjsjy/zs/zsgg/202608/t20260826_8265512.html",
-      "tags": [],
-      "verifiedAt": "2026-08-27T12:49:27.229Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://sia.cas.cn/zpjy/yjsjy/zs/zsgg/202608/t20260826_8265512.html"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "unverified",
-          "summary": ""
-        },
-        "formatLocation": {
-          "status": "unverified",
-          "summary": ""
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": ""
-      },
-      "recommendation": {
-        "status": "unverified",
-        "summary": ""
-      },
-      "materials": {
-        "status": "unverified",
-        "summary": ""
       }
     },
     {
@@ -9862,6 +10092,52 @@
       }
     },
     {
+      "projectId": "2027|中国科学院上海高等研究院|中国科学院上海高等研究院|中国科学院上海高等研究院接收2027年推荐免试研究生招生简章",
+      "feedId": "camp2027",
+      "name": "中国科学院上海高等研究院",
+      "institute": "中国科学院上海高等研究院",
+      "project": "中国科学院上海高等研究院接收2027年推荐免试研究生招生简章",
+      "eventType": "推荐免试研究生",
+      "description": "中国科学院上海高等研究院接收2027年推荐免试研究生招生简章",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-18T23:59:59+08:00",
+      "deadlineOriginal": "即日起至2026年9月18日。",
+      "deadlineEpochMs": 1789747199000,
+      "website": "https://sari.cas.cn/gradedu/yjszs/tms/202608/t20260827_8266055.html",
+      "tags": [],
+      "verifiedAt": "2026-08-30T03:20:04.959Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://sari.cas.cn/gradedu/yjszs/tms/202608/t20260827_8266055.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "unverified",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|西安电子科技大学|人工智能学院|推免预报名",
       "feedId": "camp2027",
       "name": "西安电子科技大学",
@@ -10806,6 +11082,52 @@
       "materials": {
         "status": "confirmed",
         "summary": "推荐免试申请者直接向新疆天文台研究生部提交如下材料"
+      }
+    },
+    {
+      "projectId": "2027|中国科学院新疆理化技术研究所|中国科学院新疆理化技术研究所|中国科学院新疆理化技术研究所2027年接收推荐免试生的通知",
+      "feedId": "camp2027",
+      "name": "中国科学院新疆理化技术研究所",
+      "institute": "中国科学院新疆理化技术研究所",
+      "project": "中国科学院新疆理化技术研究所2027年接收推荐免试生的通知",
+      "eventType": "推荐免试生",
+      "description": "中国科学院新疆理化技术研究所2027年接收推荐免试生的通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-10-08T23:59:59+08:00",
+      "deadlineOriginal": "即日起至2026年10月8日",
+      "deadlineEpochMs": 1791475199000,
+      "website": "https://xjipc.cas.cn/yjs/zs/bszs/202608/t20260827_8266043.html",
+      "tags": [],
+      "verifiedAt": "2026-08-30T03:20:04.959Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://xjipc.cas.cn/yjs/zs/bszs/202608/t20260827_8266043.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "面试方式及时间以邮件通知为准。"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "请于2026年10月8日前（以收到时间为准）将申请材料按以上顺序，扫描为1个PDF文件"
       }
     },
     {
@@ -12499,6 +12821,98 @@
       "materials": {
         "status": "unverified",
         "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|湖南大学|网络空间安全学院|网络空间安全学院2027年招收推荐免试攻读研究生（含直博生）复试录取工作实施细则",
+      "feedId": "camp2027",
+      "name": "湖南大学",
+      "institute": "网络空间安全学院",
+      "project": "网络空间安全学院2027年招收推荐免试攻读研究生（含直博生）复试录取工作实施细则",
+      "eventType": "复试录取",
+      "description": "网络空间安全学院2027年招收推荐免试攻读研究生（含直博生）复试录取工作实施细则",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "具体时间及工作安排请关注学院通知。",
+      "deadlineEpochMs": null,
+      "website": "https://cst.hnu.edu.cn/info/1053/1323.htm",
+      "tags": [],
+      "verifiedAt": "2026-08-30T03:20:04.959Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://cst.hnu.edu.cn/info/1053/1323.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "具体时间及工作安排请关注学院通知。"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请人将以下材料按照1-9项顺序整理成一个PDF文件（A4纵向版面，内容清晰，文件大小不超过10M），上传推免生报名信息采集系统。"
+      }
+    },
+    {
+      "projectId": "2027|湖南大学|计算机学院|湖南大学计算机学院2027年接收推荐免试研究生（含直博生）预报名通知",
+      "feedId": "camp2027",
+      "name": "湖南大学",
+      "institute": "计算机学院",
+      "project": "湖南大学计算机学院2027年接收推荐免试研究生（含直博生）预报名通知",
+      "eventType": "预报名",
+      "description": "湖南大学计算机学院2027年接收推荐免试研究生（含直博生）预报名通知",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "具体时间及工作安排请关注学院通知。",
+      "deadlineEpochMs": null,
+      "website": "https://csee.hnu.edu.cn/info/1062/14218.htm",
+      "tags": [],
+      "verifiedAt": "2026-08-30T03:20:04.959Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://csee.hnu.edu.cn/info/1062/14218.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "具体时间及工作安排请关注学院通知。"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请人将以下材料按照1-9项顺序整理成一个PDF文件（A4纵向版面，内容清晰，文件大小不超过10M），上传推免生报名信息采集系统。"
       }
     },
     {
@@ -22489,8 +22903,8 @@
       }
     }
   ],
-  "snapshotId": "2026-08-29T03:45:11.970Z-b41ca4104213",
-  "approvedAt": "2026-08-29T03:45:11.970Z",
-  "previousSnapshotId": "2026-08-29T02:58:49.726Z-a2a00ffc9644",
-  "dataHash": "b41ca4104213717693450c1acc93c9f4766853ba2e3f6063c0600ef7136765ea"
+  "snapshotId": "2026-08-30T03:20:12.287Z-21ad3672bc05",
+  "approvedAt": "2026-08-30T03:20:12.287Z",
+  "previousSnapshotId": "2026-08-29T03:45:11.970Z-b41ca4104213",
+  "dataHash": "21ad3672bc0523a2c27130dcc6697ed44bb395f99f1bfc4a086751de86d0099c"
 }
