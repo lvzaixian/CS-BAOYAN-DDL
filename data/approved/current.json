@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-09-02T03:06:37.756Z",
+  "scanAt": "2026-09-03T08:40:05.824Z",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -11,8 +11,8 @@
     }
   ],
   "counts": {
-    "confirmedOpen": 304,
-    "confirmedUnknownDeadline": 37,
+    "confirmedOpen": 332,
+    "confirmedUnknownDeadline": 42,
     "pendingExcluded": 5,
     "expired": 200
   },
@@ -5735,6 +5735,98 @@
       }
     },
     {
+      "projectId": "2027|浙江大学|数学科学学院|浙江大学数学科学学院2027年全日制专业学位硕士研究生（数据科学与工程项目）推荐免试招生通知",
+      "feedId": "camp2027",
+      "name": "浙江大学",
+      "institute": "数学科学学院",
+      "project": "浙江大学数学科学学院2027年全日制专业学位硕士研究生（数据科学与工程项目）推荐免试招生通知",
+      "eventType": "全日制专业学位硕士研究生",
+      "description": "数学科学学院｜浙江大学数学科学学院2027年全日制专业学位硕士研究生（数据科学与工程项目）推荐免试招生通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-07T12:00:00+08:00",
+      "deadlineOriginal": "2026年8月10日10点起开放报名，2026年9月7日12:00报名截止",
+      "deadlineEpochMs": 1788753600000,
+      "website": "http://www.math.zju.edu.cn/2026/0806/c38123a3193823/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "http://www.math.zju.edu.cn/2026/0806/c38123a3193823/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|中南大学|人工智能学院|人工智能学院2027年推荐优秀应届本科毕业生免试攻读研究生考核录取工作通知-人工智能学院",
+      "feedId": "camp2027",
+      "name": "中南大学",
+      "institute": "人工智能学院",
+      "project": "人工智能学院2027年推荐优秀应届本科毕业生免试攻读研究生考核录取工作通知-人工智能学院",
+      "eventType": "推荐优秀应届本科毕业生免试攻读研究生",
+      "description": "人工智能学院｜人工智能学院2027年推荐优秀应届本科毕业生免试攻读研究生考核录取工作通知-人工智能学院",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-07T17:00:00+08:00",
+      "deadlineOriginal": "申请时间：2026年9月7日17:00前",
+      "deadlineEpochMs": 1788771600000,
+      "website": "https://ai.csu.edu.cn/info/1030/1386.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://ai.csu.edu.cn/info/1030/1386.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核录取工作通知-人工智能学院 首页 学院概况 学院简介 学院领导 机构设置 联系我们 师资队伍 党群工作 组织机构 党建动态 群团工作 工会活动 人才培养 研究生培养 本科生培养 科学研究 科研动态 学术交流 科研概况 学生工作 学生组织 队伍建设 诚聘英才 服务指南 信息公开 办事指南 规章制度 下"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "地点 日期 时间 内容 地点 9月12日 14:00-17:00 报到、资格审查（原件核验）、心理健康测试 管理楼102 9月13日 8:00-17:30 思想政治素质和品德考核、专业基础测试、综合素质及能力测试、外语能力测试 岳麓山校区，具体待定 （二）思想政治素质和品德考核 思想政治素质和品德考核小组按照《关于博、硕士研究生指"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请材料的真实性和准确性，若推免过程中存在弄虚作假情况，一经查实，将取消拟录取资格。 六、材料审核 （一）学院成立材料审核专家组，对申请人提交的材料进行综合审核，学院根据材料审核结果，结合招生计划、报名情况，择优确定进入综合考核的考生名单。 （二）取得考核资格的考生请于9月10日17:00前加入QQ群：1109740117（申请时备注姓名+系统申请号）"
+      }
+    },
+    {
       "projectId": "2027|中国科学院数学与系统科学研究院|数学与系统科学研究院|接收2027年推荐免试生",
       "feedId": "camp2027",
       "name": "中国科学院数学与系统科学研究院",
@@ -6011,6 +6103,52 @@
       }
     },
     {
+      "projectId": "2027|中南大学|交通运输工程学院|中南大学交通运输工程学院2027年推荐免试研究生预报名及考核工作通知-中南大学交通运输工程学院",
+      "feedId": "camp2027",
+      "name": "中南大学",
+      "institute": "交通运输工程学院",
+      "project": "中南大学交通运输工程学院2027年推荐免试研究生预报名及考核工作通知-中南大学交通运输工程学院",
+      "eventType": "推荐免试研究生预报名及考核",
+      "description": "交通运输工程学院｜中南大学交通运输工程学院2027年推荐免试研究生预报名及考核工作通知-中南大学交通运输工程学院",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-08T17:00:00+08:00",
+      "deadlineOriginal": "报名时间：2026年8月28日—9月8日17:00",
+      "deadlineEpochMs": 1788858000000,
+      "website": "https://stte.csu.edu.cn/info/1059/7904.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://stte.csu.edu.cn/info/1059/7904.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核工作通知-中南大学交通运输工程学院 联系我们 | 办公系统 | 新闻投稿 | 校友会 学院概况 学院简介 历史沿革 现任领导 历任领导 机构设置 图说交院 党群工作 党建工作 纪检工作 工会工作 离退休&统战工作 常用下载 师资队伍 教师名录 研究生导师 荣退教师 人才招聘 科学研究 科研平台 科研"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线下面试时仅需带原件现场查验） （1）本人身份证和学生证； （2）网上报名《申请表》一份； （3）个人简历； （4）学习成绩单及成绩排名证明（由本科期间所在学校或院系教务部门加盖公章）； （5）大学英语四级或六级考试成绩单； （6）学术成果（包括公开发表论文、出版著作、获得专利、获得学术科技奖项、承担课题或者其他具有学术水平的工作成果）； （7"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "交通运输工程学院2027年推荐免试研究生预报名及考核工作通知-中南大学交通运输工程学院 联系我们 | 办公系统 | 新闻投稿 | 校友会 学院概况 学院简介 历史沿革 现任领导 历任领导 机构设置 图说交院 党群工作 党建工作 纪检工作 工会工作 离退休&统战工作 常用下载 师资队伍 教师名录 研究生导师 荣退"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请材料审核及学科专业面试考核工作。 4.学院研究生招生考核监督小组 组长：李苑 成员：彭勇、李盈利、李双琳、唐进君、汪馗、伍钒、向超群 三、 预推荐报名工作安排 考生报名请查阅中南大学研招网8月28日发布的《中南大学关于2027年接收优秀应届本科毕业生免试攻读硕士研究生预报名的通知》（https://yz.csu.edu.cn/info/1009"
+      }
+    },
+    {
       "projectId": "2027|北京大学|北京脑科学与类脑研究所|北京大学前沿交叉学科研究院与北京脑科学与类脑研究所联合培养项目关于接收2027年推荐免试（直博）研究生的说明-北京大学前沿交叉学科研究院",
       "feedId": "camp2027",
       "name": "北京大学",
@@ -6057,6 +6195,52 @@
       }
     },
     {
+      "projectId": "2027|北京大学|软件与微电子学院|北京大学软件与微电子学院2027年接收推荐免试博士研究生招生说明-招生通知-北京大学软件与微电子学院",
+      "feedId": "camp2027",
+      "name": "北京大学",
+      "institute": "软件与微电子学院",
+      "project": "北京大学软件与微电子学院2027年接收推荐免试博士研究生招生说明-招生通知-北京大学软件与微电子学院",
+      "eventType": "接收推荐免试博士研究生",
+      "description": "软件与微电子学院｜北京大学软件与微电子学院2027年接收推荐免试博士研究生招生说明-招生通知-北京大学软件与微电子学院",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-08T17:00:00+08:00",
+      "deadlineOriginal": "请于2026年9月8日17:00之前",
+      "deadlineEpochMs": 1788858000000,
+      "website": "https://ss.pku.edu.cn/zsxx/zstz/55e02c72d8c54e7f91d8c4d3961fb09e.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://ss.pku.edu.cn/zsxx/zstz/55e02c72d8c54e7f91d8c4d3961fb09e.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|北京大学|软件与微电子学院|北京大学软件与微电子学院2027年接收推荐免试硕士研究生招生说明-招生通知-北京大学软件与微电子学院",
       "feedId": "camp2027",
       "name": "北京大学",
@@ -6100,6 +6284,52 @@
       "materials": {
         "status": "not-published",
         "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|南开大学|信息与传播学院|信息与传播学院关于2027年推荐免试硕士研究生预报名的通知",
+      "feedId": "camp2027",
+      "name": "南开大学",
+      "institute": "信息与传播学院",
+      "project": "信息与传播学院关于2027年推荐免试硕士研究生预报名的通知",
+      "eventType": "推荐免试硕士研究生预报名",
+      "description": "信息与传播学院｜信息与传播学院关于2027年推荐免试硕士研究生预报名的通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-09T00:00:00+08:00",
+      "deadlineOriginal": "截止时间为9月8日24:00",
+      "deadlineEpochMs": 1788883200000,
+      "website": "https://ic.nankai.edu.cn/2026/0903/c19738a601773/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://ic.nankai.edu.cn/2026/0903/c19738a601773/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核 1 ．考核将采用线下的方式，具体安排和相关要求通过学院官网或电子邮件通知，预计为 9 月中下旬。请及时关注并保持邮件联络畅通，并请提前做好准备。 2 ．现场材料审查 : 考核当天将现场审查考生的身份证、学生证、外语成绩证明等信息原件，审核是否为本人、是否达到外语要求等信息。核对后返还原件。 四、录取 学院会根据考核成绩， 择优确定学院 2027 年推荐"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线下的方式，具体安排和相关要求通过学院官网或电子邮件通知，预计为 9 月中下旬。请及时关注并保持邮件联络畅通，并请提前做好准备。 2 ．现场材料审查 : 考核当天将现场审查考生的身份证、学生证、外语成绩证明等信息原件，审核是否为本人、是否达到外语要求等信息。核对后返还原件。 四、录取 学院会根据考核成绩， 择优确定学院 2027 年推荐免试硕士研究生候选人，"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "提交材料及未按要求提交材料，报名无效。 （ 1 ）南开大学信息与传播学院推免生申请表（见附件）； （ 2 ）南开大学研究生报名系统导出的信息表（须本人签字）；（ 3 ）身份证原件扫描件；（ 4 ）本科学生证原件扫描件；（ 5 ） 本科所有科目成绩单原件扫描件及在本专业排名证明（或在成绩单上空白处注明）原件扫描件 （注：成绩与排名需加盖校级或院级教务部门公章）"
       }
     },
     {
@@ -7169,6 +7399,52 @@
       }
     },
     {
+      "projectId": "2027|山东大学|数据科学研究院|山东大学数据科学研究院2027年接收推荐免试研究生预报名通知-山东大学数据科学研究院",
+      "feedId": "camp2027",
+      "name": "山东大学",
+      "institute": "数据科学研究院",
+      "project": "山东大学数据科学研究院2027年接收推荐免试研究生预报名通知-山东大学数据科学研究院",
+      "eventType": "推免预报名",
+      "description": "数据科学研究院｜山东大学数据科学研究院2027年接收推荐免试研究生预报名通知-山东大学数据科学研究院",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T17:00:00+08:00",
+      "deadlineOriginal": "报名时间：2026年9月1日9:00-9月10日17:00",
+      "deadlineEpochMs": 1789030800000,
+      "website": "https://dsi.sdu.edu.cn/info/1093/4664.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://dsi.sdu.edu.cn/info/1093/4664.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核表（报名系统已附模板）； 3.本科阶段成绩单（本科3年成绩）与总评成绩排名证明（如有，可以和成绩单一起在系统上传），须加盖学校教务主管部门公章。 4.外语水平证明或外语资格考试成绩单； 5.重要获奖证书； 6.体现自身学术水平的代表性学术论文、出版物或原创性工作成果等材料； 7.在校期间参军入伍服兵役、参加志愿服务、到国际组织实习等证明材料；"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线下考核的形式，考核形式为面试。将于9月中旬起择优通知考生参加考核，考核复试总成绩低于60分者（成绩为百分制），不予录取。后续相关通知将会在山东大学数据科学研究院官网通知公告中公布 https://dsi.sdu.edu.cn/ ，请及时关注通知。其他未尽事宜参见学校通知。 联系人： 吴老师 0531-88369093 卫老师 0531-88366969"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|山东大学|新一代半导体材料研究院|新一代半导体材料研究院2027年接收推荐免试硕士研究生预报名通知-山东大学新一代半导体材料研究院",
       "feedId": "camp2027",
       "name": "山东大学",
@@ -7261,6 +7537,98 @@
       }
     },
     {
+      "projectId": "2027|山东大学|集成电路学院|山东大学集成电路学院2027年接收推荐免试硕士研究生预报名通知-集成电路学院",
+      "feedId": "camp2027",
+      "name": "山东大学",
+      "institute": "集成电路学院",
+      "project": "山东大学集成电路学院2027年接收推荐免试硕士研究生预报名通知-集成电路学院",
+      "eventType": "推免预报名",
+      "description": "集成电路学院｜山东大学集成电路学院2027年接收推荐免试硕士研究生预报名通知-集成电路学院",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T17:00:00+08:00",
+      "deadlineOriginal": "报名开始时间：2026年9月1日上午09:00，截止时间：2026年9月10日17:00",
+      "deadlineEpochMs": 1789030800000,
+      "website": "https://ic.sdu.edu.cn/info/1036/5206.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://ic.sdu.edu.cn/info/1036/5206.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试。具体复试时间、形式和复试录取办法将在学院网站公布。 三、申请材料 1. 申请攻读研究生报告，内容包括个人信息简介，学习、科研简要经历，对申请专业的认识及未来学习科研规划等； 2． 思想政治素质和品德考核表（ 点击下载 ） ； 3．本科阶段成绩单，须加盖学校教务主管部门公章； 4．外语水平证明或外语资格考试成绩单； 5．获奖证书； 6．体现"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线下考核的形式，考核形式为面试。将于9月中旬起择优通知考生参加考核，考核复试总成绩低于60分者（成绩为百分制），不予录取。 3.后续相关复试相关通知将会在山东大学集成电路学院官网-研究生教育-研究生招生-通知公告中公布，请及时关注系统及学院网站通知。 4．报名期间如有问题，请及时与我们联系。 联系电话： 0531-88390132，邮箱： jcdlyj"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请材料 1. 申请攻读研究生报告，内容包括个人信息简介，学习、科研简要经历，对申请专业的认识及未来学习科研规划等； 2． 思想政治素质和品德考核表（ 点击下载 ） ； 3．本科阶段成绩单，须加盖学校教务主管部门公章； 4．外语水平证明或外语资格考试成绩单； 5．获奖证书； 6．体现自身学术水平的代表性学术论文、出版物或原创性工作成果等材料；"
+      }
+    },
+    {
+      "projectId": "2027|武汉大学|测绘学院|测绘学院关于2027年接收推荐免试研究生（含直博生）预报名的通知-武汉大学测绘学院",
+      "feedId": "camp2027",
+      "name": "武汉大学",
+      "institute": "测绘学院",
+      "project": "测绘学院关于2027年接收推荐免试研究生（含直博生）预报名的通知-武汉大学测绘学院",
+      "eventType": "测绘学院关于2027年接收推荐免试研究生（含直博生）预报名的通知-武汉大学测绘学院",
+      "description": "测绘学院｜测绘学院关于2027年接收推荐免试研究生（含直博生）预报名的通知-武汉大学测绘学院",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T17:00:00+08:00",
+      "deadlineOriginal": "2026年9月3日10:00—9月10日17:00",
+      "deadlineEpochMs": 1789030800000,
+      "website": "https://www.sgg.whu.edu.cn/info/1380/45961.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://www.sgg.whu.edu.cn/info/1380/45961.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核 学院将对有效预报名信息及申报材料进行审核，并在预报名系统中发布初审结果。对于初审通过的考生，须在系统确认参加考核。学院计划于9月中旬（预计9月16日-9月17日）进行复试，具体复试时间、地点通过QQ群通知，请保持电话、QQ畅通。 （一）考核内容 复试考核分三个部分进行，即：背景评估、编程测试及综合面试： 1.背景评估：根据申请人提交的申请材料进行评估，"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "地点通过QQ群通知，请保持电话、QQ畅通。 （一）考核内容 复试考核分三个部分进行，即：背景评估、编程测试及综合面试： 1.背景评估：根据申请人提交的申请材料进行评估，包括：考生的教育背景，学习成绩及排名等情况。 2.编程测试：上机编程，测试考生熟练掌握常用编程语言的应用能力。 3.综合面试：综合面试包括心理素质、专业英语测试及专业面试，主要测试考生的心理素"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请材料进行评估，包括：考生的教育背景，学习成绩及排名等情况。 2.编程测试：上机编程，测试考生熟练掌握常用编程语言的应用能力。 3.综合面试：综合面试包括心理素质、专业英语测试及专业面试，主要测试考生的心理素质、掌握本专业系统知识的情况、攻读硕士学位的目的与科研计划等。重在考查综合运用所学知识的能力、科研创新能力（专业能力倾向）、英语听说应用以及对本学科前"
+      }
+    },
+    {
       "projectId": "2027|西安电子科技大学|计算机科学与技术学院（示范性软件学院）|推免预报名",
       "feedId": "camp2027",
       "name": "西安电子科技大学",
@@ -7304,6 +7672,190 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：材料复杂度：较高；材料清单：签字诚信承诺书、个人简历、成绩单、专业排名证明、身份证和学生证、英语证明及其他成果证明"
+      }
+    },
+    {
+      "projectId": "2027|西安电子科技大学|通信工程学院|通信工程学院2027年推荐免试研究生招生预报名通知-通信工程学院",
+      "feedId": "camp2027",
+      "name": "西安电子科技大学",
+      "institute": "通信工程学院",
+      "project": "通信工程学院2027年推荐免试研究生招生预报名通知-通信工程学院",
+      "eventType": "推荐免试研究生招生预报名",
+      "description": "通信工程学院｜通信工程学院2027年推荐免试研究生招生预报名通知-通信工程学院",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T18:00:00+08:00",
+      "deadlineOriginal": "报名时间：即日起-2026年9月10日18:00",
+      "deadlineEpochMs": 1789034400000,
+      "website": "https://ste.xidian.edu.cn/info/1337/16376.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://ste.xidian.edu.cn/info/1337/16376.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核 的 考 生，必须在教育部“推免服务系统”进行网报。报考学院与专业应与预报名系统中 最终 信息一致。 六、复试考核 复试时间请考生关注学院网站（https://ste.xidian.edu.cn/）通知公告栏中相关工作安排。复试考核形式以综合面试为主，面试时间一般不少于20分钟，主要考核内容包括英语口语与听力、专业知识与知识结构、科研能力与创新意识、综合"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请材料进行审核后，确定审核通过名单，并将于9月中旬在学院网站统一发布信息，未入选者不再另行通知。 五、正式报名 中国研究生招生信息网“推免服务系统”开通后，所有通过西电研究生报名平台报名且 通过预推免考核 的 考 生，必须在教育部“推免服务系统”进行网报。报考学院与专业应与预报名系统中 最终 信息一致。 六、复试考核 复试时间请考生关注学院网站（https"
+      }
+    },
+    {
+      "projectId": "2027|中国传媒大学|信息与通信工程学院|中国传媒大学2027年接收推荐免试攻读硕士学位研究生（含直博生）办法",
+      "feedId": "camp2027",
+      "name": "中国传媒大学",
+      "institute": "信息与通信工程学院",
+      "project": "中国传媒大学2027年接收推荐免试攻读硕士学位研究生（含直博生）办法",
+      "eventType": "接收推荐免试攻读硕士学位研究生",
+      "description": "信息与通信工程学院｜中国传媒大学2027年接收推荐免试攻读硕士学位研究生（含直博生）办法",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T20:00:00+08:00",
+      "deadlineOriginal": "预报名时间为2026年9月2日10:00-9月10日20:00",
+      "deadlineEpochMs": 1789041600000,
+      "website": "https://yz.cuc.edu.cn/2026/0830/c8678a273445/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yz.cuc.edu.cn/2026/0830/c8678a273445/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试考核。 1. 预报名时间及预报名系统网址 预报名时间为 2026 年 9 月 2 日 10:00-9 月 10 日 20:00 ，预报名系统网址为： https://yzbm.cuc.edu.cn/10033/user/login/login 。 2. 报考材料 （ 1 ）《中国传媒大学 2027 年招收推荐免试攻读硕士学位研究生（含直博生）申请表》（模"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线下复试或网络远程复试，以面试考核为主，由各培养单位根据学科特点和专业要求自主确定复试方式。 网络远程复试采用“双机位”模式。其中，主机位采用腾讯的“腾讯会议”软件，辅机位采用阿里的“钉钉”软件。考生在正式考试之前，须提前准备相关硬件、软件、钉钉账户及腾讯会议账户（即微信账户）。其中，钉钉账户须提前添加对应的复试助理钉钉号，复试助理钉钉号详见报考学院（研究院"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "住宿申请等。 8. 录取通知书将于 2027 年 7 月寄发。 9. 从 2023 级研究生开始，我校对于专业学位研究生（专项计划除外）只提供第一年住宿。 10. 本办法内容如有与教育部最新政策相冲突之处，我校将按照教育部最新政策执行。中国传媒大学招生处拥有对本办法的最终解释权。 八、联系方式 1. 通信地址 北京市朝阳区定福庄东街 1 号中国传媒大学招生处"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请材料。 请严格按照《中国传媒大学 2027 年招收推荐免试攻读硕士学位研究生（含直博生）申请材料汇总表》（模板见附件 4 ）要求的格式将各项材料的电子版整合为一个 PDF 文档，文件命名格式为“报考学院 _ 报考专业 _ 考生姓名”，通过预报名系统上传此 PDF 文档和其他音视频作品。 3. 材料审核 我校将对考生的报考材料进行综合评审，择优确定复试名单"
+      }
+    },
+    {
+      "projectId": "2027|中国传媒大学|数据科学与智能媒体学院|中国传媒大学2027年接收推荐免试攻读硕士学位研究生（含直博生）办法",
+      "feedId": "camp2027",
+      "name": "中国传媒大学",
+      "institute": "数据科学与智能媒体学院",
+      "project": "中国传媒大学2027年接收推荐免试攻读硕士学位研究生（含直博生）办法",
+      "eventType": "接收推荐免试攻读硕士学位研究生",
+      "description": "数据科学与智能媒体学院｜中国传媒大学2027年接收推荐免试攻读硕士学位研究生（含直博生）办法",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T20:00:00+08:00",
+      "deadlineOriginal": "预报名时间为2026年9月2日10:00-9月10日20:00",
+      "deadlineEpochMs": 1789041600000,
+      "website": "https://yz.cuc.edu.cn/2026/0830/c8678a273445/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yz.cuc.edu.cn/2026/0830/c8678a273445/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试考核。 1. 预报名时间及预报名系统网址 预报名时间为 2026 年 9 月 2 日 10:00-9 月 10 日 20:00 ，预报名系统网址为： https://yzbm.cuc.edu.cn/10033/user/login/login 。 2. 报考材料 （ 1 ）《中国传媒大学 2027 年招收推荐免试攻读硕士学位研究生（含直博生）申请表》（模"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线下复试或网络远程复试，以面试考核为主，由各培养单位根据学科特点和专业要求自主确定复试方式。 网络远程复试采用“双机位”模式。其中，主机位采用腾讯的“腾讯会议”软件，辅机位采用阿里的“钉钉”软件。考生在正式考试之前，须提前准备相关硬件、软件、钉钉账户及腾讯会议账户（即微信账户）。其中，钉钉账户须提前添加对应的复试助理钉钉号，复试助理钉钉号详见报考学院（研究院"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "住宿申请等。 8. 录取通知书将于 2027 年 7 月寄发。 9. 从 2023 级研究生开始，我校对于专业学位研究生（专项计划除外）只提供第一年住宿。 10. 本办法内容如有与教育部最新政策相冲突之处，我校将按照教育部最新政策执行。中国传媒大学招生处拥有对本办法的最终解释权。 八、联系方式 1. 通信地址 北京市朝阳区定福庄东街 1 号中国传媒大学招生处"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请材料。 请严格按照《中国传媒大学 2027 年招收推荐免试攻读硕士学位研究生（含直博生）申请材料汇总表》（模板见附件 4 ）要求的格式将各项材料的电子版整合为一个 PDF 文档，文件命名格式为“报考学院 _ 报考专业 _ 考生姓名”，通过预报名系统上传此 PDF 文档和其他音视频作品。 3. 材料审核 我校将对考生的报考材料进行综合评审，择优确定复试名单"
+      }
+    },
+    {
+      "projectId": "2027|中国传媒大学|计算机与网络空间安全学院|中国传媒大学2027年接收推荐免试攻读硕士学位研究生（含直博生）办法",
+      "feedId": "camp2027",
+      "name": "中国传媒大学",
+      "institute": "计算机与网络空间安全学院",
+      "project": "中国传媒大学2027年接收推荐免试攻读硕士学位研究生（含直博生）办法",
+      "eventType": "接收推荐免试攻读硕士学位研究生",
+      "description": "计算机与网络空间安全学院｜中国传媒大学2027年接收推荐免试攻读硕士学位研究生（含直博生）办法",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T20:00:00+08:00",
+      "deadlineOriginal": "预报名时间为2026年9月2日10:00-9月10日20:00",
+      "deadlineEpochMs": 1789041600000,
+      "website": "https://yz.cuc.edu.cn/2026/0830/c8678a273445/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yz.cuc.edu.cn/2026/0830/c8678a273445/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试考核。 1. 预报名时间及预报名系统网址 预报名时间为 2026 年 9 月 2 日 10:00-9 月 10 日 20:00 ，预报名系统网址为： https://yzbm.cuc.edu.cn/10033/user/login/login 。 2. 报考材料 （ 1 ）《中国传媒大学 2027 年招收推荐免试攻读硕士学位研究生（含直博生）申请表》（模"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线下复试或网络远程复试，以面试考核为主，由各培养单位根据学科特点和专业要求自主确定复试方式。 网络远程复试采用“双机位”模式。其中，主机位采用腾讯的“腾讯会议”软件，辅机位采用阿里的“钉钉”软件。考生在正式考试之前，须提前准备相关硬件、软件、钉钉账户及腾讯会议账户（即微信账户）。其中，钉钉账户须提前添加对应的复试助理钉钉号，复试助理钉钉号详见报考学院（研究院"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "住宿申请等。 8. 录取通知书将于 2027 年 7 月寄发。 9. 从 2023 级研究生开始，我校对于专业学位研究生（专项计划除外）只提供第一年住宿。 10. 本办法内容如有与教育部最新政策相冲突之处，我校将按照教育部最新政策执行。中国传媒大学招生处拥有对本办法的最终解释权。 八、联系方式 1. 通信地址 北京市朝阳区定福庄东街 1 号中国传媒大学招生处"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请材料。 请严格按照《中国传媒大学 2027 年招收推荐免试攻读硕士学位研究生（含直博生）申请材料汇总表》（模板见附件 4 ）要求的格式将各项材料的电子版整合为一个 PDF 文档，文件命名格式为“报考学院 _ 报考专业 _ 考生姓名”，通过预报名系统上传此 PDF 文档和其他音视频作品。 3. 材料审核 我校将对考生的报考材料进行综合评审，择优确定复试名单"
       }
     },
     {
@@ -7540,6 +8092,144 @@
       "materials": {
         "status": "confirmed",
         "summary": "申请人须提交的申请材料包括"
+      }
+    },
+    {
+      "projectId": "2027|中国科学院南京地理与湖泊研究所|南京地理与湖泊研究所|硕士招生中国科学院南京地理与湖泊研究所2027年接收推荐免试硕士生和直博生公告－中国科学院南京地理与湖泊研究所",
+      "feedId": "camp2027",
+      "name": "中国科学院南京地理与湖泊研究所",
+      "institute": "南京地理与湖泊研究所",
+      "project": "硕士招生中国科学院南京地理与湖泊研究所2027年接收推荐免试硕士生和直博生公告－中国科学院南京地理与湖泊研究所",
+      "eventType": "接收推荐免试硕士生和直博生",
+      "description": "南京地理与湖泊研究所｜硕士招生中国科学院南京地理与湖泊研究所2027年接收推荐免试硕士生和直博生公告－中国科学院南京地理与湖泊研究所",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T23:59:59+08:00",
+      "deadlineOriginal": "即日起至9月10日",
+      "deadlineEpochMs": 1789055999000,
+      "website": "http://www.niglas.ac.cn/yjsjy_165790/zs/sszs/202608/t20260827_8265806.html",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "http://www.niglas.ac.cn/yjsjy_165790/zs/sszs/202608/t20260827_8265806.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "面试时提交。 （三）初审 研究生部对申请材料进行初审，并通过预报名系统将初审结果通知申请者本人。初审合格者，应在规定的时间参加我所组织的考核。 （四）复试和体检 复试时间暂定9月中下旬，初审通过的考生将获得邮件通知，并须按通知要求参加复试、体检，我所将择优录取。复试内容包括： 1. 专业知识：主要包括对所报考学科前沿"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请材料（1-5是必须提供材料，6-9是自愿提供材料）： 1.《中国科学院大学推荐免试攻读硕士学位研究生/直博生申请表》（网报信息填写完成、提交后即可下载或打印），经申请人签字确认，签字可打印后手签或使用电子签名。（若在系统中无法填选报考导师，请打印后手工填写） 2. 所在学校教务部门（或院系）出具并加盖公章的大学本科前三年所修课程成绩单（五"
+      }
+    },
+    {
+      "projectId": "2027|中国科学院地理科学与资源研究所|地理科学与资源研究所|地理科学与资源研究所2027年接收推荐免试生招生公告 -- 地理科学与资源研究所",
+      "feedId": "camp2027",
+      "name": "中国科学院地理科学与资源研究所",
+      "institute": "地理科学与资源研究所",
+      "project": "地理科学与资源研究所2027年接收推荐免试生招生公告 -- 地理科学与资源研究所",
+      "eventType": "接收推荐免试生招生",
+      "description": "地理科学与资源研究所｜地理科学与资源研究所2027年接收推荐免试生招生公告 -- 地理科学与资源研究所",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T23:59:59+08:00",
+      "deadlineOriginal": "于9月10日前通过电子邮件送达",
+      "deadlineEpochMs": 1789055999000,
+      "website": "https://igsnrr.cas.cn/yjsjy/tzgg/202608/t20260818_8261798.html",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://igsnrr.cas.cn/yjsjy/tzgg/202608/t20260818_8261798.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试。面试内容包括英语测试、专业内容复试、心理测评和体检等。 四、复试和体检 复试和体检的具体形式、时间另行通知，请同学们关注招生官网并注意接听电话。 五、拟录取 1、经复试和体检合格并公示后，拟录取的推免生应在规定时间内登录教育部的“全国推荐优秀应届本科毕业生免试攻读研究生信息公开暨管理服务系统”（以下简称“推免服务系统”）填写报考志愿，接收并确认我所的复"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|中国科学院成都山地灾害与环境研究所|成都山地灾害与环境研究所|中国科学院、水利部成都山地灾害与环境研究所",
+      "feedId": "camp2027",
+      "name": "中国科学院成都山地灾害与环境研究所",
+      "institute": "成都山地灾害与环境研究所",
+      "project": "中国科学院、水利部成都山地灾害与环境研究所",
+      "eventType": "接收推荐免试硕士研究生",
+      "description": "成都山地灾害与环境研究所｜中国科学院、水利部成都山地灾害与环境研究所",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T23:59:59+08:00",
+      "deadlineOriginal": "即日起-9月10日",
+      "deadlineEpochMs": 1789055999000,
+      "website": "https://imde.cas.cn/yjsjy/zsdt/zsjz/202608/t20260824_8264738.html",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://imde.cas.cn/yjsjy/zsdt/zsjz/202608/t20260824_8264738.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核”制工作实施办法 中国科学院成都山地所2027年接收推荐免试硕士研究生（直博生）实施细则 2026中国科学院成都山地灾害与环境研究所山地科学优秀大学生夏令营2号通知 2026年度中国科学院成都山地所博士研究生补拟录取名单公示（三） 2026年度中国科学院成都山地所博士研究生补拟录取名单公示（二） 培养动态 成都山地所召开2027届毕业生学位及"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "交通地质灾害防治技术国家工程研究中心 自然资源部应急测绘技术创新中心 自然资源部西南国土空间生态保护修复与综合整治工程技术创新中心 党建与科学文化 党委 纪委 工会 团委 党建要闻 联学联建破壁垒 科研共进话冰川——环境二支部与玉龙雪山站党支部联合开展\"支部助合作 党建促科研\"主题党日活动 成都山地所召开支部（总支）书记工作会议 集中学习"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
       }
     },
     {
@@ -8293,6 +8983,98 @@
       }
     },
     {
+      "projectId": "2027|中国科学院理论物理研究所|理论物理研究所|2027年接收推荐免试生面试预通知--中国科学院理论物理研究所",
+      "feedId": "camp2027",
+      "name": "中国科学院理论物理研究所",
+      "institute": "理论物理研究所",
+      "project": "2027年接收推荐免试生面试预通知--中国科学院理论物理研究所",
+      "eventType": "接收推荐免试生",
+      "description": "理论物理研究所｜2027年接收推荐免试生面试预通知--中国科学院理论物理研究所",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-11T08:00:00+08:00",
+      "deadlineOriginal": "于2026年9月11日早上8:00前发送至",
+      "deadlineEpochMs": 1789084800000,
+      "website": "https://itp.cas.cn/yjs/zs/sszs/202609/t20260901_8274974.html",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://itp.cas.cn/yjs/zs/sszs/202609/t20260901_8274974.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "面试预通知--中国科学院理论物理研究所 --> 返回所主页 | Toggle navigation 首页 概况 工作动态 招生信息 硕士招生 博士招生 夏令营 导师介绍 表格下载 培养管理 规章制度 高级课程 海外交流 表彰奖励 表格下载 科教融合 实习合作联合培养 大学生科创计划 彭桓武科教合作中心 学位管理"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请材料。 一、招生专业 （一） 学术型学位（070201 理论物理） （二）专业型学位（085405 软件工程） 详情请见附件3。 二、申请条件 （一）中华人民共和国公民，拥护中国共产党的领导，热爱科学事业，道德品质良好，遵纪守法。 （二）能获得本科就读学校当年推荐免试研究生资格。 （三）诚实守信，品行端正，学风优良，无任何考试作弊和剽窃他人学术成果"
+      }
+    },
+    {
+      "projectId": "2027|山东大学|信息科学与工程学院|信息科学与工程学院2027年接收推荐免试硕士研究生和本科直博生预报名通知及复试工作安排-山东大学-信息科学与工程学院",
+      "feedId": "camp2027",
+      "name": "山东大学",
+      "institute": "信息科学与工程学院",
+      "project": "信息科学与工程学院2027年接收推荐免试硕士研究生和本科直博生预报名通知及复试工作安排-山东大学-信息科学与工程学院",
+      "eventType": "接收推荐免试硕士研究生和本科直博生预报名",
+      "description": "信息科学与工程学院｜信息科学与工程学院2027年接收推荐免试硕士研究生和本科直博生预报名通知及复试工作安排-山东大学-信息科学与工程学院",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-11T08:00:00+08:00",
+      "deadlineOriginal": "2026年9月1日9：00—9月11日8：00",
+      "deadlineEpochMs": 1789084800000,
+      "website": "https://www.ise.sdu.edu.cn/info/1096/16821.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://www.ise.sdu.edu.cn/info/1096/16821.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试工作安排-山东大学-信息科学与工程学院 首页 学院概况 学院概况 现任领导 科研机构 行政机构 科研平台 学术科研 科研动态 学术预告 师资队伍 教职工 教授、副教授 博导、硕导 导师团队 人才培养 本科生教育 研究生教育 学生工作 通知 公告 规章制度 校园生活 学生网站 English About-"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "地点：信息学院 4 08 办公室。 5. 复试安排 复试时间： 9月 1 6 日上午 8：30开始；下午 1 ： 30开始。 复试分组、时间、地点等见后续通知（具体见 q q 群） 6 .复试方式（全程录音录像） （ 1）复试采用 线下面试 方式进行，百分制评分。考核内容主要包括：除了思想政治素质和品德考核外，重点要对其专业素养、研究能力、科研志趣"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请材料 1. 申请攻读研究生报告，内容包括个人信息简介，学习、科研简要经历，对申请专业的认识及未来学习科研规划等； 2 . 思想政治素质和品德考核表； 3 . 本科阶段成绩单，须加盖学校教务主管部门公章； 4 . 外语水平证明或外语资格考试成绩单； 5 . 重要获奖证书； 6 . 体现自身学术水平的代表性学术论文、出版物或原创性工作成果等材料；"
+      }
+    },
+    {
       "projectId": "2027|山东大学|软件学院|2027年接收推荐免试硕士研究生和本科直博生预报名通知",
       "feedId": "camp2027",
       "name": "山东大学",
@@ -8934,6 +9716,52 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：材料复杂度：高；材料清单：身份证明、学历与完整成绩单、研究计划、英语证明及两位学术推荐人"
+      }
+    },
+    {
+      "projectId": "2027|武汉大学|物理科学与技术学院|武汉大学物理科学与技术学院接收2027年推荐免试研究生预报名通知-武汉大学物理科学与技术学院",
+      "feedId": "camp2027",
+      "name": "武汉大学",
+      "institute": "物理科学与技术学院",
+      "project": "武汉大学物理科学与技术学院接收2027年推荐免试研究生预报名通知-武汉大学物理科学与技术学院",
+      "eventType": "接收推荐免试研究生预报名",
+      "description": "物理科学与技术学院｜武汉大学物理科学与技术学院接收2027年推荐免试研究生预报名通知-武汉大学物理科学与技术学院",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-12T00:00:00+08:00",
+      "deadlineOriginal": "预报名时间：2026年8月28日至9月11日24：00",
+      "deadlineEpochMs": 1789142400000,
+      "website": "https://physics.whu.edu.cn/info/1236/75321.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://physics.whu.edu.cn/info/1236/75321.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核资格等； ② 填报本科院校名称需完整规范，例：XX大学（XX校区/XX分校）。 （三）综合考核 1. 学院根据网上报名材料统一审核，根据申请类别分专业择优选择进入综合考核的学生名单。审核通过的考生将会收到预报名系统发送的通知，考生可登录预报名系统查看审核结果。审核通过的考生须在规定时间内在系统内回复是否参加综合考核。 2.学院按二级学科开展综合考核，考核"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "校区/XX分校）。 （三）综合考核 1. 学院根据网上报名材料统一审核，根据申请类别分专业择优选择进入综合考核的学生名单。审核通过的考生将会收到预报名系统发送的通知，考生可登录预报名系统查看审核结果。审核通过的考生须在规定时间内在系统内回复是否参加综合考核。 2.学院按二级学科开展综合考核，考核由背景评估和综合面试两部分构成。采取线上考核方式，具体安排将通过"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信（下载附件2），须由专家亲笔签名。（1）申请人所在本科学校的教师（副教授及其以上职称）推荐信1封；（2）武汉大学物理科学与技术学院的教师（副教授及其以上职称）推荐信1封。 注：①所有填报信息、上传材料务必真实准确，学院将统一复核，信息不实或材料造假者将取消报名资格、考核资格等； ② 填报本科院校名称需完整规范，例：XX大学（XX校区/XX分校）。 （三"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请材料： 1. 身份证扫描件（正反面扫描至同一页面）； 2. 学生证扫描件（含学校盖章个人信息页、全部注册盖章页面）； 3. 个人陈述（无固定模板，内容包含本科学习与科研经历、获奖成果、报考专业研究兴趣、读研规划等）； 4. 加盖本科院校教务/培养单位公章的完整本科成绩单（原件扫描件）； 5. 专业排名证明（模板请见附件1，供参考）； 6. 外语等级/能力"
       }
     },
     {
@@ -10215,6 +11043,328 @@
       }
     },
     {
+      "projectId": "2027|西安交通大学|电子与信息学部—信息与通信工程学院|西安交通大学2027年推荐免试研究生招生章程",
+      "feedId": "camp2027",
+      "name": "西安交通大学",
+      "institute": "电子与信息学部—信息与通信工程学院",
+      "project": "西安交通大学2027年推荐免试研究生招生章程",
+      "eventType": "西安交通大学2027年推荐免试研究生招生章程",
+      "description": "电子与信息学部—信息与通信工程学院｜西安交通大学2027年推荐免试研究生招生章程",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-14T23:59:59+08:00",
+      "deadlineOriginal": "学校推免生报名时间为9月1日-9月14日",
+      "deadlineEpochMs": 1789401599000,
+      "website": "https://yz.xjtu.edu.cn/xjtutjms_2027.pdf",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yz.xjtu.edu.cn/xjtutjms_2027.pdf"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核 1．由各学院（部、中心）组织专家组对申请者进行综合考核，考核方式可 采取线上或线下的形式，考核内容包括材料审核、复试（专业知识考核、英语 听力和口语测试）、思想政治素质和品德考核，专业知识考核可采用笔试、面 试、实验或实践操作等考核形式。学院（部、中心）向材料审核通过者发送复 试通知，申请人须在规定时间接受复试，否则视为放弃考核资格。考核工作安 排"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线上或线下的形式，考核内容包括材料审核、复试（专业知识考核、英语 听力和口语测试）、思想政治素质和品德考核，专业知识考核可采用笔试、面 试、实验或实践操作等考核形式。学院（部、中心）向材料审核通过者发送复 试通知，申请人须在规定时间接受复试，否则视为放弃考核资格。考核工作安 排及名单详见各学院（部、中心）发布的有关细则或通知。 2．申请人应自觉遵守学校考"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "交通大学 2027 年推荐免试研究生招生章程 招收优秀应届本科毕业生免试攻读研究生，是研究生招生的重要组成部分， 也是提高研究生招生质量、加强拔尖创新人才选拔、服务支撑教育强国建设的 重要举措。为做好2027年推荐免试研究生招生工作,根据教育部、陕西省教育考 试院等推免工作文件要求，经学校研究生招生委员会审议通过，制定本章程。 一、招生计划及招生学科、"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|西安交通大学|电子与信息学部—微电子学院|西安交通大学2027年推荐免试研究生招生章程",
+      "feedId": "camp2027",
+      "name": "西安交通大学",
+      "institute": "电子与信息学部—微电子学院",
+      "project": "西安交通大学2027年推荐免试研究生招生章程",
+      "eventType": "西安交通大学2027年推荐免试研究生招生章程",
+      "description": "电子与信息学部—微电子学院｜西安交通大学2027年推荐免试研究生招生章程",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-14T23:59:59+08:00",
+      "deadlineOriginal": "学校推免生报名时间为9月1日-9月14日",
+      "deadlineEpochMs": 1789401599000,
+      "website": "https://yz.xjtu.edu.cn/xjtutjms_2027.pdf",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yz.xjtu.edu.cn/xjtutjms_2027.pdf"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核 1．由各学院（部、中心）组织专家组对申请者进行综合考核，考核方式可 采取线上或线下的形式，考核内容包括材料审核、复试（专业知识考核、英语 听力和口语测试）、思想政治素质和品德考核，专业知识考核可采用笔试、面 试、实验或实践操作等考核形式。学院（部、中心）向材料审核通过者发送复 试通知，申请人须在规定时间接受复试，否则视为放弃考核资格。考核工作安 排"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线上或线下的形式，考核内容包括材料审核、复试（专业知识考核、英语 听力和口语测试）、思想政治素质和品德考核，专业知识考核可采用笔试、面 试、实验或实践操作等考核形式。学院（部、中心）向材料审核通过者发送复 试通知，申请人须在规定时间接受复试，否则视为放弃考核资格。考核工作安 排及名单详见各学院（部、中心）发布的有关细则或通知。 2．申请人应自觉遵守学校考"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "交通大学 2027 年推荐免试研究生招生章程 招收优秀应届本科毕业生免试攻读研究生，是研究生招生的重要组成部分， 也是提高研究生招生质量、加强拔尖创新人才选拔、服务支撑教育强国建设的 重要举措。为做好2027年推荐免试研究生招生工作,根据教育部、陕西省教育考 试院等推免工作文件要求，经学校研究生招生委员会审议通过，制定本章程。 一、招生计划及招生学科、"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|西安交通大学|电子与信息学部—电子科学与工程学院|西安交通大学2027年推荐免试研究生招生章程",
+      "feedId": "camp2027",
+      "name": "西安交通大学",
+      "institute": "电子与信息学部—电子科学与工程学院",
+      "project": "西安交通大学2027年推荐免试研究生招生章程",
+      "eventType": "西安交通大学2027年推荐免试研究生招生章程",
+      "description": "电子与信息学部—电子科学与工程学院｜西安交通大学2027年推荐免试研究生招生章程",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-14T23:59:59+08:00",
+      "deadlineOriginal": "学校推免生报名时间为9月1日-9月14日",
+      "deadlineEpochMs": 1789401599000,
+      "website": "https://yz.xjtu.edu.cn/xjtutjms_2027.pdf",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yz.xjtu.edu.cn/xjtutjms_2027.pdf"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核 1．由各学院（部、中心）组织专家组对申请者进行综合考核，考核方式可 采取线上或线下的形式，考核内容包括材料审核、复试（专业知识考核、英语 听力和口语测试）、思想政治素质和品德考核，专业知识考核可采用笔试、面 试、实验或实践操作等考核形式。学院（部、中心）向材料审核通过者发送复 试通知，申请人须在规定时间接受复试，否则视为放弃考核资格。考核工作安 排"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线上或线下的形式，考核内容包括材料审核、复试（专业知识考核、英语 听力和口语测试）、思想政治素质和品德考核，专业知识考核可采用笔试、面 试、实验或实践操作等考核形式。学院（部、中心）向材料审核通过者发送复 试通知，申请人须在规定时间接受复试，否则视为放弃考核资格。考核工作安 排及名单详见各学院（部、中心）发布的有关细则或通知。 2．申请人应自觉遵守学校考"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "交通大学 2027 年推荐免试研究生招生章程 招收优秀应届本科毕业生免试攻读研究生，是研究生招生的重要组成部分， 也是提高研究生招生质量、加强拔尖创新人才选拔、服务支撑教育强国建设的 重要举措。为做好2027年推荐免试研究生招生工作,根据教育部、陕西省教育考 试院等推免工作文件要求，经学校研究生招生委员会审议通过，制定本章程。 一、招生计划及招生学科、"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|西安交通大学|电子与信息学部—网络空间安全学院|西安交通大学2027年推荐免试研究生招生章程",
+      "feedId": "camp2027",
+      "name": "西安交通大学",
+      "institute": "电子与信息学部—网络空间安全学院",
+      "project": "西安交通大学2027年推荐免试研究生招生章程",
+      "eventType": "西安交通大学2027年推荐免试研究生招生章程",
+      "description": "电子与信息学部—网络空间安全学院｜西安交通大学2027年推荐免试研究生招生章程",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-14T23:59:59+08:00",
+      "deadlineOriginal": "学校推免生报名时间为9月1日-9月14日",
+      "deadlineEpochMs": 1789401599000,
+      "website": "https://yz.xjtu.edu.cn/xjtutjms_2027.pdf",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yz.xjtu.edu.cn/xjtutjms_2027.pdf"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核 1．由各学院（部、中心）组织专家组对申请者进行综合考核，考核方式可 采取线上或线下的形式，考核内容包括材料审核、复试（专业知识考核、英语 听力和口语测试）、思想政治素质和品德考核，专业知识考核可采用笔试、面 试、实验或实践操作等考核形式。学院（部、中心）向材料审核通过者发送复 试通知，申请人须在规定时间接受复试，否则视为放弃考核资格。考核工作安 排"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线上或线下的形式，考核内容包括材料审核、复试（专业知识考核、英语 听力和口语测试）、思想政治素质和品德考核，专业知识考核可采用笔试、面 试、实验或实践操作等考核形式。学院（部、中心）向材料审核通过者发送复 试通知，申请人须在规定时间接受复试，否则视为放弃考核资格。考核工作安 排及名单详见各学院（部、中心）发布的有关细则或通知。 2．申请人应自觉遵守学校考"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "交通大学 2027 年推荐免试研究生招生章程 招收优秀应届本科毕业生免试攻读研究生，是研究生招生的重要组成部分， 也是提高研究生招生质量、加强拔尖创新人才选拔、服务支撑教育强国建设的 重要举措。为做好2027年推荐免试研究生招生工作,根据教育部、陕西省教育考 试院等推免工作文件要求，经学校研究生招生委员会审议通过，制定本章程。 一、招生计划及招生学科、"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|西安交通大学|电子与信息学部—自动化科学与工程学院|西安交通大学2027年推荐免试研究生招生章程",
+      "feedId": "camp2027",
+      "name": "西安交通大学",
+      "institute": "电子与信息学部—自动化科学与工程学院",
+      "project": "西安交通大学2027年推荐免试研究生招生章程",
+      "eventType": "西安交通大学2027年推荐免试研究生招生章程",
+      "description": "电子与信息学部—自动化科学与工程学院｜西安交通大学2027年推荐免试研究生招生章程",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-14T23:59:59+08:00",
+      "deadlineOriginal": "学校推免生报名时间为9月1日-9月14日",
+      "deadlineEpochMs": 1789401599000,
+      "website": "https://yz.xjtu.edu.cn/xjtutjms_2027.pdf",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yz.xjtu.edu.cn/xjtutjms_2027.pdf"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核 1．由各学院（部、中心）组织专家组对申请者进行综合考核，考核方式可 采取线上或线下的形式，考核内容包括材料审核、复试（专业知识考核、英语 听力和口语测试）、思想政治素质和品德考核，专业知识考核可采用笔试、面 试、实验或实践操作等考核形式。学院（部、中心）向材料审核通过者发送复 试通知，申请人须在规定时间接受复试，否则视为放弃考核资格。考核工作安 排"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线上或线下的形式，考核内容包括材料审核、复试（专业知识考核、英语 听力和口语测试）、思想政治素质和品德考核，专业知识考核可采用笔试、面 试、实验或实践操作等考核形式。学院（部、中心）向材料审核通过者发送复 试通知，申请人须在规定时间接受复试，否则视为放弃考核资格。考核工作安 排及名单详见各学院（部、中心）发布的有关细则或通知。 2．申请人应自觉遵守学校考"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "交通大学 2027 年推荐免试研究生招生章程 招收优秀应届本科毕业生免试攻读研究生，是研究生招生的重要组成部分， 也是提高研究生招生质量、加强拔尖创新人才选拔、服务支撑教育强国建设的 重要举措。为做好2027年推荐免试研究生招生工作,根据教育部、陕西省教育考 试院等推免工作文件要求，经学校研究生招生委员会审议通过，制定本章程。 一、招生计划及招生学科、"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|西安交通大学|电子与信息学部—计算机科学与技术学院|西安交通大学2027年推荐免试研究生招生章程",
+      "feedId": "camp2027",
+      "name": "西安交通大学",
+      "institute": "电子与信息学部—计算机科学与技术学院",
+      "project": "西安交通大学2027年推荐免试研究生招生章程",
+      "eventType": "西安交通大学2027年推荐免试研究生招生章程",
+      "description": "电子与信息学部—计算机科学与技术学院｜西安交通大学2027年推荐免试研究生招生章程",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-14T23:59:59+08:00",
+      "deadlineOriginal": "学校推免生报名时间为9月1日-9月14日",
+      "deadlineEpochMs": 1789401599000,
+      "website": "https://yz.xjtu.edu.cn/xjtutjms_2027.pdf",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yz.xjtu.edu.cn/xjtutjms_2027.pdf"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核 1．由各学院（部、中心）组织专家组对申请者进行综合考核，考核方式可 采取线上或线下的形式，考核内容包括材料审核、复试（专业知识考核、英语 听力和口语测试）、思想政治素质和品德考核，专业知识考核可采用笔试、面 试、实验或实践操作等考核形式。学院（部、中心）向材料审核通过者发送复 试通知，申请人须在规定时间接受复试，否则视为放弃考核资格。考核工作安 排"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线上或线下的形式，考核内容包括材料审核、复试（专业知识考核、英语 听力和口语测试）、思想政治素质和品德考核，专业知识考核可采用笔试、面 试、实验或实践操作等考核形式。学院（部、中心）向材料审核通过者发送复 试通知，申请人须在规定时间接受复试，否则视为放弃考核资格。考核工作安 排及名单详见各学院（部、中心）发布的有关细则或通知。 2．申请人应自觉遵守学校考"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "交通大学 2027 年推荐免试研究生招生章程 招收优秀应届本科毕业生免试攻读研究生，是研究生招生的重要组成部分， 也是提高研究生招生质量、加强拔尖创新人才选拔、服务支撑教育强国建设的 重要举措。为做好2027年推荐免试研究生招生工作,根据教育部、陕西省教育考 试院等推免工作文件要求，经学校研究生招生委员会审议通过，制定本章程。 一、招生计划及招生学科、"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|西安交通大学|电子与信息学部—软件学院|西安交通大学2027年推荐免试研究生招生章程",
+      "feedId": "camp2027",
+      "name": "西安交通大学",
+      "institute": "电子与信息学部—软件学院",
+      "project": "西安交通大学2027年推荐免试研究生招生章程",
+      "eventType": "西安交通大学2027年推荐免试研究生招生章程",
+      "description": "电子与信息学部—软件学院｜西安交通大学2027年推荐免试研究生招生章程",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-14T23:59:59+08:00",
+      "deadlineOriginal": "学校推免生报名时间为9月1日-9月14日",
+      "deadlineEpochMs": 1789401599000,
+      "website": "https://yz.xjtu.edu.cn/xjtutjms_2027.pdf",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yz.xjtu.edu.cn/xjtutjms_2027.pdf"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核 1．由各学院（部、中心）组织专家组对申请者进行综合考核，考核方式可 采取线上或线下的形式，考核内容包括材料审核、复试（专业知识考核、英语 听力和口语测试）、思想政治素质和品德考核，专业知识考核可采用笔试、面 试、实验或实践操作等考核形式。学院（部、中心）向材料审核通过者发送复 试通知，申请人须在规定时间接受复试，否则视为放弃考核资格。考核工作安 排"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "线上或线下的形式，考核内容包括材料审核、复试（专业知识考核、英语 听力和口语测试）、思想政治素质和品德考核，专业知识考核可采用笔试、面 试、实验或实践操作等考核形式。学院（部、中心）向材料审核通过者发送复 试通知，申请人须在规定时间接受复试，否则视为放弃考核资格。考核工作安 排及名单详见各学院（部、中心）发布的有关细则或通知。 2．申请人应自觉遵守学校考"
+        }
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "交通大学 2027 年推荐免试研究生招生章程 招收优秀应届本科毕业生免试攻读研究生，是研究生招生的重要组成部分， 也是提高研究生招生质量、加强拔尖创新人才选拔、服务支撑教育强国建设的 重要举措。为做好2027年推荐免试研究生招生工作,根据教育部、陕西省教育考 试院等推免工作文件要求，经学校研究生招生委员会审议通过，制定本章程。 一、招生计划及招生学科、"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|西安电子科技大学|空间科学与技术学院|空间科学与技术学院2027年推荐免试研究生招生预报名通知",
       "feedId": "camp2027",
       "name": "西安电子科技大学",
@@ -10871,6 +12021,144 @@
       "logistics": {
         "status": "not-published",
         "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|中国科学院新疆生态与地理研究所|新疆生态与地理研究所|中国科学院新疆生态与地理研究所招收2027年推免生（含直博生）的通知----中国科学院新疆生态与地理研究所",
+      "feedId": "camp2027",
+      "name": "中国科学院新疆生态与地理研究所",
+      "institute": "新疆生态与地理研究所",
+      "project": "中国科学院新疆生态与地理研究所招收2027年推免生（含直博生）的通知----中国科学院新疆生态与地理研究所",
+      "eventType": "招收2027年推免生",
+      "description": "新疆生态与地理研究所｜中国科学院新疆生态与地理研究所招收2027年推免生（含直博生）的通知----中国科学院新疆生态与地理研究所",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T23:59:59+08:00",
+      "deadlineOriginal": "申请人于9月15日前",
+      "deadlineEpochMs": 1789487999000,
+      "website": "https://egi.cas.cn/yjsjy/zsxx/sszs/202609/t20260901_8274875.html",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://egi.cas.cn/yjsjy/zsxx/sszs/202609/t20260901_8274875.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核 开课信息 学术报告 出国留学项目 各类奖助学金 学位管理 毕业答辩 学位动态 International Students Application for Admission Master Programs PhD Programs Fellowships Regulations Download Center 就业信息"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请材料 申请人完成国科大推免系统报名后，须按要求提交以下材料： 1.《中国科学院大学推荐免试攻读硕士学位研究生/直博生申请表》，通过在线报名系统中的报表途径打印。 2.学校教务部门（或院系）出具并加盖公章的大学本科前三年所修课程成绩单原件（五年制的提供前四年课程成绩单）。 3.有效居民身份证复印件（正反面复印在同一页）。 4.英语水平证明：英语四/六级成绩"
+      }
+    },
+    {
+      "projectId": "2027|中国科学院西安光学精密机械研究所|西安光学精密机械研究所|中国科学院西安光机所2027年招收推荐免试生的通知----西光所研究生处网站",
+      "feedId": "camp2027",
+      "name": "中国科学院西安光学精密机械研究所",
+      "institute": "西安光学精密机械研究所",
+      "project": "中国科学院西安光机所2027年招收推荐免试生的通知----西光所研究生处网站",
+      "eventType": "招收推荐免试生",
+      "description": "西安光学精密机械研究所｜中国科学院西安光机所2027年招收推荐免试生的通知----西光所研究生处网站",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T23:59:59+08:00",
+      "deadlineOriginal": "申请者应在2026年9月15日前将申请材料电子版发送到指定邮箱",
+      "deadlineEpochMs": 1789487999000,
+      "website": "https://opt.cas.cn/rsjyc/zsdt/202607/t20260731_8257547.html",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://opt.cas.cn/rsjyc/zsdt/202607/t20260731_8257547.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核通知 1.研究生处 对 申请人提交的申请表及申请材料进行初审，确定参加复试人员名单（将按照申请人提交时间先后分批次通知并安排面试）。 2.研究生处通过短信或邮件的方式将考核的时间、地点及考核方式通知到同意参加面试的考生。 五、考核和体检 1.我所组成考核小组对推荐免试申请者进行考核，内容主要包括思想政治品德考核、专业知识和外语听力口语考核"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "地点及考核方式通知到同意参加面试的考生。 五、考核和体检 1.我所组成考核小组对推荐免试申请者进行考核，内容主要包括思想政治品德考核、专业知识和外语听力口语考核。 2.考核以面试的形式进行。思想政治品德考核、专业知识和外语水平的考核将同时进行。 3.思想政治品德考核主要考查考生的政治态度、思想品德、人生观、价值观、工作学习态度、团队合作精神、科研道德及遵纪守"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|长安大学|信息工程学院|信息工程学院2027年接收推荐免试研究生（含直博生）工作安排-长安大学信息工程学院",
+      "feedId": "camp2027",
+      "name": "长安大学",
+      "institute": "信息工程学院",
+      "project": "信息工程学院2027年接收推荐免试研究生（含直博生）工作安排-长安大学信息工程学院",
+      "eventType": "接收推荐免试研究生",
+      "description": "信息工程学院｜信息工程学院2027年接收推荐免试研究生（含直博生）工作安排-长安大学信息工程学院",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T23:59:59+08:00",
+      "deadlineOriginal": "加群截至时间2026年9月15日前",
+      "deadlineEpochMs": 1789487999000,
+      "website": "https://it.chd.edu.cn/info/1013/1930.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://it.chd.edu.cn/info/1013/1930.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试安排将在群内公布，申请加群方式为：姓名+学校。 3．复试通过的考生须在“全国推荐免试攻读研究生（免初试、转段）信息公开管理服务系统”正式报名，完成填报志愿、接受复试确认、接受待录取确认等环节。 另：学院研究生导师信息见二维码 五、其他 1.政审和调档随统考考生一起进行，一般在第二年4月份，请申请人关注我校研究生招生网http://yzb.chd."
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请材料 申请人将以下材料按照1-5项顺序整理成一个PDF文件（不超过10M）， 1.个人简历、身份证和学生证； 2.本科成绩单和总评成绩排名证明(由教务处盖章或所在学院盖章)； 3.英语水平证明材料（CET-4、CET-6、TOEFL、IELTS等成绩单）； 4.学术科研成果（公开发表的论文等）和获奖证书； 5.参加社会实践、公益事业等的证明材"
       }
     },
     {
@@ -14360,6 +15648,52 @@
       }
     },
     {
+      "projectId": "2027|中国地质大学（武汉）|地理与信息工程学院|地理与信息工程学院2027年接收推免生预报名通知-中国地质大学地理与信息工程学院",
+      "feedId": "camp2027",
+      "name": "中国地质大学（武汉）",
+      "institute": "地理与信息工程学院",
+      "project": "地理与信息工程学院2027年接收推免生预报名通知-中国地质大学地理与信息工程学院",
+      "eventType": "接收推免生预报名",
+      "description": "地理与信息工程学院｜地理与信息工程学院2027年接收推免生预报名通知-中国地质大学地理与信息工程学院",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "申请人请即日起登录学校",
+      "deadlineEpochMs": null,
+      "website": "https://xgxy.cug.edu.cn/info/1030/41450.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://xgxy.cug.edu.cn/info/1030/41450.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核程序 （一）预报名 申请人请即日起登录学校 “推免生预报名系统”（网址： https://epo.cug.edu.cn/open/zstksstm/signin.aspx ）进行网上预报名。 （二）材料提交 申请考生请将以下材料合并成一个 PDF文档，发送至学院指定邮箱（邮箱地址待定，请关注学院官网后续通知），文件命名为“姓名-本科学校名称-申请专业名称"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请材料的真实性和准确性。 2. 若申请人取得当年推免生资格，则复试成绩有效；若未取得推免生资格，则复试成绩无效。 3. 复试录取工作由学院组织，请关注学院官网（ https://xgxy.cug.edu.cn/ ）通知。 六、联系方式 · 学院网址： https://xgxy.cug.edu.cn/ · 研究生教学办公室： 027-67883809 （陈老"
+      }
+    },
+    {
       "projectId": "2027|中国科学院云南天文台|中国科学院云南天文台|2027年接收推荐免试生",
       "feedId": "camp2027",
       "name": "中国科学院云南天文台",
@@ -15216,6 +16550,144 @@
       }
     },
     {
+      "projectId": "2027|深圳大学|人工智能学院|深圳大学人工智能学院2027年硕士推免预报名正在进行",
+      "feedId": "camp2027",
+      "name": "深圳大学",
+      "institute": "人工智能学院",
+      "project": "深圳大学人工智能学院2027年硕士推免预报名正在进行",
+      "eventType": "深圳大学人工智能学院2027年硕士推免预报名正在进行",
+      "description": "人工智能学院｜深圳大学人工智能学院2027年硕士推免预报名正在进行",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "即日起即可报名",
+      "deadlineEpochMs": null,
+      "website": "https://mp.weixin.qq.com/s/MPqHQFtdd_6mPDeixoTq-w",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://mp.weixin.qq.com/s/MPqHQFtdd_6mPDeixoTq-w"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "面试通知。 （二）国家“推免服务系统”（正式报名） 获得推免资格的考生在教育部中国研招网“推免服务系统”（http://yz.chsi.com.cn/tm）注册报名，系统开放时间请关注中国研究生招生信息网相关公告。 3、选拔方式与具体流程 （1）推免生在预报名系统进行报名。 （2）报名成功后，加入2027级推免生招生通知群（见下图二维码），进群后备注“姓名-"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|深圳大学|物理与光电工程学院|深圳大学物理与光电工程学院接收2027级推免研究生公告-深圳大学物理与光电工程学院",
+      "feedId": "camp2027",
+      "name": "深圳大学",
+      "institute": "物理与光电工程学院",
+      "project": "深圳大学物理与光电工程学院接收2027级推免研究生公告-深圳大学物理与光电工程学院",
+      "eventType": "深圳大学物理与光电工程学院接收2027级推免研究生公告-深圳大学物理与光电工程学院",
+      "description": "物理与光电工程学院｜深圳大学物理与光电工程学院接收2027级推免研究生公告-深圳大学物理与光电工程学院",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "有意向申请我校的推免生须在“深圳大学2027年硕士研究生推免生预报名系统”进行预报名",
+      "deadlineEpochMs": null,
+      "website": "https://cpoe.szu.edu.cn/info/1153/9392.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://cpoe.szu.edu.cn/info/1153/9392.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|深圳理工大学|深圳大学联合培养项目|深圳理工大学-深圳大学联合培养项目2027年接收推荐免试研究生预报名的通知-深圳理工大学研究生招生网",
+      "feedId": "camp2027",
+      "name": "深圳理工大学",
+      "institute": "深圳大学联合培养项目",
+      "project": "深圳理工大学-深圳大学联合培养项目2027年接收推荐免试研究生预报名的通知-深圳理工大学研究生招生网",
+      "eventType": "推免预报名",
+      "description": "深圳大学联合培养项目｜深圳理工大学-深圳大学联合培养项目2027年接收推荐免试研究生预报名的通知-深圳理工大学研究生招生网",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "有意向者请登录",
+      "deadlineEpochMs": null,
+      "website": "https://yz.suat-sz.edu.cn/info/1006/1331.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://yz.suat-sz.edu.cn/info/1006/1331.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|湖南大学|半导体学院（集成电路学院）|2027硕士研究生招生关键信息",
       "feedId": "camp2027",
       "name": "湖南大学",
@@ -15259,6 +16731,52 @@
       "materials": {
         "status": "unverified",
         "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|湖南大学|物理与微电子科学学院|湖南大学物理与微电子科学学院2027年接收推荐免试研究生（含直博生）预报名通知-湖南大学物理与微电子科学学院",
+      "feedId": "camp2027",
+      "name": "湖南大学",
+      "institute": "物理与微电子科学学院",
+      "project": "湖南大学物理与微电子科学学院2027年接收推荐免试研究生（含直博生）预报名通知-湖南大学物理与微电子科学学院",
+      "eventType": "湖南大学物理与微电子科学学院2027年接收推荐免试研究生（含直博生）预报名通知-湖南大学物理与微电子科学学院",
+      "description": "物理与微电子科学学院｜湖南大学物理与微电子科学学院2027年接收推荐免试研究生（含直博生）预报名通知-湖南大学物理与微电子科学学院",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "申请人可于8月28日之后登录湖南大学接收推免生报名信息采集系统",
+      "deadlineEpochMs": null,
+      "website": "https://spe.hnu.edu.cn/info/1083/9767.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-03T08:40:05.824Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://spe.hnu.edu.cn/info/1083/9767.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核选拔工作，具体时间及工作安排请关注学院通知。申请人须在 “ 全国推荐免试攻读研究生（免初试、转段）信息公开管理服务系统 ” 正式报名，完成填报志愿、接受复试确认、接受待录取确认等环节，服务系统开放时间请关注中国研究生招生信息网相关公告。 四、申请材料 申请人将以下材料按照 1-6 项顺序整理成一个 PDF 文件（不超过 10M ），上传推免生报名信息"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "校区 , 410082 行政办公室：0731-88822332 学生工作办：0731-88821986 教学科研办：0731-88822627 Copyright &copy 2015 湖南大学物理与微电子科学学院 &copy 2015 SPE of Hunan University. All rights reserved. 首页 学院 学院简介"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请材料 申请人将以下材料按照 1-6 项顺序整理成一个 PDF 文件（不超过 10M ），上传推免生报名信息采集系统。 1. 个人简历、身份证和学生证； 2. 本科成绩单和总评成绩排名证明 ( 由教务处盖章或所在学院盖章 ) ； 3. 英语水平证明材料（如 CET-4 、 CET-6 、 TOEFL 、 IELTS 成绩单等）； 4. 学术科研成"
       }
     },
     {
@@ -25341,8 +26859,8 @@
       }
     }
   ],
-  "snapshotId": "2026-09-02T03:07:26.151Z-591c1b2f797f",
-  "approvedAt": "2026-09-02T03:07:26.151Z",
-  "previousSnapshotId": "2026-09-01T04:45:11.745Z-ad0c069eb017",
-  "dataHash": "591c1b2f797f8403c7c90d225278572db6069fc4869afc45e226a59ead1ef9ab"
+  "snapshotId": "2026-09-03T08:40:26.315Z-2b1561bf7cf8",
+  "approvedAt": "2026-09-03T08:40:26.315Z",
+  "previousSnapshotId": "2026-09-02T03:07:26.151Z-591c1b2f797f",
+  "dataHash": "2b1561bf7cf888a44ccaa1aceac7c29162575352405dc54fa05ad57b8058a430"
 }
