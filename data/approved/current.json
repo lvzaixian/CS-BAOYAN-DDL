@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-09-05T08:48:40.457Z",
+  "scanAt": "2026-09-05T09:17:30.026Z",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -11,7 +11,7 @@
     }
   ],
   "counts": {
-    "confirmedOpen": 332,
+    "confirmedOpen": 354,
     "confirmedUnknownDeadline": 42,
     "pendingExcluded": 5,
     "expired": 200
@@ -6889,6 +6889,52 @@
       }
     },
     {
+      "projectId": "2027|北京师范大学|人工智能学院|接收推荐免试硕士博士研究生",
+      "feedId": "camp2027",
+      "name": "北京师范大学",
+      "institute": "人工智能学院",
+      "project": "人工智能学院2027年接收校内外推荐免试硕士/博士研究生通知",
+      "eventType": "推荐免试硕士/博士研究生",
+      "description": "人工智能学院2027年接收校内外推荐免试硕士/博士研究生通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T12:00:00+08:00",
+      "deadlineOriginal": "请考生在9月10日12:00前登录北京师范大学2027年推免申请系统进行申请",
+      "deadlineEpochMs": 1789012800000,
+      "website": "https://ai.bnu.edu.cn/ggjxz/tzgg/df9187fe0a2b4ef4a98e9d0edf5d77b5.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://ai.bnu.edu.cn/ggjxz/tzgg/df9187fe0a2b4ef4a98e9d0edf5d77b5.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "推免综合考核时间暂定9月14日，具体安排后续通知"
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": "具体安排后续通知"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "无需寄送纸质版材料，申请材料电子版按照要求上传系统"
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": "具体安排后续通知"
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "请考生一定提前合理安排行程、购买车票"
+      }
+    },
+    {
       "projectId": "2027|北京航空航天大学|航天智能科学与技术系|北航宇航学院接收推荐免试攻读 2027 年研究生（含博士）报名通知",
       "feedId": "camp2027",
       "name": "北京航空航天大学",
@@ -6932,6 +6978,98 @@
       "materials": {
         "status": "unverified",
         "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|中国地质大学（北京）|人工智能学院|接收推免研究生及复试",
+      "feedId": "camp2027",
+      "name": "中国地质大学（北京）",
+      "institute": "人工智能学院",
+      "project": "中国地质大学（北京）人工智能学院2027年接收优秀应届本科毕业生推荐免试攻读研究生（含直博生）及复试工作方案",
+      "eventType": "推荐免试攻读研究生",
+      "description": "中国地质大学（北京）人工智能学院2027年接收优秀应届本科毕业生推荐免试攻读研究生（含直博生）及复试工作方案",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T14:00:00+08:00",
+      "deadlineOriginal": "报名截止9月10日下午14时",
+      "deadlineEpochMs": 1789020000000,
+      "website": "https://bm.cugb.edu.cn/yjsyzsb/c/2026-09-04/856420.shtml",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://bm.cugb.edu.cn/yjsyzsb/c/2026-09-04/856420.shtml"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "笔试时间：9月17日下午18：00-20：00"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "复试形式：现场复试。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "资格审查需提供的材料："
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "书面推荐信"
+      },
+      "logistics": {
+        "status": "unverified",
+        "summary": "按照学院规定的复试时间参加复试"
+      }
+    },
+    {
+      "projectId": "2027|中国科学技术大学|网络空间安全学院|预推免招生",
+      "feedId": "camp2027",
+      "name": "中国科学技术大学",
+      "institute": "网络空间安全学院",
+      "project": "2026年网络空间安全学院预推免招生公告",
+      "eventType": "预推免招生",
+      "description": "2026年网络空间安全学院预推免招生公告",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T17:00:00+08:00",
+      "deadlineOriginal": "报名截止日期：2026年9月10日下午17:00",
+      "deadlineEpochMs": 1789030800000,
+      "website": "https://cybersec.ustc.edu.cn/2026/0903/c23826a752108/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://cybersec.ustc.edu.cn/2026/0903/c23826a752108/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "线下面试拟定于2026年9月14日进行"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "面试地点拟定于我校高新校区"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "将以上材料按顺序汇总至一个PDF文件"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "报考同学可提前联系我院导师进行推荐。"
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "请考生提前规划好路线，确保准时到达。"
       }
     },
     {
@@ -7672,6 +7810,52 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：材料复杂度：较高；材料清单：签字诚信承诺书、个人简历、成绩单、专业排名证明、身份证和学生证、英语证明及其他成果证明"
+      }
+    },
+    {
+      "projectId": "2027|中国人民大学|高瓴人工智能学院|工程硕博士培养改革专项推免招生",
+      "feedId": "camp2027",
+      "name": "中国人民大学",
+      "institute": "高瓴人工智能学院",
+      "project": "中国人民大学2027年工程硕博士培养改革专项推免研究生招生报名通知",
+      "eventType": "工程硕博士培养改革专项推免",
+      "description": "中国人民大学2027年工程硕博士培养改革专项推免研究生招生报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-10T18:00:00+08:00",
+      "deadlineOriginal": "系统开放时间为2026年9月4日9:00-9月10日18:00。",
+      "deadlineEpochMs": 1789034400000,
+      "website": "https://ai.ruc.edu.cn/newslist/notice/20260904001.html",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://ai.ruc.edu.cn/newslist/notice/20260904001.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": "后续考核选拔预计于9月中旬开展"
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": "线上宣讲会"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "所有申请材料请使用PDF格式提交"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "专家推荐信2封（仅申请直博须提供）"
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "缴纳报名费"
       }
     },
     {
@@ -9351,6 +9535,52 @@
       }
     },
     {
+      "projectId": "2027|江西财经大学|计算机与人工智能学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "江西财经大学",
+      "institute": "计算机与人工智能学院",
+      "project": "计算机与人工智能学院关于接收2027年推荐免试研究生（含直博生）预报名的通知",
+      "eventType": "预报名",
+      "description": "计算机与人工智能学院关于接收2027年推荐免试研究生（含直博生）预报名的通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-11T17:00:00+08:00",
+      "deadlineOriginal": "自本通知发布之日起至2026年9月11日17时，逾期不再受理预报名。",
+      "deadlineEpochMs": 1789117200000,
+      "website": "https://cai.jxufe.edu.cn/news-show-3369.html",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://cai.jxufe.edu.cn/news-show-3369.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": "具体时间、地点及细则另行通知。"
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": "复试形式（笔试、面试等）按照学校统一部署及学院具体安排执行"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "将所有PDF材料打包为ZIP压缩文件"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "直博生录取原则上需提前联系并取得意向博士生导师接收"
+      },
+      "logistics": {
+        "status": "unverified",
+        "summary": "本次报名为预报名"
+      }
+    },
+    {
       "projectId": "2027|华中师范大学|人工智能教育学部|华中师范大学2027年接收优秀应届本科毕业生免试攻读研究生预报名通知",
       "feedId": "camp2027",
       "name": "华中师范大学",
@@ -9624,6 +9854,52 @@
       "materials": {
         "status": "confirmed",
         "summary": "以上所有材料电子版通过我校研究生报考服务系统（http://gmss.cup.edu.cn/logon）上传"
+      }
+    },
+    {
+      "projectId": "2027|中国科学院大学|工程科学学院|接收推荐免试研究生",
+      "feedId": "camp2027",
+      "name": "中国科学院大学",
+      "institute": "工程科学学院",
+      "project": "工程科学学院2027年接收推荐免试研究生公告",
+      "eventType": "接收推荐免试研究生",
+      "description": "工程科学学院2027年接收推荐免试研究生公告",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-11T23:59:59+08:00",
+      "deadlineOriginal": "报名及材料提交截止日期为2026年9月11日，若未在规定时间内提交材料或材料不全，将视为自动放弃。",
+      "deadlineEpochMs": 1789142399000,
+      "website": "https://eng.ucas.ac.cn/index.php/zh-CN/xjgl-2/2862-2027",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://eng.ucas.ac.cn/index.php/zh-CN/xjgl-2/2862-2027"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": "预计在9月中旬进行。"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "考核以面试为主"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "推荐免试申请者通过国科大招生信息网推荐免试申请系统初步报名后，应提交如下材料："
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "专家推荐书（由副教授或相当职称及以上专家推荐）"
+      },
+      "logistics": {
+        "status": "unverified",
+        "summary": "将通过邮件通知参加复试"
       }
     },
     {
@@ -9946,6 +10222,52 @@
       "materials": {
         "status": "confirmed",
         "summary": "申请者提交电子材料（以下材料合并为一个PDF文件）："
+      }
+    },
+    {
+      "projectId": "2027|北京理工大学|网络空间安全学院|接收推荐免试研究生",
+      "feedId": "camp2027",
+      "name": "北京理工大学",
+      "institute": "网络空间安全学院",
+      "project": "北京理工大学网络空间安全学院2027年接收推荐免试研究生（含直博生）方案",
+      "eventType": "接收推荐免试研究生",
+      "description": "北京理工大学网络空间安全学院2027年接收推荐免试研究生（含直博生）方案",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-13T17:00:00+08:00",
+      "deadlineOriginal": "在9月13日17：00前提交申请材料",
+      "deadlineEpochMs": 1789290000000,
+      "website": "https://cst.bit.edu.cn/xxfw/tzgg/58a147115f154c439a0851311c8fc0d0.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://cst.bit.edu.cn/xxfw/tzgg/58a147115f154c439a0851311c8fc0d0.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "online",
+        "time": {
+          "status": "confirmed",
+          "summary": "9月15日开始各方向组织复试相关工作"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "复试采取线上面试形式。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "所提交材料包括："
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "专家推荐书"
+      },
+      "logistics": {
+        "status": "unverified",
+        "summary": "提交的材料恕不退还。"
       }
     },
     {
@@ -10517,6 +10839,52 @@
       }
     },
     {
+      "projectId": "2027|山东大学|未来技术学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "山东大学",
+      "institute": "未来技术学院",
+      "project": "山东大学未来技术学院2027年接收推荐免试硕士研究生和本科直博生预报名通知",
+      "eventType": "推免预报名",
+      "description": "山东大学未来技术学院2027年接收推荐免试硕士研究生和本科直博生预报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-14T12:00:00+08:00",
+      "deadlineOriginal": "报名时间：2026年9月1日09:00-9月14日12:00",
+      "deadlineEpochMs": 1789358400000,
+      "website": "https://sft.sdu.edu.cn/info/1010/2287.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://sft.sdu.edu.cn/info/1010/2287.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": "将于9月中下旬起择优通知考生参加复试。"
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": "具体复试时间、形式和复试录取办法将在山东大学未来技术学院官网公布。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "各位考生需登录系统后提交以下材料："
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "本科直博生建议提前与意向报考的博士生导师联系，并由导师向学院推荐。"
+      },
+      "logistics": {
+        "status": "unverified",
+        "summary": "为方便考生提前做好推荐免试申请准备工作"
+      }
+    },
+    {
       "projectId": "2027|西安电子科技大学|国家卓越工程师学院粤港澳大湾区基地|推免硕士研究生招生预报名",
       "feedId": "camp2027",
       "name": "西安电子科技大学",
@@ -10606,6 +10974,52 @@
       "materials": {
         "status": "not-published",
         "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|西南大学|计算机与信息科学学院 软件学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "西南大学",
+      "institute": "计算机与信息科学学院 软件学院",
+      "project": "西南大学计算机与信息科学学院 软件学院关于接收2027年优秀应届本科毕业生推荐免（初）试攻读研究生的预报名通知",
+      "eventType": "预报名",
+      "description": "西南大学计算机与信息科学学院 软件学院关于接收2027年优秀应届本科毕业生推荐免（初）试攻读研究生的预报名通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-14T17:00:00+08:00",
+      "deadlineOriginal": "报名时间：2026年09月05日至09月14（17:00前）。",
+      "deadlineEpochMs": 1789376400000,
+      "website": "https://cis.swu.edu.cn/info/1145/5987.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://cis.swu.edu.cn/info/1145/5987.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "机试：9月18日8:00-10:00"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "复试采用机试+面试的形式"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "报名所需提交相关材料如下："
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": "学院将对考生提交的所有材料进行审查"
+      },
+      "logistics": {
+        "status": "unverified",
+        "summary": "请考生及时关注“西南大学2027年接收推免生预报名系统”站内消息并保持手机畅通。"
       }
     },
     {
@@ -11924,6 +12338,52 @@
       }
     },
     {
+      "projectId": "2027|中国科学技术大学|自动化系|推免生面试",
+      "feedId": "camp2027",
+      "name": "中国科学技术大学",
+      "institute": "自动化系",
+      "project": "自动化系推免生面试公告",
+      "eventType": "推免生面试",
+      "description": "自动化系推免生面试公告",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T23:59:59+08:00",
+      "deadlineOriginal": "于9月15日前登录研究生报考服务系统直接报名",
+      "deadlineEpochMs": 1789487999000,
+      "website": "https://auto.ustc.edu.cn/2026/0903/c26085a752098/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://auto.ustc.edu.cn/2026/0903/c26085a752098/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": "具体面试时间及地点由导师通知。"
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": "具体面试时间及地点由导师通知。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "报名材料必须真实完整，如有虚假将取消入学资格。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "申请我系推免生面试需要通过导师推荐"
+      },
+      "logistics": {
+        "status": "unverified",
+        "summary": "整个推免期间同学只需要与导师联系，不需要与系里联系。"
+      }
+    },
+    {
       "projectId": "2027|中国科学院上海光学精密机械研究所|上海光机所|2027年接收推荐免试生",
       "feedId": "camp2027",
       "name": "中国科学院上海光学精密机械研究所",
@@ -12633,6 +13093,98 @@
       }
     },
     {
+      "projectId": "2027|西北大学|电子信息学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "西北大学",
+      "institute": "电子信息学院",
+      "project": "西北大学2027年接收推荐免试研究生（含直博生)预报名公告",
+      "eventType": "预报名",
+      "description": "西北大学2027年接收推荐免试研究生（含直博生)预报名公告",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-17T23:59:59+08:00",
+      "deadlineOriginal": "预报名：2026年9月1日—9月17日，申请人登录“西北大学推免生预报名系统”进行网上预报名。",
+      "deadlineEpochMs": 1789660799000,
+      "website": "https://yjs.nwu.edu.cn/info/1104/5623.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yjs.nwu.edu.cn/info/1104/5623.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": "具体安排以各院（系、所）的通知为准。"
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": "院（系、所）对推免生的报名信息进行初审，确定复试名单，向申请人发放复试通知。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "考生复试时需提供的材料："
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": "学院通知要求的其他材料。"
+      },
+      "logistics": {
+        "status": "unverified",
+        "summary": "请考生关注所报学院的官网并保证电话畅通。"
+      }
+    },
+    {
+      "projectId": "2027|西北大学|计算机学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "西北大学",
+      "institute": "计算机学院",
+      "project": "西北大学2027年接收推荐免试研究生（含直博生)预报名公告",
+      "eventType": "预报名",
+      "description": "西北大学2027年接收推荐免试研究生（含直博生)预报名公告",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-17T23:59:59+08:00",
+      "deadlineOriginal": "预报名：2026年9月1日—9月17日，申请人登录“西北大学推免生预报名系统”进行网上预报名。",
+      "deadlineEpochMs": 1789660799000,
+      "website": "https://yjs.nwu.edu.cn/info/1104/5623.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yjs.nwu.edu.cn/info/1104/5623.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": "具体安排以各院（系、所）的通知为准。"
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": "院（系、所）对推免生的报名信息进行初审，确定复试名单，向申请人发放复试通知。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "考生复试时需提供的材料："
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": "学院通知要求的其他材料。"
+      },
+      "logistics": {
+        "status": "unverified",
+        "summary": "请考生关注所报学院的官网并保证电话畅通。"
+      }
+    },
+    {
       "projectId": "2027|西安电子科技大学|光电工程学院|推免预报名",
       "feedId": "camp2027",
       "name": "西安电子科技大学",
@@ -13067,6 +13619,52 @@
       "materials": {
         "status": "confirmed",
         "summary": "将以下所有报名材料的电子版，按编号顺序合并为一个PDF文档"
+      }
+    },
+    {
+      "projectId": "2027|哈尔滨工程大学|计算机科学与技术学院|接收推免研究生预报名",
+      "feedId": "camp2027",
+      "name": "哈尔滨工程大学",
+      "institute": "计算机科学与技术学院",
+      "project": "哈尔滨工程大学计算机科学与技术学院关于2027年接收优秀应届生免试攻读研究生预报名的通知",
+      "eventType": "预报名",
+      "description": "哈尔滨工程大学计算机科学与技术学院关于2027年接收优秀应届生免试攻读研究生预报名的通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-18T20:00:00+08:00",
+      "deadlineOriginal": "申请人应在9月18日20:00前，登录我校“推免生信息采集系统”",
+      "deadlineEpochMs": 1789732800000,
+      "website": "https://cstc.hrbeu.edu.cn/2026/0904/c3688a351834/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://cstc.hrbeu.edu.cn/2026/0904/c3688a351834/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": "具体安排另行通知。"
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": "学院将以邮件、短信、电话等形式通知申请人参加复试考核"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "以上材料请合并为一个pdf文件（大小不超过25M）上传至“推免生信息采集系统”。"
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": "推免人选推荐环节中提交的科研创新成果"
+      },
+      "logistics": {
+        "status": "unverified",
+        "summary": "应及时留意我校研究生招生网和学院官网通知公告栏发布的信息。"
       }
     },
     {
@@ -13637,6 +14235,52 @@
       }
     },
     {
+      "projectId": "2027|中国科学技术大学|国家卓越工程师学院（先进技术研究院）|推免生接收",
+      "feedId": "camp2027",
+      "name": "中国科学技术大学",
+      "institute": "国家卓越工程师学院（先进技术研究院）",
+      "project": "中国科学技术大学国家卓越工程师学院（先进技术研究院）2027年推免生接收办法",
+      "eventType": "推免生接收",
+      "description": "中国科学技术大学国家卓越工程师学院（先进技术研究院）2027年推免生接收办法",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-20T12:00:00+08:00",
+      "deadlineOriginal": "申请人在9月20日12:00前通过登录中国科学技术大学研究生报考服务系统",
+      "deadlineEpochMs": 1789876800000,
+      "website": "https://x.ustc.edu.cn/iatWap/x198/20260904/8063.html",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://x.ustc.edu.cn/iatWap/x198/20260904/8063.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": "对通过审核的考生进行面试"
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": "参照上年度"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请人务必承诺提交的申请材料真实、准确"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "意向考生应于9月20日前联系先研院2026推免生招生实践基地及校内导师获得推荐"
+      },
+      "logistics": {
+        "status": "confirmed",
+        "summary": "通知拟录取的学生寄送有关材料纸质版"
+      }
+    },
+    {
       "projectId": "2027|南京农业大学|智慧农业学院（人工智能学院）|接收2027年推免生提前申请",
       "feedId": "camp2027",
       "name": "南京农业大学",
@@ -13680,6 +14324,374 @@
       "materials": {
         "status": "unverified",
         "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|西北工业大学|光电与智能研究院|推免预报名",
+      "feedId": "camp2027",
+      "name": "西北工业大学",
+      "institute": "光电与智能研究院",
+      "project": "西北工业大学2027年接收推荐免试研究生预报名的通知",
+      "eventType": "预报名",
+      "description": "西北工业大学2027年接收推荐免试研究生预报名的通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-20T18:00:00+08:00",
+      "deadlineOriginal": "预报名时间：9月4日15:00—9月20日18:00，具体时间以各学院公布为准。",
+      "deadlineEpochMs": 1789898400000,
+      "website": "https://yzb.nwpu.edu.cn/info/1174/10478.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yzb.nwpu.edu.cn/info/1174/10478.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": "学院分批次对推免生的报名信息进行初审，确定复试名单，向申请人发放复试通知。"
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": "考生参加复试，学院确定拟录取名单。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "考生复试时需提供的材料："
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": "学院通知要求的其他材料。"
+      },
+      "logistics": {
+        "status": "unverified",
+        "summary": "具体时间以各学院公布为准。"
+      }
+    },
+    {
+      "projectId": "2027|西北工业大学|无人系统技术研究院/人工智能学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "西北工业大学",
+      "institute": "无人系统技术研究院/人工智能学院",
+      "project": "西北工业大学2027年接收推荐免试研究生预报名的通知",
+      "eventType": "预报名",
+      "description": "西北工业大学2027年接收推荐免试研究生预报名的通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-20T18:00:00+08:00",
+      "deadlineOriginal": "预报名时间：9月4日15:00—9月20日18:00，具体时间以各学院公布为准。",
+      "deadlineEpochMs": 1789898400000,
+      "website": "https://yzb.nwpu.edu.cn/info/1174/10478.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yzb.nwpu.edu.cn/info/1174/10478.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": "学院分批次对推免生的报名信息进行初审，确定复试名单，向申请人发放复试通知。"
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": "考生参加复试，学院确定拟录取名单。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "考生复试时需提供的材料："
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": "学院通知要求的其他材料。"
+      },
+      "logistics": {
+        "status": "unverified",
+        "summary": "具体时间以各学院公布为准。"
+      }
+    },
+    {
+      "projectId": "2027|西北工业大学|电子信息学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "西北工业大学",
+      "institute": "电子信息学院",
+      "project": "西北工业大学2027年接收推荐免试研究生预报名的通知",
+      "eventType": "预报名",
+      "description": "西北工业大学2027年接收推荐免试研究生预报名的通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-20T18:00:00+08:00",
+      "deadlineOriginal": "预报名时间：9月4日15:00—9月20日18:00，具体时间以各学院公布为准。",
+      "deadlineEpochMs": 1789898400000,
+      "website": "https://yzb.nwpu.edu.cn/info/1174/10478.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yzb.nwpu.edu.cn/info/1174/10478.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": "学院分批次对推免生的报名信息进行初审，确定复试名单，向申请人发放复试通知。"
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": "考生参加复试，学院确定拟录取名单。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "考生复试时需提供的材料："
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": "学院通知要求的其他材料。"
+      },
+      "logistics": {
+        "status": "unverified",
+        "summary": "具体时间以各学院公布为准。"
+      }
+    },
+    {
+      "projectId": "2027|西北工业大学|网络空间安全学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "西北工业大学",
+      "institute": "网络空间安全学院",
+      "project": "西北工业大学2027年接收推荐免试研究生预报名的通知",
+      "eventType": "预报名",
+      "description": "西北工业大学2027年接收推荐免试研究生预报名的通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-20T18:00:00+08:00",
+      "deadlineOriginal": "预报名时间：9月4日15:00—9月20日18:00，具体时间以各学院公布为准。",
+      "deadlineEpochMs": 1789898400000,
+      "website": "https://yzb.nwpu.edu.cn/info/1174/10478.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yzb.nwpu.edu.cn/info/1174/10478.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": "学院分批次对推免生的报名信息进行初审，确定复试名单，向申请人发放复试通知。"
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": "考生参加复试，学院确定拟录取名单。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "考生复试时需提供的材料："
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": "学院通知要求的其他材料。"
+      },
+      "logistics": {
+        "status": "unverified",
+        "summary": "具体时间以各学院公布为准。"
+      }
+    },
+    {
+      "projectId": "2027|西北工业大学|自动化学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "西北工业大学",
+      "institute": "自动化学院",
+      "project": "西北工业大学2027年接收推荐免试研究生预报名的通知",
+      "eventType": "预报名",
+      "description": "西北工业大学2027年接收推荐免试研究生预报名的通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-20T18:00:00+08:00",
+      "deadlineOriginal": "预报名时间：9月4日15:00—9月20日18:00，具体时间以各学院公布为准。",
+      "deadlineEpochMs": 1789898400000,
+      "website": "https://yzb.nwpu.edu.cn/info/1174/10478.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yzb.nwpu.edu.cn/info/1174/10478.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": "学院分批次对推免生的报名信息进行初审，确定复试名单，向申请人发放复试通知。"
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": "考生参加复试，学院确定拟录取名单。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "考生复试时需提供的材料："
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": "学院通知要求的其他材料。"
+      },
+      "logistics": {
+        "status": "unverified",
+        "summary": "具体时间以各学院公布为准。"
+      }
+    },
+    {
+      "projectId": "2027|西北工业大学|计算机学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "西北工业大学",
+      "institute": "计算机学院",
+      "project": "西北工业大学2027年接收推荐免试研究生预报名的通知",
+      "eventType": "预报名",
+      "description": "西北工业大学2027年接收推荐免试研究生预报名的通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-20T18:00:00+08:00",
+      "deadlineOriginal": "预报名时间：9月4日15:00—9月20日18:00，具体时间以各学院公布为准。",
+      "deadlineEpochMs": 1789898400000,
+      "website": "https://yzb.nwpu.edu.cn/info/1174/10478.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yzb.nwpu.edu.cn/info/1174/10478.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": "学院分批次对推免生的报名信息进行初审，确定复试名单，向申请人发放复试通知。"
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": "考生参加复试，学院确定拟录取名单。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "考生复试时需提供的材料："
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": "学院通知要求的其他材料。"
+      },
+      "logistics": {
+        "status": "unverified",
+        "summary": "具体时间以各学院公布为准。"
+      }
+    },
+    {
+      "projectId": "2027|西北工业大学|软件学院|推免预报名",
+      "feedId": "camp2027",
+      "name": "西北工业大学",
+      "institute": "软件学院",
+      "project": "西北工业大学2027年接收推荐免试研究生预报名的通知",
+      "eventType": "预报名",
+      "description": "西北工业大学2027年接收推荐免试研究生预报名的通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-20T18:00:00+08:00",
+      "deadlineOriginal": "预报名时间：9月4日15:00—9月20日18:00，具体时间以各学院公布为准。",
+      "deadlineEpochMs": 1789898400000,
+      "website": "https://yzb.nwpu.edu.cn/info/1174/10478.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yzb.nwpu.edu.cn/info/1174/10478.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": "学院分批次对推免生的报名信息进行初审，确定复试名单，向申请人发放复试通知。"
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": "考生参加复试，学院确定拟录取名单。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "考生复试时需提供的材料："
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": "学院通知要求的其他材料。"
+      },
+      "logistics": {
+        "status": "unverified",
+        "summary": "具体时间以各学院公布为准。"
+      }
+    },
+    {
+      "projectId": "2027|西北工业大学|集成电路学院（微电子学院）|推免预报名",
+      "feedId": "camp2027",
+      "name": "西北工业大学",
+      "institute": "集成电路学院（微电子学院）",
+      "project": "西北工业大学2027年接收推荐免试研究生预报名的通知",
+      "eventType": "预报名",
+      "description": "西北工业大学2027年接收推荐免试研究生预报名的通知",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-20T18:00:00+08:00",
+      "deadlineOriginal": "预报名时间：9月4日15:00—9月20日18:00，具体时间以各学院公布为准。",
+      "deadlineEpochMs": 1789898400000,
+      "website": "https://yzb.nwpu.edu.cn/info/1174/10478.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-05T09:17:30.026Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yzb.nwpu.edu.cn/info/1174/10478.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "unverified",
+          "summary": "学院分批次对推免生的报名信息进行初审，确定复试名单，向申请人发放复试通知。"
+        },
+        "formatLocation": {
+          "status": "unverified",
+          "summary": "考生参加复试，学院确定拟录取名单。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "考生复试时需提供的材料："
+      },
+      "recommendation": {
+        "status": "unverified",
+        "summary": "学院通知要求的其他材料。"
+      },
+      "logistics": {
+        "status": "unverified",
+        "summary": "具体时间以各学院公布为准。"
       }
     },
     {
@@ -26859,8 +27871,8 @@
       }
     }
   ],
-  "snapshotId": "2026-09-05T08:48:40.457Z-af7f0c01c44b",
-  "approvedAt": "2026-09-05T08:48:40.457Z",
-  "previousSnapshotId": "2026-09-03T08:40:26.315Z-2b1561bf7cf8",
-  "dataHash": "af7f0c01c44bca3373e17ac2162c2a07682c730be443ef1ac8cd7d17c04db03e"
+  "snapshotId": "2026-09-05T09:17:34.173Z-644a32c76c5b",
+  "approvedAt": "2026-09-05T09:17:34.173Z",
+  "previousSnapshotId": "2026-09-05T08:48:40.457Z-af7f0c01c44b",
+  "dataHash": "644a32c76c5b552b1b41d6b8141a041eeff366395a6e0b72d34972bfec782564"
 }
