@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-09-03T08:40:05.824Z",
+  "scanAt": "2026-09-05T08:48:40.457Z",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -1947,52 +1947,6 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：材料复杂度：中高；材料清单：学院申请表、盖章成绩单、排名证明、英语证明、身份证与学生证"
-      }
-    },
-    {
-      "projectId": "2027|华东师范大学|上海智能教育研究院|推免预报名",
-      "feedId": "camp2027",
-      "name": "华东师范大学",
-      "institute": "上海智能教育研究院",
-      "project": "上海智能教育研究院｜2027年招收优秀本科毕业生免试攻读研究生预报名",
-      "eventType": "推免预报名",
-      "description": "上海智能教育研究院｜2027年招收优秀本科毕业生免试攻读研究生预报名",
-      "verificationStatus": "confirmed-open",
-      "deadline": "2026-08-26T00:00:00+08:00",
-      "deadlineOriginal": "报名时间：2026年7月27日00:00至2026年8月25日24:00。",
-      "deadlineEpochMs": 1787673600000,
-      "website": "https://aiedu.ecnu.edu.cn/_upload/article/files/e0/be/b6695f9644009e12ec76724aaf9c/5e53b986-a19e-4677-8107-c4609664ee43.pdf",
-      "tags": [],
-      "verifiedAt": "2026-08-05T17:44:21.000Z",
-      "discoverySources": [
-        {
-          "kind": "official",
-          "label": "官方链接",
-          "url": "https://aiedu.ecnu.edu.cn/_upload/article/files/e0/be/b6695f9644009e12ec76724aaf9c/5e53b986-a19e-4677-8107-c4609664ee43.pdf"
-        }
-      ],
-      "eventArrangement": {
-        "mode": "unknown",
-        "time": {
-          "status": "confirmed",
-          "summary": "待学院复试通知"
-        },
-        "formatLocation": {
-          "status": "confirmed",
-          "summary": "待学院复试通知"
-        }
-      },
-      "logistics": {
-        "status": "not-published",
-        "summary": "未公布"
-      },
-      "recommendation": {
-        "status": "confirmed",
-        "summary": "推荐信数量：推荐信数量：申请直接攻博的考生须上传两封副教授（或相当专业技术职务）及以上专家推荐信；推荐信模板：未提供推荐信模板"
-      },
-      "materials": {
-        "status": "confirmed",
-        "summary": "材料复杂度：材料复杂度：待官方公布；材料清单：待官方公布"
       }
     },
     {
@@ -4951,14 +4905,14 @@
       "deadline": "2026-09-05T23:00:00+08:00",
       "deadlineOriginal": "预报名起止时间为2026年7月24日9:00至2026年9月5日23:00。",
       "deadlineEpochMs": 1788620400000,
-      "website": "https://cs.ecnu.edu.cn/_upload/article/files/3a/be/0083db82420a99fb290c038630e1/87d1e518-6879-4b47-a219-8fbbf4c88986.pdf",
+      "website": "https://cs.ecnu.edu.cn/c3/c2/c19867a771010/page.htm",
       "tags": [],
-      "verifiedAt": "2026-08-05T17:44:21.000Z",
+      "verifiedAt": "2026-09-05T08:48:40.457Z",
       "discoverySources": [
         {
           "kind": "official",
           "label": "官方链接",
-          "url": "https://cs.ecnu.edu.cn/_upload/article/files/3a/be/0083db82420a99fb290c038630e1/87d1e518-6879-4b47-a219-8fbbf4c88986.pdf"
+          "url": "https://cs.ecnu.edu.cn/c3/c2/c19867a771010/page.htm"
         }
       ],
       "eventArrangement": {
@@ -5223,6 +5177,52 @@
       "materials": {
         "status": "confirmed",
         "summary": "材料复杂度：材料复杂度：中；材料清单：在线填报个人信息和志愿，并按学院要求提交成绩单、排名证明、英语及科研获奖材料"
+      }
+    },
+    {
+      "projectId": "2027|华东师范大学|上海智能教育研究院|推免预报名",
+      "feedId": "camp2027",
+      "name": "华东师范大学",
+      "institute": "上海智能教育研究院",
+      "project": "上海智能教育研究院｜2027年招收优秀本科毕业生免试攻读研究生预报名",
+      "eventType": "推免预报名",
+      "description": "上海智能教育研究院｜2027年招收优秀本科毕业生免试攻读研究生预报名",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-06T00:00:00+08:00",
+      "deadlineOriginal": "报名时间：2026年7月27日00:00至2026年9月5日24:00。",
+      "deadlineEpochMs": 1788624000000,
+      "website": "https://aiedu.ecnu.edu.cn/c3/b0/c49538a770992/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-05T08:48:40.457Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "官方链接",
+          "url": "https://aiedu.ecnu.edu.cn/c3/b0/c49538a770992/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "待学院复试通知"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "待学院复试通知"
+        }
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": "未公布"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "推荐信数量：推荐信数量：申请直接攻博的考生须上传两封副教授（或相当专业技术职务）及以上专家推荐信；推荐信模板：未提供推荐信模板"
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "材料复杂度：材料复杂度：待官方公布；材料清单：待官方公布"
       }
     },
     {
@@ -26859,8 +26859,8 @@
       }
     }
   ],
-  "snapshotId": "2026-09-03T08:40:26.315Z-2b1561bf7cf8",
-  "approvedAt": "2026-09-03T08:40:26.315Z",
-  "previousSnapshotId": "2026-09-02T03:07:26.151Z-591c1b2f797f",
-  "dataHash": "2b1561bf7cf888a44ccaa1aceac7c29162575352405dc54fa05ad57b8058a430"
+  "snapshotId": "2026-09-05T08:48:40.457Z-af7f0c01c44b",
+  "approvedAt": "2026-09-05T08:48:40.457Z",
+  "previousSnapshotId": "2026-09-03T08:40:26.315Z-2b1561bf7cf8",
+  "dataHash": "af7f0c01c44bca3373e17ac2162c2a07682c730be443ef1ac8cd7d17c04db03e"
 }
