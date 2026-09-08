@@ -1046,3 +1046,27 @@ test('approved projectId leading cycle must be exactly four digits', async (t) =
     });
   }
 });
+
+test('uses the readable official ZJU 2027 pre-recommendation notice instead of the raw API', () => {
+  const snapshot = JSON.parse(
+    readFileSync(new URL('../data/approved/current.json', import.meta.url), 'utf8'),
+  ) as {
+    opportunities: Array<{
+      name: string;
+      project: string;
+      website: string;
+      discoverySources: Array<{ url: string }>;
+    }>;
+  };
+  const zjuPreRecommendationRows = snapshot.opportunities.filter(
+    (row) => row.name === '浙江大学' && row.project.endsWith('接收外校推荐免试研究生'),
+  );
+  const readableNoticeUrl =
+    'https://yjsy.zju.edu.cn/open/zsss/ZsssBksmOpenList?bksmlx=2&nf=2027';
+
+  assert.equal(zjuPreRecommendationRows.length, 8);
+  for (const row of zjuPreRecommendationRows) {
+    assert.equal(row.website, readableNoticeUrl);
+    assert.equal(row.discoverySources[0]?.url, readableNoticeUrl);
+  }
+});

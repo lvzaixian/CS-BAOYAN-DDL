@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-09-07T02:58:51.463Z",
+  "scanAt": "2026-09-08T02:00:42.000Z",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -8520,14 +8520,14 @@
       "deadline": "2026-09-10T23:59:00+08:00",
       "deadlineOriginal": "浙江大学爱丁堡大学联合学院（ZJE）：2026年8月10日开放报名，2026年9月10日校外报名截止。\n浙江大学伊利诺伊大学厄巴纳香槟校区联合学院（ZJUI）：2026年8月10日开放报名，2026年9月10日校外报名截止。\n浙江大学国际联合商学院（ZIBS）：大数据技术与工程（iMDS）：2026年8月10日开放报名，2026年9月10日校外报名截止。",
       "deadlineEpochMs": 1789055940000,
-      "website": "https://yjsy.zju.edu.cn/dataapi/open/zsss/listBksm?nf=2027&bksmlx=2&pageNo=1&pageSize=100",
+      "website": "https://yjsy.zju.edu.cn/open/zsss/ZsssBksmOpenList?bksmlx=2&nf=2027",
       "tags": [],
       "verifiedAt": "2026-08-05T18:02:27.176Z",
       "discoverySources": [
         {
           "kind": "official",
           "label": "官方链接",
-          "url": "https://yjsy.zju.edu.cn/dataapi/open/zsss/listBksm?nf=2027&bksmlx=2&pageNo=1&pageSize=100"
+          "url": "https://yjsy.zju.edu.cn/open/zsss/ZsssBksmOpenList?bksmlx=2&nf=2027"
         }
       ],
       "eventArrangement": {
@@ -8566,14 +8566,14 @@
       "deadline": "2026-09-10T23:59:00+08:00",
       "deadlineOriginal": "推荐免试系统开放时间：8月10日，学院申请截止时间为9月10日",
       "deadlineEpochMs": 1789055940000,
-      "website": "https://yjsy.zju.edu.cn/dataapi/open/zsss/listBksm?nf=2027&bksmlx=2&pageNo=1&pageSize=100",
+      "website": "https://yjsy.zju.edu.cn/open/zsss/ZsssBksmOpenList?bksmlx=2&nf=2027",
       "tags": [],
       "verifiedAt": "2026-08-05T18:02:27.176Z",
       "discoverySources": [
         {
           "kind": "official",
           "label": "官方链接",
-          "url": "https://yjsy.zju.edu.cn/dataapi/open/zsss/listBksm?nf=2027&bksmlx=2&pageNo=1&pageSize=100"
+          "url": "https://yjsy.zju.edu.cn/open/zsss/ZsssBksmOpenList?bksmlx=2&nf=2027"
         }
       ],
       "eventArrangement": {
@@ -9316,14 +9316,14 @@
       "deadline": "2026-09-11T00:00:00+08:00",
       "deadlineOriginal": "2026年8月10日9:00开始报名，2026年9月10日24:00报名截止。",
       "deadlineEpochMs": 1789056000000,
-      "website": "https://yjsy.zju.edu.cn/dataapi/open/zsss/listBksm?nf=2027&bksmlx=2&pageNo=1&pageSize=100",
+      "website": "https://yjsy.zju.edu.cn/open/zsss/ZsssBksmOpenList?bksmlx=2&nf=2027",
       "tags": [],
       "verifiedAt": "2026-08-05T18:02:27.176Z",
       "discoverySources": [
         {
           "kind": "official",
           "label": "官方链接",
-          "url": "https://yjsy.zju.edu.cn/dataapi/open/zsss/listBksm?nf=2027&bksmlx=2&pageNo=1&pageSize=100"
+          "url": "https://yjsy.zju.edu.cn/open/zsss/ZsssBksmOpenList?bksmlx=2&nf=2027"
         }
       ],
       "eventArrangement": {
@@ -9362,14 +9362,14 @@
       "deadline": "2026-09-11T00:00:00+08:00",
       "deadlineOriginal": "2026年8月10日9:00-9月10日24:00",
       "deadlineEpochMs": 1789056000000,
-      "website": "https://yjsy.zju.edu.cn/dataapi/open/zsss/listBksm?nf=2027&bksmlx=2&pageNo=1&pageSize=100",
+      "website": "https://yjsy.zju.edu.cn/open/zsss/ZsssBksmOpenList?bksmlx=2&nf=2027",
       "tags": [],
       "verifiedAt": "2026-08-05T18:02:27.176Z",
       "discoverySources": [
         {
           "kind": "official",
           "label": "官方链接",
-          "url": "https://yjsy.zju.edu.cn/dataapi/open/zsss/listBksm?nf=2027&bksmlx=2&pageNo=1&pageSize=100"
+          "url": "https://yjsy.zju.edu.cn/open/zsss/ZsssBksmOpenList?bksmlx=2&nf=2027"
         }
       ],
       "eventArrangement": {
@@ -9408,14 +9408,14 @@
       "deadline": "2026-09-11T00:00:00+08:00",
       "deadlineOriginal": "2026年8月10日10:00-2026年9月10日24:00",
       "deadlineEpochMs": 1789056000000,
-      "website": "https://yjsy.zju.edu.cn/dataapi/open/zsss/listBksm?nf=2027&bksmlx=2&pageNo=1&pageSize=100",
+      "website": "https://yjsy.zju.edu.cn/open/zsss/ZsssBksmOpenList?bksmlx=2&nf=2027",
       "tags": [],
       "verifiedAt": "2026-08-05T18:02:27.176Z",
       "discoverySources": [
         {
           "kind": "official",
           "label": "官方链接",
-          "url": "https://yjsy.zju.edu.cn/dataapi/open/zsss/listBksm?nf=2027&bksmlx=2&pageNo=1&pageSize=100"
+          "url": "https://yjsy.zju.edu.cn/open/zsss/ZsssBksmOpenList?bksmlx=2&nf=2027"
         }
       ],
       "eventArrangement": {
@@ -9454,14 +9454,14 @@
       "deadline": "2026-09-11T00:00:00+08:00",
       "deadlineOriginal": "2026年8月10日8:00起开放报名，2026年9月10日24点报名截止",
       "deadlineEpochMs": 1789056000000,
-      "website": "https://yjsy.zju.edu.cn/dataapi/open/zsss/listBksm?nf=2027&bksmlx=2&pageNo=1&pageSize=100",
+      "website": "https://yjsy.zju.edu.cn/open/zsss/ZsssBksmOpenList?bksmlx=2&nf=2027",
       "tags": [],
       "verifiedAt": "2026-08-05T18:02:27.176Z",
       "discoverySources": [
         {
           "kind": "official",
           "label": "官方链接",
-          "url": "https://yjsy.zju.edu.cn/dataapi/open/zsss/listBksm?nf=2027&bksmlx=2&pageNo=1&pageSize=100"
+          "url": "https://yjsy.zju.edu.cn/open/zsss/ZsssBksmOpenList?bksmlx=2&nf=2027"
         }
       ],
       "eventArrangement": {
@@ -9500,14 +9500,14 @@
       "deadline": "2026-09-11T00:00:00+08:00",
       "deadlineOriginal": "2026年8月10日9:00开始报名，2026年9月10日24：00报名截止。",
       "deadlineEpochMs": 1789056000000,
-      "website": "https://yjsy.zju.edu.cn/dataapi/open/zsss/listBksm?nf=2027&bksmlx=2&pageNo=1&pageSize=100",
+      "website": "https://yjsy.zju.edu.cn/open/zsss/ZsssBksmOpenList?bksmlx=2&nf=2027",
       "tags": [],
       "verifiedAt": "2026-08-05T18:02:27.176Z",
       "discoverySources": [
         {
           "kind": "official",
           "label": "官方链接",
-          "url": "https://yjsy.zju.edu.cn/dataapi/open/zsss/listBksm?nf=2027&bksmlx=2&pageNo=1&pageSize=100"
+          "url": "https://yjsy.zju.edu.cn/open/zsss/ZsssBksmOpenList?bksmlx=2&nf=2027"
         }
       ],
       "eventArrangement": {
@@ -9546,14 +9546,14 @@
       "deadline": "2026-09-11T00:00:00+08:00",
       "deadlineOriginal": "2026年8月10日起开放报名，2026年9月10日24:00报名截止。",
       "deadlineEpochMs": 1789056000000,
-      "website": "https://yjsy.zju.edu.cn/dataapi/open/zsss/listBksm?nf=2027&bksmlx=2&pageNo=1&pageSize=100",
+      "website": "https://yjsy.zju.edu.cn/open/zsss/ZsssBksmOpenList?bksmlx=2&nf=2027",
       "tags": [],
       "verifiedAt": "2026-08-05T18:02:27.176Z",
       "discoverySources": [
         {
           "kind": "official",
           "label": "官方链接",
-          "url": "https://yjsy.zju.edu.cn/dataapi/open/zsss/listBksm?nf=2027&bksmlx=2&pageNo=1&pageSize=100"
+          "url": "https://yjsy.zju.edu.cn/open/zsss/ZsssBksmOpenList?bksmlx=2&nf=2027"
         }
       ],
       "eventArrangement": {
@@ -29021,8 +29021,8 @@
       }
     }
   ],
-  "snapshotId": "2026-09-07T02:58:59.982Z-ef419bf518cf",
-  "approvedAt": "2026-09-07T02:58:59.982Z",
-  "previousSnapshotId": "2026-09-05T09:17:34.173Z-644a32c76c5b",
-  "dataHash": "ef419bf518cf2809adf3ecd8e03fd7678067d88efb0086c0a7be1f01200a675e"
+  "snapshotId": "2026-09-08T02:07:17.000Z-876be409bbd0",
+  "approvedAt": "2026-09-08T02:07:17.000Z",
+  "previousSnapshotId": "2026-09-07T02:58:59.982Z-ef419bf518cf",
+  "dataHash": "876be409bbd0c21f00d876fb9294f4922c598b25e280d82bd675f1a48c6664eb"
 }
