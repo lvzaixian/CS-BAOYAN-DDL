@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-09-11T02:26:53.446Z",
+  "scanAt": "2026-09-11T03:19:56.294Z",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -11,7 +11,7 @@
     }
   ],
   "counts": {
-    "confirmedOpen": 438,
+    "confirmedOpen": 439,
     "confirmedUnknownDeadline": 47,
     "pendingExcluded": 5,
     "expired": 200
@@ -11556,6 +11556,52 @@
       "materials": {
         "status": "confirmed",
         "summary": "申请材料： 1. 身份证扫描件（正反面扫描至同一页面）； 2. 学生证扫描件（含学校盖章个人信息页、全部注册盖章页面）； 3. 个人陈述（无固定模板，内容包含本科学习与科研经历、获奖成果、报考专业研究兴趣、读研规划等）； 4. 加盖本科院校教务/培养单位公章的完整本科成绩单（原件扫描件）； 5. 专业排名证明（模板请见附件1，供参考）； 6. 外语等级/能力"
+      }
+    },
+    {
+      "projectId": "2027|上海交通大学|自动化与感知学院|上海交通大学自动化与感知学院 2027级接收推荐免试研究生预推免办法（含工程硕博士专项）",
+      "feedId": "camp2027",
+      "name": "上海交通大学",
+      "institute": "自动化与感知学院",
+      "project": "上海交通大学自动化与感知学院 2027级接收推荐免试研究生预推免办法（含工程硕博士专项）",
+      "eventType": "推荐免试",
+      "description": "控制科学与工程、仪器科学与技术及电子信息工程硕博士专项。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-12T09:00:00+08:00",
+      "deadlineOriginal": "1、报名时间：即日起至9月12日上午9:00",
+      "deadlineEpochMs": 1789174800000,
+      "website": "https://sais.sjtu.edu.cn/yjs_zsgz/1838.html",
+      "tags": [],
+      "verifiedAt": "2026-09-11T03:19:18.993Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://sais.sjtu.edu.cn/yjs_zsgz/1838.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试：9月中下旬开展，具体复试安排将邮件通知"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "本次选拔活动暂定在交大闵行校区进行"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "请通过报名系统提交电子版材料，复试时提交纸质版"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
       }
     },
     {
@@ -31965,8 +32011,8 @@
       }
     }
   ],
-  "snapshotId": "2026-09-11T02:26:58.551Z-a7cf9948c0c4",
-  "approvedAt": "2026-09-11T02:26:58.551Z",
-  "previousSnapshotId": "2026-09-08T02:07:17.000Z-876be409bbd0",
-  "dataHash": "a7cf9948c0c4dd34680252ab2987d941a483f059e344e718946ef515116a7a84"
+  "snapshotId": "2026-09-11T03:20:21.232Z-11cd3360d4ed",
+  "approvedAt": "2026-09-11T03:20:21.232Z",
+  "previousSnapshotId": "2026-09-11T02:26:58.551Z-a7cf9948c0c4",
+  "dataHash": "11cd3360d4edadf6672b4e1ee088ed4545e82dbe47a44edae31a3b3a9ca808c6"
 }
