@@ -388,6 +388,10 @@ function deadlineOriginalSupportsNormalizedDate(original: string, deadline: stri
     String.raw`${escapedMonth}\s*(?:月|[-./])\s*${escapedDay}(?:\s*日)?`,
     'u',
   );
+  const abbreviatedSameMonthRange = new RegExp(
+    String.raw`${escapedMonth}\s*月\s*\d{1,2}\s*日?\s*(?:至|到|[-–—~～])\s*${escapedDay}\s*日?`,
+    'u',
+  );
   const englishMonth = [
     'Jan(?:uary)?', 'Feb(?:ruary)?', 'Mar(?:ch)?', 'Apr(?:il)?', 'May', 'Jun(?:e)?',
     'Jul(?:y)?', 'Aug(?:ust)?', 'Sep(?:t(?:ember)?)?', 'Oct(?:ober)?', 'Nov(?:ember)?', 'Dec(?:ember)?',
@@ -396,7 +400,12 @@ function deadlineOriginalSupportsNormalizedDate(original: string, deadline: stri
     String.raw`(?:\b${englishMonth}(?:\s+|-)${escapedDay}(?:st|nd|rd|th)?(?:\s*,\s*|\s+|-)${escapedYear}\b|\b${escapedDay}(?:st|nd|rd|th)?(?:\s+|-)${englishMonth}(?:\s*,\s*|\s+|-)${escapedYear}\b)`,
     'iu',
   );
-  if (completeDate.test(original) || monthDay.test(original) || englishDate.test(original)) {
+  if (
+    completeDate.test(original)
+    || monthDay.test(original)
+    || abbreviatedSameMonthRange.test(original)
+    || englishDate.test(original)
+  ) {
     return true;
   }
 

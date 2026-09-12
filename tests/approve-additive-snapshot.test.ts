@@ -3210,6 +3210,34 @@ test('accepts an English month-name deadline that matches the normalized date', 
   }
 });
 
+test('accepts a Chinese same-month deadline range whose end date omits the month', async () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const addition = additionFor(parent);
+  addition.deadline = '2099-09-17T12:00:00+08:00';
+  addition.deadlineOriginal = '9月11日-17日中午12:00前';
+  addition.deadlineEpochMs = Date.parse(addition.deadline);
+  const run = additiveRun(parent, parentText, [addition]);
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = await approveAdditiveSnapshotFile({
+      runPath: source.run,
+      parentPath: source.parent,
+      approvedPath: source.approved,
+      decisionPath: source.decision,
+      approvedAt: nextApprovedAt,
+      nowMs: Date.parse('2026-08-09T09:00:00.000Z'),
+    });
+    assert.equal(result.status, 'ready');
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
 test('accepts next-day normalization for an official Chinese 24:00 deadline', async () => {
   const source = paths();
   const parent = sealedParent();
