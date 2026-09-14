@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-09-14T04:03:26.878Z",
+  "scanAt": "2026-09-14T17:06:13.993Z",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -11,7 +11,7 @@
     }
   ],
   "counts": {
-    "confirmedOpen": 553,
+    "confirmedOpen": 565,
     "confirmedUnknownDeadline": 67,
     "pendingExcluded": 5,
     "expired": 200
@@ -17398,6 +17398,52 @@
       }
     },
     {
+      "projectId": "2027|长安大学|机器人与具身智能学院|2027年推荐免试研究生（含直博生）招生工作细则",
+      "feedId": "camp2027",
+      "name": "长安大学",
+      "institute": "机器人与具身智能学院",
+      "project": "2027年推荐免试研究生（含直博生）招生工作细则",
+      "eventType": "推荐免试",
+      "description": "学院接收推荐免试研究生（含直博生），预报名系统9月15日关闭，须按通知完成报名和加群。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T23:59:00+08:00",
+      "deadlineOriginal": "2026年9月15日前",
+      "deadlineEpochMs": 1789487940000,
+      "website": "https://ec.chd.edu.cn/info/1043/2909.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T17:06:13.979Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://ec.chd.edu.cn/info/1043/2909.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "后续复试安排将在 1 群 、 2 群 内公布"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请人将以下材料按照 1-5 项顺序整理成一个 PDF 文件（不超过 10M ）， 1. 个人简历、身份证和学生证； 2. 本科成绩单和总评成绩排名证明 ( 由教务处盖章或所在学院盖章 ) ； 3. 英语水平证明材料（ CET-4 、 CET-6 、 TOEFL 、 IELTS 等成绩单）； 4. 学术科研成果（公开发表的论文等）和获奖证书； 5. 参加社会实践、公益事业等的证明材料；"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "报考直博生的考生需向学院提供专家推荐书 2份。"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|中国地质大学（北京）|地球物理与信息技术学院|地球物理与信息技术学院2027年接收优秀应届本科毕业生推荐免试攻读研究生（含直博生）复试工作方案",
       "feedId": "camp2027",
       "name": "中国地质大学（北京）",
@@ -18195,6 +18241,52 @@
       }
     },
     {
+      "projectId": "2027|北京航空航天大学|大科学装置研究院|接收推荐免试攻读2027年研究生（含博士）工作方案",
+      "feedId": "camp2027",
+      "name": "北京航空航天大学",
+      "institute": "大科学装置研究院",
+      "project": "接收推荐免试攻读2027年研究生（含博士）工作方案",
+      "eventType": "推免",
+      "description": "含电子信息、仪器科学与技术、生物医学工程等专业。须填写官方通知中的WPS报名表，并将完整材料PDF邮件备份；原文9月15日24:00即9月16日00:00。材料用扫描仪1:1扫描并按顺序合并，纸质件复试报到提交。7项模板下载返回验证码，未能读取。9月18日缴纳复试费100元；暂定9月19日报到、9月20日起面试。食宿交通报销官方未公布。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-16T00:00:00+08:00",
+      "deadlineOriginal": "2026年9月12日上午9:00—9月15日晚上24:00",
+      "deadlineEpochMs": 1789488000000,
+      "website": "https://piqs.buaa.edu.cn/info/1038/2731.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T17:06:13.978Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://piqs.buaa.edu.cn/info/1038/2731.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "报到时间：暂定9月19日下午"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "复试采用现场考核形式进行综合面试"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "上述材料1-13原件，用扫描仪按1:1扫描后（请勿手机拍照或手机扫描）按顺序合并为1个PDF文件"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "若拟申请攻读博士研究生，须提交至少两名所报考学科专业领域内的教授（或相当专业技术职称的专家）的书面推荐意见"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|北京航空航天大学|无人系统研究院|北航无人系统研究院接收推荐免试攻读2027年研究生（含博士）工作方案",
       "feedId": "camp2027",
       "name": "北京航空航天大学",
@@ -18379,6 +18471,52 @@
       }
     },
     {
+      "projectId": "2027|吉林大学|人工智能学院|人工智能学院关于2027年接收推免生复试录取工作办法的通知",
+      "feedId": "camp2027",
+      "name": "吉林大学",
+      "institute": "人工智能学院",
+      "project": "人工智能学院关于2027年接收推免生复试录取工作办法的通知",
+      "eventType": "推免",
+      "description": "9月16日12:00前通过https://yzbbm.jlu.edu.cn/报名；同日23:00前将材料扫描为一个PDF发送至通知邮箱，文件名为硕士/直博+申请专业+申请人姓名+是否开放日合格学员。开放日考核合格者同样必须按时报名和提交材料，但无需复试。直博须至少两位本学科教授或相当职称专家推荐。复试为线下机试和面试，每人准备6分钟综合能力展示。申请表及直博推荐书模板下载均遇验证码，未能读取附件；食宿交通报销官方未公布。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-16T12:00:00+08:00",
+      "deadlineOriginal": "2026年9月16日12：00前",
+      "deadlineEpochMs": 1789531200000,
+      "website": "https://sai.jlu.edu.cn/info/1033/5502.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T17:06:13.978Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://sai.jlu.edu.cn/info/1033/5502.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "2.复试时间及地点（1）上机考试：2026年9月18日下午1：00，具体地点另行通知；（2）面试考核：2026年9月19日上午8：30开始，面试地点为吉林大学正新楼。"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "复试采用线下“机试+面试”形式进行。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "1.《吉林大学2027年接收推荐免试研究生申请表》一份（见附件1，手写签字盖章后扫描）。2.加盖所在学校教务部门公章的本科期间成绩单一份（原件扫描）。3.在校期间发表的论文、获得专利的证书、研究成果证明、获奖证书、外语水平考试证书等材料（原件扫描）。4.学生证（有学校盖章的个人信息页面和注册章页面，原件扫描）。5.身份证正反面（原件扫描）。6.申请直博生须有两名报考学科专业领域内的教授(或相当专业技术职称的专家)的书面推荐意见（见附件2，手写签字盖章后扫描）。将以上材料同时扫描形成一个PDF文件于9月16日23：00前发送至邮箱"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "申请直博生须有两名报考学科专业领域内的教授(或相当专业技术职称的专家)的书面推荐意见（见附件2，手写签字盖章后扫描）。"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|华中科技大学|人工智能与自动化学院|人工智能与自动化学院（184）2027年接收推荐免试研究生工作细则",
       "feedId": "camp2027",
       "name": "华中科技大学",
@@ -18464,6 +18602,52 @@
       "recommendation": {
         "status": "not-published",
         "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|长沙理工大学|物理与电子科学学院|招收2027年推荐免试研究生（含直博生）招生简章",
+      "feedId": "camp2027",
+      "name": "长沙理工大学",
+      "institute": "物理与电子科学学院",
+      "project": "招收2027年推荐免试研究生（含直博生）招生简章",
+      "eventType": "推荐免试",
+      "description": "物理与电子科学学院招收物理学、电子科学与技术、信息与通信工程、集成电路科学与工程推免硕士，并列明直博专业。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-16T23:59:00+08:00",
+      "deadlineOriginal": "9月8日—9月16日",
+      "deadlineEpochMs": 1789574340000,
+      "website": "https://www.csust.edu.cn/yjsy/info/1121/11806.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T17:06:13.979Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://www.csust.edu.cn/yjsy/info/1121/11806.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "（三）考生在复试时需交验以下材料（预报名的同学将材料扫描成pdf，在“申请系统”里作为附件上传）： 1．有效身份证、学生证。 2．其他有关材料（如大学英语四、六级考试成绩单，相关获奖证书、本人代表性学术论文、出版物或原创性工作成果等）。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "申请直博生的考生①两名所报考学科专业领域内教授或相当专业技术职称专家的推荐书"
       },
       "logistics": {
         "status": "not-published",
@@ -18889,6 +19073,52 @@
       }
     },
     {
+      "projectId": "2027|吉林大学|计算机科学与技术学院|2027年计算机科学与技术学院接收推荐免试攻读硕士学位研究生复试录取实施细则",
+      "feedId": "camp2027",
+      "name": "吉林大学",
+      "institute": "计算机科学与技术学院",
+      "project": "2027年计算机科学与技术学院接收推荐免试攻读硕士学位研究生复试录取实施细则",
+      "eventType": "推免",
+      "description": "普通新申请（不含开放日合格考生）须在9月17日08:00前通过推免预报名系统报名，只接收第一志愿；本科专业须为计算机、软件、电子、通信、数学。开放日合格考生另须在9月16日09:00前提交压缩扫描材料，文件名为报考专业+姓名+本科所在院校，资格合格免复试，无需现场审核。其余申请人9月20日现场资格审查并参加笔试、面试、机试。申请表与直博专家推荐书模板下载均遇验证码，未能读取附件。食宿交通报销官方未公布。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-17T08:00:00+08:00",
+      "deadlineOriginal": "报名截至时间为2026年9月17日8:00",
+      "deadlineEpochMs": 1789603200000,
+      "website": "https://ccst.jlu.edu.cn/info/1229/21178.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T17:06:13.978Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://ccst.jlu.edu.cn/info/1229/21178.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "资格审核：9月20日"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "地点：计算机楼B401等"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "1.《吉林大学2027年接收推荐免试研究生申请表》（见附件1）。2.加盖所在学校教务部门公章的本科期间成绩单。3.在校期间发表的论文、获得专利的证书、研究成果证明、获奖证书、外语水平考试证书以及长期有效第二代居民身份证等材料。4.申请直博生须提交两名所报考学科专业领域内的教授(或相当专业技术职称的专家)的书面推荐意见（见附件2）。5.第二代居民身份证和每学期均参加注册的学生证"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "申请直博生须提交两名所报考学科专业领域内的教授(或相当专业技术职称的专家)的书面推荐意见（见附件2）。"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|北京航空航天大学|中法未来科技学院|北京航空航天大学中法未来科技学院接收推荐免试攻读2027年硕士研究生工作方案",
       "feedId": "camp2027",
       "name": "北京航空航天大学",
@@ -18924,6 +19154,52 @@
       "materials": {
         "status": "not-published",
         "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|吉林大学|软件学院|软件学院2027年接收推荐免试攻读硕士学位研究生复试录取工作办法",
+      "feedId": "camp2027",
+      "name": "吉林大学",
+      "institute": "软件学院",
+      "project": "软件学院2027年接收推荐免试攻读硕士学位研究生复试录取工作办法",
+      "eventType": "推免",
+      "description": "普通新申请（不含开放日考核合格考生）须在9月17日09:00前通过https://yzbbm.jlu.edu.cn/报名，只接收第一志愿；本科专业应为软件工程、计算机、数学、电子或通信。资格材料打包发送通知邮箱，正文未单列邮件提交截止。开放日合格者报名资格审查合格后按开放日考核成绩排序免复试，录满为止。9月20日资格审核、笔试和上机，9月21日面试。申请表模板下载遇验证码，未能读取附件；推荐信及食宿交通报销官方未公布。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-17T09:00:00+08:00",
+      "deadlineOriginal": "报名截至时间为2026年9月17日上午9:00",
+      "deadlineEpochMs": 1789606800000,
+      "website": "https://csw.jlu.edu.cn/info/1156/8491.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T17:06:13.979Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://csw.jlu.edu.cn/info/1156/8491.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "2026年9月20日12：00资格审核地点：中心校区王湘浩楼B1082026年9月20日下午13：30笔试（100分）地点：中心校区王湘浩楼B3392026年9月20日晚18：00上机考试（100分）地点：中心校区王湘浩楼2026年9月21日上午9：00—11：30面试（100分）地点：中心校区王湘浩楼B339-1"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "采用线下复试方式。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "1．《吉林大学2027年接收推荐免试研究生申请表》（见附件1）。2．加盖所在学校教务部门公章的本科期间成绩单。3．在校期间发表的论文、获得专利的证书、研究成果证明、获奖证书、外语水平考试证书以及长期有效第二代居民身份证等材料。4．第二代居民身份证和每学期均参加注册的学生证"
       },
       "recommendation": {
         "status": "not-published",
@@ -19211,6 +19487,52 @@
       }
     },
     {
+      "projectId": "2027|江南大学|人工智能与计算机学院（软件学院）|接收推荐免试研究生工作（卓工专项）",
+      "feedId": "camp2027",
+      "name": "江南大学",
+      "institute": "人工智能与计算机学院（软件学院）",
+      "project": "接收推荐免试研究生工作（卓工专项）",
+      "eventType": "推荐免试",
+      "description": "2027年卓工专项。学院预报名至9月17日；专项报名表须于9月18日12:00前发送至官方通知指定邮箱，按较早报名动作显示截止。细则允许未预报名考生通过学院邮箱提交材料，专项仍要求尽早预报名。9月22日至23日专项面试，具体方式官方未公布。三项附件下载均受验证码阻断，未能读取；附件内项目名额及要求尚未核验。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-17T23:59:00+08:00",
+      "deadlineOriginal": "预报名时间：即日起至9月17日。",
+      "deadlineEpochMs": 1789660740000,
+      "website": "https://ai.jiangnan.edu.cn/info/1037/2539.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T17:06:13.979Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://ai.jiangnan.edu.cn/info/1037/2539.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "9月22日-23日组织面试，学校与联培企业设立考核组，对申请人的基础理论知识、创新潜质、工程素养、兴趣意愿等方面进行考核。"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请者须提交以下材料扫描文件，将所有材料按编号顺序合并为1个PDF文件，以“报考专业+姓名+联系方式”命名：（1）本人有效身份证件正、反面；（2）《教育部学籍在线验证报告》（请前往学信网认证）；（3）大学本科阶段成绩单（须加盖学校教务处公章）；（4）英语四六级成绩单（其他英语水平证书）；（5）政治思想情况表；（6）各类获奖证书及能证明科研水平和能力的材料；（7）诚信承诺书（本人签名）我校2027年推荐免试研究生政治思想情况表和诚信承诺书模板链接为https://yz.jiangnan.edu.cn/xzzq/ss.htm。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "报考本科直博的考生需由两位报考学科专业领域内的教授或相当专业技术职称的专家推荐，推荐信模板链接https://yz.jiangnan.edu.cn/xzzq/bs.htm"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|江南大学|光电信息与物理科学学院|江南大学接收2027年推荐免试研究生预报名公告-江南大学研究生招生信息网",
       "feedId": "camp2027",
       "name": "江南大学",
@@ -19298,6 +19620,98 @@
         "summary": ""
       },
       "materials": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|江南大学|自动化与智能科学学院（物联网学院）|接收推荐免试研究生工作（卓工专项）",
+      "feedId": "camp2027",
+      "name": "江南大学",
+      "institute": "自动化与智能科学学院（物联网学院）",
+      "project": "接收推荐免试研究生工作（卓工专项）",
+      "eventType": "推荐免试",
+      "description": "2027年卓工专项。学院预报名至9月17日；专项报名表须于9月18日12:00前发送至官方通知指定邮箱，按较早报名动作显示截止。细则允许未预报名考生通过学院邮箱提交材料，专项仍要求尽早预报名。9月22日至23日专项面试，具体方式官方未公布。三项附件下载均受验证码阻断，未能读取；附件内项目名额及要求尚未核验。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-17T23:59:00+08:00",
+      "deadlineOriginal": "预报名时间：即日起至9月17日。",
+      "deadlineEpochMs": 1789660740000,
+      "website": "https://auto.jiangnan.edu.cn/info/1126/4960.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T17:06:13.979Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://auto.jiangnan.edu.cn/info/1126/4960.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "9月22日-23日组织面试，学校与联培企业设立考核组，对申请人的基础理论知识、创新潜质、工程素养、兴趣意愿等方面进行考核。"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请者须提交以下材料扫描文件，将所有材料按编号顺序合并为1个PDF文件，以“报考专业+姓名+联系方式”命名：（1）本人有效身份证件正、反面；（2）《教育部学籍在线验证报告》（请前往学信网认证）；（3）大学本科阶段成绩单（须加盖学校教务处公章）；（4）英语四六级成绩单（其他英语水平证书）；（5）政治思想情况表；（6）各类获奖证书及能证明科研水平和能力的材料；（7）诚信承诺书（本人签名）我校2027年推荐免试研究生政治思想情况表和诚信承诺书模板链接为https://yz.jiangnan.edu.cn/xzzq/ss.htm。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "报考本科直博的考生需由两位报考学科专业领域内的教授或相当专业技术职称的专家推荐，推荐信模板链接https://yz.jiangnan.edu.cn/xzzq/bs.htm"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|江南大学|集成电路学院|接收推荐免试研究生工作（卓工专项）",
+      "feedId": "camp2027",
+      "name": "江南大学",
+      "institute": "集成电路学院",
+      "project": "接收推荐免试研究生工作（卓工专项）",
+      "eventType": "推荐免试",
+      "description": "2027年卓工专项。学院预报名至9月17日；专项报名表须于9月18日12:00前发送至官方通知指定邮箱，按较早报名动作显示截止。细则允许未预报名考生通过学院邮箱提交材料，专项仍要求尽早预报名。9月22日至23日专项面试，具体方式官方未公布。三项附件下载均受验证码阻断，未能读取；附件内项目名额及要求尚未核验。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-17T23:59:00+08:00",
+      "deadlineOriginal": "预报名时间：即日起至9月17日。",
+      "deadlineEpochMs": 1789660740000,
+      "website": "https://ic.jiangnan.edu.cn/info/1021/1967.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T17:06:13.980Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://ic.jiangnan.edu.cn/info/1021/1967.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "9月22日-23日组织面试，学校与联培企业设立考核组，对申请人的基础理论知识、创新潜质、工程素养、兴趣意愿等方面进行考核。"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请者须提交以下材料扫描文件，将所有材料按编号顺序合并为1个PDF文件，以“报考专业+姓名+联系方式”命名：（1）本人有效身份证件正、反面；（2）《教育部学籍在线验证报告》（请前往学信网认证）；（3）大学本科阶段成绩单（须加盖学校教务处公章）；（4）英语四六级成绩单（其他英语水平证书）；（5）政治思想情况表；（6）各类获奖证书及能证明科研水平和能力的材料；（7）诚信承诺书（本人签名）我校2027年推荐免试研究生政治思想情况表和诚信承诺书模板链接为https://yz.jiangnan.edu.cn/xzzq/ss.htm。"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
         "status": "not-published",
         "summary": ""
       }
@@ -22331,6 +22745,52 @@
       }
     },
     {
+      "projectId": "2027|北京化工大学|数理学院|数理学院2027年推免招生工作实施细则",
+      "feedId": "camp2027",
+      "name": "北京化工大学",
+      "institute": "数理学院",
+      "project": "数理学院2027年推免招生工作实施细则",
+      "eventType": "推免",
+      "description": "招生目录包含电子科学与技术及数据科学与科学计算方向。9月20日23:00前在研究生报考服务系统报名并提交材料；9月21日9:00后还须全国推免系统正式报名。材料包括签名诚信承诺书、学籍验证报告或学生证、身份证、教务部门盖章成绩单、英语及科研获奖证明，扫描清晰勿拍照。预计9月22—24日在昌平校区现场面试，具体安排另行通知；食宿交通报销官方未公布。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-20T23:00:00+08:00",
+      "deadlineOriginal": "2026年9月20日23:00前",
+      "deadlineEpochMs": 1789916400000,
+      "website": "https://graduate.buct.edu.cn/_upload/article/files/b2/75/f8b6ac4b4ff5921f3b301f7ea3ed/d60a4a53-399b-4a74-bdd8-f035f8599012.pdf",
+      "tags": [],
+      "verifiedAt": "2026-09-14T17:06:13.978Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://graduate.buct.edu.cn/_upload/article/files/b2/75/f8b6ac4b4ff5921f3b301f7ea3ed/d60a4a53-399b-4a74-bdd8-f035f8599012.pdf"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "面试时间预计于9月22日-24日之间，地点为北京化工大学昌平校区。"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "我院复试采用现场综合考核方式"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "本人亲笔签名的《北京化工大学2027年推荐免试研究生诚信承诺书》"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|天津大学|新媒体与传播学院|电子信息（新媒体方向）2027级推免预报名",
       "feedId": "camp2027",
       "name": "天津大学",
@@ -22506,6 +22966,52 @@
         "time": {
           "status": "confirmed",
           "summary": "各批次具体安排另行通知"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|西北农林科技大学|信息工程学院|关于西北农林科技大学2027年招收推荐免试研究生预报名工作的通知",
+      "feedId": "camp2027",
+      "name": "西北农林科技大学",
+      "institute": "信息工程学院",
+      "project": "关于西北农林科技大学2027年招收推荐免试研究生预报名工作的通知",
+      "eventType": "推免",
+      "description": "信息工程学院已列于当年接收推免生学院附件。预报名系统https://yjsks.nwafu.edu.cn/ks/于9月10—20日开放；此为校级系统上限，学院具体申报截止以学院通知为准，本轮学院公告未查到更早接收截止。请尽早申请并关注学院联系及复试通知。直博要求大学英语六级成绩不低于425或小语种四级。材料模板、推荐信、复试具体安排及食宿交通报销在本通知中未公布。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-20T23:59:00+08:00",
+      "deadlineOriginal": "2026年9月10日至9月20日",
+      "deadlineEpochMs": 1789919940000,
+      "website": "https://yz.nwafu.edu.cn/tzgg/efc5ad22976f45b595487499b6c39d8e.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T17:06:13.978Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yz.nwafu.edu.cn/tzgg/efc5ad22976f45b595487499b6c39d8e.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
         },
         "formatLocation": {
           "status": "not-published",
@@ -23545,6 +24051,52 @@
       "materials": {
         "status": "confirmed",
         "summary": "申请材料"
+      }
+    },
+    {
+      "projectId": "2027|中国科学院重庆绿色智能技术研究院|重庆绿色智能技术研究院|2027年推荐免试研究生（含直博生）招生简章",
+      "feedId": "camp2027",
+      "name": "中国科学院重庆绿色智能技术研究院",
+      "institute": "重庆绿色智能技术研究院",
+      "project": "2027年推荐免试研究生（含直博生）招生简章",
+      "eventType": "推荐免试",
+      "description": "中国科学院重庆绿色智能技术研究院推免生自主招生，报名单位选择重庆绿色智能技术研究院；纸质及电子材料均须按要求提交。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-25T23:59:00+08:00",
+      "deadlineOriginal": "申请人即日起——9月25日（可视具体报名情况及高校实际情况适当延长）",
+      "deadlineEpochMs": 1790351940000,
+      "website": "https://cigit.cas.cn/yjsjy/bszs/bsjz/202609/t20260911_8281079.html",
+      "tags": [],
+      "verifiedAt": "2026-09-14T17:06:13.979Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://cigit.cas.cn/yjsjy/bszs/bsjz/202609/t20260911_8281079.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "考核方式和具体时间安排以邮件通知为准。"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "附件1\n申请人纸质材料清单\n\n以下材料，复印后按照先后顺序装订成册，一式五份。考生在复试前以顺丰快递的方式将装订成册的5份材料以及申请表、成绩单原件寄至重庆研究院招生领导小组办公室（地址：重庆市北碚区方正大道266号，中国科学院重庆绿色智能技术研究院教务处；联系人：张老师，联系电话023-65935865，邮编：400714）。 \n一、必须提供的材料　　 \n1．《推荐免试攻读硕士学位研究生（直博生）申请表》（详见附件2）； 　　 \n2．所在学校教务部门（或院系）出具并加盖公章的大学本科前三年所修课程成绩单（五年制的提供前四年课程成绩单）； 　　 \n3．个人简历及专业学习情况介绍； 　　 \n4．有效居民身份证复印件（正反面复印在同一张纸上）； \n5．考生告知书（详见附件3）；\n6．考生承诺书（详见附件4）。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "二、自愿提供的材料　　 \n1．《申请推荐免试攻读中国科学院大学研究生专家推荐书》（由教授或相当职称及以上专家推荐）（详见附件5）。"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
       }
     },
     {
@@ -38175,8 +38727,8 @@
       }
     }
   ],
-  "snapshotId": "2026-09-14T04:03:27.248Z-3d2b796ac5db",
-  "approvedAt": "2026-09-14T04:03:27.248Z",
-  "previousSnapshotId": "2026-09-13T15:50:57.880Z-02e0f7fb9939",
-  "dataHash": "3d2b796ac5dbc0642f71488aed9db0015e60dffc81632a5ab65884121d61517d"
+  "snapshotId": "2026-09-14T17:06:14.364Z-7beb49467786",
+  "approvedAt": "2026-09-14T17:06:14.364Z",
+  "previousSnapshotId": "2026-09-14T04:03:27.248Z-3d2b796ac5db",
+  "dataHash": "7beb4946778644944db82153b7d8e4e8693ff80e466bc5db4ea8e8df7036c742"
 }

@@ -3266,6 +3266,33 @@ test('accepts next-day normalization for an official Chinese 24:00 deadline', as
   }
 });
 
+for (const day of ['16', '17']) {
+  test(`Chinese 晚上24:00 deadline ${day === '16' ? 'accepts the next day' : 'rejects a later day'}`, async () => {
+    const source = paths();
+    const parent = sealedParent();
+    const parentText = writeJson(source.parent, parent);
+    writeFileSync(source.approved, parentText, 'utf8');
+    const addition = additionFor(parent);
+    addition.deadline = `2099-09-${day}T00:00:00+08:00`;
+    addition.deadlineOriginal = '2099年9月12日上午9:00—9月15日晚上24:00';
+    addition.deadlineEpochMs = Date.parse(addition.deadline);
+    const run = additiveRun(parent, parentText, [addition]);
+    materializeRunArtifacts(source, run);
+    writeJson(source.run, run);
+
+    try {
+      if (day === '16') {
+        assert.equal((await approve(source)).status, 'ready');
+      } else {
+        await assertRejectedBeforeApproval(source, parentText, () => approve(source),
+          /normalized deadline must match the calendar date in deadlineOriginal/u);
+      }
+    } finally {
+      rmSync(source.root, { recursive: true, force: true });
+    }
+  });
+}
+
 test('accepts a field quotation whose only difference is extracted layout whitespace', async () => {
   const source = paths();
   const parent = sealedParent();
