@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "scanAt": "2026-09-13T15:50:57.363Z",
+  "scanAt": "2026-09-14T04:01:23.139Z",
   "defaultFeedId": "camp2027",
   "feeds": [
     {
@@ -11,8 +11,8 @@
     }
   ],
   "counts": {
-    "confirmedOpen": 528,
-    "confirmedUnknownDeadline": 58,
+    "confirmedOpen": 553,
+    "confirmedUnknownDeadline": 67,
     "pendingExcluded": 5,
     "expired": 200
   },
@@ -14289,6 +14289,52 @@
       }
     },
     {
+      "projectId": "2027|西安电子科技大学|机电工程学院|机电工程学院2027年推免生预报名通知",
+      "feedId": "camp2027",
+      "name": "西安电子科技大学",
+      "institute": "机电工程学院",
+      "project": "机电工程学院2027年推免生预报名通知",
+      "eventType": "推荐免试",
+      "description": "通过西电研究生招生服务平台填写预报名信息，正式录取须完成教育部推免系统流程。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-14T17:00:00+08:00",
+      "deadlineOriginal": "根据相关工作安排，现将我院2027年预推免报名系统的报名截止时间延长至2026年9月14日17:00，请各位同学合理安排填报时间，避免因逾期影响报名。",
+      "deadlineEpochMs": 1789376400000,
+      "website": "https://eme.xidian.edu.cn/info/1012/16196.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.117Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://eme.xidian.edu.cn/info/1012/16196.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "2、综合面试：采取线下面试形式，预计于9月进行，具体安排另行通知，请关注学院官网。"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "2、综合面试：采取线下面试形式，预计于9月进行，具体安排另行通知，请关注学院官网。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "（1）《推免生报考诚信承诺书》（附件一），务必手写签字后拍照或扫描； （2）个人简历一份； （3）本科阶段成绩单原件，须加盖学校教务部门公章； （4）全国英语四、六级成绩单或TOEFL、GRE/GMAT等体现自身英语水平的证明材料； （5）其他能证明自己能力的材料，如：获奖证书、发表或已录用的学术论文、出版物或原创性工作成果等。"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|华中科技大学|网络空间安全学院|网络空间安全学院（920）2027年接收推荐免试研究生工作细则",
       "feedId": "camp2027",
       "name": "华中科技大学",
@@ -14475,6 +14521,52 @@
       "logistics": {
         "status": "not-published",
         "summary": "具体考核时间、相关工作要求与安排将通过学院官网另行通知"
+      }
+    },
+    {
+      "projectId": "2027|南昌大学|人工智能学院|南昌大学人工智能学院2027年接收推荐免试研究生预报名通知",
+      "feedId": "camp2027",
+      "name": "南昌大学",
+      "institute": "人工智能学院",
+      "project": "南昌大学人工智能学院2027年接收推荐免试研究生预报名通知",
+      "eventType": "推免",
+      "description": "招收140500智能科学与技术、085410人工智能、085404计算机技术。预推免报名9月14日截止；预计9月18日线下复试（待定），地点南昌大学前湖校区。材料：身份证及学生证复印件、预报名表、盖章成绩单、英语成绩与科研获奖证明。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-14T23:59:00+08:00",
+      "deadlineOriginal": "我院预推免报名截止时间暂定为：9月4日-9月14日",
+      "deadlineEpochMs": 1789401540000,
+      "website": "https://sai.ncu.edu.cn/info/1003/3162.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://sai.ncu.edu.cn/info/1003/3162.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "预计9月18日线下复试（待定），地点：南昌大学前湖校区。具体安排待通知。"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "预计9月18日线下复试（待定），地点：南昌大学前湖校区。具体安排待通知。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "考生在推荐免试预录取复试报到时需提交的书面材料： （1）本人有效身份证、学生证复印件（身份证复印正反面，学生证复印学生信息和注册情况）； （2）南昌大学2027年接收推荐免试研究生预报名表 （3）本科在校学习成绩单原件，需加盖推荐院校教务处公章； （4）其他有关材料（如大学英语四、六级考试成绩单复印件，其他获奖证书、本人代表性学术论文、出版物或原创性工作成果等）复印件。"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
       }
     },
     {
@@ -15597,6 +15689,52 @@
       }
     },
     {
+      "projectId": "2027|华东政法大学|知识产权学院|华东政法大学“科创企业涉外法治人才专项班（通信、集成电路方向，生物医药方向）”2027年接收推荐免试研究生报名的通知",
+      "feedId": "camp2027",
+      "name": "华东政法大学",
+      "institute": "知识产权学院",
+      "project": "华东政法大学“科创企业涉外法治人才专项班（通信、集成电路方向，生物医药方向）”2027年接收推荐免试研究生报名的通知",
+      "eventType": "推免生",
+      "description": "本科专业可为计算机科学与技术、通信工程、微电子等相关专业；CET6≥500或托福≥80或雅思≥6.0。报名选择普通推免→科创企业涉外法治人才专项班。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T12:00:00+08:00",
+      "deadlineOriginal": "12时至9月 15 日（周 二 ） 12时",
+      "deadlineEpochMs": 1789444800000,
+      "website": "https://gs.ecupl.edu.cn/2026/0831/c13332a227574/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.117Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://gs.ecupl.edu.cn/2026/0831/c13332a227574/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试工作安排另行通知"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "本科阶段前六个学期成绩单 PDF扫描件"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|南京航空航天大学|自动化学院|接收推荐免试研究生预报名",
       "feedId": "camp2027",
       "name": "南京航空航天大学",
@@ -16694,6 +16832,420 @@
       "materials": {
         "status": "confirmed",
         "summary": "请将上述全部申请材料电子版按编号顺序合并为一个 PDF 文档，"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|华南理工大学|吴贤铭智能工程学院|关于公布各院（系）2027年研究生招生预推免接收工作复试方案的通知",
+      "feedId": "camp2027",
+      "name": "华南理工大学",
+      "institute": "吴贤铭智能工程学院",
+      "project": "关于公布各院（系）2027年研究生招生预推免接收工作复试方案的通知",
+      "eventType": "推免",
+      "description": "尚未完成的意向推免生请及时登录系统确认完成本人志愿填报；第一批复试名单筛选截止报名时间为9月15日，各院系将视第一批复试接收情况确定是否进行第二批复试。通过预推免报名系统提交申请表、学生证、身份证正反面、证件照、本科成绩单、英语等级证明和科研获奖证明；复试时提交打印申请表和证件成绩原件。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T23:59:00+08:00",
+      "deadlineOriginal": "第一批复试名单筛选截止报名时间为9月15日",
+      "deadlineEpochMs": 1789487940000,
+      "website": "https://yz.scut.edu.cn/2026/0913/c30108a635170/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yz.scut.edu.cn/2026/0913/c30108a635170/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "各院系将视第一批复试接收情况确定是否进行第二批复试，具体留意预推免系统信息"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "通过预推免报名系统提交电子申请资料，包括《华南理工大学2027年接收推荐免试攻读硕士学位研究生（含直博生）申请表》、学生证、身份证（正反面）、本人近期免冠证件照、本科期间学习成绩单、英语等级证明（四六级或者托福雅思）、其他学术论文或获奖证书的扫描件及系统要求提交的其他材料。"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|华南理工大学|微电子学院|关于公布各院（系）2027年研究生招生预推免接收工作复试方案的通知",
+      "feedId": "camp2027",
+      "name": "华南理工大学",
+      "institute": "微电子学院",
+      "project": "关于公布各院（系）2027年研究生招生预推免接收工作复试方案的通知",
+      "eventType": "推免",
+      "description": "尚未完成的意向推免生请及时登录系统确认完成本人志愿填报；第一批复试名单筛选截止报名时间为9月15日，各院系将视第一批复试接收情况确定是否进行第二批复试。通过预推免报名系统提交申请表、学生证、身份证正反面、证件照、本科成绩单、英语等级证明和科研获奖证明；复试时提交打印申请表和证件成绩原件。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T23:59:00+08:00",
+      "deadlineOriginal": "第一批复试名单筛选截止报名时间为9月15日",
+      "deadlineEpochMs": 1789487940000,
+      "website": "https://yz.scut.edu.cn/2026/0913/c30108a635170/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yz.scut.edu.cn/2026/0913/c30108a635170/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "各院系将视第一批复试接收情况确定是否进行第二批复试，具体留意预推免系统信息"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "通过预推免报名系统提交电子申请资料，包括《华南理工大学2027年接收推荐免试攻读硕士学位研究生（含直博生）申请表》、学生证、身份证（正反面）、本人近期免冠证件照、本科期间学习成绩单、英语等级证明（四六级或者托福雅思）、其他学术论文或获奖证书的扫描件及系统要求提交的其他材料。"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|华南理工大学|未来技术学院|关于公布各院（系）2027年研究生招生预推免接收工作复试方案的通知",
+      "feedId": "camp2027",
+      "name": "华南理工大学",
+      "institute": "未来技术学院",
+      "project": "关于公布各院（系）2027年研究生招生预推免接收工作复试方案的通知",
+      "eventType": "推免",
+      "description": "尚未完成的意向推免生请及时登录系统确认完成本人志愿填报；第一批复试名单筛选截止报名时间为9月15日，各院系将视第一批复试接收情况确定是否进行第二批复试。通过预推免报名系统提交申请表、学生证、身份证正反面、证件照、本科成绩单、英语等级证明和科研获奖证明；复试时提交打印申请表和证件成绩原件。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T23:59:00+08:00",
+      "deadlineOriginal": "第一批复试名单筛选截止报名时间为9月15日",
+      "deadlineEpochMs": 1789487940000,
+      "website": "https://yz.scut.edu.cn/2026/0913/c30108a635170/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yz.scut.edu.cn/2026/0913/c30108a635170/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "各院系将视第一批复试接收情况确定是否进行第二批复试，具体留意预推免系统信息"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "通过预推免报名系统提交电子申请资料，包括《华南理工大学2027年接收推荐免试攻读硕士学位研究生（含直博生）申请表》、学生证、身份证（正反面）、本人近期免冠证件照、本科期间学习成绩单、英语等级证明（四六级或者托福雅思）、其他学术论文或获奖证书的扫描件及系统要求提交的其他材料。"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|华南理工大学|物理与光电学院|关于公布各院（系）2027年研究生招生预推免接收工作复试方案的通知",
+      "feedId": "camp2027",
+      "name": "华南理工大学",
+      "institute": "物理与光电学院",
+      "project": "关于公布各院（系）2027年研究生招生预推免接收工作复试方案的通知",
+      "eventType": "推免",
+      "description": "尚未完成的意向推免生请及时登录系统确认完成本人志愿填报；第一批复试名单筛选截止报名时间为9月15日，各院系将视第一批复试接收情况确定是否进行第二批复试。物理与光电学院复试资格确认9月16日前；现场报到9月18日15:00-17:00；复试9月19日8:30。通过预推免报名系统提交申请表、学生证、身份证正反面、证件照、本科成绩单、英语等级证明和科研获奖证明；复试时提交打印申请表和证件成绩原件。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T23:59:00+08:00",
+      "deadlineOriginal": "第一批复试名单筛选截止报名时间为9月15日",
+      "deadlineEpochMs": 1789487940000,
+      "website": "https://yz.scut.edu.cn/2026/0913/c30108a635170/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yz.scut.edu.cn/2026/0913/c30108a635170/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试时间：9 月 19 日上午 8:30"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "复试采用现场复试方式进行。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "通过预推免报名系统提交电子申请资料，包括《华南理工大学2027年接收推荐免试攻读硕士学位研究生（含直博生）申请表》、学生证、身份证（正反面）、本人近期免冠证件照、本科期间学习成绩单、英语等级证明（四六级或者托福雅思）、其他学术论文或获奖证书的扫描件及系统要求提交的其他材料。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "直博生需提交两份所报考学科专业领域内的教授（或其他正高专业技术职\n\n务）出具的推荐信。"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|华南理工大学|电子与信息学院|关于公布各院（系）2027年研究生招生预推免接收工作复试方案的通知",
+      "feedId": "camp2027",
+      "name": "华南理工大学",
+      "institute": "电子与信息学院",
+      "project": "关于公布各院（系）2027年研究生招生预推免接收工作复试方案的通知",
+      "eventType": "推免",
+      "description": "尚未完成的意向推免生请及时登录系统确认完成本人志愿填报；第一批复试名单筛选截止报名时间为9月15日，各院系将视第一批复试接收情况确定是否进行第二批复试。通过预推免报名系统提交申请表、学生证、身份证正反面、证件照、本科成绩单、英语等级证明和科研获奖证明；复试时提交打印申请表和证件成绩原件。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T23:59:00+08:00",
+      "deadlineOriginal": "第一批复试名单筛选截止报名时间为9月15日",
+      "deadlineEpochMs": 1789487940000,
+      "website": "https://yz.scut.edu.cn/2026/0913/c30108a635170/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yz.scut.edu.cn/2026/0913/c30108a635170/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "各院系将视第一批复试接收情况确定是否进行第二批复试，具体留意预推免系统信息"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "通过预推免报名系统提交电子申请资料，包括《华南理工大学2027年接收推荐免试攻读硕士学位研究生（含直博生）申请表》、学生证、身份证（正反面）、本人近期免冠证件照、本科期间学习成绩单、英语等级证明（四六级或者托福雅思）、其他学术论文或获奖证书的扫描件及系统要求提交的其他材料。"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|华南理工大学|自动化科学与工程学院|关于公布各院（系）2027年研究生招生预推免接收工作复试方案的通知",
+      "feedId": "camp2027",
+      "name": "华南理工大学",
+      "institute": "自动化科学与工程学院",
+      "project": "关于公布各院（系）2027年研究生招生预推免接收工作复试方案的通知",
+      "eventType": "推免",
+      "description": "尚未完成的意向推免生请及时登录系统确认完成本人志愿填报；第一批复试名单筛选截止报名时间为9月15日，各院系将视第一批复试接收情况确定是否进行第二批复试。通过预推免报名系统提交申请表、学生证、身份证正反面、证件照、本科成绩单、英语等级证明和科研获奖证明；复试时提交打印申请表和证件成绩原件。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T23:59:00+08:00",
+      "deadlineOriginal": "第一批复试名单筛选截止报名时间为9月15日",
+      "deadlineEpochMs": 1789487940000,
+      "website": "https://yz.scut.edu.cn/2026/0913/c30108a635170/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yz.scut.edu.cn/2026/0913/c30108a635170/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "各院系将视第一批复试接收情况确定是否进行第二批复试，具体留意预推免系统信息"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "通过预推免报名系统提交电子申请资料，包括《华南理工大学2027年接收推荐免试攻读硕士学位研究生（含直博生）申请表》、学生证、身份证（正反面）、本人近期免冠证件照、本科期间学习成绩单、英语等级证明（四六级或者托福雅思）、其他学术论文或获奖证书的扫描件及系统要求提交的其他材料。"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|华南理工大学|计算机科学与工程学院|关于公布各院（系）2027年研究生招生预推免接收工作复试方案的通知",
+      "feedId": "camp2027",
+      "name": "华南理工大学",
+      "institute": "计算机科学与工程学院",
+      "project": "关于公布各院（系）2027年研究生招生预推免接收工作复试方案的通知",
+      "eventType": "推免",
+      "description": "尚未完成的意向推免生请及时登录系统确认完成本人志愿填报；第一批复试名单筛选截止报名时间为9月15日，各院系将视第一批复试接收情况确定是否进行第二批复试。通过预推免报名系统提交申请表、学生证、身份证正反面、证件照、本科成绩单、英语等级证明和科研获奖证明；复试时提交打印申请表和证件成绩原件。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T23:59:00+08:00",
+      "deadlineOriginal": "第一批复试名单筛选截止报名时间为9月15日",
+      "deadlineEpochMs": 1789487940000,
+      "website": "https://yz.scut.edu.cn/2026/0913/c30108a635170/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yz.scut.edu.cn/2026/0913/c30108a635170/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "各院系将视第一批复试接收情况确定是否进行第二批复试，具体留意预推免系统信息"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "通过预推免报名系统提交电子申请资料，包括《华南理工大学2027年接收推荐免试攻读硕士学位研究生（含直博生）申请表》、学生证、身份证（正反面）、本人近期免冠证件照、本科期间学习成绩单、英语等级证明（四六级或者托福雅思）、其他学术论文或获奖证书的扫描件及系统要求提交的其他材料。"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|华南理工大学|软件学院|关于公布各院（系）2027年研究生招生预推免接收工作复试方案的通知",
+      "feedId": "camp2027",
+      "name": "华南理工大学",
+      "institute": "软件学院",
+      "project": "关于公布各院（系）2027年研究生招生预推免接收工作复试方案的通知",
+      "eventType": "推免",
+      "description": "尚未完成的意向推免生请及时登录系统确认完成本人志愿填报；第一批复试名单筛选截止报名时间为9月15日，各院系将视第一批复试接收情况确定是否进行第二批复试。通过预推免报名系统提交申请表、学生证、身份证正反面、证件照、本科成绩单、英语等级证明和科研获奖证明；复试时提交打印申请表和证件成绩原件。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T23:59:00+08:00",
+      "deadlineOriginal": "第一批复试名单筛选截止报名时间为9月15日",
+      "deadlineEpochMs": 1789487940000,
+      "website": "https://yz.scut.edu.cn/2026/0913/c30108a635170/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yz.scut.edu.cn/2026/0913/c30108a635170/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "各院系将视第一批复试接收情况确定是否进行第二批复试，具体留意预推免系统信息"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "通过预推免报名系统提交电子申请资料，包括《华南理工大学2027年接收推荐免试攻读硕士学位研究生（含直博生）申请表》、学生证、身份证（正反面）、本人近期免冠证件照、本科期间学习成绩单、英语等级证明（四六级或者托福雅思）、其他学术论文或获奖证书的扫描件及系统要求提交的其他材料。"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|华南理工大学|集成电路学院|关于公布各院（系）2027年研究生招生预推免接收工作复试方案的通知",
+      "feedId": "camp2027",
+      "name": "华南理工大学",
+      "institute": "集成电路学院",
+      "project": "关于公布各院（系）2027年研究生招生预推免接收工作复试方案的通知",
+      "eventType": "推免",
+      "description": "尚未完成的意向推免生请及时登录系统确认完成本人志愿填报；第一批复试名单筛选截止报名时间为9月15日，各院系将视第一批复试接收情况确定是否进行第二批复试。通过预推免报名系统提交申请表、学生证、身份证正反面、证件照、本科成绩单、英语等级证明和科研获奖证明；复试时提交打印申请表和证件成绩原件。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-15T23:59:00+08:00",
+      "deadlineOriginal": "第一批复试名单筛选截止报名时间为9月15日",
+      "deadlineEpochMs": 1789487940000,
+      "website": "https://yz.scut.edu.cn/2026/0913/c30108a635170/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yz.scut.edu.cn/2026/0913/c30108a635170/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "各院系将视第一批复试接收情况确定是否进行第二批复试，具体留意预推免系统信息"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "通过预推免报名系统提交电子申请资料，包括《华南理工大学2027年接收推荐免试攻读硕士学位研究生（含直博生）申请表》、学生证、身份证（正反面）、本人近期免冠证件照、本科期间学习成绩单、英语等级证明（四六级或者托福雅思）、其他学术论文或获奖证书的扫描件及系统要求提交的其他材料。"
       },
       "recommendation": {
         "status": "not-published",
@@ -18475,6 +19027,144 @@
       }
     },
     {
+      "projectId": "2027|华南师范大学|人工智能学院|华南师范大学关于2027年接收全国高校优秀应届本科推免生预报名的通知",
+      "feedId": "camp2027",
+      "name": "华南师范大学",
+      "institute": "人工智能学院",
+      "project": "华南师范大学关于2027年接收全国高校优秀应届本科推免生预报名的通知",
+      "eventType": "推免",
+      "description": "学生可在规定时间内登录我校推免预报名系统报名，按要求提交相关申请材料。各学院推免预报名系统将根据实时报名情况调整关闭时间，请各位考生尽早申报。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-17T13:00:00+08:00",
+      "deadlineOriginal": "9月14日08:00 至 9月17日13:00",
+      "deadlineEpochMs": 1789621200000,
+      "website": "https://yz.scnu.edu.cn/a/20260910/684.html",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yz.scnu.edu.cn/a/20260910/684.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "各二级单位将审核申请材料，并通过电话或邮件等方式将具体情况反馈给学生。"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "按要求提交相关申请材料"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|吉林大学|通信工程学院|吉林大学通信工程学院2027年推荐免试攻读研究生招生录取实施细则",
+      "feedId": "camp2027",
+      "name": "吉林大学",
+      "institute": "通信工程学院",
+      "project": "吉林大学通信工程学院2027年推荐免试攻读研究生招生录取实施细则",
+      "eventType": "推荐免试",
+      "description": "材料合并PDF发送至通知邮箱；未参加校园学术活动开放日人员可申请，邮件发送成功后加入通知附件微信群。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-17T16:00:00+08:00",
+      "deadlineOriginal": "2026 年 9 月 17 日 16:00 之前",
+      "deadlineEpochMs": 1789632000000,
+      "website": "https://dce.jlu.edu.cn/info/1032/11434.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.117Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://dce.jlu.edu.cn/info/1032/11434.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "2.9 月 20 日上午 8 ： 30 开始进行推免生复试。"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "（ 2 ）复试采取线下笔试和面试相结合的形式。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "1. 居民身份证、学生证扫描件各一份。 2. 《吉林大学 2027 年接收推荐免试研究生申请表》一份（见附件）。 3. 加盖所在学校教务部门公章的本科期间成绩单扫描件一份。 4. 在校期间发表的论文、获得专利的证书、研究成果证明、获奖证书、外语水平考试证书等材料扫描件。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "5. 申请直博生须有至少两名所报考学科专业领域内的教授 ( 或相当专业技术职称的专家 ) 的书面推荐意见。"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|西安电子科技大学|生命科学技术学院|生命科学技术学院2027年推荐免试研究生招生预报名通知",
+      "feedId": "camp2027",
+      "name": "西安电子科技大学",
+      "institute": "生命科学技术学院",
+      "project": "生命科学技术学院2027年推荐免试研究生招生预报名通知",
+      "eventType": "推荐免试",
+      "description": "通过西电研究生招生服务平台填写预报名信息，正式录取须完成教育部推免系统流程。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-17T18:00:00+08:00",
+      "deadlineOriginal": "即日起至 202 6 年9月 17 日 18: 00 。",
+      "deadlineEpochMs": 1789639200000,
+      "website": "https://life.xidian.edu.cn/info/1048/17301.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.117Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://life.xidian.edu.cn/info/1048/17301.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "1.考核时间：202 6 年9月 中 下旬，具体时间 将 另行通知。"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "（1）考生个人简历； （2）西安电子科技大学推免生报考诚信承诺书（见附件），须本人手写签字； （3） 考生本人 身份证和学生证扫描件； （4）本科阶段前 6 学期成绩单，需加盖教务部门 或院系 公章； （ 5 ）全国英语四、六级成绩单或TOEFL、GRE、GMAT等能体现自身英语水平的证明； （ 6 ）其它能证明自己能力的材料，如：获奖证书，发表或已录用的能体现自身学术水平的学术论文、专利、出版物或原创性工作成果等。"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|江南大学|人工智能与计算机学院|江南大学接收2027年推荐免试研究生预报名公告-江南大学研究生招生信息网",
       "feedId": "camp2027",
       "name": "江南大学",
@@ -18974,6 +19664,236 @@
       "materials": {
         "status": "confirmed",
         "summary": "各项材料务必按照下述顺序标注并整合为1个PDF"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|华南师范大学|教育信息技术学院|华南师范大学关于2027年接收全国高校优秀应届本科推免生预报名的通知",
+      "feedId": "camp2027",
+      "name": "华南师范大学",
+      "institute": "教育信息技术学院",
+      "project": "华南师范大学关于2027年接收全国高校优秀应届本科推免生预报名的通知",
+      "eventType": "推免",
+      "description": "学生可在规定时间内登录我校推免预报名系统报名，按要求提交相关申请材料。各学院推免预报名系统将根据实时报名情况调整关闭时间，请各位考生尽早申报。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-18T10:00:00+08:00",
+      "deadlineOriginal": "9月13日15:00 至 9月18日10:00",
+      "deadlineEpochMs": 1789696800000,
+      "website": "https://yz.scnu.edu.cn/a/20260910/684.html",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yz.scnu.edu.cn/a/20260910/684.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "各二级单位将审核申请材料，并通过电话或邮件等方式将具体情况反馈给学生。"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "按要求提交相关申请材料"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|中央音乐学院|音乐人工智能与音乐信息科技系|中央音乐学院音乐人工智能与音乐信息科技方向2027年接收优秀应届本科毕业生免试攻读硕士学位研究生（含直博生）办法",
+      "feedId": "camp2027",
+      "name": "中央音乐学院",
+      "institute": "音乐人工智能与音乐信息科技系",
+      "project": "中央音乐学院音乐人工智能与音乐信息科技方向2027年接收优秀应届本科毕业生免试攻读硕士学位研究生（含直博生）办法",
+      "eventType": "推免",
+      "description": "考生须在中央音乐学院推免生管理系统（网址： https://yjszs.ccom.edu.cn/tp/zs/login/toLogin/tm ）注册账号、并登录，",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-18T12:00:00+08:00",
+      "deadlineOriginal": "于9月18日中午12:00前按要求完成填报本人各项真实信息、提交申请材料等所有步骤。",
+      "deadlineEpochMs": 1789704000000,
+      "website": "https://www.ccom.edu.cn/info/10721/268961.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://www.ccom.edu.cn/info/10721/268961.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "复试采取面试方式。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "考生须将需要提交的所有材料电子版或扫描件按顺序合成一个 PDF文档，在中央音乐学院推免生管理系统中提交。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "《专家推荐书》2份（报考直博的考生需由2名具有正高级专业技术职称的相关专业专家推荐，报考硕士的考生需由2名具有副高级或以上专业技术职称的相关专业专家推荐）。"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|天津大学|精密仪器与光电子工程学院|直接攻读博士学位研究生",
+      "feedId": "camp2027",
+      "name": "天津大学",
+      "institute": "精密仪器与光电子工程学院",
+      "project": "直接攻读博士学位研究生",
+      "eventType": "直博生",
+      "description": "凡有意申请直博生（含本校生）： 登录天津大学博士招生管理系统（http://202.113.8.92/bszs/）或天津大学研究生招生网（yzb.tju.edu.cn）（->服务系统->2027直博生申请）进行网上报名，系统开放截止时间2026年9月18日中午12:00。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-18T12:00:00+08:00",
+      "deadlineOriginal": "系统开放截止时间2026年9月18日中午12:00。",
+      "deadlineEpochMs": 1789704000000,
+      "website": "https://jyxy.tju.edu.cn/cn/new/20260910/2492.shtml",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://jyxy.tju.edu.cn/cn/new/20260910/2492.shtml"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "所有考核工作在2026年10月20日前完成。"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "我院综合考核采用现场考核的方式进行"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "请各位考生将上述材料的2-6项按顺序转化为一个PDF文件上传报名系统，上传内容须清晰可见，附件总大小不超过20M。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "按照要求请两位教授或相应职称的专家填写推荐理由和意见，并请手工签署姓名。"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|上海科技大学|生命学院|[研招]上海科技大学生命学院接收2027年入学推免生（含直博）通知",
+      "feedId": "camp2027",
+      "name": "上海科技大学",
+      "institute": "生命学院",
+      "project": "[研招]上海科技大学生命学院接收2027年入学推免生（含直博）通知",
+      "eventType": "推免生",
+      "description": "欢迎计算机、数学等相关专业推免生。报名系统选择生命学院2027招生年度推免生复试活动（九推）；9月18日15:00后报名视实际情况而定。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-18T15:00:00+08:00",
+      "deadlineOriginal": "网上报名： 9 月 18 日（周五） 15 ： 00 前",
+      "deadlineEpochMs": 1789714800000,
+      "website": "https://slst.shanghaitech.edu.cn/2026/0730/c319a1125983/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.117Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://slst.shanghaitech.edu.cn/2026/0730/c319a1125983/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "预计 8 月 24 日之后邮件通知获得复试资格的同学以及分批复试时间"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "复试形式：综合素质上机测试、线下面试"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "整个文件不超过 10M"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "B （自愿提供）：推荐信（推荐人签名，可电子签名）和获奖证书复印件"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|华南师范大学|电子科学与工程学院（微电子学院）|华南师范大学关于2027年接收全国高校优秀应届本科推免生预报名的通知",
+      "feedId": "camp2027",
+      "name": "华南师范大学",
+      "institute": "电子科学与工程学院（微电子学院）",
+      "project": "华南师范大学关于2027年接收全国高校优秀应届本科推免生预报名的通知",
+      "eventType": "推免",
+      "description": "学生可在规定时间内登录我校推免预报名系统报名，按要求提交相关申请材料。各学院推免预报名系统将根据实时报名情况调整关闭时间，请各位考生尽早申报。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-18T15:00:00+08:00",
+      "deadlineOriginal": "9月14日10:00 至 9月18日15:00",
+      "deadlineEpochMs": 1789714800000,
+      "website": "https://yz.scnu.edu.cn/a/20260910/684.html",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yz.scnu.edu.cn/a/20260910/684.html"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "各二级单位将审核申请材料，并通过电话或邮件等方式将具体情况反馈给学生。"
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "按要求提交相关申请材料"
       },
       "recommendation": {
         "status": "not-published",
@@ -20258,6 +21178,52 @@
       }
     },
     {
+      "projectId": "2027|上海科技大学|上海创芯学院|上海创芯学院&上海科技大学接收2027级推免生 （第二批）通知",
+      "feedId": "camp2027",
+      "name": "上海科技大学",
+      "institute": "上海创芯学院",
+      "project": "上海创芯学院&上海科技大学接收2027级推免生 （第二批）通知",
+      "eventType": "推免生",
+      "description": "选择上海创芯学院、第二批2027研招上科大联培推免面试；电子信息专业学位（含直博），无需选报导师。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-19T23:59:00+08:00",
+      "deadlineOriginal": "报名截止时间： 2026 年 9 月 19 日 ( 含 ) 。",
+      "deadlineEpochMs": 1789833540000,
+      "website": "https://sist.shanghaitech.edu.cn/2026/0903/c7339a1126777/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://sist.shanghaitech.edu.cn/2026/0903/c7339a1126777/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "hybrid",
+        "time": {
+          "status": "confirmed",
+          "summary": "预计 9 月中下旬起开始邮件通知获得复试资格的同学以及分批复试时间"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "复试形式：线上综合素质考核、线下专业面试。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "英文个人陈述 + 中文个人陈述"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|中国科学院上海应用物理研究所|中国科学院上海应用物理研究所|2027年招收推荐免试生",
       "feedId": "camp2027",
       "name": "中国科学院上海应用物理研究所",
@@ -20852,6 +21818,52 @@
       "recommendation": {
         "status": "not-published",
         "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|上海大学|医学院|上海大学医学院2027年接收推荐免试攻读研究生(含直博生) 预报名通知",
+      "feedId": "camp2027",
+      "name": "上海大学",
+      "institute": "医学院",
+      "project": "上海大学医学院2027年接收推荐免试攻读研究生(含直博生) 预报名通知",
+      "eventType": "推免生",
+      "description": "智能医学诊疗（0810J9、0811J9、0812J9）交叉学科硕士；登录上海大学推免预报名系统报名。 原文仅明确直博推荐信，通用申请材料清单官方未公布。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-20T16:00:00+08:00",
+      "deadlineOriginal": "即日起至2026年9月20日16点",
+      "deadlineEpochMs": 1789891200000,
+      "website": "https://medicine.shu.edu.cn/info/1023/18147.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.117Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://medicine.shu.edu.cn/info/1023/18147.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "时间预计在2026年9月20日左右"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "推免生复试安排在上海大学宝山校区"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请直博生，除满足上述条件外，须提交两封相关专业正高职称专家的推荐信（原件、手签、鲜章）。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "申请直博生，除满足上述条件外，须提交两封相关专业正高职称专家的推荐信（原件、手签、鲜章）"
       },
       "logistics": {
         "status": "not-published",
@@ -21503,6 +22515,52 @@
       "materials": {
         "status": "not-published",
         "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|西安电子科技大学|物理学院|西安电子科技大学物理学院2027年推荐免试研究生招生预报名通知",
+      "feedId": "camp2027",
+      "name": "西安电子科技大学",
+      "institute": "物理学院",
+      "project": "西安电子科技大学物理学院2027年推荐免试研究生招生预报名通知",
+      "eventType": "推免预报名",
+      "description": "通过西电研究生招生服务平台填写预报名信息，正式录取须完成教育部推免系统流程。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-09-20T23:59:00+08:00",
+      "deadlineOriginal": "即日起至 202 6 年 9 月 20 日",
+      "deadlineEpochMs": 1789919940000,
+      "website": "https://phy.xidian.edu.cn/info/1012/11743.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.117Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://phy.xidian.edu.cn/info/1012/11743.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "考生登录西电研究生招生服务平台（https://yjspt.xidian.edu.cn/gsapp/sys/wdyjsbm/entrance.do）在“202 7 年推免生预报名”模块进行预报名，选择意向学院和专业，按照学院报名要求填写相关信息并上传《西安电子科技大学推免生报考诚信承诺书》。"
       },
       "recommendation": {
         "status": "not-published",
@@ -22999,6 +24057,52 @@
       }
     },
     {
+      "projectId": "2027|河北大学|网络空间安全与计算机学院|河北大学网络空间安全与计算机学院2027年接收优秀应届本科毕业生免试攻读研究生（含直博生）招生录取实施细则",
+      "feedId": "camp2027",
+      "name": "河北大学",
+      "institute": "网络空间安全与计算机学院",
+      "project": "河北大学网络空间安全与计算机学院2027年接收优秀应届本科毕业生免试攻读研究生（含直博生）招生录取实施细则",
+      "eventType": "推免生",
+      "description": "学院通知：https://cs.hbu.edu.cn/wzsy/yjsxx/details/3233 。材料压缩包以申请专业及姓名命名，10月9日前发送至学院通知所列邮箱。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-10-09T23:59:00+08:00",
+      "deadlineOriginal": "在 10 月 9 日前",
+      "deadlineEpochMs": 1791561540000,
+      "website": "https://cs.hbu.edu.cn/front/articles/getbyId?article_id=3233",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.115Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://cs.hbu.edu.cn/front/articles/getbyId?article_id=3233"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "offline",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试时间安排请关注学院网站；"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "复试考核以面试为主 , 线下进行，复试时间安排请关注学院网站；"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "上述证明材料制成 PDF 格式后，压缩成一个不大于 5M 的 zip 文件压缩包。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "申请推免直博生的另须提交两封《专家推荐书》，推荐人须是所报考学科专业领域内的副教授（或具有相当职称及以上的专家），拟报考的导师不得作为推荐人。"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|澳门科技大学|创新工程学院|2027/2028学年内地推免生申请本科直博入学办法",
       "feedId": "camp2027",
       "name": "澳门科技大学",
@@ -23224,6 +24328,52 @@
         "summary": ""
       },
       "materials": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|河北大学|电子信息工程学院|电子信息工程学院2027年接收优秀应届本科毕业生免试攻读研究生（含直博生）招生录取实施细则",
+      "feedId": "camp2027",
+      "name": "河北大学",
+      "institute": "电子信息工程学院",
+      "project": "电子信息工程学院2027年接收优秀应届本科毕业生免试攻读研究生（含直博生）招生录取实施细则",
+      "eventType": "推免生",
+      "description": "10月18日为国家系统关闭日期，学院材料期限未公布，须及早按学院通知提交电子版材料并电话确认。",
+      "verificationStatus": "confirmed-open",
+      "deadline": "2026-10-18T23:59:00+08:00",
+      "deadlineOriginal": "10月18日系统关闭推免生注册、支付、报名功能。",
+      "deadlineEpochMs": 1792339140000,
+      "website": "https://ceie.hbu.edu.cn/info/1103/5410.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.115Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://ceie.hbu.edu.cn/info/1103/5410.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "复试时间等具体安排请关注电子信息工程学院网站相关通知。"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "复试考核以线上面试为主,具体复试时间安排等请关注学院网站；"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "上述证明材料制成PDF格式后，压缩成一个不大于5M的zip文件压缩包以“申请专业—姓名”命名、邮件主题“推免硕士/直博+专业+姓名”"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "申请推免直博生的另须提交两封《专家推荐书》，推荐人须是所报考学科专业领域内的副教授（或具有相当职称及以上的专家），拟报考的导师不得作为推荐人。"
+      },
+      "logistics": {
         "status": "not-published",
         "summary": ""
       }
@@ -25091,6 +26241,328 @@
       }
     },
     {
+      "projectId": "2027|北京信息科技大学|仪器科学与光电工程学院|2027年接收推荐免试研究生（含直博生）",
+      "feedId": "camp2027",
+      "name": "北京信息科技大学",
+      "institute": "仪器科学与光电工程学院",
+      "project": "2027年接收推荐免试研究生（含直博生）",
+      "eventType": "推荐免试",
+      "description": "考生须在国家规定时间内登录“全国推荐免试攻读研究生（免初试、转段）信息公开管理服务系统”（网址：https://yz.chsi.com.cn/tm），填报志愿并参加综合考核。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "考生须在国家规定时间内登录“全国推荐免试攻读研究生（免初试、转\n段）信息公开管理服务系统”（网址：https://yz.chsi.com.cn/tm），填报志愿并\n参加综合考核。",
+      "deadlineEpochMs": null,
+      "website": "https://yanjiusheng.bistu.edu.cn/docs/2026-09/1df20376028b4c9380d39763a90ac070.pdf",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yanjiusheng.bistu.edu.cn/docs/2026-09/1df20376028b4c9380d39763a90ac070.pdf"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "（一）本人简介；\n（二）本人有效的学生证、身份证原件；\n（三）所在学校教务部门开具的应届本科毕业生证明（在读证明，红章原\n件）；\n（四）本科历年学习成绩单一份，加盖所在学校教务部门公章（红章原\n件）；\n（五）国家级英语考试成绩或合格证书复印件；\n（六）有关科研创新证明材料复印件(包括发表论文、参与课题等)；\n（七）重要奖项证书复印件；\n（八）申请直博生的推免生，还须提交两名报考学科专业领域内教授（或\n相当专业技术职称专家）的推荐信，须有专家亲笔签名，推荐书须密封并在骑\n缝处签字；\n（九）本人签名的诚信承诺书。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "申请直博生的推免生，还须提交两名报考学科专业领域内教授（或相当专业技术职称专家）的推荐信，须有专家亲笔签名，推荐书须密封并在骑缝处签字；"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|北京信息科技大学|信息与通信工程学院|2027年接收推荐免试研究生（含直博生）",
+      "feedId": "camp2027",
+      "name": "北京信息科技大学",
+      "institute": "信息与通信工程学院",
+      "project": "2027年接收推荐免试研究生（含直博生）",
+      "eventType": "推荐免试",
+      "description": "考生须在国家规定时间内登录“全国推荐免试攻读研究生（免初试、转段）信息公开管理服务系统”（网址：https://yz.chsi.com.cn/tm），填报志愿并参加综合考核。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "考生须在国家规定时间内登录“全国推荐免试攻读研究生（免初试、转\n段）信息公开管理服务系统”（网址：https://yz.chsi.com.cn/tm），填报志愿并\n参加综合考核。",
+      "deadlineEpochMs": null,
+      "website": "https://yanjiusheng.bistu.edu.cn/docs/2026-09/1df20376028b4c9380d39763a90ac070.pdf",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.115Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yanjiusheng.bistu.edu.cn/docs/2026-09/1df20376028b4c9380d39763a90ac070.pdf"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "（一）本人简介；\n（二）本人有效的学生证、身份证原件；\n（三）所在学校教务部门开具的应届本科毕业生证明（在读证明，红章原\n件）；\n（四）本科历年学习成绩单一份，加盖所在学校教务部门公章（红章原\n件）；\n（五）国家级英语考试成绩或合格证书复印件；\n（六）有关科研创新证明材料复印件(包括发表论文、参与课题等)；\n（七）重要奖项证书复印件；\n（八）申请直博生的推免生，还须提交两名报考学科专业领域内教授（或\n相当专业技术职称专家）的推荐信，须有专家亲笔签名，推荐书须密封并在骑\n缝处签字；\n（九）本人签名的诚信承诺书。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "申请直博生的推免生，还须提交两名报考学科专业领域内教授（或相当专业技术职称专家）的推荐信，须有专家亲笔签名，推荐书须密封并在骑缝处签字；"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|北京信息科技大学|机电工程学院|2027年接收推荐免试研究生（含直博生）",
+      "feedId": "camp2027",
+      "name": "北京信息科技大学",
+      "institute": "机电工程学院",
+      "project": "2027年接收推荐免试研究生（含直博生）",
+      "eventType": "推荐免试",
+      "description": "考生须在国家规定时间内登录“全国推荐免试攻读研究生（免初试、转段）信息公开管理服务系统”（网址：https://yz.chsi.com.cn/tm），填报志愿并参加综合考核。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "考生须在国家规定时间内登录“全国推荐免试攻读研究生（免初试、转\n段）信息公开管理服务系统”（网址：https://yz.chsi.com.cn/tm），填报志愿并\n参加综合考核。",
+      "deadlineEpochMs": null,
+      "website": "https://yanjiusheng.bistu.edu.cn/docs/2026-09/1df20376028b4c9380d39763a90ac070.pdf",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yanjiusheng.bistu.edu.cn/docs/2026-09/1df20376028b4c9380d39763a90ac070.pdf"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "（一）本人简介；\n（二）本人有效的学生证、身份证原件；\n（三）所在学校教务部门开具的应届本科毕业生证明（在读证明，红章原\n件）；\n（四）本科历年学习成绩单一份，加盖所在学校教务部门公章（红章原\n件）；\n（五）国家级英语考试成绩或合格证书复印件；\n（六）有关科研创新证明材料复印件(包括发表论文、参与课题等)；\n（七）重要奖项证书复印件；\n（八）申请直博生的推免生，还须提交两名报考学科专业领域内教授（或\n相当专业技术职称专家）的推荐信，须有专家亲笔签名，推荐书须密封并在骑\n缝处签字；\n（九）本人签名的诚信承诺书。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "申请直博生的推免生，还须提交两名报考学科专业领域内教授（或相当专业技术职称专家）的推荐信，须有专家亲笔签名，推荐书须密封并在骑缝处签字；"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|北京信息科技大学|理学院|2027年接收推荐免试研究生（含直博生）",
+      "feedId": "camp2027",
+      "name": "北京信息科技大学",
+      "institute": "理学院",
+      "project": "2027年接收推荐免试研究生（含直博生）",
+      "eventType": "推荐免试",
+      "description": "考生须在国家规定时间内登录“全国推荐免试攻读研究生（免初试、转段）信息公开管理服务系统”（网址：https://yz.chsi.com.cn/tm），填报志愿并参加综合考核。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "考生须在国家规定时间内登录“全国推荐免试攻读研究生（免初试、转\n段）信息公开管理服务系统”（网址：https://yz.chsi.com.cn/tm），填报志愿并\n参加综合考核。",
+      "deadlineEpochMs": null,
+      "website": "https://yanjiusheng.bistu.edu.cn/docs/2026-09/1df20376028b4c9380d39763a90ac070.pdf",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yanjiusheng.bistu.edu.cn/docs/2026-09/1df20376028b4c9380d39763a90ac070.pdf"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "（一）本人简介；\n（二）本人有效的学生证、身份证原件；\n（三）所在学校教务部门开具的应届本科毕业生证明（在读证明，红章原\n件）；\n（四）本科历年学习成绩单一份，加盖所在学校教务部门公章（红章原\n件）；\n（五）国家级英语考试成绩或合格证书复印件；\n（六）有关科研创新证明材料复印件(包括发表论文、参与课题等)；\n（七）重要奖项证书复印件；\n（八）申请直博生的推免生，还须提交两名报考学科专业领域内教授（或\n相当专业技术职称专家）的推荐信，须有专家亲笔签名，推荐书须密封并在骑\n缝处签字；\n（九）本人签名的诚信承诺书。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "申请直博生的推免生，还须提交两名报考学科专业领域内教授（或相当专业技术职称专家）的推荐信，须有专家亲笔签名，推荐书须密封并在骑缝处签字；"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|北京信息科技大学|管理科学与工程学院|2027年接收推荐免试研究生（含直博生）",
+      "feedId": "camp2027",
+      "name": "北京信息科技大学",
+      "institute": "管理科学与工程学院",
+      "project": "2027年接收推荐免试研究生（含直博生）",
+      "eventType": "推荐免试",
+      "description": "考生须在国家规定时间内登录“全国推荐免试攻读研究生（免初试、转段）信息公开管理服务系统”（网址：https://yz.chsi.com.cn/tm），填报志愿并参加综合考核。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "考生须在国家规定时间内登录“全国推荐免试攻读研究生（免初试、转\n段）信息公开管理服务系统”（网址：https://yz.chsi.com.cn/tm），填报志愿并\n参加综合考核。",
+      "deadlineEpochMs": null,
+      "website": "https://yanjiusheng.bistu.edu.cn/docs/2026-09/1df20376028b4c9380d39763a90ac070.pdf",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yanjiusheng.bistu.edu.cn/docs/2026-09/1df20376028b4c9380d39763a90ac070.pdf"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "（一）本人简介；\n（二）本人有效的学生证、身份证原件；\n（三）所在学校教务部门开具的应届本科毕业生证明（在读证明，红章原\n件）；\n（四）本科历年学习成绩单一份，加盖所在学校教务部门公章（红章原\n件）；\n（五）国家级英语考试成绩或合格证书复印件；\n（六）有关科研创新证明材料复印件(包括发表论文、参与课题等)；\n（七）重要奖项证书复印件；\n（八）申请直博生的推免生，还须提交两名报考学科专业领域内教授（或\n相当专业技术职称专家）的推荐信，须有专家亲笔签名，推荐书须密封并在骑\n缝处签字；\n（九）本人签名的诚信承诺书。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "申请直博生的推免生，还须提交两名报考学科专业领域内教授（或相当专业技术职称专家）的推荐信，须有专家亲笔签名，推荐书须密封并在骑缝处签字；"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|北京信息科技大学|自动化学院（人工智能学院）|2027年接收推荐免试研究生（含直博生）",
+      "feedId": "camp2027",
+      "name": "北京信息科技大学",
+      "institute": "自动化学院（人工智能学院）",
+      "project": "2027年接收推荐免试研究生（含直博生）",
+      "eventType": "推荐免试",
+      "description": "考生须在国家规定时间内登录“全国推荐免试攻读研究生（免初试、转段）信息公开管理服务系统”（网址：https://yz.chsi.com.cn/tm），填报志愿并参加综合考核。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "考生须在国家规定时间内登录“全国推荐免试攻读研究生（免初试、转\n段）信息公开管理服务系统”（网址：https://yz.chsi.com.cn/tm），填报志愿并\n参加综合考核。",
+      "deadlineEpochMs": null,
+      "website": "https://yanjiusheng.bistu.edu.cn/docs/2026-09/1df20376028b4c9380d39763a90ac070.pdf",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.116Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yanjiusheng.bistu.edu.cn/docs/2026-09/1df20376028b4c9380d39763a90ac070.pdf"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "（一）本人简介；\n（二）本人有效的学生证、身份证原件；\n（三）所在学校教务部门开具的应届本科毕业生证明（在读证明，红章原\n件）；\n（四）本科历年学习成绩单一份，加盖所在学校教务部门公章（红章原\n件）；\n（五）国家级英语考试成绩或合格证书复印件；\n（六）有关科研创新证明材料复印件(包括发表论文、参与课题等)；\n（七）重要奖项证书复印件；\n（八）申请直博生的推免生，还须提交两名报考学科专业领域内教授（或\n相当专业技术职称专家）的推荐信，须有专家亲笔签名，推荐书须密封并在骑\n缝处签字；\n（九）本人签名的诚信承诺书。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "申请直博生的推免生，还须提交两名报考学科专业领域内教授（或相当专业技术职称专家）的推荐信，须有专家亲笔签名，推荐书须密封并在骑缝处签字；"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|北京信息科技大学|计算机学院|2027年接收推荐免试研究生（含直博生）",
+      "feedId": "camp2027",
+      "name": "北京信息科技大学",
+      "institute": "计算机学院",
+      "project": "2027年接收推荐免试研究生（含直博生）",
+      "eventType": "推荐免试",
+      "description": "考生须在国家规定时间内登录“全国推荐免试攻读研究生（免初试、转段）信息公开管理服务系统”（网址：https://yz.chsi.com.cn/tm），填报志愿并参加综合考核。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "考生须在国家规定时间内登录“全国推荐免试攻读研究生（免初试、转\n段）信息公开管理服务系统”（网址：https://yz.chsi.com.cn/tm），填报志愿并\n参加综合考核。",
+      "deadlineEpochMs": null,
+      "website": "https://yanjiusheng.bistu.edu.cn/docs/2026-09/1df20376028b4c9380d39763a90ac070.pdf",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.115Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://yanjiusheng.bistu.edu.cn/docs/2026-09/1df20376028b4c9380d39763a90ac070.pdf"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "（一）本人简介；\n（二）本人有效的学生证、身份证原件；\n（三）所在学校教务部门开具的应届本科毕业生证明（在读证明，红章原\n件）；\n（四）本科历年学习成绩单一份，加盖所在学校教务部门公章（红章原\n件）；\n（五）国家级英语考试成绩或合格证书复印件；\n（六）有关科研创新证明材料复印件(包括发表论文、参与课题等)；\n（七）重要奖项证书复印件；\n（八）申请直博生的推免生，还须提交两名报考学科专业领域内教授（或\n相当专业技术职称专家）的推荐信，须有专家亲笔签名，推荐书须密封并在骑\n缝处签字；\n（九）本人签名的诚信承诺书。"
+      },
+      "recommendation": {
+        "status": "confirmed",
+        "summary": "申请直博生的推免生，还须提交两名报考学科专业领域内教授（或相当专业技术职称专家）的推荐信，须有专家亲笔签名，推荐书须密封并在骑缝处签字；"
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
       "projectId": "2027|北京理工大学|人工智能学院|2027年接收优秀应届本科毕业生推荐免试攻读研究生（含本直博生）办法",
       "feedId": "camp2027",
       "name": "北京理工大学",
@@ -25469,6 +26941,52 @@
       "materials": {
         "status": "confirmed",
         "summary": "[]"
+      }
+    },
+    {
+      "projectId": "2027|哈尔滨工业大学（威海）|计算机科学与技术学院|哈尔滨工业大学（威海）计算机科学与技术学院2027年接收优秀应届本科毕业生免试攻读研究生报名通知",
+      "feedId": "camp2027",
+      "name": "哈尔滨工业大学（威海）",
+      "institute": "计算机科学与技术学院",
+      "project": "哈尔滨工业大学（威海）计算机科学与技术学院2027年接收优秀应届本科毕业生免试攻读研究生报名通知",
+      "eventType": "推免生",
+      "description": "登录哈工大推免生信息采集系统报名，每名考生可填报两个志愿；毕业专业原则上为计算机、软件、网安、人工智能等计算类相关专业。学院按报名情况分批通知面试，公开通知及系统登录页均未公布报名截止。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "面试时间、形式以后续通知为准。",
+      "deadlineEpochMs": null,
+      "website": "https://cst.hitwh.edu.cn/2026/0803/c371a216545/page.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.117Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://cst.hitwh.edu.cn/2026/0803/c371a216545/page.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "confirmed",
+          "summary": "计算机科学与技术学院推免生考核形式为面试，考核时间将在审核通过后，根据报名情况适时安排。面试时间、形式以后续通知为准。"
+        },
+        "formatLocation": {
+          "status": "confirmed",
+          "summary": "面试时间、形式以后续通知为准。"
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "申请人须按要求提供成绩单、成绩排名证明、各类证书等材料。"
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
       }
     },
     {
@@ -26337,6 +27855,52 @@
       "materials": {
         "status": "not-published",
         "summary": ""
+      },
+      "recommendation": {
+        "status": "not-published",
+        "summary": ""
+      },
+      "logistics": {
+        "status": "not-published",
+        "summary": ""
+      }
+    },
+    {
+      "projectId": "2027|西安电子科技大学|网络安全与密码学部|2027年西安电子科技大学网络安全与密码学部推荐免试研究生接收工作实施方案",
+      "feedId": "camp2027",
+      "name": "西安电子科技大学",
+      "institute": "网络安全与密码学部",
+      "project": "2027年西安电子科技大学网络安全与密码学部推荐免试研究生接收工作实施方案",
+      "eventType": "推荐免试",
+      "description": "通过西电研究生招生服务平台填写预报名信息，正式录取须完成教育部推免系统流程。",
+      "verificationStatus": "confirmed-unknown-deadline",
+      "deadline": null,
+      "deadlineOriginal": "推免生接收录取工作通过中国研究生招生信息网“推免服务系统”进行，按照系统时间节点完成工作流程。",
+      "deadlineEpochMs": null,
+      "website": "https://ce.xidian.edu.cn/info/1324/17683.htm",
+      "tags": [],
+      "verifiedAt": "2026-09-14T04:01:23.118Z",
+      "discoverySources": [
+        {
+          "kind": "official",
+          "label": "学院或研究生招生官方通知",
+          "url": "https://ce.xidian.edu.cn/info/1324/17683.htm"
+        }
+      ],
+      "eventArrangement": {
+        "mode": "unknown",
+        "time": {
+          "status": "not-published",
+          "summary": ""
+        },
+        "formatLocation": {
+          "status": "not-published",
+          "summary": ""
+        }
+      },
+      "materials": {
+        "status": "confirmed",
+        "summary": "1.推免生预报名工作通过西安电子科技大学研究生招生服务平台推免生预报名系统进行，考生须上传诚信承诺书及相关支撑材料等。"
       },
       "recommendation": {
         "status": "not-published",
@@ -36611,8 +38175,8 @@
       }
     }
   ],
-  "snapshotId": "2026-09-13T15:50:57.880Z-02e0f7fb9939",
-  "approvedAt": "2026-09-13T15:50:57.880Z",
-  "previousSnapshotId": "2026-09-13T02:40:35.193Z-aa43c2204221",
-  "dataHash": "02e0f7fb99392b3d07f3d1c36b96f4842a3beeaf4b1953635664709abcfda422"
+  "snapshotId": "2026-09-14T04:01:23.576Z-58721cc98861",
+  "approvedAt": "2026-09-14T04:01:23.576Z",
+  "previousSnapshotId": "2026-09-13T15:50:57.880Z-02e0f7fb9939",
+  "dataHash": "58721cc98861f93c975734831ac84aa5bc673ac26ac271e052abd5d6a50e006c"
 }
