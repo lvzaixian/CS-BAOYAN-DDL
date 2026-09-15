@@ -418,7 +418,7 @@ function deadlineOriginalSupportsNormalizedDate(original: string, deadline: stri
   const previousCompleteDate = String.raw`0*${previousYear}\s*(?:年|[-./])\s*0*${previousMonth}\s*(?:月|[-./])\s*0*${previousDay}(?:\s*日)?`;
   const previousMonthDay = String.raw`0*${previousMonth}\s*(?:月|[-./])\s*0*${previousDay}(?:\s*日)?`;
   const previousDateAtMidnight = new RegExp(
-    String.raw`(?:${previousCompleteDate}|${previousMonthDay})\s*24\s*(?:(?::|：)\s*00?|点|时)`,
+    String.raw`(?:${previousCompleteDate}|${previousMonthDay})\s*(?:晚上\s*)?24\s*(?:(?::|：)\s*00?|点|时)`,
     'u',
   );
   return previousDateAtMidnight.test(original);
