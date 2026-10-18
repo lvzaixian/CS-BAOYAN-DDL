@@ -261,6 +261,7 @@ const additiveInstitutionalHostSuffixes = [
   '.edu.cn',
   '.ac.cn',
   '.edu.hk',
+  '.eduhk.hk',
   '.edu.mo',
   '.edu.tw',
   '.cas.cn',
@@ -284,6 +285,11 @@ function hasErrorCode(error: unknown, code: string): boolean {
 
 function quoted(value: string): string {
   return JSON.stringify(value);
+}
+
+function additiveEvidenceTextIncludes(text: string, quote: string): boolean {
+  return text.includes(quote)
+    || text.replace(/\s+/gu, '').includes(quote.replace(/\s+/gu, ''));
 }
 
 function safeError(error: unknown): string {
@@ -374,22 +380,38 @@ function deadlineOriginalSupportsNormalizedDate(original: string, deadline: stri
   const escapedMonth = String.raw`0*${month}`;
   const escapedDay = String.raw`0*${day}`;
   const completeDate = new RegExp(
-    String.raw`${escapedYear}\s*(?:年|[-./])\s*${escapedMonth}\s*(?:月|[-./])\s*${escapedDay}(?:日)?`,
+    String.raw`${escapedYear}\s*(?:年|[-./])\s*${escapedMonth}\s*(?:月|[-./])\s*${escapedDay}(?:\s*日)?`,
     'u',
   );
   const monthDay = new RegExp(
-    String.raw`${escapedMonth}\s*(?:月|[-./])\s*${escapedDay}(?:日)?`,
+    String.raw`${escapedMonth}\s*(?:月|[-./])\s*${escapedDay}(?:\s*日)?`,
     'u',
   );
   const englishMonth = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    'Jan(?:uary)?', 'Feb(?:ruary)?', 'Mar(?:ch)?', 'Apr(?:il)?', 'May', 'Jun(?:e)?',
+    'Jul(?:y)?', 'Aug(?:ust)?', 'Sep(?:t(?:ember)?)?', 'Oct(?:ober)?', 'Nov(?:ember)?', 'Dec(?:ember)?',
   ][month - 1];
   const englishDate = new RegExp(
-    String.raw`\b${englishMonth}\s+${escapedDay}(?:st|nd|rd|th)?\s*,?\s*${escapedYear}\b`,
+    String.raw`(?:\b${englishMonth}(?:\s+|-)${escapedDay}(?:st|nd|rd|th)?(?:\s*,\s*|\s+|-)${escapedYear}\b|\b${escapedDay}(?:st|nd|rd|th)?(?:\s+|-)${englishMonth}(?:\s*,\s*|\s+|-)${escapedYear}\b)`,
     'iu',
   );
-  return completeDate.test(original) || monthDay.test(original) || englishDate.test(original);
+  if (completeDate.test(original) || monthDay.test(original) || englishDate.test(original)) {
+    return true;
+  }
+
+  // Chinese notices conventionally use 24:00 for midnight at the end of the
+  // previous calendar date. Permit only that exact next-day normalization.
+  const previousDate = new Date(Date.UTC(year, month - 1, day) - 86_400_000);
+  const previousYear = previousDate.getUTCFullYear();
+  const previousMonth = previousDate.getUTCMonth() + 1;
+  const previousDay = previousDate.getUTCDate();
+  const previousCompleteDate = String.raw`0*${previousYear}\s*(?:年|[-./])\s*0*${previousMonth}\s*(?:月|[-./])\s*0*${previousDay}(?:\s*日)?`;
+  const previousMonthDay = String.raw`0*${previousMonth}\s*(?:月|[-./])\s*0*${previousDay}(?:\s*日)?`;
+  const previousDateAtMidnight = new RegExp(
+    String.raw`(?:${previousCompleteDate}|${previousMonthDay})\s*24\s*(?:(?::|：)\s*00?|点|时)`,
+    'u',
+  );
+  return previousDateAtMidnight.test(original);
 }
 
 function parseFieldEvidence(value: unknown, path: string): AdditiveFieldEvidence {
@@ -1807,11 +1829,11 @@ function assertAdditiveEvidence(
         ? null
         : artifactMaterials.get(material.artifact.extractedTextArtifactSha256)?.text ?? null
     );
-    if (quoteText === null || !quoteText.includes(fieldEvidence.quote)) {
+    if (quoteText === null || !additiveEvidenceTextIncludes(quoteText, fieldEvidence.quote)) {
       throw new Error(`addition ${quoted(opportunity.projectId)} field evidence quote must occur in its file-backed artifact text`);
     }
     const sourceValue = additiveFieldQuoteSourceValue(opportunity, fieldEvidence.field);
-    if (sourceValue !== null && !fieldEvidence.quote.includes(sourceValue)) {
+    if (sourceValue !== null && !additiveEvidenceTextIncludes(fieldEvidence.quote, sourceValue)) {
       throw new Error(`addition ${quoted(opportunity.projectId)} field evidence quote must contain the field source value`);
     }
   }
