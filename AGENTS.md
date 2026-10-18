@@ -38,7 +38,7 @@ pnpm run snapshot:approve-additive -- \
 
 `--parent-url` 可为 Fork 显式指定自己的 HTTPS `/data/current.json`；省略沿用原站地址，run.parent.url 必须与执行者的预期地址完全一致。
 
-`discovery-run.json` 是私有的 `schemaVersion: 3` 日常运行文件，必须包含唯一 `runId`、`incremental` 或 `sweep` 模式、开始/结束时间、从 `https://ddl.meta-mind.cn/data/current.json` 新鲜下载的父快照原始 SHA-256、父 `snapshotId`/`dataHash`、scope 图、普通官方 artifact 清单、候选新增项和字段证据。它还必须带有 `coverage`：`{schemaVersion: 1, rotationDate, registrySha256, sentinelsSha256}`。两个 SHA-256 是本轮冻结的注册表和哨兵配置原始字节哈希；`rotationDate` 必须等于 `finishedAt` 的北京时间日期。私有候选、旧运行产物和工作簿不能充当父本。
+`discovery-run.json` 是私有的 `schemaVersion: 3` 日常运行文件，必须包含唯一 `runId`、`incremental` 或 `sweep` 模式、开始/结束时间、从执行者指定的父 URL（默认 `https://ddl.meta-mind.cn/data/current.json`）新鲜下载的父快照原始 SHA-256、父 `snapshotId`/`dataHash`、scope 图、普通官方 artifact 清单、候选新增项和字段证据。它还必须带有 `coverage`：`{schemaVersion: 1, rotationDate, registrySha256, sentinelsSha256}`。两个 SHA-256 是本轮冻结的注册表和哨兵配置原始字节哈希；`rotationDate` 必须等于 `finishedAt` 的北京时间日期。私有候选、旧运行产物和工作簿不能充当父本。
 
 每日 v3 run 还必须带有 `fixedDiscoveryChecks`，并且**恰好**包含以下三项私有深研派发现检查：
 
