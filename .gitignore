@@ -6,12 +6,20 @@ node_modules
 /playwright-report
 /test-results
 /browser-diagnostics
+/artifacts
+/agent-reports
+/.worktrees
+/-.png
+/-.ppm
 src/data/logos.json
 data/staging/*.json
 !data/staging/.gitkeep
 
 
 # local env files
+.env
+.env.*
+!.env.example
 .env.local
 .env.*.local
 

@@ -1,5 +1,15 @@
 # CS DDL 追加式更新工作约定
 
+## 归档模式（2026-10-18 起优先适用）
+
+本项目以可复用的公开归档方式维护。先读 [README](README.md)、[归档说明](ARCHIVE.md) 和 [文档导航](docs/README.md)。
+
+- 保留 Fork、Issue、PR 和 CI；不启用定时扫描、监控或合入后的自动生产部署。
+- 下文的“每日”“自动发布”描述恢复运营时的数据契约，不是当前调度状态，也不授权启动扫描或部署。
+- `data/approved/current.json` 是冻结的历史批准快照。文档整理、构建和测试不得改写其内容或更新时间。
+- 完整复用分为静态网站和可信扫描器接入两层；本仓库没有独立后端服务或内置无人值守爬虫。
+- 恢复数据更新、调度或线上部署时，按用户明确的新任务执行，并保留下面的官方证据、追加性和隐私约束。
+
 ## 目标与边界
 
 `ddl.meta-mind.cn` 是一个公开招生信息聚合站。日常更新的目标是持续发现并追加有官方证据的新项目；它不是逐条人工审批、全量重审或删除同步系统。
@@ -25,6 +35,8 @@ pnpm run snapshot:approve-additive -- \
   --registry scripts/source/universities.json \
   --sentinels scripts/source/priority-sentinels.json
 ```
+
+`--parent-url` 可为 Fork 显式指定自己的 HTTPS `/data/current.json`；省略沿用原站地址，run.parent.url 必须与执行者的预期地址完全一致。
 
 `discovery-run.json` 是私有的 `schemaVersion: 3` 日常运行文件，必须包含唯一 `runId`、`incremental` 或 `sweep` 模式、开始/结束时间、从 `https://ddl.meta-mind.cn/data/current.json` 新鲜下载的父快照原始 SHA-256、父 `snapshotId`/`dataHash`、scope 图、普通官方 artifact 清单、候选新增项和字段证据。它还必须带有 `coverage`：`{schemaVersion: 1, rotationDate, registrySha256, sentinelsSha256}`。两个 SHA-256 是本轮冻结的注册表和哨兵配置原始字节哈希；`rotationDate` 必须等于 `finishedAt` 的北京时间日期。私有候选、旧运行产物和工作簿不能充当父本。
 

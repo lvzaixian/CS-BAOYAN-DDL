@@ -1,8 +1,6 @@
 name: Public Monitor
 
 on:
-  schedule:
-    - cron: '17 */6 * * *'
   workflow_dispatch:
 
 permissions:

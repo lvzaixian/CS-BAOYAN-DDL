@@ -195,7 +195,7 @@ export interface AdditiveApprovalRun {
   startedAt: string;
   finishedAt: string;
   parent: {
-    url: 'https://ddl.meta-mind.cn/data/current.json';
+    url: string;
     sha256: string;
     snapshotId: string;
     dataHash: string;
@@ -217,6 +217,7 @@ export interface ApproveAdditiveSnapshotFileOptions {
   approvedPath: string;
   decisionPath: string;
   approvedAt: string;
+  expectedParentUrl?: string;
   registryPath?: string;
   sentinelsPath?: string;
   nowMs?: number;
@@ -251,6 +252,7 @@ const additiveRequiredEvidenceFields = [
   'logistics',
 ] as const;
 const additiveRunMaximumAgeMs = 24 * 60 * 60 * 1000;
+const additiveDefaultParentUrl = 'https://ddl.meta-mind.cn/data/current.json';
 const additiveRegistryPath = fileURLToPath(
   new URL('../source/universities.json', import.meta.url),
 );
@@ -558,7 +560,26 @@ function fixedDiscoveryChecksAt(
   });
 }
 
-function parseAdditiveRun(value: unknown): AdditiveApprovalRun {
+function assertAdditiveParentEndpoint(value: string): void {
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw new Error('expectedParentUrl must be a credential-free HTTPS endpoint ending in /data/current.json without query, fragment, whitespace, controls, or backslashes');
+  }
+  if (
+    /[\p{White_Space}\p{Cc}\p{Cf}\\?#]/u.test(value)
+    || !/^https:\/\//iu.test(value)
+    || url.protocol !== 'https:'
+    || url.username !== ''
+    || url.password !== ''
+    || !url.pathname.endsWith('/data/current.json')
+  ) {
+    throw new Error('expectedParentUrl must be a credential-free HTTPS endpoint ending in /data/current.json without query, fragment, whitespace, controls, or backslashes');
+  }
+}
+
+function parseAdditiveRun(value: unknown, expectedParentUrl: string): AdditiveApprovalRun {
   const object = objectAt(value, 'discovery run');
   exactKeys(object, 'discovery run', [
     'schemaVersion',
@@ -599,8 +620,8 @@ function parseAdditiveRun(value: unknown): AdditiveApprovalRun {
     'privateParentCandidateUsed',
   ]);
   const url = stringAt(parentObject, 'url', 'discovery run.parent');
-  if (url !== 'https://ddl.meta-mind.cn/data/current.json') {
-    throw new Error('discovery run.parent.url must be the public current.json endpoint');
+  if (url !== expectedParentUrl) {
+    throw new Error('discovery run.parent.url must exactly match the configured public current.json endpoint');
   }
   if (parentObject.privateParentCandidateUsed !== false) {
     throw new Error('discovery run.parent.privateParentCandidateUsed must be false');
@@ -2435,6 +2456,8 @@ export async function approveAdditiveSnapshotFile(
   signal?: AbortSignal,
   hooks: ApproveSnapshotIoHooks = {},
 ): Promise<AdditiveApprovalResult> {
+  const expectedParentUrl = options.expectedParentUrl ?? additiveDefaultParentUrl;
+  assertAdditiveParentEndpoint(expectedParentUrl);
   const runPath = resolve(options.runPath);
   const parentPath = resolve(options.parentPath);
   const approvedPath = resolve(options.approvedPath);
@@ -2483,7 +2506,7 @@ export async function approveAdditiveSnapshotFile(
     registryFile,
     sentinelsFile,
   );
-  const run = parseAdditiveRun(runFile.value);
+  const run = parseAdditiveRun(runFile.value, expectedParentUrl);
   assertScopeManifest(run);
   await assertAdditiveDecisionDoesNotCollideWithArtifacts(decisionPath, runDirectory, run);
   const artifactMaterials = await readAndVerifyAdditiveArtifacts(runPath, run);

@@ -9,12 +9,13 @@ interface CliOptions {
   approved: string;
   decision: string;
   approvedAt?: string;
+  parentUrl?: string;
   registry?: string;
   sentinels?: string;
 }
 
 const usage =
-  'Usage: snapshot:approve-additive -- --run PATH --parent PATH --approved PATH --decision PATH [--approved-at ISO_TIMESTAMP] [--registry PATH --sentinels PATH]';
+  'Usage: snapshot:approve-additive -- --run PATH --parent PATH --approved PATH --decision PATH [--approved-at ISO_TIMESTAMP] [--parent-url HTTPS_URL] [--registry PATH --sentinels PATH]';
 
 function quoted(value: string): string {
   return JSON.stringify(value);
@@ -27,6 +28,7 @@ function parseCliOptions(argv: string[]): CliOptions {
     '--approved',
     '--decision',
     '--approved-at',
+    '--parent-url',
     '--registry',
     '--sentinels',
   ]);
@@ -60,6 +62,7 @@ function parseCliOptions(argv: string[]): CliOptions {
     approved,
     decision,
     approvedAt: values.get('--approved-at'),
+    parentUrl: values.get('--parent-url'),
     registry,
     sentinels,
   };
@@ -75,6 +78,7 @@ async function runCli(): Promise<void> {
     approvedPath: options.approved,
     decisionPath: options.decision,
     approvedAt: options.approvedAt ?? new Date().toISOString(),
+    expectedParentUrl: options.parentUrl,
     registryPath: options.registry,
     sentinelsPath: options.sentinels,
   });

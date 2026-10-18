@@ -1,5 +1,7 @@
 # 腾讯云静态部署手册
 
+> 归档说明：本文保留更新/运维实现契约与历史操作记录。当前已停止定时运行，部署需从 main 手动触发；入门请先看 [文档导航](../README.md)。
+
 ## 当前边界
 
 本仓库只提供部署工具，不代表腾讯云已配置完成。本次实现没有连接腾讯云、写入 GitHub Secrets、执行 bootstrap，也没有修改防火墙、`sshd`、DNS 或 TLS。
@@ -558,14 +560,11 @@ PUBLIC_BASE_URL
 
 `PUBLIC_BASE_URL` 必须是最终可访问站点的 HTTP 或 HTTPS 根 origin：不得带凭据、非根路径、query 或 fragment。HTTP 只可用于 TLS 完成前的受控验收；自动 gate、部署 smoke 和 TLS 校验会继续阻止不安全的真实上线。
 
-`production-approval` 与 `production` 都必须保留 Environment 绑定，并将 deployment branches 限制为受保护的 `main`。无人值守目标要求两个 Environment 的 `required_reviewers` 都被仓库管理员一次性移除；这是一项外部 GitHub 配置，本文档不声称它已经完成，切换前必须只读核验。不要因移除 reviewer 而删除 Environment、放宽分支限制、把 Secrets 移到仓库级或打印 Secret 值。仓库 `main` 仍启用 branch protection：禁止 force push，并要求名为 `CI` 的检查成功后才能合并。
+`production-approval` 与 `production` 都必须保留 Environment 绑定，并将 deployment branches 限制为受保护的 `main`。无人值守目标要求两个 Environment 的 `required_reviewers` 都被仓库管理员一次性移除；这是一项外部 GitHub 配置，本文档不声称它已经完成，切换前必须只读核验。不要因移除 reviewer 而删除 Environment、放宽分支限制、把 Secrets 移到仓库级或打印 Secret 值。仓库 `main` 仍启用 branch protection：禁止 force push，并要求 CI 中名为 `verify` 的检查成功后才能合并。
 
 ## 发布行为
 
-工作流只接受两种来源：
-
-- 本仓库 `main` push 触发且成功结束的 `CI` workflow run；
-- 从 `refs/heads/main` 发起的手动 dispatch。
+归档模式下，工作流只接受从 `refs/heads/main` 发起的手动 dispatch。main 的 CI 成功后不会自动部署；服务器准备、Secret 与域名配置应由复用者在自己的环境完成。
 
 工作流分成四个 job，其中生产部署使用全新 runner：
 

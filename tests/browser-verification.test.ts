@@ -155,6 +155,22 @@ test('frontend exposes stable browser selectors and accessible filter state', ()
   assert.match(app, /aria-label="筛选条件"/);
 });
 
+test('archived workflows keep PR and main checks while deployment requires manual main dispatch', () => {
+  const ci = read('.github/workflows/ci.yml');
+  assert.match(ci, /on:\s*\n\s*pull_request:\s*\n\s*push:\s*\n\s*branches:\s*\[main\]/);
+
+  const deploy = read('.github/workflows/deploy.yml');
+  assert.match(deploy, /on:\s*\n\s*workflow_dispatch:/);
+  assert.doesNotMatch(deploy, /workflow_run|^\s*(?:schedule|cron|push|pull_request):/m);
+  const guards = [...deploy.matchAll(/if:\s*>-\s*\n\s*(.*)/g)].map((match) => match[1]);
+  assert.deepEqual(guards, [
+    "github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'",
+    "github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'",
+  ]);
+  const releaseShas = [...deploy.matchAll(/RELEASE_SHA:\s*(.*)/g)].map((match) => match[1]);
+  assert.deepEqual(releaseShas, Array(4).fill('${{ github.sha }}'));
+});
+
 test('CI and deploy gate production packaging behind the same browser suite', () => {
   const ci = read('.github/workflows/ci.yml');
   const ciDiagnostics = ci.indexOf('Initialize browser diagnostics');

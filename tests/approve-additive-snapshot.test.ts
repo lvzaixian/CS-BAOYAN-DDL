@@ -492,7 +492,7 @@ async function assertRejectedBeforeApproval(
   assert.equal(existsSync(source.decision), false);
 }
 
-function approve(source: ReturnType<typeof paths>) {
+function approve(source: ReturnType<typeof paths>, expectedParentUrl?: string) {
   return approveAdditiveSnapshotFile({
     runPath: source.run,
     parentPath: source.parent,
@@ -500,8 +500,102 @@ function approve(source: ReturnType<typeof paths>) {
     decisionPath: source.decision,
     approvedAt: nextApprovedAt,
     nowMs: Date.parse('2026-08-09T09:00:00.000Z'),
+    expectedParentUrl,
   });
 }
+
+test('accepts an operator-configured fork parent endpoint for empty and ready runs', async (t) => {
+  for (const [endpoint, withAddition] of [
+    ['https://fork.example/data/current.json', false],
+    ['https://fork.example/cs-ddl/data/current.json', true],
+  ] as const) {
+    await t.test(endpoint, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const run = additiveRun(parent, parentText, withAddition ? [additionFor(parent)] : []);
+      run.parent.url = endpoint;
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        const result = await approve(source, endpoint);
+        assert.equal(result.status, withAddition ? 'ready' : 'no-additions');
+        const approved = JSON.parse(readFileSync(source.approved, 'utf8')) as PublicSnapshot;
+        assert.deepEqual(
+          approved.opportunities.find((row) => row.projectId === parent.opportunities[0].projectId),
+          parent.opportunities[0],
+        );
+        assert.equal(approved.opportunities.length, parent.opportunities.length + Number(withAddition));
+        const decision = JSON.parse(readFileSync(source.decision, 'utf8')) as Record<string, unknown>;
+        assert.equal(decision.status, result.status);
+        if (!withAddition) assert.equal(readFileSync(source.approved, 'utf8'), parentText);
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('rejects a run parent URL that does not exactly match the configured endpoint', async (t) => {
+  for (const [actual, expected] of [
+    ['https://fork.example/data/current.json', undefined],
+    ['https://ddl.meta-mind.cn/data/current.json', 'https://fork.example/data/current.json'],
+    ['https://FORK.example/data/current.json', 'https://fork.example/data/current.json'],
+  ] as const) {
+    await t.test(`${actual} with ${expected ?? 'default'}`, async () => {
+      const source = paths();
+      const parent = sealedParent();
+      const parentText = writeJson(source.parent, parent);
+      writeFileSync(source.approved, parentText, 'utf8');
+      const run = additiveRun(parent, parentText, []);
+      run.parent.url = actual;
+      materializeRunArtifacts(source, run);
+      writeJson(source.run, run);
+
+      try {
+        await assertRejectedBeforeApproval(
+          source, parentText, () => approve(source, expected), /parent\.url.*endpoint/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+test('rejects an invalid expected parent URL before any approval writes', async (t) => {
+  for (const endpoint of [
+    '',
+    'not a URL',
+    'http://fork.example/data/current.json',
+    'https://user:password@fork.example/data/current.json',
+    'https://fork.example/data/current.json?version=1',
+    'https://fork.example/data/current.json?',
+    'https://fork.example/data/current.json#parent',
+    'https://fork.example/data/current.json#',
+    'https://fork.example/current.json',
+    ' https://fork.example/data/current.json',
+    'https://fork.example/\t/data/current.json',
+    'https://fork.example/\u0000/data/current.json',
+    'https://fork.example/\u007f/data/current.json',
+    'https://fork.example/\u200b/data/current.json',
+    'https://fork.example\\data/current.json',
+  ]) {
+    await t.test(JSON.stringify(endpoint), async () => {
+      const source = paths();
+      const parentText = writeJson(source.approved, sealedParent());
+      try {
+        await assertRejectedBeforeApproval(
+          source, parentText, () => approve(source, endpoint), /expectedParentUrl.*HTTPS.*current\.json/i,
+        );
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
+  }
+});
 
 test('rejects a fixed discovery URL mutation before writing a private decision', async () => {
   const source = paths();
@@ -3585,6 +3679,60 @@ test('daily additive approval has a dedicated narrow CLI instead of the legacy r
     });
   } finally {
     rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('forwards the CLI parent URL option to additive approval', () => {
+  const source = paths();
+  const parent = sealedParent();
+  const parentText = writeJson(source.parent, parent);
+  writeFileSync(source.approved, parentText, 'utf8');
+  const currentRunTime = new Date().toISOString();
+  const endpoint = 'https://fork.example/cs-ddl/data/current.json';
+  const run = additiveRun(parent, parentText, [], currentRunTime);
+  run.parent.url = endpoint;
+  materializeRunArtifacts(source, run);
+  writeJson(source.run, run);
+
+  try {
+    const result = spawnSync(process.execPath, [
+      '--import', 'tsx', 'scripts/snapshot/approve-additive-snapshot.ts',
+      '--run', source.run, '--parent', source.parent, '--approved', source.approved,
+      '--decision', source.decision, '--approved-at', currentRunTime, '--parent-url', endpoint,
+    ], { cwd: repositoryRoot, encoding: 'utf8' });
+    assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+    assert.equal(JSON.parse(result.stdout).status, 'no-additions');
+    assert.equal(readFileSync(source.approved, 'utf8'), parentText);
+    assert.equal(JSON.parse(readFileSync(source.decision, 'utf8')).status, 'no-additions');
+  } finally {
+    rmSync(source.root, { recursive: true, force: true });
+  }
+});
+
+test('rejects duplicate and missing CLI parent URL arguments before writing', async (t) => {
+  const endpoint = 'https://fork.example/data/current.json';
+  for (const [args, expected] of [
+    [['--parent-url', endpoint, '--parent-url', endpoint], /duplicate argument: "--parent-url"/],
+    [['--parent-url'], /missing value for "--parent-url"/],
+    [['--parent-url', '--approved-at'], /missing value for "--parent-url"/],
+  ] as const) {
+    await t.test(args.join(' '), () => {
+      const source = paths();
+      const parentText = writeJson(source.approved, sealedParent());
+      try {
+        const result = spawnSync(process.execPath, [
+          '--import', 'tsx', 'scripts/snapshot/approve-additive-snapshot.ts',
+          '--run', source.run, '--parent', source.parent, '--approved', source.approved,
+          '--decision', source.decision, ...args,
+        ], { cwd: repositoryRoot, encoding: 'utf8' });
+        assert.equal(result.status, 1);
+        assert.match(result.stderr, expected);
+        assert.equal(readFileSync(source.approved, 'utf8'), parentText);
+        assert.equal(existsSync(source.decision), false);
+      } finally {
+        rmSync(source.root, { recursive: true, force: true });
+      }
+    });
   }
 });
 
