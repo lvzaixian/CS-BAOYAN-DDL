@@ -1,10 +1,6 @@
 name: Deploy Tencent
 
 on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -21,7 +17,7 @@ jobs:
     timeout-minutes: 5
     environment: production-approval
     env:
-      RELEASE_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+      RELEASE_SHA: ${{ github.sha }}
       BUILD_BUNDLE_DIR: ${{ github.workspace }}/release-build
 
     steps:
@@ -79,17 +75,11 @@ jobs:
 
   prepare:
     if: >-
-      (github.event_name == 'workflow_run' &&
-       github.event.workflow_run.conclusion == 'success' &&
-       github.event.workflow_run.event == 'push' &&
-       github.event.workflow_run.head_branch == 'main' &&
-       github.event.workflow_run.repository.full_name == github.repository &&
-       github.event.workflow_run.head_repository.full_name == github.repository) ||
-      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+      github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
-      RELEASE_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+      RELEASE_SHA: ${{ github.sha }}
 
     steps:
       - name: Checkout release commit
@@ -235,17 +225,11 @@ jobs:
   package-control-plane:
     needs: production_gate
     if: >-
-      (github.event_name == 'workflow_run' &&
-       github.event.workflow_run.conclusion == 'success' &&
-       github.event.workflow_run.event == 'push' &&
-       github.event.workflow_run.head_branch == 'main' &&
-       github.event.workflow_run.repository.full_name == github.repository &&
-       github.event.workflow_run.head_repository.full_name == github.repository) ||
-      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+      github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      RELEASE_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+      RELEASE_SHA: ${{ github.sha }}
 
     steps:
       - name: Checkout deployment control plane
@@ -298,7 +282,7 @@ jobs:
     env:
       DEPLOY_ROOT: /srv/cs-baoyan-ddl
       PUBLIC_BASE_URL: ${{ vars.PUBLIC_BASE_URL }}
-      RELEASE_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+      RELEASE_SHA: ${{ github.sha }}
       RUN_TOKEN: ${{ github.run_id }}-${{ github.run_attempt }}
       BUILD_BUNDLE_DIR: ${{ github.workspace }}/release-build
       CONTROL_BUNDLE_DIR: ${{ github.workspace }}/control-plane-bundle

@@ -74,10 +74,10 @@ const releaseIdentity = {
 const dayMs = 24 * 60 * 60 * 1000;
 const nowMs = Date.parse('2030-01-01T00:00:00Z');
 
-test('monitor workflow is scheduled, manually runnable, read-only, and isolated from production credentials', () => {
+test('archived monitor is manually runnable, read-only, and isolated from production credentials', () => {
   const workflow = source(workflowPath);
   assert.notEqual(workflow, '', '.github/workflows/monitor.yml must exist');
-  assert.match(workflow, /schedule:\s*\n\s*- cron:\s*['"]\d{1,2} \*\/6 \* \* \*['"]/);
+  assert.doesNotMatch(workflow, /^\s*(?:schedule|cron):/m);
   assert.match(workflow, /workflow_dispatch:/);
   assert.match(workflow, /permissions:\s*\n\s*contents:\s*read/);
   assert.doesNotMatch(workflow, /^\s*environment:/m);

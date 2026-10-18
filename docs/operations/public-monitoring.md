@@ -1,6 +1,6 @@
 # 公开站点监控
 
-`.github/workflows/monitor.yml` 每 6 小时运行一次，也支持从 `main` 手动触发。它只观察 `ddl.meta-mind.cn` 的公开 HTTPS 表面：首页、`/data/current.json`、`/data/release.json` 和 TLS 证书。它不扫描招生来源、不写数据、不部署、不回滚，也不连接腾讯云主机。
+归档模式下，`.github/workflows/monitor.yml` 已移除定时触发，仅支持从 `main` 手动触发；原仓库的 workflow 保持暂停，复用者如需手动运行，先在 Actions 启用它。它只观察 `ddl.meta-mind.cn` 的公开 HTTPS 表面：首页、`/data/current.json`、`/data/release.json` 和 TLS 证书。它不扫描招生来源、不写数据、不部署、不回滚，也不连接腾讯云主机。
 
 ## 配置
 

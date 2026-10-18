@@ -3,6 +3,11 @@
   "private": true,
   "version": "2.0.0",
   "type": "module",
+  "description": "Archived admissions deadline website and evidence-based additive update pipeline",
+  "packageManager": "pnpm@10.28.2",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "predev": "tsx scripts/build-logos.ts",
     "dev": "vite",
